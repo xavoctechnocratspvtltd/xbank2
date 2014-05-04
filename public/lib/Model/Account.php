@@ -5,13 +5,13 @@ class Model_Account extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Agent','agent_id')->display(array('form'=>'authcomplete/Basic'));
+		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
 		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id);
-		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'authcomplete/Basic'));
-		$this->hasOne('Member','collector_id')->display(array('form'=>'authcomplete/Basic'));
-		$this->hasOne('Member','member_id')->display(array('form'=>'authcomplete/Basic'));
-		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'authcomplete/Basic'));
+		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'autocomplete/Basic'));
 		
 		$this->addField('OpeningBalanceDr')->type('money');
 		$this->addField('OpeningBalanceCr')->type('money');

@@ -12,19 +12,23 @@ class page_accounts_Loan extends Page {
 			$crud->js()->univ()->errorMessage('Done')->execute();
 		});
 
+
+		/**
+		 * Add Documents Fields ...
+		 */
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
-			$k = 1;
 			$documents=$this->add('Model_Document');
 			foreach ($documents as $d) {
-			    $f=$crud->form->addField('checkbox',$documents['name']);
-			   	$o->move($f,'last');
-			    $f=$crud->form->addField('line',$documents['name'].' '.$documents['Discription']);
-			   	$o->move($f,'last');
-			    $k++;
+			    $f1=$crud->form->addField('checkbox',$this->api->normalizeName($documents['name']));
+			   	$o->move($f1,'last');
+			    $f2=$crud->form->addField('line',$this->api->normalizeName($documents['name'].' value'));
+			   	$o->move($f2,'last');
+			   	$f1->js(true)->univ()->alert('hi')->bindConditionalShow(array(
+					''=>array(''),
+					'*'=>array($this->api->normalizeName($documents['name'].' value'))
+					),'div .atk-form-row');
 			}
-
-			$crud->form->addField('line','aaa');			
 		}
 
 		$crud->setModel('Account_Loan',array('AccountNumber','member_id','scheme_id','loanAmount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'));

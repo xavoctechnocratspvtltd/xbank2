@@ -151,16 +151,6 @@ class Model_Account extends Model_Table {
 		$this->hook('afterAccountCredited',array($amount));
 	}
 
-	function manageForm($form){
-		$this->hook('accountFormCreated',array($form));
-		if($form->isSubmitted()){
-			$this->hook('accountFormSubmitted',array($form));
-			$values = $form->getAllFields();
-			$this->createNewAccount($values['member_id'],$values['scheme_id'],$values['AccountNumber'],$values);
-			$form->js()->univ()->successMessage('HI')->execute();
-		}
-	}
-
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null){
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;
@@ -172,6 +162,20 @@ class Model_Account extends Model_Table {
 		}
 		$this->save();
 		return $this->id;
+	}
+
+	function updateDocument(Model_Document $document,$value){
+
+
+		
+		$document_submitted = $this->add('Model_DocumentSubmitted');
+		$document_submitted->addCondition('documents_id',$document->id);
+		$document_submitted->addCondition('accounts_id',$this->id);
+		$document_submitted->tryLoadAny();
+		
+		$document_submitted['Description'] = $value;
+		$document_submitted->save();
+
 	}
 
 	function deposit($amount){

@@ -90,6 +90,12 @@ class Form_Field_Basic extends \Form_Field_Hidden
         return $this;
     }
 
+    function mustNotMatch()
+    {
+        $this->options = array_merge($this->options, array('mustNotMatch'=>'true'));
+        return $this;
+    }
+
     function validateNotNULL($msg = null)
     {
         $this->other_field->validateNotNULL($msg);

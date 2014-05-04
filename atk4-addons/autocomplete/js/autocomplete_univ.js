@@ -31,8 +31,13 @@ $.each({
 				if($(this).data('ui-autocomplete').selectedItem == undefined) {
 					if("mustMatch" in options) q.val('');
 					$(other_field).val(q.val());
-					console.log('clearing');
 					return false;
+				}else{
+					if('mustNotMatch' in options){
+						q.val('');
+						$(other_field).val(q.val());
+						return false;
+					}
 				}
 			}
 		},options))

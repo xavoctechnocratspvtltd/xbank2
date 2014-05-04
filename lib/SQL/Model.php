@@ -309,11 +309,11 @@ class SQL_Model extends Model implements Serializable {
             // TODO: should we use expression in where?
 
 
-            $this->_dsql()->where($field->getExpr(),$cond,$value);
+            // $this->_dsql()->where($field->getExpr(),$cond,$value);
 
 
-            //$this->_dsql()->having($f,$cond,$value);
-            //$field->updateSelectQuery($this->dsql);
+            $this->_dsql()->having($f,$cond,$value);
+            $field->updateSelectQuery($this->dsql);
         }elseif($field->relation){
             $this->_dsql()->where($field->relation->short_name.'.'.$f,$cond,$value);
         }elseif($this->relations){

@@ -15,6 +15,7 @@ class page_accounts_Loan extends Page {
 		    $o=$crud->form->add('Order');
 			$k = 1;
 			$documents=$this->add('Model_Document');
+			$documents->addCondition('LoanAccount',true);
 			foreach ($documents as $d) {
 			    $f=$crud->form->addField('checkbox',$documents['name']);
 			   	$o->move($f,'last');
@@ -23,10 +24,9 @@ class page_accounts_Loan extends Page {
 			    $k++;
 			}
 
-			$crud->form->addField('line','aaa');			
 		}
 
-		$crud->setModel('Account_Loan',array('AccountNumber','member_id','scheme_id','loanAmount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'));
+		$crud->setModel('Account_Loan',array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'));
 		if($crud->grid){
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','edit_document');

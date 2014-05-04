@@ -7,7 +7,7 @@ class Model_Account_CC extends Model_Account{
 		$this->addCondition('SchemeType','CC');
 
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','CC');
-
+		$this->getElement('Amount')->caption('CC Limit');
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

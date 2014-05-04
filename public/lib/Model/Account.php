@@ -5,30 +5,12 @@ class Model_Account extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->addField('AccountNumber');
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'autocomplete/Basic'));
-
-		//New Fields added//
-		$this->addField('loanAmount')->type('money');
-		
-		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
-		
-		//New Fields added//
-		$this->addField('gaurantor');
-		$this->addField('gaurantorAddress');
-		$this->addField('gaurantorPhNo');
-
-
-		$this->addField('ModeOfOperation')->caption('Operation Mode');
-		
-		//New Fields added//
 		$this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
-
-
-		$this->addField('LoanInsurranceDate')->type('datetime')->defaultValue($this->api->now);
-		
+		$this->hasOne('Account','account_to_debit_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Account','intrest_to_account_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
 
@@ -36,6 +18,25 @@ class Model_Account extends Model_Table {
 		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));
+		
+
+		
+		
+		//New Fields added//
+		$this->addField('AccountNumber');
+		$this->addField('AccountDisplayName')->caption('Account Name');
+		$this->addField('gaurantor');
+		$this->addField('gaurantorAddress');
+		$this->addField('gaurantorPhNo');
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
+
+
+		$this->addField('ModeOfOperation')->caption('Operation Mode');
+		
+		//New Fields added//
+
+
+		$this->addField('LoanInsurranceDate')->type('datetime')->defaultValue($this->api->now);
 		
 		$this->addField('OpeningBalanceDr')->type('money');
 		$this->addField('OpeningBalanceCr')->type('money');
@@ -53,11 +54,10 @@ class Model_Account extends Model_Table {
 		$this->addField('CurrentBalanceCr')->type('money');
 		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('InterestToAccount')->type('int');
-		$this->addField('RdAmount')->type('money');
+		$this->addField('Amount')->type('money');
 		$this->addField('LockingStatus')->type('boolean')->defaultValue(false);
 		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(false);
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
-		$this->addField('AccountDisplayName');
 		$this->addField('PAndLGroup');
 
 		$this->leftJoin('schemes','scheme_id')

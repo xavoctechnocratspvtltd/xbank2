@@ -7,5 +7,9 @@ class page_accounts_DDS extends Page {
 		$crud=$this->add('CRUD');
 		$crud->setModel('Account_DDS');
 
+		
+		if($crud->grid)
+			$crud->grid->addPaginator(10);
+
 	}
 }

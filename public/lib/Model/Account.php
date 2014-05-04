@@ -5,20 +5,21 @@ class Model_Account extends Model_Table {
 	function init(){
 		parent::init();
 
+		$this->addField('AccountNumber');
+		$this->hasOne('Member','member_id');
+		$this->hasOne('Scheme','scheme_id');
 		$this->hasOne('Agent','agent_id');
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
 		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id);
 		$this->hasOne('Dealer','dealer_id');
 		$this->hasOne('Member','collector_id');
-		$this->hasOne('Member','member_id');
-		$this->hasOne('Scheme','scheme_id');
 		
 		$this->addField('OpeningBalanceDr')->type('money');
 		$this->addField('OpeningBalanceCr')->type('money');
 		$this->addField('ClosingBalance')->type('money');
 		$this->addField('CurrentBalanceDr')->type('money');
 		$this->addField('CurrentInterest');
-		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		$this->addField('Nominee');
 		$this->addField('NomineeAge');
 		$this->addField('RelationWithNominee');
@@ -26,7 +27,6 @@ class Model_Account extends Model_Table {
 		$this->addField('MinorNomineeParentName');
 		$this->addField('ModeOfOperation');
 		$this->addField('DefaultAC')->type('boolean')->defaultValue(false);
-		$this->addField('AccountNumber');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('CurrentBalanceCr')->type('money');

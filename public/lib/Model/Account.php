@@ -6,13 +6,13 @@ class Model_Account extends Model_Table {
 		parent::init();
 
 		$this->addField('AccountNumber');
-		$this->hasOne('Member','member_id');
-		$this->hasOne('Scheme','scheme_id');
+		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'autocomplete/Basic'));
 
 		//New Fields added//
 		$this->addField('loanAmount')->type('money');
 		
-		$this->hasOne('Agent','agent_id');
+		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		
 		//New Fields added//
@@ -24,18 +24,18 @@ class Model_Account extends Model_Table {
 		$this->addField('ModeOfOperation')->caption('Operation Mode');
 		
 		//New Fields added//
-		$this->hasOne('Account','loan_from_account_id');
+		$this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
 
 
 		$this->addField('LoanInsurranceDate')->type('datetime')->defaultValue($this->api->now);
 		
-		$this->hasOne('Account','LoanAgainstAccount_id');
-		$this->hasOne('Dealer','dealer_id');
+		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
 
 
-		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
-		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id);
-		$this->hasOne('Member','collector_id');
+		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));
 		
 		$this->addField('OpeningBalanceDr')->type('money');
 		$this->addField('OpeningBalanceCr')->type('money');
@@ -63,8 +63,35 @@ class Model_Account extends Model_Table {
 		$this->leftJoin('schemes','scheme_id')
 			->addField('SchemeType');
 
-		$this->addExpression('name')->set('AccountNumber');
 
+		$this->addExpression('name')->set(function($m,$q){
+			
+			$member = $m->add('Model_Member',array('table_alias'=>'account_holder'));
+			$member->addCondition('id',$q->getField('member_id'));
+			$member->_dsql()->del('fields')->field('name');
+
+			$member_father = $m->add('Model_Member',array('table_alias'=>'account_holder_father'));
+			$member_father->addCondition('id',$q->getField('member_id'));
+			$member_father->_dsql()->del('fields')->field('FatherName');
+
+
+			return '(CONCAT(
+								('.$member->_dsql()->render().'),
+								" [ ",
+								('.$member_father->_dsql()->render().'),
+								" ] ",
+								'. $q->getField('AccountNumber') .',
+								" - ",
+								IFNULL('.$q->getField('AccountDisplayName').',AccountNumber)
+							)
+					)';
+		});
+
+		// $member_join = $this->leftJoin('members','member_id');
+		// $member_join->addField('member_name','name');
+		// $member_join->addField('FatherName');
+
+		// $this->debug();
 
 		$this->hasMany('Jointmember','account_id');
 		$this->hasMany('Premium','account_id');

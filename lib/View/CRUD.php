@@ -493,6 +493,7 @@ class View_CRUD extends View
     protected function formSubmit($form)
     {
         try {
+            $this->hook('pre-update',array($form));
             $form->update();
             $self = $this;
             $this->api->addHook('pre-render', function () use ($self) {

@@ -1,7 +1,12 @@
 <?php
 class Model_Account_CC extends Model_Account{
+
 	function init(){
 		parent::init();
+
+		$this->addCondition('SchemeType','CC');
+
+		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','CC');
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}

@@ -306,7 +306,7 @@ class Form_Basic extends View implements ArrayAccess {
     function update(){
         // TODO: start transaction here
         try{
-
+            
             if($this->hook('update'))return $this;
 
             if(!($m=$this->getModel()))throw new BaseException("Can't save, model not specified");

@@ -111,7 +111,7 @@ class Page_Tester extends Page {
                             'skipped'=>$e->getMessage()
                         );
                     }
-                    throw $e;
+                    // throw $e;
                 }
 
                 $this->input=$input;

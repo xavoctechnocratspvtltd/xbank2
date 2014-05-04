@@ -4,6 +4,8 @@ class Model_BalanceSheet extends Model_Table {
 	function init(){
 		parent::init();
 
+		$this->addExpression('name')->set('Head');
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

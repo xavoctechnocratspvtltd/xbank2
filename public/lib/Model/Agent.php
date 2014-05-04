@@ -1,12 +1,12 @@
 <?php
-class Model_Agents extends Model_Table {
-	var $table= "xagents";
+class Model_Agent extends Model_Table {
+	var $table= "agents";
 	function init(){
 		parent::init();
 
 		$this->hasOne('Member','member_id');
-		$this->hasOne('Sponsor','sponsor_id');
-		$this->hasOne('Tree','tree_id');
+		$this->hasOne('Agent','sponsor_id');
+		// $this->hasOne('Tree','tree_id');
 		$this->addField('ActiveStatus')->type('int');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);

@@ -40,7 +40,7 @@ class Frontend extends ApiFrontend {
         $auth->check();
 
         $this->current_branch = $this->auth->model->ref('branch_id');
-
+        $this->title = ' :: [' . $this->api->current_branch['name'].']';
         $header_menu1=$header->add('Menu_Base');
 
         // $header_menu1->addMenuItem('index',array('Home','icon'=>'home','swatch'=>'yellow'));
@@ -60,5 +60,32 @@ class Frontend extends ApiFrontend {
         if(!$date) $date = $this->api->today;
         $date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " +1 DAY"));    
         return $date;
+    }
+
+    function getFinancialYear($date=null,$start_end = 'both'){
+        if(!$date) $date = $this->api->now;
+        $month = date('m',strtotime($date));
+        $year = date('Y',strtotime($date));
+        if($month >=1 AND $month <=3  ){
+            $f_year_start = $year-1;
+            $f_year_end = $year;
+        }
+        else{
+            $f_year_start = $year;
+            $f_year_end = $year+1;
+        }
+
+        if(strpos($start_end, 'start') !==false){
+            return $f_year_start.'-04-01';
+        }
+        if(strpos($start_end, 'end') !==false){
+            return $f_year_end.'-03-31';
+        }
+
+        return array(
+                'start_date'=>$f_year_start.'-04-01',
+                'end_date'=>$f_year_end.'-03-31'
+            );
+
     }
 }

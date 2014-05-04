@@ -44,6 +44,8 @@ class Model_Account extends Model_Table {
 		$this->leftJoin('schemes','scheme_id')
 			->addField('SchemeType');
 
+		$this->addExpression('name')->set('AccountNumber');
+
 
 		$this->hasMany('Jointmember','account_id');
 		$this->hasMany('Premium','account_id');

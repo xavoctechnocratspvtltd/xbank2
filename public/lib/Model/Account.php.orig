@@ -5,37 +5,25 @@ class Model_Account extends Model_Table {
 	function init(){
 		parent::init();
 
+<<<<<<< HEAD
 		$this->addField('AccountNumber');
 		$this->hasOne('Member','member_id');
 		$this->hasOne('Scheme','scheme_id');
-
-		//New Fields added//
-		$this->addField('loanAmount')->type('money');
-		
 		$this->hasOne('Agent','agent_id');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
-		
-		//New Fields added//
-		$this->addField('gaurantor');
-		$this->addField('gaurantorAddress');
-		$this->addField('gaurantorPhNo');
-
-
-		$this->addField('ModeOfOperation')->caption('Operation Mode');
-		
-		//New Fields added//
-		$this->hasOne('Account','loan_from_account_id');
-
-
-		$this->addField('LoanInsurranceDate')->type('datetime')->defaultValue($this->api->now);
-		
-		$this->hasOne('Account','LoanAgainstAccount_id');
-		$this->hasOne('Dealer','dealer_id');
-
-
 		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
 		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id);
+		$this->hasOne('Dealer','dealer_id');
 		$this->hasOne('Member','collector_id');
+=======
+		$this->hasOne('Agent','agent_id')->display(array('form'=>'authcomplete/Basic'));
+		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
+		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id);
+		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'authcomplete/Basic'));
+		$this->hasOne('Member','collector_id')->display(array('form'=>'authcomplete/Basic'));
+		$this->hasOne('Member','member_id')->display(array('form'=>'authcomplete/Basic'));
+		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'authcomplete/Basic'));
+>>>>>>> 9a2ccb2cfa61364c4e2f1e5d69f646d54ae758eb
 		
 		$this->addField('OpeningBalanceDr')->type('money');
 		$this->addField('OpeningBalanceCr')->type('money');
@@ -47,6 +35,7 @@ class Model_Account extends Model_Table {
 		$this->addField('RelationWithNominee');
 		$this->addField('MinorNomineeDOB');
 		$this->addField('MinorNomineeParentName');
+		$this->addField('ModeOfOperation');
 		$this->addField('DefaultAC')->type('boolean')->defaultValue(false);
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
@@ -54,7 +43,9 @@ class Model_Account extends Model_Table {
 		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('InterestToAccount')->type('int');
 		$this->addField('RdAmount')->type('money');
+		$this->addField('LoanInsurranceDate')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('LockingStatus')->type('boolean')->defaultValue(false);
+		$this->addField('LoanAgainstAccount')->type('int');
 		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(false);
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
 		$this->addField('AccountDisplayName');
@@ -68,7 +59,6 @@ class Model_Account extends Model_Table {
 
 		$this->hasMany('Jointmember','account_id');
 		$this->hasMany('Premium','account_id');
-		$this->hasMany('DocumentSubmitted','account_id');
 
 		$this->addHook('beforeSave',$this);
 

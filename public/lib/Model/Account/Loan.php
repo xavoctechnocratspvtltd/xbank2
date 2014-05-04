@@ -13,9 +13,10 @@ class Model_Account_Loan extends Model_Account{
 
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null){
 
-		if(!$form['aaa']) $form->displayError('aaa','oopss');
 
-		parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form);
+		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form);
+
+
 
 	}
 }

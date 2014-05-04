@@ -171,6 +171,7 @@ class Model_Account extends Model_Table {
 			$this[$field] = $value;
 		}
 		$this->save();
+		return $this->id;
 	}
 
 	function deposit($amount){

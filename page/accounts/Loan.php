@@ -8,7 +8,7 @@ class page_accounts_Loan extends Page {
 		
 		$crud->addHook('myupdate',function($crud,$form){
 			$loan_account_model = $crud->add('Model_Account_Loan');
-			$loan_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch->id, $form['AccountNumber'],array(),$form);
+			$loan_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch->id, $form['AccountNumber'],$form->getAllFields(),$form);
 			$crud->js()->univ()->errorMessage('Done')->execute();
 		});
 

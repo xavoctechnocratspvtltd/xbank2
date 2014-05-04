@@ -159,7 +159,7 @@ class Form_Field_Basic extends \Form_Field_Hidden
         }
 
         $this->other_field->js(true)
-            ->_load('autocomplete_univ5')
+            ->_load('autocomplete_univ')
             ->_css('autocomplete')
             ->univ()
             ->myautocomplete($url, $this, $this->options, $this->id_field, $this->title_field);

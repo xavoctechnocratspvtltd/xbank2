@@ -6,9 +6,10 @@ class page_accounts_Loan extends Page {
 
 		$crud=$this->add('xCRUD');
 		
-		
 		$crud->addHook('myupdate',function($crud,$form){
-			$form->js()->univ()->errorMessage($form['aaa'])->execute();
+			$loan_account_model = $crud->add('Model_Account_Loan');
+			$loan_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch->id, $form['AccountNumber'],array(),$form);
+			$crud->js()->univ()->errorMessage('Done')->execute();
 		});
 
 		if($crud->isEditing("add")){
@@ -45,9 +46,7 @@ class page_accounts_Loan extends Page {
 
 		if($crud->isEditing('add')){
 			$o->now();
-		}
-		// Form Submit handler
-		
+		}		
 
 	}
 

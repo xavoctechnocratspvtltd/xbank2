@@ -6,30 +6,30 @@ class Model_Account extends Model_Table {
 		parent::init();
 
 		$this->addField('AccountNumber');
-		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Member','member_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Scheme','scheme_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
 
 		//New Fields added//
-		$this->addField('loanAmount')->type('money');
+		// $this->addField('loanAmount')->type('money');
 		
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		
 		//New Fields added//
-		$this->addField('gaurantor');
-		$this->addField('gaurantorAddress');
-		$this->addField('gaurantorPhNo');
+		// $this->addField('gaurantor');
+		// $this->addField('gaurantorAddress');
+		// $this->addField('gaurantorPhNo');
 
 
 		$this->addField('ModeOfOperation')->caption('Operation Mode');
 		
 		//New Fields added//
-		$this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
+		// $this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
 
 
 		$this->addField('LoanInsurranceDate')->type('datetime')->defaultValue($this->api->now);
 		
-		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
+		// $this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
 
 
@@ -161,7 +161,7 @@ class Model_Account extends Model_Table {
 		}
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array()){
+	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null){
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;
 		$this['AccountNumber'] = $AccountNumber;

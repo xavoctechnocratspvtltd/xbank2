@@ -7,9 +7,7 @@ class page_schemes extends Page {
 
 		$tabs = $this->add('Tabs');
 		foreach (explode(',',ACCOUNT_TYPES) as $accounts) {
-			$acc_tab = $tabs->addTab($accounts);
-			$crud=$acc_tab->add('CRUD');
-			$crud->setModel('Scheme_'.$accounts);
-		}
+			$acc_tab = $tabs->addTabURL('schemes_'.$accounts,$accounts);
 	}
+}
 }

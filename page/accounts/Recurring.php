@@ -5,6 +5,8 @@ class page_accounts_Recurring extends Page {
 		parent::init();
 		
 		$crud=$this->add('xCRUD');
+		$account_recurring_model = $this->add('Model_Account_Recurring');
+		$account_recurring_model->add('Controller_Acl');
 		
 		$crud->addHook('myupdate',function($crud,$form){
 			$form->js()->univ()->errorMessage($form['aaa'])->execute();
@@ -23,7 +25,7 @@ class page_accounts_Recurring extends Page {
 			$f->setModel('Account_SavingAndCurrent');
 		}
 
-		$crud->setModel('Account_Recurring',array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','collector_id','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
+		$crud->setModel($account_recurring_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','collector_id','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
 		
 		if($crud->grid)
 			$crud->grid->addPaginator(10);

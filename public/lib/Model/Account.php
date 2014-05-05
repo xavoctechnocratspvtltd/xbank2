@@ -5,8 +5,8 @@ class Model_Account extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Member','member_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Scheme','scheme_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','account_to_debit_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','intrest_to_account_id')->display(array('form'=>'autocomplete/Basic'));
@@ -15,23 +15,23 @@ class Model_Account extends Model_Table {
 		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
 
 
-		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Branch','branch_id')->mandatory(true)->defaultValue($this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Staff','staff_id')->mandatory(true)->defaultValue($this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));
 		
 
 		
 		
 		//New Fields added//
-		$this->addField('AccountNumber');
+		$this->addField('AccountNumber')->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Name');
 		$this->addField('gaurantor');
 		$this->addField('gaurantorAddress');
 		$this->addField('gaurantorPhNo');
-		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true);
 
 
-		$this->addField('ModeOfOperation')->caption('Operation Mode');
+		$this->addField('ModeOfOperation')->setValueList(array('Self'=>'Self','Joint'=>'Joint'))->defaultValue('Self')->caption('Operation Mode');
 		
 		//New Fields added//
 
@@ -151,29 +151,50 @@ class Model_Account extends Model_Table {
 		$this->hook('afterAccountCredited',array($amount));
 	}
 
-	function manageForm($form){
-		$this->hook('accountFormCreated',array($form));
-		if($form->isSubmitted()){
-			$this->hook('accountFormSubmitted',array($form));
-			$values = $form->getAllFields();
-			$this->createNewAccount($values['member_id'],$values['scheme_id'],$values['AccountNumber'],$values);
-			$form->js()->univ()->successMessage('HI')->execute();
-		}
-	}
-
-	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array()){
+	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null){
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;
-		$this['AccountNumber'] = $AccountNumber;
+		$this['AccountNumber'] = $this->api->current_branch['Code'].$AccountNumber;
 		$this['branch_id'] = $branch_id;
 
 		foreach ($otherValues as $field => $value) {
 			$this[$field] = $value;
 		}
 		$this->save();
+		return $this->id;
 	}
 
-	function deposit($amount){
+	function updateDocument(Model_Document $document,$value){
+		$document_submitted = $this->add('Model_DocumentSubmitted');
+		$document_submitted->addCondition('documents_id',$document->id);
+		$document_submitted->addCondition('accounts_id',$this->id);
+		$document_submitted->tryLoadAny();
+		
+		$document_submitted['Description'] = $value;
+		$document_submitted->save();
+	}
+
+	function deposit($amount,$narration,$accounts_to_debit=array(),$form=null){
+		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
+		if(!isset($this->transaction_deposit_type)) throw $this->exception('transaction_deposit_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
+		
+		// Check if account belongs to currentBranch ...
+		// If yes then ok otherwise do interbranch entry
+		if($this['branch_id'] == $this->api->current_branch->id){
+			// Account Belongs to same branch
+			$cr_array=array($this->api->current_branch['Code'].SP.$this['AccountNumber']=>$amount);
+
+			if(!count($accounts_to_debit))
+				$accounts_to_debit=array($this->api->current_branch['Code'].SP.CASH_ACCOUNT=>$amount);
+
+			$transaction = $this->add('Model_Transaction');
+			$transaction->doTransaction($accounts_to_debit, $cr_array, $this->transaction_deposit_type);
+
+		}else{
+			// Account belongs to another branch
+			// Perform interbranch transaction
+			
+		}
 		throw $this->exception ('Must Re Declare in Account Sub Class');
 	}
 

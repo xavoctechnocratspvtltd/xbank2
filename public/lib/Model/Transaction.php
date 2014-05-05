@@ -26,7 +26,7 @@ class Model_Transaction extends Model_Table {
 	}
 
 
-	function doTransaction($DRs, $CRs, $transaction_type, $branch_id=null, $transaction_date=null, $Narration=null, $only_transaction=null, $options=array() ){
+	function doTransaction($DRs, $CRs, $transaction_type, $branch_id=null, $transaction_date=null, $Narration=null, $only_transaction=false, $options=array() ){
 		if($this->loaded())
 			throw $this->exception('New Transaction can only be added on unLoaded Transaction Model ');
 

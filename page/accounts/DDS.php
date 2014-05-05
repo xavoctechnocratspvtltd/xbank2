@@ -5,7 +5,9 @@ class page_accounts_DDS extends Page {
 		parent::init();
 
 		$crud=$this->add('xCRUD');
-		
+		$account_dds_model = $this->add('Model_Account_DDS');
+		$account_dds_model->add('Controller_Acl');
+
 		$crud->addHook('myupdate',function($crud,$form){
 			$form->js()->univ()->errorMessage($form['aaa'])->execute();
 		});
@@ -21,7 +23,7 @@ class page_accounts_DDS extends Page {
 
 		}
 
-		$crud->setModel('Account_DDS',array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
+		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
 		
 		if($crud->grid)
 			$crud->grid->addPaginator(10);

@@ -6,47 +6,68 @@ class Model_Account extends Model_Table {
 		parent::init();
 
 <<<<<<< HEAD
+		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Account','account_to_debit_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Account','intrest_to_account_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
+
+
+		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));
+		
+
+=======
 		$this->addField('AccountNumber');
-		$this->hasOne('Member','member_id');
-		$this->hasOne('Scheme','scheme_id');
+		$this->hasOne('Member','member_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Scheme','scheme_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
 
 		//New Fields added//
-		$this->addField('loanAmount')->type('money');
+		// $this->addField('loanAmount')->type('money');
+>>>>>>> aadfafafa961fed622eb7c2ccf334ee5768d2fd4
 		
-		$this->hasOne('Agent','agent_id');
-		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		
 		//New Fields added//
+<<<<<<< HEAD
+		$this->addField('AccountNumber');
+		$this->addField('AccountDisplayName')->caption('Account Name');
 		$this->addField('gaurantor');
 		$this->addField('gaurantorAddress');
 		$this->addField('gaurantorPhNo');
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
+=======
+		// $this->addField('gaurantor');
+		// $this->addField('gaurantorAddress');
+		// $this->addField('gaurantorPhNo');
+>>>>>>> aadfafafa961fed622eb7c2ccf334ee5768d2fd4
 
 
 		$this->addField('ModeOfOperation')->caption('Operation Mode');
 		
 		//New Fields added//
-		$this->hasOne('Account','loan_from_account_id');
+<<<<<<< HEAD
+=======
+		// $this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
+>>>>>>> aadfafafa961fed622eb7c2ccf334ee5768d2fd4
 
 
 		$this->addField('LoanInsurranceDate')->type('datetime')->defaultValue($this->api->now);
 		
-		$this->hasOne('Account','LoanAgainstAccount_id');
-		$this->hasOne('Dealer','dealer_id');
-
-
-		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
-		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id);
-		$this->hasOne('Member','collector_id');
+<<<<<<< HEAD
 =======
-		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
-		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id);
+		// $this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
+
+
+		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Scheme','scheme_id')->display(array('form'=>'autocomplete/Basic'));
->>>>>>> 6fc0d129124a985b2708a66b295029d68f00d94a
 		
+>>>>>>> aadfafafa961fed622eb7c2ccf334ee5768d2fd4
 		$this->addField('OpeningBalanceDr')->type('money');
 		$this->addField('OpeningBalanceCr')->type('money');
 		$this->addField('ClosingBalance')->type('money');
@@ -63,11 +84,10 @@ class Model_Account extends Model_Table {
 		$this->addField('CurrentBalanceCr')->type('money');
 		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('InterestToAccount')->type('int');
-		$this->addField('RdAmount')->type('money');
+		$this->addField('Amount')->type('money');
 		$this->addField('LockingStatus')->type('boolean')->defaultValue(false);
 		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(false);
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
-		$this->addField('AccountDisplayName');
 		$this->addField('PAndLGroup');
 
 		$this->leftJoin('schemes','scheme_id')
@@ -161,17 +181,7 @@ class Model_Account extends Model_Table {
 		$this->hook('afterAccountCredited',array($amount));
 	}
 
-	function manageForm($form){
-		$this->hook('accountFormCreated',array($form));
-		if($form->isSubmitted()){
-			$this->hook('accountFormSubmitted',array($form));
-			$values = $form->getAllFields();
-			$this->createNewAccount($values['member_id'],$values['scheme_id'],$values['AccountNumber'],$values);
-			$form->js()->univ()->successMessage('HI')->execute();
-		}
-	}
-
-	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array()){
+	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null){
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;
 		$this['AccountNumber'] = $AccountNumber;
@@ -181,6 +191,21 @@ class Model_Account extends Model_Table {
 			$this[$field] = $value;
 		}
 		$this->save();
+		return $this->id;
+	}
+
+	function updateDocument(Model_Document $document,$value){
+
+
+		
+		$document_submitted = $this->add('Model_DocumentSubmitted');
+		$document_submitted->addCondition('documents_id',$document->id);
+		$document_submitted->addCondition('accounts_id',$this->id);
+		$document_submitted->tryLoadAny();
+		
+		$document_submitted['Description'] = $value;
+		$document_submitted->save();
+
 	}
 
 	function deposit($amount){

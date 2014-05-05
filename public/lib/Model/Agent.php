@@ -23,6 +23,8 @@ class Model_Agent extends Model_Table {
 		$this->hasMany('Gaurantor','gaurantor_id');
 		//$this->add('dynamic_model/Controller_AutoCreator');
 
+		
+
 		$this->addExpression('name')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('name');
 		});

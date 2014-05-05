@@ -26,11 +26,18 @@ $.each({
 			},
 			change: function(event, ui) {
 				var data=$.data(this);//Get plugin data for 'this'
-				if(data.uiAutocomplete.selectedItem==undefined) {
+				// console.log(data);
+				// console.log(data.selectedItem);
+				if($(this).data('ui-autocomplete').selectedItem == undefined) {
 					if("mustMatch" in options) q.val('');
 					$(other_field).val(q.val());
-					
 					return false;
+				}else{
+					if('mustNotMatch' in options){
+						q.val('');
+						$(other_field).val(q.val());
+						return false;
+					}
 				}
 			}
 		},options))

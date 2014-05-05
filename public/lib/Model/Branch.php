@@ -91,6 +91,10 @@ class Model_Branch extends Model_Table {
 		return $member;
 	}
 
+	function getDefaultDealer(){
+		
+	}
+
 	function newVoucherNumber($branch_id=null, $transaction_date=null){
 
 		if(!$branch_id) $branch_id = $this->id;

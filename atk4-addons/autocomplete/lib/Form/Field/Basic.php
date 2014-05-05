@@ -90,6 +90,12 @@ class Form_Field_Basic extends \Form_Field_Hidden
         return $this;
     }
 
+    function mustNotMatch()
+    {
+        $this->options = array_merge($this->options, array('mustNotMatch'=>'true'));
+        return $this;
+    }
+
     function validateNotNULL($msg = null)
     {
         $this->other_field->validateNotNULL($msg);
@@ -134,7 +140,7 @@ class Form_Field_Basic extends \Form_Field_Hidden
         if ($_GET[$this->name]) {
 
             if ($_GET['term']) {
-                $this->addCondition($_GET['term']);
+                $this->addCondition(str_replace(" ", "%", $_GET['term']));
             }
 
             $data = $this->getData();

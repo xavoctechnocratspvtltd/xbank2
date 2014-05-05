@@ -9,6 +9,7 @@ class Frontend extends ApiFrontend {
     function init()
     {
         parent::init();
+
         // config-default.php file is placed at root of project folder
         $this->api->dbConnect();
         $this->title =  'Agiletoolkit 4.3';

@@ -5,7 +5,8 @@ class page_accounts_CC extends Page {
 		parent::init();
 
 		$crud=$this->add('xCRUD');
-		
+		$account_cc_model =$this->add('Model_Account_CC');
+		$account_cc_model->add('Controller_Acl');		
 		
 		$crud->addHook('myupdate',function($crud,$form){
 			$form->js()->univ()->errorMessage($form['aaa'])->execute();
@@ -26,11 +27,12 @@ class page_accounts_CC extends Page {
 
 		}
 
-		$crud->setModel('Account_CC',array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'));
+		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'));
 
 		
-		if($crud->grid)
+		if($crud->grid){
 			$crud->grid->addPaginator(10);
+		}
 
 		if($crud->isEditing('add')){
 			$o->now();

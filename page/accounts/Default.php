@@ -6,7 +6,10 @@ class page_accounts_Default extends Page {
 
 
 		$crud=$this->add('CRUD');
-		$crud->setModel('Account_Default',array('AccountNumber','member_id','scheme_id','agent_id','ActiveStatus'));
+		$account_default_model = $this->add('Model_Account_Default');
+		$account_default_model->add('Controller_Acl');
+
+		$crud->setModel($account_default_model,array('AccountNumber','member_id','scheme_id','agent_id','ActiveStatus'));
 
 		
 		if($crud->grid)

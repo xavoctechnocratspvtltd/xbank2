@@ -1,6 +1,6 @@
 <?php
 class Model_Branch extends Model_Table {
-	var $table= "jos_xbranch";
+	var $table= "branches";
 	function init(){
 		parent::init();
 

@@ -11,7 +11,7 @@ class Model_Scheme extends Model_Table {
 		// if(!$this->loanType) throw $this->exception('Loan Type must be defined in Scheme Class')->addMoreInfo('Scheme',get_class())->addMoreInfo('loanType',$this->loanType===null?'n':'y');
 		// if(!$this->schemeType) throw $this->exception('Scheme Type must be defined in Scheme Class');
 
-		// $this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
+		// $this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->hasOne('BalanceSheet','balance_sheet_id');
 		$this->addField('name')->caption('Scheme Name')->mandatory(true);
 		$this->addField('MinLimit')->caption('Minimum Balance/Amount');

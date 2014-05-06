@@ -5,7 +5,7 @@ class Model_Member extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Branch','branch_id')->defaultValue($this->api->current_branch->id);
+		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->addField('name')->mandatory(true);
 		$this->addField('CurrentAddress');
 		$this->addField('FatherName');
@@ -33,9 +33,9 @@ class Model_Member extends Model_Table {
 		$this->addField('ParentAddress');
 		$this->addField('DOB')->type('date');
 		$this->addField('FilledForm60')->type('boolean')->mandatory(true);
-		$this->addField('IsCustomer')->type('boolean')->mandatory(true);
-		$this->addField('IsMember')->type('boolean')->mandatory(true)->defaultValue(true);
-		$this->addField('isAgent')->type('boolean')->mandatory(true)->defaultValue(false);
+		// $this->addField('is_customer')->type('boolean')->mandatory(true);
+		// $this->addField('is_member')->type('boolean')->mandatory(true)->defaultValue(true);
+		$this->addField('is_agent')->type('boolean')->mandatory(true)->defaultValue(false);
 
 		$this->hasMany('Jointmember','member_id');
 		//$this->add('dynamic_model/Controller_AutoCreator');
@@ -44,8 +44,8 @@ class Model_Member extends Model_Table {
 	function createNewMember($name,$isCustomer,$isAgent=null,$other_values=array()){
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Member');
 		$this['name']=$name;
-		$this['isCustomer']=$isCustomer;
-		$this['isAgent']=$isAgent;
+		// $this['isCustomer']=$isCustomer;
+		$this['is_agent']=$isAgent;
 		foreach ($other_values as $field => $value) {
 			$this[$field]=$value;
 		}

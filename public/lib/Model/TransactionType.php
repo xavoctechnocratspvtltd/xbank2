@@ -1,6 +1,6 @@
 <?php
 class Model_TransactionType extends Model_Table {
-	var $table= "transaction_type";
+	var $table= "transaction_types";
 	function init(){
 		parent::init();
 

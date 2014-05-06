@@ -7,17 +7,17 @@ class Model_Account extends Model_Table {
 
 		$this->hasOne('Member','member_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Scheme','scheme_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Account','account_to_debit_id')->display(array('form'=>'autocomplete/Basic'));
+		// $this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
+		// $this->hasOne('Account','account_to_debit_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','intrest_to_account_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
 
 
-		$this->hasOne('Branch','branch_id')->mandatory(true)->defaultValue($this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Staff','staff_id')->mandatory(true)->defaultValue($this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Branch','branch_id')->mandatory(true)->defaultValue(@$this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Staff','staff_id')->mandatory(true)->defaultValue(@$this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
+		// $this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));
 		
 
 		
@@ -25,9 +25,6 @@ class Model_Account extends Model_Table {
 		//New Fields added//
 		$this->addField('AccountNumber')->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Name');
-		$this->addField('gaurantor');
-		$this->addField('gaurantorAddress');
-		$this->addField('gaurantorPhNo');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true);
 
 
@@ -53,7 +50,7 @@ class Model_Account extends Model_Table {
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('CurrentBalanceCr')->type('money');
 		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime')->defaultValue($this->api->now);
-		$this->addField('InterestToAccount')->type('int');
+		// $this->addField('InterestToAccount')->type('int'); now converted to hasOne Account
 		$this->addField('Amount')->type('money');
 		$this->addField('LockingStatus')->type('boolean')->defaultValue(false);
 		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(false);
@@ -96,6 +93,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('Jointmember','account_id');
 		$this->hasMany('Premium','account_id');
 		$this->hasMany('DocumentSubmitted','account_id');
+		$this->hasMany('AccountGaurantor','account_id');
 
 		$this->addHook('beforeSave',$this);
 
@@ -199,7 +197,7 @@ class Model_Account extends Model_Table {
 					}
 				}
 			}else{
-				$transaction->addDebitAccount($this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount);
+				$transaction->addDebitAccount(@$this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount);
 			}
 			$transaction->execute();
 		}else{
@@ -217,7 +215,7 @@ class Model_Account extends Model_Table {
 					}
 				}
 			}else{
-				$transaction->addMyAccount($this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount,'dr');
+				$transaction->addMyAccount(@$this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount,'dr');
 			}
 
 			$transaction->addOtherAccount($this['AccountNumber'],$amount,'cr');

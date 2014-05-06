@@ -7,13 +7,58 @@ class page_corrections extends Page {
 
 	function page_index(){
 
-	}	
+		$rename_tables =array(
+				'jos_xbalance_sheet'=>'balance_sheet',
+				'jos_xbranch'=>'branches',
+				'jos_xdealer'=>'dealers',
+				'jos_xdocuments'=>'documents',
+				'jos_xmember'=>'members',
+				'jos_xschemes'=>'schemes',
+				'jos_xstaff'=>'staffs',
+				'jos_xtransactions'=>'transaction_row',
+				'jos_xaccounts'=>'accounts',
+				'jos_xtransaction_type'=>'transaction_types',
+				'jos_xdocuments_submitted'=>'documents_submitted',
+
+				);
+
+
+		foreach ($rename_tables as $old_table_name => $new_table_name) {
+			try{
+				$this->query("RENAME TABLE $old_table_name TO $new_table_name");
+			}catch(Exception $e){
+				$this->add('View')->set("Could not rename table $old_table_name  -- " . $e->getMessage());
+			}
+		}
+
+
+		$this->add('Model_AgentGuarantor');
+		$this->add('Model_AccountGuarantor');
+		$this->add('Model_Transaction');
+
+		$this->page_fields();
+		$this->page_movetomany();
+		$this->page_transactionsUpdate();
+	}
 
 	function page_fields(){
 
+		
 		$renameFields =array(
-				array('defaultaccounts','a3','a4'),
-				array('defaultaccounts','a3','a4'),
+				array('balance_sheet','Name','name'),
+				array('branches','Name','name'),
+				array('dealers','DealerName','name'),
+				array('documents','Name','name'),
+				array('members','Name','name'),
+				array('schemes','Name','name'),
+				array('staffs','Name','name'),
+				array('transaction_types','Transaction','name'),
+				array('accounts','schemes_id','scheme_id'),
+				array('accounts','agents_id','agent_id'),
+				array('accounts','RdAmount','Amount'),
+				array('accounts','InterestToAccount','intrest_to_account_id'),
+				array('accounts','LoanAgainstAccount','LoanAgainstAccount_id'),
+				array('accounts','PAndLGroup','group'),
 			);
 
 		foreach ($renameFields as $dtl) {
@@ -21,7 +66,7 @@ class page_corrections extends Page {
 		}
 
 		$new_fields=array(
-				array('table_name','field_name','type')
+				array('members','is_agent','boolean')
 			);
 
 		foreach ($new_fields as $dtl) {
@@ -31,13 +76,37 @@ class page_corrections extends Page {
 
 
 		$remove_fields=array(
-				array('table_name','field_name')
+				array('members','IsCustomer'),
+				array('members','IsMember'),
+				array('schemes','branch_id'),
+				array('members','collector_id'),
 			);
 
 		foreach ($remove_fields as $dtl) {
 			$this->removeField($dtl[0],$dtl[1]);
 		}
 
+		$drop_table=array('jos_banner','jos_bannerclient','jos_bannertrack',
+						'jos_categories','jos_components','jos_contact_details'
+						,'jos_content','jos_content_frontpage','jos_content_rating'
+						,'jos_core_acl_aro','jos_core_acl_aro_groups','jos_core_acl_aro_map',
+						'jos_core_acl_aro_sections','jos_core_acl_groups_aro_map','jos_core_log_items'
+						,'jos_core_log_searches','jos_groups','jos_menu','jos_menu_types',
+						'jos_messages','jos_messages_cfg','jos_migration_backlinks',
+						'jos_modules','jos_modules_menu','jos_newsfeeds','jos_plugins','jos_poll_data',
+						'jos_poll_date','jos_poll_menu','jos_polls','jos_sections','jos_session','jos_stats_agents',
+						'jos_templates_menu','jos_users','jos_weblinks');
+
+
+		foreach ($drop_table as $table_name) {
+			try{
+				$this->query("DROP Table $table_name");
+			}catch(Exception $e){
+				$this->add('View')->set($table_name.' can not drop');
+			}
+
+			
+		}
 
 	}
 
@@ -47,19 +116,19 @@ class page_corrections extends Page {
 
 	function removeField($table,$field){
 		try{
-			$this->query("ALTER TABLE $table DROP $field");
+			$this->query($q="ALTER TABLE $table DROP $field");
 		}catch(Exception $e){
-			$this->add('Text')->set($e->getMessage());
+			$this->add('View')->set($q. ' -- '. $e->getMessage());
 		}
 	}
 
 	function renameField($table,$old_field_name,$new_name){
 		try{
-			$field_type = $this->query("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$table' AND COLUMN_NAME = '$old_field_name'",true);
+			$field_type = $this->query($q="SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$table' AND COLUMN_NAME = '$old_field_name'",true);
 			if(!$field_type) return;
-			$this->query("ALTER TABLE $table CHANGE $old_field_name $new_name $field_type")->getOne();
+			$this->query($q="ALTER TABLE $table CHANGE $old_field_name $new_name $field_type")->getOne();
 		}catch(Exception $e){
-			$this->add('Text')->set($e->getMessage());
+			$this->add('View')->set($q. " -- " . $e->getMessage());
 		}
 	}
 
@@ -79,7 +148,7 @@ class page_corrections extends Page {
 			$q->setCustom('type_expr',$this->resolveFieldType($type));
 			$q->execute();
 		}catch(Exception $e){
-			$this->add('Text')->set($e->getMessage());
+			$this->add('View')->set("Add field $table, $field  -- ".$e->getMessage());
 		}
 	}
 
@@ -107,54 +176,56 @@ class page_corrections extends Page {
 
     	$to_move = array(
     			array(
-    					'from'=>array('tabel_name',array(0,'id_4_referenece_field','field2','field3')),
-    					'to'=>'table_name'
-    				)
+    					'from'=>array('agents',array(0,'id','Guarantor1Name','Guarantor1FatherHusbandName','Guarantor1Address',0,'Guarantor1Occupation')),
+    					'to'=>'agent_guarantors',
+    					'field'=>'remove'
+    				),
+    			array(
+    					'from'=>array('agents',array(0,'id','Guarantor2Name','Guarantor2FatherHusbandName','Guarantor2Address',0,'Guarantor2Occupation')),
+    					'to'=>'agent_guarantors',
+    					'field'=>'remove' /*remove*/
+    				),
+    			array(
+    					'from'=>array('accounts',array(0,'id','Nominee',0,'MinorNomineeParentName','RelationWithNominee',0)),
+    					'to'=>'account_guarantors',
+    					'field'=>'remove' /*remove*/
+    				),
+
     		);
 
     	foreach ($to_move as $move) {
-    		$this->query('TRUNCATE '. $move['to']);
-
-	    	$this->query("INSERT INTO ".$move['to']." (
-						SELECT ".implode(",", $move['from'][1])."
-						FROM ".$move['from'][0]." 
-						)");
+    		try{
+	    		$this->query($q='TRUNCATE '. $move['to']);
+		    	$this->query($q="INSERT INTO ".$move['to']." (
+							SELECT ".implode(",", $move['from'][1])."
+							FROM ".$move['from'][0]." 
+							)");
+		    	foreach ($move['from'][1] as $field) {
+		    			if($field==0 or $field=='id') continue;
+		    			if($move['field']=='remove')
+			    			$this->removeField($move['from'][0],$field);
+		    		}	
+		    }catch(Exception $e){
+		    	$this->add('View')->set('Coudnot move ' . $e->getMessage());
+		    }
     		
     	}
 
-    	return;
 
-    	$to_move = array(
-    			array(
-    					'from'=>array('model_name',array('field1','field2','fiel3')),
-    					'to'=>array('model_name',array('newname1','newname2','newname3')),
-    					'related_field'=>'from_table_id'
-    				),
-    		);
 
-    	foreach ($to_move as $move) {
-    		$model_obj = $this->add($move['from'][0]);
-			$to_obj = $this->add($move['to'][0]);
-
-    		foreach($model_obj as $junk){
-    			$to_obj[$move['related_field']] = $model_obj->id;
-    			for($i=0;$i<count($move['from'][1]);$i++){
-    				$to_obj[$move['to'][1][$i]] = $model_obj[$move['from'][1][$i]];
-    			}
-    			$to_obj->saveAndUnload();
-    		}
-    	}
     }
 
 
-
     function page_transactionsUpdate(){
+    	
     	// fill display voucher from voucher first where display voucher =0
-    		
+    
     	$this->query('UPDATE transaction_row SET display_voucher_no=voucher_no WHERE display_voucher_no = 0');
 
     	// Create Transaction master with 
     	// display_voucher_no,branch_id,transaction_type_id,created_at, updated_at
+
+    	$this->query('TRUNCATE transactions');
 
     	$this->query("INSERT INTO transactions (
 					SELECT 0,  transaction_type_id, staff_id, reference_account_id, branch_id ,voucher_no , display_voucher_no ,Narration, created_at, updated_at 

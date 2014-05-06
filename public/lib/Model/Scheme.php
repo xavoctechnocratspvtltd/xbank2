@@ -83,7 +83,12 @@ class Model_Scheme extends Model_Table {
 	// }
 
 	function getDefaultAccounts(){
-		throw $this->exception('Function Must be ReCreated in child Scheme Model');
+		throw $this->exception('RE Declare The function in Specific Scheme Models');
+
+		// if(!$this->schemeType) throw $this->exception('DefaultAccounts must be called from Specific Scheme Model not generic scheme Model');
+		// $default_account_model = $this->add('Model_DefaultAccounts');
+		// $default_account_model->filterFor($this->schemeType);
+		// return $default_account_model->getAll();
 	}
 
 	// Overrides by Child Classes to add values and called as parent::...
@@ -106,10 +111,12 @@ class Model_Scheme extends Model_Table {
 		if(!$this->loaded()) throw $this->exception('Scheme Must be loaded to create default accounts for');
 		if(!($branch instanceof Model_Branch) and !$branch->loaded()) throw $this->exception('Argument Branch must be a loaded Branch Model');
 
-		foreach ($this->getDefaultAccounts() as $under_scheme => $Intermediate_Account_Text) {
+		foreach ($this->getDefaultAccounts() as $under_scheme => $intermediate_text) {
+
 			$scheme = $this->add('Model_Scheme')->loadBy('name',$under_scheme);
 			$account = $this->add('Model_Account');
-			$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch->id,$branch['Code'].SP.$Intermediate_Account_Text.SP.$this['name'],array('DefaultAC'=>true));
+			$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$intermediate_text.SP.$this['name'],array('DefaultAC'=>true));
+
 		}
 
 	}

@@ -42,10 +42,10 @@ class Model_Scheme_DDS extends Model_Scheme {
 		return array(
 			"Indirect Expenses"=>"Commission Paid On",
 			"Indirect Expenses"=>"Interest Paid On",
-			"Indirect Expenses"=>"Collection Charges Paid On",
+			// "Indirect Expenses"=>"Collection Charges Paid On",
 			"Provision"=>"Commission Payable On",
 			"Provision"=>"Interest Payable On",
-			"Provision"=>"Collection Payable On"
+			// "Provision"=>"Collection Payable On"
 
 			);
 	}

@@ -58,7 +58,7 @@ class Model_Account extends Model_Table {
 		$this->addField('LockingStatus')->type('boolean')->defaultValue(false);
 		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(false);
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
-		$this->addField('PAndLGroup');
+		$this->addField('Group');
 
 		$this->leftJoin('schemes','scheme_id')
 			->addField('SchemeType');
@@ -105,6 +105,8 @@ class Model_Account extends Model_Table {
 
 	function beforeSave(){
 		// PandLGroup set default
+		$this['Group'] = $this->ref('scheme_id')->get('SchemeGroup');
+		
 	}
 
 	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){
@@ -151,11 +153,13 @@ class Model_Account extends Model_Table {
 		$this->hook('afterAccountCredited',array($amount));
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null){
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null){
+		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Muct be Loaded Object of Model_Branch');
+		
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;
-		$this['AccountNumber'] = $this->api->current_branch['Code'].$AccountNumber;
-		$this['branch_id'] = $branch_id;
+		$this['AccountNumber'] = $AccountNumber;
+		$this['branch_id'] = $branch->id;
 
 		foreach ($otherValues as $field => $value) {
 			$this[$field] = $value;
@@ -182,19 +186,48 @@ class Model_Account extends Model_Table {
 		// If yes then ok otherwise do interbranch entry
 		if($this['branch_id'] == $this->api->current_branch->id){
 			// Account Belongs to same branch
-			$cr_array=array($this->api->current_branch['Code'].SP.$this['AccountNumber']=>$amount);
-
-			if(!count($accounts_to_debit))
-				$accounts_to_debit=array($this->api->current_branch['Code'].SP.CASH_ACCOUNT=>$amount);
-
 			$transaction = $this->add('Model_Transaction');
-			$transaction->doTransaction($accounts_to_debit, $cr_array, $this->transaction_deposit_type);
+			$transaction->createNewTransaction($this->transaction_deposit_type);
+			
+			$transaction->addCreditAccount($this['AccountNumber'],$amount);			
 
+			if(count($accounts_to_debit)){
+				foreach ($accounts_to_debit as $debit_info) {
+					if(!is_array($debit_info)) throw $this->exception('Provided information must be array');
+					foreach ($debit_info as $account => $amount) {
+						$transaction->addDebitAccount($account,$amount);
+					}
+				}
+			}else{
+				$transaction->addDebitAccount($this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount);
+			}
+			$transaction->execute();
 		}else{
 			// Account belongs to another branch
 			// Perform interbranch transaction
 			
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewInterBranchTransaction($this->ref('branch_id'),$this->transaction_deposit_type);
+
+			if(count($accounts_to_debit)){
+				foreach ($accounts_to_debit as $debit_info) {
+					if(!is_array($debit_info)) throw $this->exception('Provided information must be array');
+					foreach ($debit_info as $account => $amount) {
+						$transaction->addMyAccount($account,$amount,'dr');
+					}
+				}
+			}else{
+				$transaction->addMyAccount($this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount,'dr');
+			}
+
+			$transaction->addOtherAccount($this['AccountNumber'],$amount,'cr');
+
+			$transaction->execute();
+
 		}
+
+
+
 		throw $this->exception ('Must Re Declare in Account Sub Class');
 	}
 

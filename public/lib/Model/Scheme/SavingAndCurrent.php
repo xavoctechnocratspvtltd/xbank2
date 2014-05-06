@@ -41,7 +41,10 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 	function getDefaultAccounts(){
 		return array(
 			"Indirect Expenses"=>"Commission Paid On",
-			"Indirect Expenses"=>"Interest Paid On"
+			"Indirect Expenses"=>"Interest Paid On",
+			"Indirect Income"=>"Minimum Balance Charge Received On",
+			"Indirect Income"=>"ChequeBook Charge Received On",
+			"Indirect Income"=>"Statement Charge Received On",
 			);
 	}
 }

@@ -14,10 +14,14 @@ class page_transactions_deposit extends Page {
 		$form->addSubmit('Deposit');
 
 		if($form->isSubmitted()){
-			$form->js()->univ()->successMessage($form['account'])->execute();
-			$account_model_temp = $this->add('Model_Account')->load($form['account']);
+			
+			$account_model_temp = $this->add('Model_Account')
+										->load($form['account']);
+
 			$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
-			$account_model->deposit($form['amount'],$form['narration'],$form['account_to_debit']?array($form['account_to_debit']=>$form['amount']):array(),$form);
+			$account_model->load($form['account']);
+
+			$account_model->deposit($form['amount'],$form['narration'],$form['account_to_debit']?array(array($form['account_to_debit']=>$form['amount'])):array(),$form);
 			$form->js()->univ()->successMessage($form['account'])->execute();
 		}
 	}

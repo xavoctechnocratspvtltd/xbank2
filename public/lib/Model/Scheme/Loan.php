@@ -52,7 +52,11 @@ class Model_Scheme_Loan extends Model_Scheme {
 			"Indirect Income"=>"Interest Received On",
 			"Indirect Income"=>"Processing Fee Received On",
 			"Indirect Income"=>"Penalty Due To Late Payment On",
-			"Indirect Income"=>"For Close Account On"
+			"Indirect Income"=>"For Close Account On",
+			"Indirect Income"=>"Time Over Charge On",
+			"Indirect Income"=>"Conveyence Charge Received On",
+			"Indirect Income"=>"Rent Charge Received On",
+			"Indirect Income"=>"Legal Charge Received On",
 			);
 	}
 

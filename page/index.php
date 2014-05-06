@@ -6,7 +6,7 @@ class page_index extends xPage{
 	function init(){
 		parent::init();
 		$crud=$this->add('CRUD');
-		$crud->setModel('Document');
+		$crud->setModel('Transaction');
 
 		if($crud->isEditing() and $crud->form->isSubmitted() ){
 			$x=$this->add('Model_Branch');

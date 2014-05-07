@@ -6,7 +6,7 @@ class page_corrections extends Page {
 	public $remove_fields=array();// [] = array(table_name,old_field,new_field)
 
 	function page_index(){
-
+		$this->add('View_Info')->set('Start');
 		$rename_tables =array(
 				'jos_xbalance_sheet'=>'balance_sheet',
 				'jos_xbranch'=>'branches',
@@ -31,11 +31,13 @@ class page_corrections extends Page {
 			}
 		}
 
+		$this->add('View_Info')->set('Tables Renamed, Creating new tables from models');
 
 		$this->add('Model_AgentGuarantor');
 		$this->add('Model_AccountGuarantor');
 		$this->add('Model_Transaction');
 
+		
 		$this->page_fields();
 		$this->page_movetomany();
 		$this->page_transactionsUpdate();
@@ -44,6 +46,7 @@ class page_corrections extends Page {
 	function page_fields(){
 
 		
+		$this->add('View_Info')->set('Renaming fields');
 		$renameFields =array(
 				array('balance_sheet','Name','name'),
 				array('branches','Name','name'),
@@ -64,6 +67,7 @@ class page_corrections extends Page {
 		foreach ($renameFields as $dtl) {
 			$this->renameField($dtl[0],$dtl[1],$dtl[2]);
 		}
+		$this->add('View_Info')->set('fields renamed adding new ');
 
 		$new_fields=array(
 				array('members','is_agent','boolean')

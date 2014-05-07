@@ -5,9 +5,10 @@ class Model_TransactionType extends Model_Table {
 		parent::init();
 
 		$this->addField('Transaction');
+		// $this->addField('name');
 		$this->addField('FromAC');
 		$this->addField('ToAC');
 		$this->addField('Default_Narration');
-		//$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

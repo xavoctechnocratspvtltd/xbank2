@@ -10,7 +10,7 @@ tests/log/
 .buildpath
 .settings
 .DS_Store
-
+*.sql
 *-ck.js
 
 *.codekit

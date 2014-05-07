@@ -8,7 +8,7 @@ class page_daybook extends Page {
 		$form->addField('DatePicker','date')->validateNotNull();
 		$form->addSubmit('Open Day Book');
 
-		$day_transaction_model = $this->add('Model_Transaction');
+		$day_transaction_model = $this->add('Model_TransactionRow');
 		$day_transaction_model->setLimit(10);
 		$day_transaction_model->addExpression('name')->set('Narration');
 		

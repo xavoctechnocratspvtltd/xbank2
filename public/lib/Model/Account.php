@@ -71,11 +71,12 @@ class Model_Account extends Model_Table {
 			$member_father->addCondition('id',$q->getField('member_id'));
 			$member_father->_dsql()->del('fields')->field('FatherName');
 
+			// return 'AccountNumber';
 
 			return '(CONCAT(
 								('.$member->_dsql()->render().'),
 								" [ ",
-								('.$member_father->_dsql()->render().'),
+								IFNULL(('.$member_father->_dsql()->render().'),"NA"),
 								" ] ",
 								'. $q->getField('AccountNumber') .',
 								" - ",

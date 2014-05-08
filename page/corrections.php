@@ -62,6 +62,7 @@ class page_corrections extends Page {
 				array('accounts','InterestToAccount','intrest_to_account_id'),
 				array('accounts','LoanAgainstAccount','LoanAgainstAccount_id'),
 				array('accounts','PAndLGroup','group'),
+				array('staffs','StaffID','username'),
 			);
 
 		foreach ($renameFields as $dtl) {
@@ -70,13 +71,15 @@ class page_corrections extends Page {
 		$this->add('View_Info')->set('fields renamed adding new ');
 
 		$new_fields=array(
-				array('members','is_agent','boolean')
+				array('members','is_agent','boolean'),
+				array('staffs','name','string')
 			);
 
 		foreach ($new_fields as $dtl) {
 			$this->addField($dtl[0],$dtl[1],$dtl[2]);
 		}
 
+		$this->query('UPDATE staffs SET name=username');
 
 
 		$remove_fields=array(
@@ -130,6 +133,8 @@ class page_corrections extends Page {
 		try{
 			$field_type = $this->query($q="SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$table' AND COLUMN_NAME = '$old_field_name'",true);
 			if(!$field_type) return;
+			if($field_type=='varchar') $field_type .= '(255)';
+			
 			$this->query($q="ALTER TABLE $table CHANGE $old_field_name $new_name $field_type")->getOne();
 		}catch(Exception $e){
 			$this->add('View')->set($q. " -- " . $e->getMessage());

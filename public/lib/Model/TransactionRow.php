@@ -5,7 +5,7 @@ class Model_TransactionRow extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Transaction','transaction_id');
-		$this->hasOne('Account','account_id');
+		$this->hasOne('Account','accounts_id');
 		$this->addField('amountDr')->type('money');
 		$this->addField('amountCr')->type('money');
 		$this->addField('side');

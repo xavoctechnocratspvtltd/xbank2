@@ -1,8 +1,6 @@
 <?php
 
 class page_daybook extends Page {
-	public $voucher_no=0;
-
 	function init(){
 		parent::init();
 

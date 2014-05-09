@@ -6,8 +6,8 @@ class Model_TransactionRow extends Model_Table {
 
 		$this->hasOne('Transaction','transaction_id');
 		$this->hasOne('Account','account_id');
-		$this->addField('amountDr')->type('money');
-		$this->addField('amountCr')->type('money');
+		$this->addField('amountDr')->caption('Debit')->type('money');
+		$this->addField('amountCr')->caption('Credit')->type('money');
 		$this->addField('side');
 		$this->addField('accounts_in_side')->type('int');
 

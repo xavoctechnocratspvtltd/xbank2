@@ -228,7 +228,7 @@ class View extends AbstractView
                     ->set($text['icon']);
             }else{
                 $this->add('Icon')->set($text['icon']);
-                $this->add('HTML')->set('&nbsp;');
+                $this->add('Html')->set('&nbsp;');
                 $this->add('Text')->set($text[0]);
             }
 

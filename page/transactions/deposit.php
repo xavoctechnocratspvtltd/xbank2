@@ -8,7 +8,7 @@ class page_transactions_deposit extends Page {
 		$form = $this->add('Form');
 		$form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull()->setModel('Account','AccountNumber');
 		$form->addField('Number','amount')->validateNotNull();
-		$form->addField('autocomplete/Basic','account_to_debit')->setFieldHint('sdfsd')->setModel('Account');
+		$form->addField('autocomplete/Basic','account_to_debit')->setFieldHint('sdfsd')->setModel('Account','AccountNumber');
 		$form->addField('Text','narration');
 		$form->addSubmit('Deposit');
 

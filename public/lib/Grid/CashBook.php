@@ -1,6 +1,6 @@
 <?php
 
-class Grid_DayBook extends Grid_AccountsBase{
+class Grid_CashBook extends Grid_AccountsBase{
 	public $voucher_no=0;
 
 	function setModel($model,$fields=array()){

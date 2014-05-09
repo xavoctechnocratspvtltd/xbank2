@@ -21,8 +21,24 @@ class Grid_AccountsBase extends Grid{
 		$this->current_row[$field] = (($this->sno++) + ($_GET[$this->short_name.'_paginator_skip']?:0));
 	}
 
+	function init_voucherNo($field){
+	}
+
+	function format_voucherNo($field){
+		$url = $this->api->url('voucher_print');
+		$transaction_id = ($this->model instanceof Model_TransactionRow)? $this->model['transaction_id']: $this->model->id;
+		$this->current_row_html[$field] = "<a href='#' class='voucher' onclick='$(this).univ().frameURL(\"Transaction Voucher\",\"" .
+                    $url->set(array(
+                        $field => $this->current_id,
+                        'transaction_id'=>$transaction_id,
+                        $this->name.'_'.$field => $this->current_id
+                    )) . "\")'".
+            ">".$this->current_row[$field]."</a>";
+	}
+
 	function recursiveRender(){
 		if($this->order) $this->order->now();
+		if($this->hasColumn('voucher_no')) $this->addFormatter('voucher_no','voucherNo');
 		parent::recursiveRender();
 	}
 

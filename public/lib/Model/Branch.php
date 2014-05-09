@@ -108,9 +108,9 @@ class Model_Branch extends Model_Table {
 		$transaction_model->addCondition('created_at','>=',$f_year['start_date']);
 		$transaction_model->addCondition('created_at','<=',$this->api->nextDate($f_year['end_date'])); // ! important next date
 
-		$transaction_model->max('voucher_no');
+		$transaction_model->_dsql()->del('fields')->field('max(voucher_no)');
 
-		$max_voucher = $transaction_model->getOne();
+		$max_voucher = $transaction_model->_dsql()->getOne();
 		
 		return $max_voucher+1;
 

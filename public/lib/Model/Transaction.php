@@ -33,7 +33,7 @@ class Model_Transaction extends Model_Table {
 		
 		$this->addHook('beforeSave',$this);
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function beforeSave(){
@@ -44,16 +44,16 @@ class Model_Transaction extends Model_Table {
 	function createNewTransaction($transaction_type, $branch=null, $transaction_date=null, $Narration=null, $only_transaction=false){
 		if($this->loaded()) throw $this->exception('Use Unloaded Transaction model to create new Transaction');
 		
-		$transaction_type = $this->add('Model_TransactionType');
-		$transaction_type->tryLoadBy('name',$transaction_type);
-		if(!$transaction_type->loaded()) $transaction_type->save();
+		$transaction_type_model = $this->add('Model_TransactionType');
+		$transaction_type_model->tryLoadBy('name',$transaction_type);
+		if(!$transaction_type_model->loaded()) $transaction_type_model->save();
 
 		if(!$branch) $branch = $this->api->current_branch;
 
 		if(!$transaction_date) $transaction_date = $this->api->now;
 
 		// Transaction TYpe Save if not available
-		$this['transaction_type_id'] = $transaction_type->id;
+		$this['transaction_type_id'] = $transaction_type_model->id;
 		$this['reference_account_id'] = isset($options['reference_account_id'])?:0;
 		$this['branch_id'] = $branch->id;
 		$this['voucher_no'] = $branch->newVoucherNumber();
@@ -65,11 +65,11 @@ class Model_Transaction extends Model_Table {
 	}
 
 	function addDebitAccount($AccountNumber, $amount){
-		$this->dr_accounts[] = array($AccountNumber=>$amount);
+		$this->dr_accounts += array($AccountNumber=>$amount);
 	}
 
 	function addCreditAccount($AccountNumber, $amount){
-		$this->cr_accounts[] = array($AccountNumber=>$amount);
+		$this->cr_accounts += array($AccountNumber=>$amount);
 	}
 
 	function executeSingleBranch(){
@@ -96,7 +96,7 @@ class Model_Transaction extends Model_Table {
 
 		$total_credit_amount =0;
 		// Foreach Cr add new Transactionrow (Cr Wala)
-		foreach ($cr_accounts as $AccountNumber => $Amount) {
+		foreach ($this->cr_accounts as $AccountNumber => $Amount) {
 			if($Amount ==0) continue;
 			$account = $this->add('Model_Account');
 			$account->loadBy('AccountNumber',$AccountNumber);
@@ -125,7 +125,7 @@ class Model_Transaction extends Model_Table {
 		if(!in_array($side, array("dr","cr"))) throw $this->exception('side must be dr or cr in string small letters');
 		if( $this->myside!=null and $this->myside!=$side) throw $this->exception('My Accounts Must be in single sides all must be wither DR or CR');
 		$this->myside = $side;
-		$this->my_accounts[] = array($AccountNumber=>$amount);
+		$this->my_accounts += array($AccountNumber=>$amount);
 	}
 
 	function addOtherAccount($AccountNumber,$amount, $side){
@@ -133,7 +133,7 @@ class Model_Transaction extends Model_Table {
 		if(isset($this->otherside) and $this->otherside!=$side) throw $this->exception('My Accounts Must be in single sides all must be wither DR or CR');
 		
 		$this->otherside = $side;
-		$this->other_accounts[] =array($AccountNumber=>$amount);
+		$this->other_accounts +=array($AccountNumber=>$amount);
 	}
 
 	function execute(){

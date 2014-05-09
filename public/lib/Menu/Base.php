@@ -9,7 +9,7 @@ class Menu_Base extends Menu {
 
 
 		$this->addMenuItem('members','Members');
-		$this->addMenuItem('accounts','Accounts');
+		$account = $this->addMenuItem('accounts','Accounts');
 		
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$books = 	$this->addMenuItem('books','Books');
@@ -17,8 +17,9 @@ class Menu_Base extends Menu {
 		$this->addMenuItem('logout','Logout');
 
 		$admin_sub_menus_popover=$this->add('View_Popover');
-		$transactions_sub_menus_popover = $this->add('View_Popover');
+		$account_sub_menu_popover = $this->add('View_Popover');
 		$books_sub_menus_popover = $this->add('View_Popover');
+		$transactions_sub_menus_popover = $this->add('View_Popover');
 		
 
 		$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
@@ -26,6 +27,11 @@ class Menu_Base extends Menu {
 		$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
 		$admin_sub_menus->addMenuItem('branches','Branches');
 		$admin->js('click',$admin_sub_menus_popover->showJS());
+
+		$account_sub_menu = $account_sub_menu_popover->add('Menu_Vertical');
+		$account_sub_menu->addMenuItem('accounts','Accounts Management');
+		$account_sub_menu->addMenuItem('accounts_statement','Accounts Statement');
+		$account->js('click',$account_sub_menu_popover->showJS());
 
 		$transactions_sub_menus = $transactions_sub_menus_popover->add('Menu_Vertical');
 		$transactions_sub_menus->addMenuItem('transactions_deposit','Deposit');

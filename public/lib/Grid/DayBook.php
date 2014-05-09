@@ -1,11 +1,12 @@
 <?php
 
-class Lister_DayBook extends Grid{
+class Grid_DayBook extends Grid_AccountsBase{
 	public $voucher_no=0;
 
 	function setModel($model,$fields=array()){
 		parent::setModel($model,$fields);
-		$this->addFormatter('voucher_no','voucherNo');
+		$this->addFormatter('voucher_no','Wrap,voucherNo');
+		$this->addFormatter('account','Wrap');
 	}
 
 	function format_voucherNo($field){
@@ -15,4 +16,6 @@ class Lister_DayBook extends Grid{
 			$this->voucher_no=$this->model->get('voucher_no');
 		}
 	}
+
+
 }

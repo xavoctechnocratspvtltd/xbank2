@@ -1,6 +1,7 @@
 <?php
 class Model_Agent extends Model_Table {
 	var $table= "agents";
+
 	function init(){
 		parent::init();
 
@@ -21,7 +22,6 @@ class Model_Agent extends Model_Table {
 		// $this->addField('Rank_2_Count')->type('int');
 		// $this->addField('Rank_3_Count')->type('int');
 		$this->hasMany('Gaurantor','gaurantor_id');
-		//$this->add('dynamic_model/Controller_AutoCreator');
 
 		
 
@@ -29,5 +29,6 @@ class Model_Agent extends Model_Table {
 			return $m->refSQL('member_id')->fieldQuery('name');
 		});
 
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

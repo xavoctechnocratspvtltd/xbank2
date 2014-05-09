@@ -224,15 +224,40 @@ class Model_Account extends Model_Table {
 			$transaction->execute();
 
 		}
-
-
-
-		throw $this->exception ('Must Re Declare in Account Sub Class');
 	}
 
 	function withdrawl($amount){
 		throw $this->exception ('Must Re Declare in Account Sub Class');
 
+	}
+
+	function getOpeningBalance($date=null,$side='both',$forPandL=false) {
+		if(!$date) $date = '1970-01-01';
+		if(!$this->loaded()) throw $this->exception('Model Must be loaded to get opening Balance','Logic');
+		
+
+		$transaction_row=$this->add('Model_TransactionRow');
+		$transaction_join=$transaction_row->join('transactions.id','transaction_id');
+		$transaction_row->addCondition('created_at','<',$date);
+		$transaction_row->addCondition('account_id',$this->id);
+
+		if($forPandL){
+			$financial_start_date = $this->api->getFinancialYear($date,'start');
+			$transaction_row->addCondition('created_at','>=',$financial_start_date);
+		}
+
+		$transaction_row->_dsql()->del('fields')->field('SUM(amountDr)')->field('SUM(amountCr)');
+		$result = $transaction_row->_dsql()->getHash();
+
+		$cr = $result['SUM(amountCr)'];
+		if(!$forPandL) $cr = $cr + $this['OpeningBalanceCr'];
+		if(strtolower($side) =='cr') return $cr;
+
+		$dr = $result['SUM(amountDr)'];		
+		if(!$forPandL) $dr = $dr + $this['OpeningBalanceDr'];
+		if(strtolower($side) =='dr') return $dr;
+
+		return array('CR'=>$cr,'DR'=>$dr);
 	}
 
 	final function daily(){

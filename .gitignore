@@ -12,5 +12,5 @@ tests/log/
 .DS_Store
 *.sql
 *-ck.js
-
+*.orig
 *.codekit

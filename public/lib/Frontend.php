@@ -43,6 +43,7 @@ class Frontend extends ApiFrontend {
 
         $this->current_branch = $this->auth->model->ref('branch_id');
         $this->title = ' :: [' . $this->api->current_branch['name'].']';
+        
         $header_menu1=$header->add('Menu_Base');
 
         // $header_menu1->addMenuItem('index',array('Home','icon'=>'home','swatch'=>'yellow'));

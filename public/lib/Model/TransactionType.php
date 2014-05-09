@@ -4,8 +4,8 @@ class Model_TransactionType extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->addField('Transaction');
-		// $this->addField('name');
+		// $this->addField('Transaction');
+		$this->addField('name');
 		$this->addField('FromAC');
 		$this->addField('ToAC');
 		$this->addField('Default_Narration');

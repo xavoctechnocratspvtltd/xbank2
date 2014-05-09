@@ -19,6 +19,7 @@ class page_corrections extends Page {
 				'jos_xaccounts'=>'accounts',
 				'jos_xtransaction_type'=>'transaction_types',
 				'jos_xdocuments_submitted'=>'documents_submitted',
+				'jos_xagents'=>'agents',
 
 				);
 
@@ -55,14 +56,15 @@ class page_corrections extends Page {
 				array('members','Name','name'),
 				array('schemes','Name','name'),
 				array('staffs','Name','name'),
-				array('transaction_types','Transaction','name'),
+				array('transaction_types','Transaction','name'), //CHECK
 				array('accounts','schemes_id','scheme_id'),
 				array('accounts','agents_id','agent_id'),
 				array('accounts','RdAmount','Amount'),
 				array('accounts','InterestToAccount','intrest_to_account_id'),
 				array('accounts','LoanAgainstAccount','LoanAgainstAccount_id'),
-				array('accounts','PAndLGroup','group'),
+				array('accounts','PAndLGroup','Group'),
 				array('staffs','StaffID','username'),
+				array('transaction','accounts_id','account_id'),
 			);
 
 		foreach ($renameFields as $dtl) {

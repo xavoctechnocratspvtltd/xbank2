@@ -1,6 +1,9 @@
 <?php
 class Model_Account_Loan extends Model_Account{
 	
+	public $transaction_deposit_type = TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT;	
+	public $default_transaction_deposit_narration = "Amount submited in Loan Account {{AccountNumber}}";	
+
 	function init(){
 		parent::init();
 
@@ -21,5 +24,11 @@ class Model_Account_Loan extends Model_Account{
 		 		$this->updateDocument($documents, $form[$this->api->normalizeName($documents['name'].' value')]);
 		}
 
+	}
+
+	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null){
+		throw new Exception("Check For Premiums etc first", 1);
+		
+		parent::deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null);
 	}
 }

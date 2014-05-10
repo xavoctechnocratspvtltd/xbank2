@@ -176,7 +176,7 @@ class Model_Account extends Model_Table {
 		if(!isset($this->transaction_deposit_type)) throw $this->exception('transaction_deposit_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_deposit_narration)) throw $this->exception('default_transaction_deposit_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 
-		if(!$narration) $narration = $this->default_transaction_deposit_narration;
+		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],$this->default_transaction_deposit_narration);
 		
 		// Check if account belongs to currentBranch ...
 		// If yes then ok otherwise do interbranch entry
@@ -221,6 +221,8 @@ class Model_Account extends Model_Table {
 			$transaction->execute();
 
 		}
+
+		return $transaction->id;
 	}
 
 	function withdrawl($amount){

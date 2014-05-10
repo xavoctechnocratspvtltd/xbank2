@@ -41,7 +41,7 @@ class Model_Transaction extends Model_Table {
 		$this['updated_at'] = $this->api->now;
 	}
 
-	function createNewTransaction($transaction_type, $branch=null, $transaction_date=null, $Narration=null, $only_transaction=false){
+	function createNewTransaction($transaction_type, $branch=null, $transaction_date=null, $Narration=null, $only_transaction=null,$options=array()){
 		if($this->loaded()) throw $this->exception('Use Unloaded Transaction model to create new Transaction');
 		
 		$transaction_type_model = $this->add('Model_TransactionType');
@@ -111,13 +111,13 @@ class Model_Transaction extends Model_Table {
 	}
 
 
-	function createNewInterBranchTransaction($other_branch,$transaction_type,$transaction_date=null, $Narration=null,$only_transaction=false){
+	function createNewInterBranchTransaction($other_branch,$transaction_type,$transaction_date=null, $Narration=null,$only_transaction=false,$options=array()){
 		$this->other_branch = $other_branch;
 		$this->my_transaction = $this->add('Model_Transaction');
-		$this->my_transaction->createNewTransaction($transaction_type,null,$transaction_date,$Narration,$only_transaction);
+		$this->my_transaction->createNewTransaction($transaction_type,null,$transaction_date,$Narration,$only_transaction,$options);
 
 		$this->other_transaction = $this->add('Model_Transaction');
-		$this->other_transaction->createNewTransaction($transaction_type,$this->other_branch,$transaction_date,$Narration,$only_transaction);
+		$this->other_transaction->createNewTransaction($transaction_type,$this->other_branch,$transaction_date,$Narration,$only_transaction,$options);
 
 	}
 

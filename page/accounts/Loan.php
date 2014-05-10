@@ -1,8 +1,8 @@
 <?php
 
 class page_accounts_Loan extends Page {
+
 	function page_index(){
-		// parent::init();
 
 		$crud=$this->add('xCRUD');
 		$account_loan_model = $this->add('Model_Account_Loan');

@@ -31,18 +31,14 @@ class Model_Account_DDS extends Model_Account{
         $agentAccount = $this->ref('agent_id')->get('AccountNumber');
 
         $transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,null,null,"DDS Premium Commission");
+		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,null,null,"DDS Premium Commission",null,array('reference_account_id'=>$this->id));
 
-        $voucherNo = array('voucherNo' => Transaction::getNewVoucherNumber(), 'referanceAccount' => $ac->id);
-        $debitAccount = array(
-            Branch::getCurrentBranch()->Code . SP . COMMISSION_PAID_ON . $ac->Schemes->Name => $amount,
-        );
-        $creditAccount = array(
-            // get agents' account number
-//                                            Branch::getCurrentBranch()->Code."_Agent_SA_". $ac->Agents->member_id  => ($amount  - ($amount * 10 /100)),
-            $agentAccount => ($amount - ($amount * TDS_PERCENTAGE / 100)),
-            Account::getAccountForCurrentBranch(BRANCH_TDS_ACCOUNT)->AccountNumber => ($amount * TDS_PERCENTAGE / 100),
-        );
-        Transaction::doTransaction($debitAccount, $creditAccount, "DDS Premium Commission", TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $voucherNo);
+        $comm_acc = $this->ref('branch_id')->get('Code') . SP . COMMISSION_PAID_ON . $this->ref('scheme_id')->get('name');
+		$transaction->addDebitAccount($comm_acc,$amount);
+
+		$transaction->addCreditAccount($this->ref('agent_id')->ref('account_id')->get('AccountNumber'),($amount - ($amount * TDS_PERCENTAGE / 100)));
+		$transaction->addCreditAccount($this->ref('agent_id')->ref('account_id')->ref('branch_id')->get('Code').SP.BRANCH_TDS_ACCOUNT,($amount * TDS_PERCENTAGE / 100));
+
+		$transaction->execute();
 	}
 }

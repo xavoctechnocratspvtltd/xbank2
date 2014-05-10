@@ -42,6 +42,7 @@ class page_corrections extends Page {
 		$this->page_fields();
 		$this->page_movetomany();
 		$this->page_transactionsUpdate();
+		$this->agentAccountToRelation();
 	}
 
 	function page_fields(){
@@ -258,6 +259,9 @@ class page_corrections extends Page {
     	
     }
 
-
+    function agentAccountToRelation(){
+    	throw new Exception("Error Processing Request", 1);
+    	
+    }
 
 }

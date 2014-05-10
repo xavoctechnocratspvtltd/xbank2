@@ -4,7 +4,6 @@ class Model_Account_CC extends Model_Account{
 	public $transaction_deposit_type = TRA_CC_ACCOUNT_AMOUNT_DEPOSIT;	
 	public $default_transaction_deposit_narration = "CC Account Amount Deposit in {{AccountNumber}}";	
 
-	public $transaction_deposit_type = TRA_CC_ACCOUNT_AMOUNT_DEPOSIT; 
 	function init(){
 		parent::init();
 

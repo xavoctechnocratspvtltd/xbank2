@@ -21,6 +21,10 @@ class page_Accounts_FixedAndMis extends Page {
 			}
 		}
 
+		if($crud->isEditing('edit')){
+			$account_fixedandmis_model->hook('editing');
+		}
+
 		$crud->setModel($account_fixedandmis_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','Nominee','NomineeAge','RelationWithNominee'));
 		
 		if($crud->isEditing('add')){

@@ -9,7 +9,19 @@ class page_accounts_CC extends Page {
 		$account_cc_model->add('Controller_Acl');		
 		
 		$crud->addHook('myupdate',function($crud,$form){
-			$form->js()->univ()->errorMessage($form['aaa'])->execute();
+			if($crud->isEditing('edit')) return;
+			
+			$documents=$form->add('Model_Document');
+			$documents->addCondition('CCAccount',true);
+			foreach ($documents as $d) {
+				
+			    if($form[$form->api->normalizeName($documents['name'])] and $form[$form->api->normalizeName($documents['name'].' value')]=='')
+			    	$form->displayError($form->api->normalizeName($documents['name'].' value'),'Please Specify');
+			}
+			$cc_account_model = $crud->add('Model_Account_CC');
+			
+			$cc_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			return true;
 		});
 
 		if($crud->isEditing("add")){
@@ -18,13 +30,21 @@ class page_accounts_CC extends Page {
 			$documents=$this->add('Model_Document');
 			$documents->addCondition('CCAccount',true);
 			foreach ($documents as $d) {
-			    $f=$crud->form->addField('checkbox',$documents['name']);
-			   	$o->move($f,'last');
-			    $f=$crud->form->addField('line',$documents['name'].' '.$documents['Discription']);
-			   	$o->move($f,'last');
+			    $f1=$crud->form->addField('checkbox',$this->api->normalizeName($documents['name']));
+			   	$o->move($f1,'last');
+			    $f2=$crud->form->addField('line',$this->api->normalizeName($documents['name'].' value'));
+			   	$f1->js(true)->univ()->bindConditionalShow(array(
+					''=>array(''),
+					'*'=>array($this->api->normalizeName($documents['name'].' value'))
+					),'div .atk-form-row');
+			   	$o->move($f2,'last');
 			    $k++;
 			}
 
+		}
+
+		if($crud->isEditing('edit')){
+			$account_cc_model->hook('editing');
 		}
 
 		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'));

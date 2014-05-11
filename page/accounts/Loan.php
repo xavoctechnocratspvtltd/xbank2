@@ -9,13 +9,14 @@ class page_accounts_Loan extends Page {
 		$account_loan_model->add('Controller_Acl');
 		
 		$crud->addHook('myupdate',function($crud,$form){
-			if($crud->isEditing('add')){
-				if($form['LoanAgSecurity'] AND !$form['LoanAgainstAccount_id'])
-					$form->displayError('LoanAgainstAccount','Please Specify Loan Against Account Number');
+			if($crud->isEditing('edit')) return;
 
-				$loan_account_model = $crud->add('Model_Account_Loan');
-				$loan_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch->id, $form['AccountNumber'],$form->getAllFields(),$form);
-			}
+			if($form['LoanAgSecurity'] AND !$form['LoanAgainstAccount_id'])
+				$form->displayError('LoanAgainstAccount','Please Specify Loan Against Account Number');
+
+			$loan_account_model = $crud->add('Model_Account_Loan');
+			$loan_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			return true;
 		});
 
 
@@ -36,13 +37,17 @@ class page_accounts_Loan extends Page {
 					'*'=>array($this->api->normalizeName($documents['name'].' value'))
 					),'div .atk-form-row');
 			}
-			$crud->form->addField('checkbox','LoanAgSecurity');
+			$f1=$crud->form->addField('checkbox','LoanAgSecurity');
+			$f1->js(true)->univ()->bindConditionalShow(array(
+					''=>array(''),
+					'*'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
+					),'div .atk-form-row');
 		}
 
 
 
 		if($crud->isEditing('edit')){
-			$account_loan_model->getElement('gaurantor')->system(true);
+			$account_loan_model->hook('editing');
 		}
 		
 		$crud->setModel($account_loan_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer'));

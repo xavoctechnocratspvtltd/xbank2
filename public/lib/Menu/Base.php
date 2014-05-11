@@ -13,6 +13,7 @@ class Menu_Base extends Menu {
 		
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$books = 	$this->addMenuItem('books','Books');
+		$utilities = 	$this->addMenuItem('utilities','Utilities');
 
 		$this->addMenuItem('logout','Logout');
 
@@ -20,6 +21,7 @@ class Menu_Base extends Menu {
 		$account_sub_menu_popover = $this->add('View_Popover');
 		$books_sub_menus_popover = $this->add('View_Popover');
 		$transactions_sub_menus_popover = $this->add('View_Popover');
+		$utilities_sub_menus_popover = $this->add('View_Popover');
 		
 
 		$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
@@ -45,5 +47,10 @@ class Menu_Base extends Menu {
 		$books_sub_menus->addMenuItem('daybook','Day Book');
 		$books_sub_menus->addMenuItem('cashbook','Cash Book');
 		$books->js('click',$books_sub_menus_popover->showJS());
+
+		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');
+		$utilities_sub_menus->addMenuItem('documents','Documents Management');
+		$utilities->js('click',$utilities_sub_menus_popover->showJS());
+
 	}
 }

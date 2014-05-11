@@ -25,6 +25,10 @@ class page_accounts_Recurring extends Page {
 			$f->setModel('Account_SavingAndCurrent');
 		}
 
+		if($crud->isEditing('edit')){
+			$account_recurring_model->hook('editing');
+		}
+
 		$crud->setModel($account_recurring_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','collector_id','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
 		
 		if($crud->grid)

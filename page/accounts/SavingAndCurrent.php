@@ -5,8 +5,8 @@ class page_accounts_SavingAndCurrent extends Page {
 		parent::init();
 
 		$crud=$this->add('xCRUD');
-		$account_savingandcurrent_mdoel = $this->add('Model_Account_SavingAndCurrent');
-		$account_savingandcurrent_mdoel->add('Controller_Acl');
+		$account_savingandcurrent_model = $this->add('Model_Account_SavingAndCurrent');
+		$account_savingandcurrent_model->add('Controller_Acl');
 		
 		$crud->addHook('myupdate',function($crud,$form){
 			$form->js()->univ()->errorMessage($form['aaa'])->execute();
@@ -23,7 +23,11 @@ class page_accounts_SavingAndCurrent extends Page {
 
 		}
 
-		$crud->setModel($account_savingandcurrent_mdoel,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
+		if($crud->isEditing('edit')){
+			$account_savingandcurrent_model->hook('editing');
+		}
+
+		$crud->setModel($account_savingandcurrent_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
 		
 		if($crud->grid)
 			$crud->grid->addPaginator(10);

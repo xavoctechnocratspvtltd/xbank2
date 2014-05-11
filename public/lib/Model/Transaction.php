@@ -82,7 +82,7 @@ class Model_Transaction extends Model_Table {
 			$this->other_branches_involved[$account['branch_id']] = 1;
 		}
 
-		$this->dr_accounts += array($account=>$amount);
+		$this->dr_accounts += array($account['AccountNumber']=>array('amount'=>$amount,'account'=>$account));
 	}
 
 	function addCreditAccount($account, $amount){
@@ -95,7 +95,7 @@ class Model_Transaction extends Model_Table {
 			$this->other_branches_involved[$account['branch_id']] = $account->ref('branch_id');
 		}
 
-		$this->cr_accounts += array($account=>$amount);
+		$this->cr_accounts += array($account['AccountNumber']=>array('amount'=>$amount,'account'=>$account));
 	}
 
 	function execute(){
@@ -104,8 +104,8 @@ class Model_Transaction extends Model_Table {
 
 		if(!$this->create_called) throw $this->exception('Create Account Function Must Be Called First');
 		
-		if(!$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id']))
-			throw $this->exception('Transaction is Not Valid');
+		if(($msg=$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id'])) !== true)
+			throw $this->exception('Transaction is Not Valid')->addMoreInfo('message',$msg);
 
 		if($this->all_debit_accounts_are_mine and $this->all_credit_accounts_are_mine)
 			$this->executeSingleBranch();
@@ -122,19 +122,19 @@ class Model_Transaction extends Model_Table {
 
 		$total_debit_amount =0;
 		// Foreach Dr add new TransacionRow (Dr wali)
-		foreach ($this->dr_accounts as $account => $Amount) {
-			if($Amount ==0) continue;
-			$account->debitWithTransaction($Amount,$this->id,$this->only_transaction);
-			$total_debit_amount += $Amount;
+		foreach ($this->dr_accounts as $accountNumber => $dtl) {
+			if($dtl['amount'] ==0) continue;
+			$dtl['account']->debitWithTransaction($dtl['amount'],$this->id,$this->only_transaction);
+			$total_debit_amount += $dtl['amount'];
 		}
 
 
 		$total_credit_amount =0;
 		// Foreach Cr add new Transactionrow (Cr Wala)
-		foreach ($this->cr_accounts as $account => $Amount) {
-			if($Amount ==0) continue;
-			$account->creditWithTransaction($Amount,$this->id,$this->only_transaction);
-			$total_credit_amount += $Amount;
+		foreach ($this->cr_accounts as $accountNumber => $dtl) {
+			if($dtl['amount'] ==0) continue;
+			$dtl['account']->creditWithTransaction($dtl['amount'],$this->id,$this->only_transaction);
+			$total_credit_amount += $dtl['amount'];
 		}
 		
 		// Credit Sum Must Be Equal to Debit Sum
@@ -149,6 +149,8 @@ class Model_Transaction extends Model_Table {
 		$other_branch = array_values($this->other_branches_involved);
 		$other_branch = $other_branch[0];
 
+		
+
 		$my_transaction = $this->add('Model_Transaction');
 		$my_transaction->createNewTransaction($this->transaction_type,null,$this->transaction_date,$this->Narration,$this->only_transaction,$this->options);
 
@@ -157,17 +159,17 @@ class Model_Transaction extends Model_Table {
 
 		$dr_total_amount=0;
 		
-		foreach ($this->dr_accounts as $acc=>$amt) {
-			$dr_total_amount += $amt;
+		foreach ($this->dr_accounts as $accountNumber=>$dtl) {
+			$dr_total_amount += $dtl['amount'];
 			if($this->all_debit_accounts_are_mine){
-				$my_transaction->addDebitAccount($acc,$amt);
+				$my_transaction->addDebitAccount($dtl['account'],$dtl['amount']);
 			}
 			else{
-				$other_transaction->addDebitAccount($acc,$amt);
+				$other_transaction->addDebitAccount($dtl['account'],$dtl['amount']);
 			}
 		}
 
-		$my_branch_and_division_account = $this->other_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $this->api->current_branch['Code'];
+		$my_branch_and_division_account = $other_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $this->api->current_branch['Code'];
 		
 		if($this->all_debit_accounts_are_mine)
 			$my_transaction->addCreditAccount($my_branch_and_division_account,$dr_total_amount);
@@ -178,22 +180,22 @@ class Model_Transaction extends Model_Table {
 		// One Transaction for other_branch 
 		$cr_total_amount = 0;
 		
-		foreach ($this->cr_accounts as $acc=>$amt) {
-			$cr_total_amount += $amt;
+		foreach ($this->cr_accounts as $accountNumber=>$dtl) {
+			$cr_total_amount += $dtl['amount'];
 			if($this->all_credit_accounts_are_mine){
-				$my_transaction->addCreditAccount($acc,$amt);
+				$my_transaction->addCreditAccount($dtl['account'],$dtl['amount']);
 			}
 			else{
-				$other_transaction->addCreditAccount($acc,$amt);
+				$other_transaction->addCreditAccount($dtl['account'],$dtl['amount']);
 			}
 		}
 
-		$other_branch_and_division_account = $this->api->current_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $this->other_branch['Code'];
+		$other_branch_and_division_account = $this->api->current_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $other_branch['Code'];
 
 		if($this->all_credit_accounts_are_mine)
-			$my_transaction->addDebitAccount($other_branch_and_division_account,$cr_total_amount);
-		else
 			$other_transaction->addCreditAccount($other_branch_and_division_account,$cr_total_amount);		
+		else
+			$other_transaction->addDebitAccount($other_branch_and_division_account,$cr_total_amount);
 		
 
 		if($dr_total_amount != $cr_total_amount ) throw $this->exception('Inter Branch Transaction must have same amounts');
@@ -204,21 +206,21 @@ class Model_Transaction extends Model_Table {
 
 	function isValidTransaction($DRs, $CRs, $transaction_type_id){
 		if(count($DRs) > 1 AND count($CRs) > 1)
-			return false;
+			return "Dr and Cr both have multiple accounts";
 
 		if(!count($DRs) or !count($CRs))
-			return false;
+			return "Either Dr or Cr accounts are not present. DRs =>".count($DRs). " and CRs =>".count($CRs);
 
 		if(!$this->all_debit_accounts_are_mine and !$this->all_credit_accounts_are_mine)
-			return false;
+			return "Dr and Cr both containes other branch accounts";
 
 		if(count($this->other_branches_involved) > 1)
-			return false;
+			return "More then one other branch involved";
 
 		return true;
 	}
 
-	function __destruct(){
-		if(!$this->executed) throw $this->exception('Transaction created but not executed');
-	}
+	// function __destruct(){
+		// if($this->create_called and !$this->executed) throw $this->exception('Transaction created but not executed');
+	// }
 }

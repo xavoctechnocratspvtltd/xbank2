@@ -23,6 +23,10 @@ class page_accounts_DDS extends Page {
 
 		}
 
+		if($crud->isEditing('edit')){
+			$account_dds_model->hook('editing');
+		}
+
 		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
 		
 		if($crud->grid)

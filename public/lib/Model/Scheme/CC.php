@@ -2,8 +2,8 @@
 class Model_Scheme_CC extends Model_Scheme {
 
 	public $loanType = true;
-	public $schemeType = 'CC';
-	public $schemeGroup = 'CC';
+	public $schemeType = ACCOUNT_TYPE_CC;
+	public $schemeGroup = ACCOUNT_TYPE_CC;
 
 	function init(){
 		parent::init();
@@ -41,6 +41,24 @@ class Model_Scheme_CC extends Model_Scheme {
 			);
 	}
 
-	
+	function monthly(){
+		$this->resetCurrentInterest();
 
+	}
+
+	function resetCurrentInterest(){
+		$accounts = $this->add('Model_Account');
+		$transaction_row_join = $accounts->join('transaction_row.account_id');
+		$transaction_join = $transaction_row_join->join('transactions','transaction_id');
+		$transaction_join->addField('transaction_date','created_at');
+
+		$accounts->addCondition('transaction_date','between',$this->dsql()->expr("DATE_ADD('" . $this->api->today . "',INTERVAL -1 MONTH) and '".$this->api->today."'"));
+		$accounts->addCondition('SchemeType',ACCOUNT_TYPE_CC);
+
+		$accounts->_dsql()
+			->set('LastCurrentInterestUpdatedAt',$this->api->db->dsql()->expr("DATE_ADD('" . $this->api->today . "',INTERVAL -1 MONTH)"))
+			->set('CurrentInterest',0)
+			;
+		$accounts->_dsql()->update();
+	}
 }

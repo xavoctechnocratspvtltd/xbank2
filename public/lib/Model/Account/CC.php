@@ -2,7 +2,9 @@
 class Model_Account_CC extends Model_Account{
 
 	public $transaction_deposit_type = TRA_CC_ACCOUNT_AMOUNT_DEPOSIT;	
+	public $transaction_withdraw_type = TRA_CC_ACCOUNT_AMOUNT_WITHDRAWL;	
 	public $default_transaction_deposit_narration = "CC Account Amount Deposit in {{AccountNumber}}";	
+	public $default_transaction_withdraw_narration = "Amount withdrawl from CC Account {{AccountNumber}}";	
 
 	function init(){
 		parent::init();
@@ -40,6 +42,13 @@ class Model_Account_CC extends Model_Account{
 
 		$transaction->execute();
 
+	}
+
+	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null){
+		$ccbalance = $this['Amount'] - ($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']);
+		if ($ccbalance < $amount)
+			throw $this->exception('Cannot withdraw more than '. $ccbalance,'ValidityCheck')->setField('amount');
+		parent::withdrawl($amount,$narration,$accounts_to_credit,$form);
 	}
 
 }

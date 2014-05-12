@@ -121,4 +121,17 @@ class Model_Scheme extends Model_Table {
 
 	}
 
+	function daily(){
+		$this->exception('Daily closing function must be in scheme');
+	}
+	function monthly(){
+		$this->exception('Monthly closing function must be in scheme');
+	}
+	function halfYearly(){
+		$this->exception('Half Yearly closing function must be in scheme');
+	}
+	function yearly(){
+		$this->exception('Yearly closing function must be in scheme');
+	}
+
 }

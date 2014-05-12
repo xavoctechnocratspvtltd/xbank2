@@ -213,8 +213,31 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function withdrawl($amount){
-		throw $this->exception ('Must Re Declare in Account Sub Class');
+	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null){
+		if(!$this->loaded()) throw $this->exception('Account must be loaded before Withdrawing amount');
+		if(!isset($this->transaction_withdraw_type)) throw $this->exception('transaction_withdraw_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
+		if(!isset($this->default_transaction_withdraw_narration)) throw $this->exception('default_transaction_withdraw_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
+
+		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],$this->default_transaction_withdraw_narration);
+		
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction($this->transaction_withdraw_type,null,null,$narration);
+		
+		$transaction->addDebitAccount($this,$amount);			
+
+		if(count($accounts_to_credit)){
+			foreach ($accounts_to_credit as $credit_info) {
+				if(!is_array($credit_info)) throw $this->exception('Provided information must be array');
+				foreach ($credit_info as $account => $amount) {
+					$transaction->addCreditAccount($account,$amount);
+				}
+			}
+		}else{				
+			$transaction->addCreditAccount(@$this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount);
+		}
+		$transaction->execute();
+
+		return $transaction->id;
 
 	}
 

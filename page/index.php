@@ -5,17 +5,8 @@ class page_index extends xPage{
 	
 	function init(){
 		parent::init();
-		$crud=$this->add('CRUD');
-		$crud->setModel('AgentGuarantor');
-
-		if($crud->isEditing() and $crud->form->isSubmitted() ){
-			$x=$this->add('Model_Branch');
-			$x['name']='temp';
-			$x->save();
-		}
-
-		if($crud->grid)
-			$crud->grid->addPaginator(5);
+		
+		$this->add('Model_Scheme_CC')->monthly();
 
 	}
 }

@@ -220,6 +220,31 @@ class Model_Transaction extends Model_Table {
 		return true;
 	}
 
+	function filterBy($SchemeType, $from_date=null,$to_date=null,$branch=null){
+		if($this->loaded()) throw $this->exception('Model is already loaded, cannot apply filter');
+
+		$transaction_row_join = $this->join('transaction_row.transaction_id');
+		$account_join = $transaction_row_join->join('accounts','account_id');
+		$scheme_join = $account_join->join('schemes','scheme_id');
+		
+		$transaction_row->addField('amountCr');
+		$transaction_row->addField('amountDr');
+		$scheme_join->addField('SchemeType');
+
+		$this->addCondition('SchemeType',$SchemeType);
+
+		if($from_date)
+			$this->addCondition('created_at','>=',$from_date);
+
+		if($to_date)
+			$this->addCondition('created_at','<',$to_date);
+
+		if(!$branch) $branch = $this->api->current_branch->id;
+		if($branch != 'all')
+			$this->addCondition('branch_id',$branch);
+
+	}
+
 	// function __destruct(){
 		// if($this->create_called and !$this->executed) throw $this->exception('Transaction created but not executed');
 	// }

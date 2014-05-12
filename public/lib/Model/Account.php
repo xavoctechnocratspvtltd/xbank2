@@ -1,6 +1,7 @@
 <?php
 class Model_Account extends Model_Table {
 	var $table= "accounts";
+	public $scheme_join=null;
 
 	function init(){
 		parent::init();
@@ -50,8 +51,9 @@ class Model_Account extends Model_Table {
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
 		$this->addField('Group');
 
-		$this->leftJoin('schemes','scheme_id')
-			->addField('SchemeType');
+		$this->scheme_join = $this->leftJoin('schemes','scheme_id');
+		$this->scheme_join->addField('SchemeType');
+		$this->scheme_join->addField('scheme_name','name');
 
 
 		$this->addExpression('name')->set(function($m,$q){
@@ -89,6 +91,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('Premium','account_id');
 		$this->hasMany('DocumentSubmitted','account_id');
 		$this->hasMany('AccountGaurantor','account_id');
+		$this->hasMany('TransactionRow','account_id');
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('editing',array($this,'editing_default'));
@@ -156,13 +159,26 @@ class Model_Account extends Model_Table {
 		$this->hook('afterAccountCredited',array($amount));
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null){
+	/**
+	 * Create new account on an empty AccountModel, overrided in child classes but required to call this parent::function
+	 * @param  id $member_id     
+	 * @param  id $scheme_id     
+	 * @param  Model_Branch $branch
+	 * @param  String $AccountNumber 
+	 * @param  array  [$otherValues]   
+	 * @param  Form_As_Array [$form]   
+	 * @param  String [$created_at]
+	 * @return id New account model id
+	 */
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null,$created_at=null){
 		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Muct be Loaded Object of Model_Branch');
-		
+		if(!$created_at) $created_at = $this->api->now;
+
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;
 		$this['AccountNumber'] = $AccountNumber;
 		$this['branch_id'] = $branch->id;
+		$this['created_at'] = $created_at;
 
 		foreach ($otherValues as $field => $value) {
 			$this[$field] = $value;
@@ -185,15 +201,16 @@ class Model_Account extends Model_Table {
 		$document_submitted->save();
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null){
+	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$transaction_date=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
 		if(!isset($this->transaction_deposit_type)) throw $this->exception('transaction_deposit_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_deposit_narration)) throw $this->exception('default_transaction_deposit_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 
 		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],$this->default_transaction_deposit_narration);
+		if(!$transaction_date) $transaction_date = $this->api->now;
 		
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_deposit_type,null,null,$narration);
+		$transaction->createNewTransaction($this->transaction_deposit_type,null,$transaction_date,$narration);
 		
 		$transaction->addCreditAccount($this,$amount);			
 
@@ -213,7 +230,7 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null,$on_date=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Withdrawing amount');
 		if(!isset($this->transaction_withdraw_type)) throw $this->exception('transaction_withdraw_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_withdraw_narration)) throw $this->exception('default_transaction_withdraw_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
@@ -221,7 +238,7 @@ class Model_Account extends Model_Table {
 		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],$this->default_transaction_withdraw_narration);
 		
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_withdraw_type,null,null,$narration);
+		$transaction->createNewTransaction($this->transaction_withdraw_type,null,$on_date,$narration);
 		
 		$transaction->addDebitAccount($this,$amount);			
 
@@ -241,6 +258,14 @@ class Model_Account extends Model_Table {
 
 	}
 
+	/**
+	 * getOpeningBalance returns Array or String as openning balance on a perticular given
+	 * date. Any transactions on that date is not taken into account.
+	 * @param  MySQl_Date_String  $date     Date on which you want openning balance. transactions on perticular date are not included.
+	 * @param  string  $side     cr/dr/both in case of both an array is returned
+	 * @param  boolean $forPandL if set true only transactions from start of financial year of given date is considered, default false
+	 * @return mixed  Array [CR/DR] or value based in side variable value
+	 */
 	function getOpeningBalance($date=null,$side='both',$forPandL=false) {
 		if(!$date) $date = '1970-01-01';
 		if(!$this->loaded()) throw $this->exception('Model Must be loaded to get opening Balance','Logic');
@@ -269,6 +294,8 @@ class Model_Account extends Model_Table {
 
 		return array('CR'=>$cr,'DR'=>$dr);
 	}
+
+	
 
 	final function daily(){
 		$this->exception('Daily closing function must be in scheme');

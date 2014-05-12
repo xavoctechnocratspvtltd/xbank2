@@ -17,6 +17,8 @@ class Model_TransactionRow extends Model_Table {
 		$join_transaction->addField('Narration');
 		$join_transaction->addField('created_at');
 
+		$this->setOrder('created_at');
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

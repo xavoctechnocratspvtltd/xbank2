@@ -53,9 +53,9 @@ class Frontend extends ApiFrontend {
 
     }
 
-    function set_date($date){
+    function setDate($date){
         $this->api->memorize('current_date',$date);
-        $this->now = $date;
+        $this->now = date('Y-m-d H:i:s',strtotime($date));
         $this->today = date('Y-m-d',strtotime($date));
     }
 

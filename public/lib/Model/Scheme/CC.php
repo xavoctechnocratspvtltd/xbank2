@@ -41,8 +41,20 @@ class Model_Scheme_CC extends Model_Scheme {
 			);
 	}
 
-	function monthly(){
+	function monthly($branch=null){
+
+		if(!$branch) $branch=$this->api->current_branch;
+
 		$this->resetCurrentInterest();
+
+		$cc_accounts = $this->add('Model_Account_CC');
+		$cc_accounts->addCondition('ActiveStatus',true);
+		$cc_accounts->addCondition('branch_id',$branch->id);
+		$cc_accounts->addCondition('created_at','<',$this->api->today);
+		foreach ($cc_accounts as $accounts_array) {
+			$cc_accounts->applyMonthlyInterest($this->api->today);
+		}
+
 
 	}
 
@@ -54,6 +66,7 @@ class Model_Scheme_CC extends Model_Scheme {
 
 		$accounts->addCondition('transaction_date','between',$this->dsql()->expr("DATE_ADD('" . $this->api->today . "',INTERVAL -1 MONTH) and '".$this->api->today."'"));
 		$accounts->addCondition('SchemeType',ACCOUNT_TYPE_CC);
+		$accounts->addCondition('branch_id',$this->api->current_branch->id);
 
 		$accounts->_dsql()
 			->set('LastCurrentInterestUpdatedAt',$this->api->db->dsql()->expr("DATE_ADD('" . $this->api->today . "',INTERVAL -1 MONTH)"))

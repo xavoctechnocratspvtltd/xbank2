@@ -15,28 +15,5 @@ class page_tests_02scheme extends Page_Tester {
         return null;
     }
 
-    function prepare_branchCreate(){
-        $branch = $this->add('Model_Branch');
-        $branch['name']='test'.rand(1000,9999);
-        $branch->save();
-        $this->api->memorize('newbranch_id',$branch->id);
-        return array($branch->id);
-    }
-
-    function test_branchCreate($bid){
-        $newbranch = $this->add('Model_Branch')->load($bid);
-        $newstaff=$newbranch->ref('Staff')->tryLoadAny();
-        return array('staff_count'=>$newstaff->count()->getOne(), 'new_staff_accessLevel'=>$newstaff['AccessLevel']);
-    }
-
-    function test_branchDelete(){
-        $newbranch = $this->add('Model_Branch')->tryLoad($this->api->recall('newbranch_id'));
-        $newbranch->delete();
-
-        $staff= $this->add('Model_Staff');
-        $staff->addCondition('branch_id',$this->api->recall('newbranch_id'));
-
-        return array('branch_loaded'=>$newbranch->loaded()?:0,'staff_count'=>$staff->count()->getOne());
-
-    }   
+     
 }

@@ -27,7 +27,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('ProcessingFees')->caption('Processing Fees');
 		$this->addField('PostingMode');
-		$this->addField('PremiumMode')->setValueList(array('Y'=>'Yearly','HF'=>'Half Yearly','Q'=>'Quarterly','M'=>'Monthly','W'=>'Weekly','D'=>'Daily'))->mandatory(true);
+		$this->addField('PremiumMode')->setValueList(array(RECURRING_MODE_YEARLY=>'Yearly',RECURRING_MODE_HALFYEARLY=>'Half Yearly',RECURRING_MODE_QUATERLY=>'Quarterly',RECURRING_MODE_MONTHLY=>'Monthly',RECURRING_MODE_WEEKLY=>'Weekly',RECURRING_MODE_DAILY=>'Daily'))->mandatory(true);
 		$this->addField('CreateDefaultAccount');
 		$this->addField('SchemeType')->enum(explode(',',ACCOUNT_TYPES))->defaultValue($this->schemeType);
 		$this->addField('SchemeGroup')->defaultValue($this->schemeType);
@@ -122,16 +122,16 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function daily(){
-		$this->exception('Daily closing function must be in scheme');
+		throw $this->exception('Daily closing function must be in scheme');
 	}
 	function monthly(){
-		$this->exception('Monthly closing function must be in scheme');
+		throw $this->exception('Monthly closing function must be in scheme');
 	}
 	function halfYearly(){
-		$this->exception('Half Yearly closing function must be in scheme');
+		throw $this->exception('Half Yearly closing function must be in scheme');
 	}
 	function yearly(){
-		$this->exception('Yearly closing function must be in scheme');
+		throw $this->exception('Yearly closing function must be in scheme');
 	}
 
 }

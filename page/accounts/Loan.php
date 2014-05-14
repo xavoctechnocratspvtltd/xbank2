@@ -42,6 +42,8 @@ class page_accounts_Loan extends Page {
 					''=>array(''),
 					'*'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
 					),'div .atk-form-row');
+			$loan_from_account_field = $crud->form->addField('autocomplete/Basic','loan_from_account')->validateNotNull();
+			$loan_from_account_field->setModel('Account');
 		}
 
 
@@ -55,6 +57,7 @@ class page_accounts_Loan extends Page {
 		if($crud->isEditing('add')){
 			$crud->form->add('Order')
 						->move('LoanAgSecurity','after','LoanInsurranceDate')
+						->move($loan_from_account_field->other_field,'after','LoanInsurranceDate')
 						->now();
 			$o->now();
 		}

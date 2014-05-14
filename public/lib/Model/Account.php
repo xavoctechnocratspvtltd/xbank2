@@ -321,16 +321,16 @@ class Model_Account extends Model_Table {
 	}	
 
 	final function daily(){
-		$this->exception('Daily closing function must be in scheme');
+		throw $this->exception('Daily closing function must be in scheme');
 	}
 	final function monthly(){
-		$this->exception('Monthly closing function must be in scheme');
+		throw $this->exception('Monthly closing function must be in scheme');
 	}
 	final function halfYearly(){
-		$this->exception('Half Yearly closing function must be in scheme');
+		throw $this->exception('Half Yearly closing function must be in scheme');
 	}
 	final function yearly(){
-		$this->exception('Yearly closing function must be in scheme');
+		throw $this->exception('Yearly closing function must be in scheme');
 	}
 	
 }

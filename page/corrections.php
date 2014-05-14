@@ -66,6 +66,7 @@ class page_corrections extends Page {
 				array('accounts','PAndLGroup','Group'),
 				array('staffs','StaffID','username'),
 				array('transaction','accounts_id','account_id'),
+				array('premiums','accounts_id','account_id'),
 			);
 
 		foreach ($renameFields as $dtl) {

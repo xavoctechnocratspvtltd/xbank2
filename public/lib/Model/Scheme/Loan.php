@@ -60,4 +60,20 @@ class Model_Scheme_Loan extends Model_Scheme {
 			);
 	}
 
+	function daily($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+
+		$loan_accounts  = $this->add('Model_Account_Loan');
+		$loan_accounts->scheme_join->addField('Interest');
+		$loan_accounts->scheme_join->addField('NumberOfPremiums');
+		$loan_accounts->scheme_join->addField('ReducingOrFlatRate');
+
+		$loan_accounts->addCondition('ActiveStatus',true);
+
+		foreach ($loan_accounts as $acc_array) {
+			$this->owner->add('View')->set("-- ".$loan_accounts['AccountNumber']);
+		}
+
+	}
+
 }

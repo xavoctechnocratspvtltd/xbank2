@@ -6,7 +6,12 @@ class page_index extends xPage{
 	function init(){
 		parent::init();
 	
-		$this->add('Model_Scheme_DDS')->daily();		
+		$accounts  = explode(',',ACCOUNT_TYPES);
+		foreach($accounts as $acc){
+			$this->add('View')->set($acc. ' = '. $this->add('Model_Account_'.$acc)->count()->getOne());
+		}
+
+		$this->add('Model_Scheme_Loan')->daily();
 
 	}
 }

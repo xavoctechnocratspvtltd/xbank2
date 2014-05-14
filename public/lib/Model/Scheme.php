@@ -45,6 +45,8 @@ class Model_Scheme extends Model_Table {
 		$this->addField('CollectorCommissionRate');
 		$this->addField('ReducingOrFlatRate')->caption('Reducing Or Flat Rate')->enum(array('Flat','Reducing'))->mandatory(true);
 
+		$this->hasMany('Account','scheme_id');
+
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterInsert',$this);
 

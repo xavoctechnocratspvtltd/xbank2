@@ -68,10 +68,14 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$loan_accounts->scheme_join->addField('NumberOfPremiums');
 		$loan_accounts->scheme_join->addField('ReducingOrFlatRate');
 
+		$loan_accounts->leftJoin('premiums.account_id')
+						->addField('DueDate');
+
 		$loan_accounts->addCondition('ActiveStatus',true);
+		$loan_accounts->addCondition('DueDate','like',$on_date.' %');
 
 		foreach ($loan_accounts as $acc_array) {
-			$this->owner->add('View')->set("-- ".$loan_accounts['AccountNumber']);
+			$loan_accounts->postInterestEntry($on_date);
 		}
 
 	}

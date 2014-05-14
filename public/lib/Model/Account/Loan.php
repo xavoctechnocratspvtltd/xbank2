@@ -149,5 +149,31 @@ class Model_Account_Loan extends Model_Account{
 		}
 	}
 
+	function postInterestEntry($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+		if(!$this->loaded()) throw $this->exception('Account Must be loaded to post interest entry');
+
+		$rate = $this['Interest'];
+	    $premiums = $this['NumberOfPremiums'];
+
+	    if ($this['ReducingOrFlatRate'] == REDUCING_RATE) {
+	        // INTEREST FOR REDUCING RATE OF INTEREST
+	        $emi = ($this['Amount'] * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
+	        $interest = round((($emi * $premiums) - $this['Amount']) / $premiums);
+	    }
+	    if ($this['ReducingOrFlatRate'] == FLAT_RATE or $this['ReducingOrFlatRate'] == 0) {
+			//    INTEREST FOR FLAT RATE OF INTEREST
+	        $interest = round(($this['Amount'] * $rate * ($premiums + 1)) / 1200) / $premiums;
+	    }
+
+	    $transaction = $this->add('Model_Transaction');
+	    $transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_LOAN,$this->ref('branch_id'),$on_date, "Interest posting in Loan Account ".$this['AccountNumber'],null, array('reference_account_id'=>$this->id));
+	    
+	    $transaction->addDebitAccount($this, $interest);
+	    $transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . $this['scheme_name'], $interest);
+	    
+	    $transaction->execute();
+	}
+
 
 }

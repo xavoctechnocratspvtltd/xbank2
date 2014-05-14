@@ -5,8 +5,8 @@ class page_index extends xPage{
 	
 	function init(){
 		parent::init();
-		
-		$this->add('Model_Scheme_CC')->monthly();
+	
+		$this->add('Model_Scheme_DDS')->daily();		
 
 	}
 }

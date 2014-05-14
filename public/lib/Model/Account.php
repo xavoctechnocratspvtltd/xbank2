@@ -87,7 +87,7 @@ class Model_Account extends Model_Table {
 
 		// $this->debug();
 
-		$this->hasMany('Jointmember','account_id');
+		$this->hasMany('JointMember','account_id');
 		$this->hasMany('Premium','account_id');
 		$this->hasMany('DocumentSubmitted','account_id');
 		$this->hasMany('AccountGaurantor','account_id');
@@ -102,17 +102,17 @@ class Model_Account extends Model_Table {
 
 	function editing_default(){
 		$this->getElement('scheme_id')->system(true);
+		$this->getElement('AccountNumber')->system(true);
 	}
 
 	function beforeSave(){
 
-		if(!$this->loaded() AND !$this['DefaultAC'] and  !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber'])){
+		if(!$this->loaded() AND !$this['DefaultAC'] AND  !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber'])){
 			throw $this->exception('AccountNumber Format not accpeted')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
 
 		// PandLGroup set default
-		$this['Group'] = $this->ref('scheme_id')->get('SchemeGroup');
-		
+		$this['Group'] = $this->add('Model_Scheme')->load($this['scheme_id'])->get('SchemeGroup');
 	}
 
 	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){
@@ -185,8 +185,22 @@ class Model_Account extends Model_Table {
 		}
 
 		$this->save();
-
+		for($k=2;$k<=4;$k++) {
+		    if($j_m_id=$form['member_ID'.$k])
+		    	$this->addJointAccountMember($j_m_id);
+		}
 		return $this->id;
+	}
+
+	function addJointAccountMember($j_m_id){
+		if(!$this->loaded()) throw $this->exception('Account Must Be loaded to add Joint Member');
+		$member = $this->add('Model_Member')->load($j_m_id);
+		$joint_member = $this->ref('JointMember')->addCondition('member_id',$j_m_id);
+		$joint_member->tryLoadAny();
+		if($joint_member->loaded())
+			throw $this->exception($member['name'].' Already Joint with account '. $this['AccountNumber']);
+		else
+			$joint_member->save();
 	}
 
 	function updateDocument(Model_Document $document,$value){
@@ -201,14 +215,15 @@ class Model_Account extends Model_Table {
 		$document_submitted->save();
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$transaction_date=null){
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
 		if(!isset($this->transaction_deposit_type)) throw $this->exception('transaction_deposit_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_deposit_narration)) throw $this->exception('default_transaction_deposit_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 
-		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],$this->default_transaction_deposit_narration);
+		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace('{{SchemeType}}', $this['SchemeType'], $this->default_transaction_deposit_narration));
 		if(!$transaction_date) $transaction_date = $this->api->now;
-		
+		if(!$accounts_to_debit) $accounts_to_debit = array();
+
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction($this->transaction_deposit_type,null,$transaction_date,$narration);
 		
@@ -230,12 +245,14 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null,$on_date=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Withdrawing amount');
 		if(!isset($this->transaction_withdraw_type)) throw $this->exception('transaction_withdraw_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_withdraw_narration)) throw $this->exception('default_transaction_withdraw_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 
-		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],$this->default_transaction_withdraw_narration);
+		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace("{{SchemeType}}", $this['SchemeType'], $this->default_transaction_withdraw_narration));
+		if(!$on_date) $on_date = $this->api->now;
+		if(!$accounts_to_debit) $accounts_to_debit = array();
 		
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction($this->transaction_withdraw_type,null,$on_date,$narration);
@@ -295,7 +312,13 @@ class Model_Account extends Model_Table {
 		return array('CR'=>$cr,'DR'=>$dr);
 	}
 
-	
+	function isMatured(){
+		return $this['MaturedStatus']?:0;
+	}
+
+	function isActive(){
+		return $this['ActiveStatus']?:0;
+	}	
 
 	final function daily(){
 		$this->exception('Daily closing function must be in scheme');

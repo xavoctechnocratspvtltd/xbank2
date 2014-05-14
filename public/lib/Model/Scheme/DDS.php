@@ -2,8 +2,8 @@
 class Model_Scheme_DDS extends Model_Scheme {
 	
 	public $loanType = true;
-	public $schemeType = 'DDS';
-	public $schemeGroup = 'DDS';
+	public $schemeType = ACCOUNT_TYPE_DDS;
+	public $schemeGroup = ACCOUNT_TYPE_DDS;
 
 	function init(){
 		parent::init();
@@ -49,4 +49,29 @@ class Model_Scheme_DDS extends Model_Scheme {
 
 			);
 	}
+
+	function daily($branch=null,$on_date=null){
+		if(!$branch) $branch = $this->api->current_branch;
+		if(!$on_date) $on_date = $this->api->today;
+
+		$matured_dds_accounts = $this->add('Model_Account_DDS');
+		$matured_dds_accounts->scheme_join->addField('MaturityPeriod');
+		$matured_dds_accounts->addCondition('ActiveStatus',true);
+		$matured_dds_accounts->addCondition('MaturedStatus',false);
+		$matured_dds_accounts->addCondition('branch_id',$branch->id);
+		$matured_dds_accounts->addCondition("maturity_date",$on_date);
+		$matured_dds_accounts->setLimit(1);
+
+		foreach ($matured_dds_accounts as $acc) {
+			$matured_dds_accounts->markMatured($on_date);
+		}
+
+	}
+
+	function monthly($branch, $on_date){
+		if(!$branch) $branch = $this->api->current_branch;
+		if(!$on_date) $on_date = $this->api->today;
+		throw $this->exception('To be done DDS monthly closing');		
+	}
+
 }

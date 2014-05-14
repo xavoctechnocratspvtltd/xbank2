@@ -33,7 +33,6 @@ class page_cashbook extends Page {
 			$cash_transaction_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			
 			$cash_account = $this->add('Model_Account');
-			$cash_account->join('schemes','scheme_id')->addField('scheme_name','name');
 			$cash_account->addCondition('scheme_name',CASH_ACCOUNT_SCHEME);
 			$cash_account->add('Controller_Acl');
 			$cash_account->tryLoadAny();

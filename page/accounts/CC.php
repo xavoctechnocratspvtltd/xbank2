@@ -9,7 +9,7 @@ class page_accounts_CC extends Page {
 		$account_cc_model->add('Controller_Acl');		
 		
 		$crud->addHook('myupdate',function($crud,$form){
-			if($crud->isEditing('edit')) return;
+			if($crud->isEditing('edit')) return false;
 			
 			$documents=$form->add('Model_Document');
 			$documents->addCondition('CCAccount',true);

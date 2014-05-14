@@ -7,6 +7,6 @@ class Model_JointMember extends Model_Table {
 		$this->hasOne('Account','account_id');
 		$this->hasOne('Member','member_id');
 
-		//$this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

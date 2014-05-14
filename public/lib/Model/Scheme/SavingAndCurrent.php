@@ -47,4 +47,33 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 			"Indirect Income"=>"Statement Charge Received On",
 			);
 	}
+
+	function halfYearly($branch=null){
+		if(!$branch) $branch=$this->api->current_branch;
+
+		$this->resetCurrentInterest($branch);
+
+		$sbca_accounts = $this->add('Model_Account_SavingAndCurrent');
+		$sbca_account->addCondition('ActiveStatus',true);
+		$sbca_account->addCondition('branch_id',$branch->id);
+		$sbca_account->addCondition('created_at','<',$this->api->today);
+		foreach ($sbca_account as $accounts_array) {
+			$sbca_account->applyHalfYearlyInterest($this->api->today);
+		}
+	}
+
+	function resetCurrentInterest($branch=null){
+		if(!$branch) $branch=$this->api->current_branch;
+
+		$accounts = $this->add('Model_Account');
+		$accounts->addCondition('SchemeType',ACCOUNT_TYPE_BANK);
+		$accounts->addCondition('branch_id',$branch->id);
+
+		$accounts->_dsql()
+			// May need to uncomment this for first closing through this application version
+			// ->set('LastCurrentInterestUpdatedAt',$this->api->db->dsql()->expr("DATE_ADD('" . $this->api->today . "',INTERVAL -1 MONTH)"))
+			->set('CurrentInterest',0)
+			;
+		$accounts->_dsql()->update();
+	}
 }

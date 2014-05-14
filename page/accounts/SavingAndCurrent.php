@@ -9,16 +9,19 @@ class page_accounts_SavingAndCurrent extends Page {
 		$account_savingandcurrent_model->add('Controller_Acl');
 		
 		$crud->addHook('myupdate',function($crud,$form){
-			$form->js()->univ()->errorMessage($form['aaa'])->execute();
+			if($crud->isEditing('edit')) return false;
+			$sbca_account_model = $crud->add('Model_Account_SavingAndCurrent');
+			
+			$sbca_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			return true;
 		});
 
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
-			$k = 2;
 			for($k=2;$k<=4;$k++) {
-			    $f=$crud->form->addField('autocomplete/Basic','member_ID'.$k);
+			    $f=$crud->form->addField('autocomplete/Basic','member_ID'.$k, 'Joint Member '.$k);
 			   	$f->setModel('Member');
-			   	$o->move($f,'before','Nominee');
+			   	$o->move($f->other_field,'before','Nominee');
 			}
 
 		}

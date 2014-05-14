@@ -61,8 +61,6 @@ class Model_Account_CC extends Model_Account{
 		if(!$till_date) $till_date = $this->api->today;
 		if(!$this->loaded()) throw $this->exception('Account must be loaded to apply monthly interest');
 
-		$this->scheme_join->addField('Interest');
-
 		$last_interest_posting_date = $this['LastCurrentInterestUpdatedAt'];
 		$current_interest = 0;
 
@@ -85,7 +83,7 @@ class Model_Account_CC extends Model_Account{
 
 		if($return) return $current_interest;
 
-		$this['LastCurrentInterestUpdatedAt'] = $last_interest_posting_date;
+		$this['LastCurrentInterestUpdatedAt'] = $till_date;
 		$this['CurrentInterest'] = $current_interest;
 		$this->save();
 

@@ -27,7 +27,7 @@ class Model_Account extends Model_Table {
 		$this->addField('ModeOfOperation')->setValueList(array('Self'=>'Self','Joint'=>'Joint'))->defaultValue('Self')->caption('Operation Mode');
 		
 		//New Fields added//
-		$this->addField('LoanInsurranceDate')->type('datetime')->defaultValue($this->api->now);
+		$this->addField('LoanInsurranceDate')->type('datetime');
 		
 		$this->addField('OpeningBalanceDr')->type('money');
 		$this->addField('OpeningBalanceCr')->type('money');

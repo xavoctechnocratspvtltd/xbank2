@@ -16,6 +16,13 @@ class Model_Account_Loan extends Model_Account{
 
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null){
 
+		throw $this->exception($form['LoanAgainstAccount_id'], 'ValidityCheck')->setField('AccountNumber');
+		throw $this->exception('Check Loan Against Security', 'ValidityCheck')->setField('AccountNumber');
+
+		if($form['LoanAgSecurity']){
+			$security_account = $this->add('Model_Account')->load($form['LoanAgainstAccount_id']);			
+		}
+
 		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form);
 
 		$documents=$this->add('Model_Document');

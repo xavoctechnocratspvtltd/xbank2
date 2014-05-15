@@ -5,6 +5,7 @@ class page_corrections extends Page {
 	public $new_fields=array();// [] = array(table_name,old_field,new_field)
 	public $remove_fields=array();// [] = array(table_name,old_field,new_field)
 
+
 	function page_index(){
 		$this->add('View_Info')->set('Start');
 		$this->query('SET FOREIGN_KEY_CHECKS = 0');
@@ -67,7 +68,7 @@ class page_corrections extends Page {
 				array('accounts','RdAmount','Amount'),
 				array('accounts','InterestToAccount','intrest_to_account_id'),
 				array('accounts','LoanAgainstAccount','LoanAgainstAccount_id'),
-				array('accounts','PAndLGroup','Group'),
+				array('accounts','PAndLGroup','`Group`'),
 				array('staffs','StaffID','username'),
 				array('transaction','accounts_id','account_id'),
 				array('transaction_row','accounts_id','account_id'),
@@ -146,7 +147,7 @@ class page_corrections extends Page {
 		try{
 			$field_type = $this->query($q="SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$table' AND COLUMN_NAME = '$old_field_name'",true);
 			if(!$field_type) return;
-			if($field_type=='varchar') $field_type .= '(255)';
+			if($field_type=='varchar' || $field_type=='char') $field_type = 'varchar(255)';
 			
 			$this->query($q="ALTER TABLE $table CHANGE $old_field_name $new_name $field_type")->getOne();
 		}catch(Exception $e){
@@ -278,7 +279,6 @@ class page_corrections extends Page {
 				SET
 					ag.account_id = ac.id
     		");
-    	throw new Exception("Error Processing Request", 1);
     }
 
 }

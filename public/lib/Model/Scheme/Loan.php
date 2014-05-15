@@ -10,7 +10,6 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 		$this->getElement('ProcessingFeesinPercent')->caption('Check if Processing Fee in %');
 		$this->getElement('balance_sheet_id')->caption('Head');
-		$this->getElement('CurrentInterest')->caption('Panelty');
 		
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();

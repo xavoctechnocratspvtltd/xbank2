@@ -1,6 +1,7 @@
 <?php
 class Model_Branch extends Model_Table {
 	var $table= "branches";
+	
 	function init(){
 		parent::init();
 
@@ -64,7 +65,7 @@ class Model_Branch extends Model_Table {
 
 		$account=$this->add('Model_Account');
 		$account_number=$account_for_branch['Code'].SP.BRANCH_AND_DIVISIONS.SP.'for'.SP.$account_under_branch['Code'];
-		$account->createNewAccount($account_under_branch->getDefaultMember()->get('id'),$scheme->id,$account_under_branch->id, $account_number);
+		$account->createNewAccount($account_under_branch->getDefaultMember()->get('id'),$scheme->id,$account_under_branch, $account_number,array('DefaultAC'=>1));
 
 	}
 

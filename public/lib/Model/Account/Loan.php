@@ -11,6 +11,7 @@ class Model_Account_Loan extends Model_Account{
 		$this->addCondition('SchemeType','Loan');
 
 		$this->getElement('Amount')->caption('Loan Amount');
+		$this->getElement('CurrentInterest')->caption('Panelty');
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";

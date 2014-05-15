@@ -113,6 +113,7 @@ class Model_Scheme extends Model_Table {
 		if(!$this->loaded()) throw $this->exception('Scheme Must be loaded to create default accounts for');
 		if(!($branch instanceof Model_Branch) and !$branch->loaded()) throw $this->exception('Argument Branch must be a loaded Branch Model');
 
+
 		foreach ($this->getDefaultAccounts() as $under_scheme => $intermediate_text) {
 
 			$scheme = $this->add('Model_Scheme')->loadBy('name',$under_scheme);

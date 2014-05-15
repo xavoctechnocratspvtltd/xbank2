@@ -45,4 +45,20 @@ class Model_Scheme_Recurring extends Model_Scheme {
 			// "Provision"=>"Collection Payable On"
 			);
 	}
+
+	function daily($branch=null,$on_date=null){
+		if(!$branch) $branch = $this->api->current_branch;
+		if(!$on_date) $on_date = $this->api->now;
+
+		$all_todays_matured_Accounts = $this->add('Model_Active_Account_Recurring');
+		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
+		$all_todays_matured_Accounts->addCondition('maturity_date',$on_date);
+		$all_todays_matured_Accounts->addCondition('MaturityStatus',false);
+
+		foreach ($all_todays_matured_Accounts as $acc_array) {
+			$all_todays_matured_Accounts->markMatured($on_date);
+		}
+
+
+	}
 }

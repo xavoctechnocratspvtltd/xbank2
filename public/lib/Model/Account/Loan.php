@@ -59,6 +59,8 @@ class Model_Account_Loan extends Model_Account{
 		 		$this->updateDocument($documents, $form[$this->api->normalizeName($documents['name'].' value')]);
 		}
 
+		$this->createPremiums();
+
 	}
 
 
@@ -90,16 +92,16 @@ class Model_Account_Loan extends Model_Account{
         $premiums = $scheme['NumberOfPremiums'];
         if ($scheme['ReducingOrFlatRate'] == REDUCING_RATE) {
 //          FOR REDUCING RATE OF INTEREST
-            $emi = ($account('Amount') * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
+            $emi = ($this('Amount') * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
         } else {
 //          FOR FLAT RATE OF INTEREST
-            $emi = (($account('Amount') * $rate * ($premiums + 1)) / 1200 + $this['Amount']) / $premiums;
+            $emi = (($this('Amount') * $rate * ($premiums + 1)) / 1200 + $this['Amount']) / $premiums;
         }
         $emi = round($emi);
         
         $prem = $this->add('Model_Premium');
         for ($i = 1; $i <= $premiums ; $i++) {
-            $prem['account_id'] = $account->id;
+            $prem['account_id'] = $this->id;
             $prem['Amount'] = $emi;
             $lastPremiumPaidDate = $prem['DueDate'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($lastPremiumPaidDate)) . $toAdd));
             $prem->saveAndUnload();

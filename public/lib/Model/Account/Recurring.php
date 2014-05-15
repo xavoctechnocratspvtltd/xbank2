@@ -20,12 +20,14 @@ class Model_Account_Recurring extends Model_Account{
 
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null, $on_date = null ){
 		if(!$on_date) $on_date = $this->api->now;
+		
 		parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form, $on_date);
 		
+		$this->createPremiums();
+		$this->deposit($form['initial_opening_amount'],null,null,null, $on_date);
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$on_date=null){
-		throw new Exception("Check For Premiums and commissions etc first", 1);
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null){
 
 		if(($this['CurrentBalanceCr'] + $amount - $this->interestPaid($on_date)) > ($this->ref('scheme_id')->get('NumberOfPremiums') * $this['Amount'])){
 			throw $this->exception(' CAnnot Deposit More then '.$this->duePremiums() . ' premiums', 'ValidityCheck')->setField('amount');
@@ -44,6 +46,44 @@ class Model_Account_Recurring extends Model_Account{
 			throw $this->exception('CAnnot withdraw partial amount : '. ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']), 'ValidityCheck')->setField('amount');
 
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
+	}
+
+	function createPremiums(){
+		if(!$this->loaded()) throw $this->exception('Account Must Be loaded to create premiums');
+		
+		$scheme = $this->ref('scheme_id');
+
+		switch ($scheme['PremiumMode']) {
+            case RECURRING_MODE_YEARLY:
+                $toAdd = " +1 year";
+                break;
+            case RECURRING_MODE_HALFYEARLY:
+                $toAdd = " +6 month";
+                break;
+            case RECURRING_MODE_QUATERLY:
+                $toAdd = " +3 month";
+                break;
+            case RECURRING_MODE_MONTHLY:
+                $toAdd = " +1 month";
+                break;
+            case RECURRING_MODE_DAILY:
+                $toAdd = " +1 day";
+                break;
+        }
+
+        $lastPremiumPaidDate = $this['created_at'];
+        $rate = $scheme['Interest'];
+        $premiums = $scheme['NumberOfPremiums'];
+        
+        $prem = $this->add('Model_Premium');
+        for ($i = 1; $i <= $premiums ; $i++) {
+            $prem['account_id'] = $this->id;
+            $prem['Amount'] = $this['Amount'];
+            $prem['DueDate'] = $lastPremiumPaidDate; // First Preiume on the day of account open
+            $lastPremiumPaidDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($lastPremiumPaidDate)) . $toAdd));
+            $prem->saveAndUnload();
+        }
+
 	}
 
 	function payPremiumsIfAdjustedIn($amount,$on_date=null){
@@ -112,4 +152,15 @@ class Model_Account_Recurring extends Model_Account{
 		return $transactions->sum('amountCr')->getOne();
 
 	}
+
+	function markMatured($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+
+		$non_interest_paid_premiums_till_now = $this->ref('Premiums');
+		$non_interest_paid_premiums_till_now->addCodnition('Paid','<>',false);
+
+		throw $this->exception('Maturity Interest to give');
+
+	}
+
 }

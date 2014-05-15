@@ -7,7 +7,7 @@ class Model_Premium extends Model_Table {
 
 		$this->hasOne('Account','account_id');
 		$this->addField('Amount');
-		$this->addField('Paid')->type('boolean')->defaultValue(false);
+		$this->addField('Paid');//->type('boolean')->defaultValue(false);
 		$this->addField('Skipped')->type('boolean')->defaultValue(false);
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);

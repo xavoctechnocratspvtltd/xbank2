@@ -12,6 +12,10 @@ class Model_Account_Loan extends Model_Account{
 
 		$this->getElement('Amount')->caption('Loan Amount');
 
+		$this->addExpression('maturity_date')->set(function($m,$q){
+			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
+		});
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 

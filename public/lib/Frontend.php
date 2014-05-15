@@ -36,13 +36,17 @@ class Frontend extends ApiFrontend {
         $footer=$l->addFooter();
         $header=$l->addHeader();
 
-        $auth = $this->add('BasicAuth');
-        $auth->allowPage(array('corrections'));
-        $auth->setModel('Staff','name','password');
-        $auth->check();
+        if($this->page !='corrections'){
 
-        $this->current_branch = $this->auth->model->ref('branch_id');
-        $this->title = ' :: [' . $this->api->current_branch['name'].']';
+            $auth = $this->add('BasicAuth');
+            $auth->allowPage(array('corrections'));
+            $auth->setModel('Staff','name','password');
+            $auth->check();
+
+            $this->current_branch = $this->auth->model->ref('branch_id');
+            $this->title = ' :: [' . $this->api->current_branch['name'].']';
+        }
+
         
         $header_menu1=$header->add('Menu_Base');
 

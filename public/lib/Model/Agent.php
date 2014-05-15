@@ -7,11 +7,11 @@ class Model_Agent extends Model_Table {
 
 		$this->hasOne('Member','member_id');
 		$this->hasOne('Agent','sponsor_id');
+		$this->addField('Account','account_id');
 		// $this->hasOne('Tree','tree_id');
 		$this->addField('ActiveStatus')->type('int');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
-		$this->addField('AccountNumber');
 		$this->addField('AgentCode');
 		$this->addField('Path');
 		$this->addField('LegCount')->type('int');
@@ -29,6 +29,6 @@ class Model_Agent extends Model_Table {
 			return $m->refSQL('member_id')->fieldQuery('name');
 		});
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

@@ -7,6 +7,7 @@ class page_corrections extends Page {
 
 	function page_index(){
 		$this->add('View_Info')->set('Start');
+		$this->query('SET FOREIGN_KEY_CHECKS = 0');
 		$rename_tables =array(
 				'jos_xbalance_sheet'=>'balance_sheet',
 				'jos_xbranch'=>'branches',
@@ -44,6 +45,8 @@ class page_corrections extends Page {
 		$this->page_movetomany();
 		$this->page_transactionsUpdate();
 		$this->agentAccountToRelation();
+
+		$this->query('SET FOREIGN_KEY_CHECKS = 1');
 	}
 
 	function page_fields(){
@@ -67,6 +70,7 @@ class page_corrections extends Page {
 				array('accounts','PAndLGroup','Group'),
 				array('staffs','StaffID','username'),
 				array('transaction','accounts_id','account_id'),
+				array('transaction_row','accounts_id','account_id'),
 				array('premiums','accounts_id','account_id'),
 			);
 
@@ -79,6 +83,7 @@ class page_corrections extends Page {
 				array('members','is_agent','boolean'),
 				array('staffs','name','string'),
 				array('dealers','loan_panelty_per_day','int'),
+				array('agents','account_id','int'),
 			);
 
 		foreach ($new_fields as $dtl) {
@@ -225,6 +230,8 @@ class page_corrections extends Page {
 		    }catch(Exception $e){
 		    	$this->add('View')->set('Coudnot move ' . $e->getMessage());
 		    }
+
+		    // TODO : Empty moved columsn for perticular accounts types ...
     		
     	}
 
@@ -265,8 +272,13 @@ class page_corrections extends Page {
     }
 
     function agentAccountToRelation(){
+    	$this->query("
+				UPDATE agents ag
+				JOIN accounts ac on ac.AccountNumber = ag.AccountNumber
+				SET
+					ag.account_id = ac.id
+    		");
     	throw new Exception("Error Processing Request", 1);
-    	
     }
 
 }

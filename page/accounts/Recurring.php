@@ -18,11 +18,11 @@ class page_accounts_Recurring extends Page {
 			for($k=2;$k<=4;$k++) {
 			    $f=$crud->form->addField('autocomplete/Basic','member_ID'.$k);
 			   	$f->setModel('Member');
-			   	$o->move($f,'before','Nominee');
+			   	$o->move($f->other_field,'before','Nominee');
 			}
 
-			$f=$crud->form->addField('autocomplete/Basic','collector_saving_account');
-			$f->setModel('Account_SavingAndCurrent');
+			// $c_a_f=$crud->form->addField('autocomplete/Basic','collector_saving_account');
+			// $c_a_f->setModel('Account_SavingAndCurrent');
 		}
 
 		if($crud->isEditing('edit')){
@@ -38,6 +38,7 @@ class page_accounts_Recurring extends Page {
 			$crud->form->addField('line','initial_opening_amount');
 			
 			$crud->form->add('Order')
+						// ->move($c_a_f->other_field,'after','Amount')
 						->move('initial_opening_amount','before','Amount')
 						->now();
 

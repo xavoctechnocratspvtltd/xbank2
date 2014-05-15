@@ -10,6 +10,8 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 		$this->getElement('ProcessingFeesinPercent')->caption('Check if Processing Fee in %');
 		$this->getElement('balance_sheet_id')->caption('Head');
+		$this->getElement('CurrentInterest')->caption('Panelty');
+		
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
 		$this->getElement('LoanType')->destroy();
@@ -60,10 +62,11 @@ class Model_Scheme_Loan extends Model_Scheme {
 			);
 	}
 
-	function daily($on_date=null){
+	function daily($branch= null,$on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
+		if(!$branch) $branch = $this->api->current_branch;
 
-		$loan_accounts  = $this->add('Model_Account_Loan');
+		$loan_accounts  = $this->add('Model_Active_Account_Loan');
 		$loan_accounts->scheme_join->addField('Interest');
 		$loan_accounts->scheme_join->addField('NumberOfPremiums');
 		$loan_accounts->scheme_join->addField('ReducingOrFlatRate');
@@ -71,11 +74,46 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$loan_accounts->leftJoin('premiums.account_id')
 						->addField('DueDate');
 
-		$loan_accounts->addCondition('ActiveStatus',true);
 		$loan_accounts->addCondition('DueDate','like',$on_date.' %');
+		$loan_accounts->addCondition('branch_id',$branch->id);
 
 		foreach ($loan_accounts as $acc_array) {
 			$loan_accounts->postInterestEntry($on_date);
+		}
+
+		$this->putPaneltiesOnAllLoanAccounts($branch,$on_date);
+	}
+
+	function putPaneltiesOnAllLoanAccounts($branch=null,$on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+		if(!$branch) $branch = $this->api->current_branch;
+
+		$panelty_accounts = $this->add('Model_Active_Account_Loan');
+		$premium_join = $panelty_accounts->leftJoin('premiums.account_id');
+		$premium_join->addField('DueDate');
+		$premium_join->addField('Paid');
+		$dealer_join = $panelty_accounts->leftJoin('dealers','dealer_id');
+		$dealer_join->addField('loan_panelty_per_day');
+
+		$panelty_accounts->addCondition('DueDate','<',$on_date);
+		$panelty_accounts->addCondition('DueDate','>',date('Y-m-d',strtotime($on_date. ' -1 Month')));
+		$panelty_accounts->addCondition('Paid',false);
+		$panelty_accounts->addCondition('branch_id',$branch->id);
+
+		$panelty_accounts->_dsql()->set('CurrentInterest',$this->api->db->dsql()->expr('CurrentInterest +'. $dealer_join->table_alias.'.loan_panelty_per_day'));
+		$panelty_accounts->_dsql()->update();
+	}
+
+	function monthly($branch=null, $on_date=null){
+		if(!$branch) $branch = $this->api->current_branch;
+		if(!$on_date) $on_date = $this->api->now;
+
+		$accounts_with_panelty = $this->add('Model_Active_Account_Loan');
+		$accounts_with_panelty->addCondition('CurrentInterest','<>',0);
+		$accounts_with_panelty->addCondition('branch_id',$branch->id);
+
+		foreach ($accounts_with_panelty as $acc) {
+			$accounts_with_panelty->postPaneltyTransaction($on_date);
 		}
 
 	}

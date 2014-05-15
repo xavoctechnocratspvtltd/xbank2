@@ -20,6 +20,7 @@ class page_corrections extends Page {
 				'jos_xtransaction_type'=>'transaction_types',
 				'jos_xdocuments_submitted'=>'documents_submitted',
 				'jos_xagents'=>'agents',
+				'jos_xpremiums'=>'premiums',
 
 				);
 
@@ -76,7 +77,8 @@ class page_corrections extends Page {
 
 		$new_fields=array(
 				array('members','is_agent','boolean'),
-				array('staffs','name','string')
+				array('staffs','name','string'),
+				array('dealers','loan_panelty_per_day','int'),
 			);
 
 		foreach ($new_fields as $dtl) {
@@ -115,9 +117,11 @@ class page_corrections extends Page {
 			}catch(Exception $e){
 				$this->add('View')->set($table_name.' can not drop');
 			}
-
-			
 		}
+
+		$this->add('Model_Account_Loan')->_dsql()
+			->set('CurrentInterest',0)
+			->update();
 
 	}
 

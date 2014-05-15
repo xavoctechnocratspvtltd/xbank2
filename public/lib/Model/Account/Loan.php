@@ -150,6 +150,8 @@ class Model_Account_Loan extends Model_Account{
 	}
 
 	function postInterestEntry($on_date=null){
+		// Applicable on all loan accounts that have their premium duedate on on_date
+
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$this->loaded()) throw $this->exception('Account Must be loaded to post interest entry');
 
@@ -166,6 +168,8 @@ class Model_Account_Loan extends Model_Account{
 	        $interest = round(($this['Amount'] * $rate * ($premiums + 1)) / 1200) / $premiums;
 	    }
 
+	    // $interest = interest value for one premium
+
 	    $transaction = $this->add('Model_Transaction');
 	    $transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_LOAN,$this->ref('branch_id'),$on_date, "Interest posting in Loan Account ".$this['AccountNumber'],null, array('reference_account_id'=>$this->id));
 	    
@@ -175,5 +179,19 @@ class Model_Account_Loan extends Model_Account{
 	    $transaction->execute();
 	}
 
+	function postPaneltyTransaction($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penalty deposited on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_account_id'=>$this->id));
+
+		$amount = $this['CurrentInerest'] < 300?:300;
+		
+		$transaction->addDebitAccount($this, $amount);
+		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . $this['scheme_name'], $amount);
+		
+		$transaction->execute();
+
+	}
 
 }

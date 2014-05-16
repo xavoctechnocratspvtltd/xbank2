@@ -41,16 +41,37 @@ class Model_Member extends Model_Table {
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function createNewMember($name,$isCustomer,$isAgent=null,$other_values=array()){
+	function createNewMember($name,$createAdmissionFeeTransaction, $createSMAccount, $isAgent=null,$other_values=array(),$form=null,$on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Member');
 		$this['name']=$name;
-		// $this['isCustomer']=$isCustomer;
-		$this['is_agent']=$isAgent;
+		$this['created_at']=$on_date;
 		foreach ($other_values as $field => $value) {
 			$this[$field]=$value;
 		}
 		$this->save();
 
+		if($createAdmissionFeeTransaction){
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$this['branch_id'], $on_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+			
+			$transaction->addDebitAccount($account_model_or_number, $amount);
+			$transaction->addCreditAccount($account_model_or_number, $amount);
+			
+			$transaction->execute();
+		}
+
+		if($createSMAccount){
+
+		}
+
+		if($isAgent){
+			$this->makeAgent();
+		}
+
+		throw $this->exception('OPEN SM ACCOUNT');
+		throw $this->exception('create agent');
 	}
 
 }

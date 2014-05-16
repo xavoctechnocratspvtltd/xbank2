@@ -17,7 +17,7 @@ class page_members extends Page {
 			
 			$new_member_model = $crud->add('Model_Member');
 			
-			$new_member_model->createNewMember($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			$new_member_model->createNewMember($form['name'],$createAdmissionFeeTransaction=true, $createSMAccount=true, $isAgent=null,$other_values=array(),$form);
 			return true;
 		});
 		

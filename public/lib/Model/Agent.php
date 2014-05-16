@@ -21,7 +21,7 @@ class Model_Agent extends Model_Table {
 		// $this->addField('Rank_1_Count')->type('int');
 		// $this->addField('Rank_2_Count')->type('int');
 		// $this->addField('Rank_3_Count')->type('int');
-		$this->hasMany('Gaurantor','gaurantor_id');
+		$this->hasMany('AgentGuarantor','agent_id');
 
 		
 

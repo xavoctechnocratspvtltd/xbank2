@@ -1,6 +1,8 @@
 <?php
 
 // TODOS: voucher_no is transaction table to be double now
+// TODOS: all admission fee voucher narration is '10 (memberid)' format ... put memberid in reference id
+// TODOS: refence_account_id to reference_id name change
 
 class page_corrections extends Page {
 	public $rename_fields=array();// [] = array(table_name,old_field,new_field)

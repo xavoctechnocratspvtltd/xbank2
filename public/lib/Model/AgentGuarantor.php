@@ -4,7 +4,7 @@ class Model_AgentGuarantor extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Account','account_id');
+		$this->hasOne('Agent','agent_id');
 
 		$this->addField('name');
 		$this->addField('father_husband_name');

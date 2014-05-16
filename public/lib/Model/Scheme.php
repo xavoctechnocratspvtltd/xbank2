@@ -103,6 +103,10 @@ class Model_Scheme extends Model_Table {
 
 	}
 
+	function getNewSMAccountNumber(){
+		return 0;
+	}
+
 	function daily(){
 		throw $this->exception('Daily closing function must be in scheme');
 	}

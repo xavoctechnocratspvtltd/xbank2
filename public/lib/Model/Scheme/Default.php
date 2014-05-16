@@ -47,6 +47,8 @@ class Model_Scheme_Default extends Model_Scheme {
 		}		
 	}
 	function getDefaultAccounts(){
-		return array();
+		return array(
+				CASH_ACCOUNT => ""
+			);
 	}
 }

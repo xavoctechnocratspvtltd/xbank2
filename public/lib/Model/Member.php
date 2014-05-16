@@ -38,40 +38,57 @@ class Model_Member extends Model_Table {
 		$this->addField('is_agent')->type('boolean')->mandatory(true)->defaultValue(false);
 
 		$this->hasMany('Jointmember','member_id');
+		$this->hasMany('Account','member_id');
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function createNewMember($name,$createAdmissionFeeTransaction, $createSMAccount, $isAgent=null,$other_values=array(),$form=null,$on_date=null){
+	function createNewMember($name, $admissionFee, $shareValue, $isAgent=null,$branch=null, $other_values=array(),$form=null,$on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
+		if(!$branch) $branch = $this->api->current_branch;
+
 
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Member');
 		$this['name']=$name;
+		$this['branch_id']=$branch->id;
 		$this['created_at']=$on_date;
 		foreach ($other_values as $field => $value) {
 			$this[$field]=$value;
 		}
 		$this->save();
 
-		if($createAdmissionFeeTransaction){
+		if($admissionFee){
 			$transaction = $this->add('Model_Transaction');
-			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$this['branch_id'], $on_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$branch, $on_date, "Member Registration Fee ", null, array('reference_account_id'=>$this->id));
 			
-			$transaction->addDebitAccount($account_model_or_number, $amount);
-			$transaction->addCreditAccount($account_model_or_number, $amount);
+			$transaction->addDebitAccount($this->ref('branch_id')->get('Code').SP.CASH_ACCOUNT, $admissionFee);
+			$transaction->addCreditAccount($this->ref('branch_id')->get('Code').SP.ADMISSION_FEE_ACCOUNT, $admissionFee);
 			
 			$transaction->execute();
 		}
 
-		if($createSMAccount){
+		if($shareValue){
+			$sahre_capital_scheme = $this->add('Model_Scheme')->loadBy('name',CAPITAL_ACCOUNT_SCHEME);
 
+			$new_sm_number = $sahre_capital_scheme->getNewSMAccountNumber();
+
+			$share_account = $this->add('Model_Account');
+			$share_account->createNewAccount($this->id, $sahre_capital_scheme->id ,$branch, $new_sm_number ,null,null,$on_date);
 		}
 
 		if($isAgent){
 			$this->makeAgent();
 		}
 
-		throw $this->exception('OPEN SM ACCOUNT');
-		throw $this->exception('create agent');
+	}
+
+	function makeAgent($guarenters=array()){
+		if(!$this->loaded()) throw $this->exception('Member must be loaded to make agent');
+
+		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+	}
+
+	function removeAgent(){
+		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
 	}
 
 }

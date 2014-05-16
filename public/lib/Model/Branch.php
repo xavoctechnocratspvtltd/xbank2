@@ -19,15 +19,6 @@ class Model_Branch extends Model_Table {
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-
-	// function createNewBranch($code,$name,$address){
-	// 	if($this->loaded()) throw $this->exception('Use Empty Model to create new branch');
-	// 	$this['Code'] = $code; // DB Unique ???
-	// 	$this['name'] = $name; // DB Unique ???
-	// 	$this['address'] = $address;
-	// 	$this->save();
-	// }
-
 	function afterInsert($branch,$id){
 		$new_branch = $this->add('Model_Branch')->load($id);
 
@@ -79,7 +70,7 @@ class Model_Branch extends Model_Table {
 	function createDefaultStaff(){
 		if(!$this->loaded()) throw $this->exception('Branch Must be loaded before creating default staff');
 		$defaultStaff = $this->add('Model_Staff');
-		$defaultStaff->createNewStaff($this->api->normalizeName($this['name'].' admin'), rand(1000,9999),80,$this->id);
+		$defaultStaff->createNewStaff($this->api->normalizeName($this['name'].' admin'), 'admin',80,$this->id);
 
 
 	}
@@ -97,23 +88,52 @@ class Model_Branch extends Model_Table {
 	}
 
 	function newVoucherNumber($branch_id=null, $transaction_date=null){
+		$cross_check=false;
 
 		if(!$branch_id) $branch_id = $this->id;
-		if(!$transaction_date) $transaction_date = $this->api->today;
 
-		$f_year = $this->api->getFinancialYear($transaction_date);
+		$f_year = $this->api->getFinancialYear($transaction_date);	
+		$start_date = $f_year['start_date'];
+		
+		if(!$transaction_date){
+			$end_date = $f_year['end_date'];
+		}else{
+			$end_date=$transaction_date;
+			$cross_check=true;
+		}
 
 
 		$transaction_model = $this->add('Model_Transaction');
 		$transaction_model->addCondition('branch_id',$branch_id);
-		$transaction_model->addCondition('created_at','>=',$f_year['start_date']);
-		$transaction_model->addCondition('created_at','<=',$this->api->nextDate($f_year['end_date'])); // ! important next date
+		$transaction_model->addCondition('created_at','>=',$start_date);
+		$transaction_model->addCondition('created_at','<',$this->api->nextDate($end_date)); // ! important next date
 
 		$transaction_model->_dsql()->del('fields')->field('max(voucher_no)');
 
 		$max_voucher = $transaction_model->_dsql()->getOne();
 		
-		return $max_voucher+1;
+		if($cross_check){
+			$cross_check = $this->add('Model_Transaction');
+			$cross_check->addCondition('branch_id',$branch_id);
+			$cross_check->addCondition('voucher_no',$max_voucher+1);
+			$cross_check->addCondition('created_at','>=',$start_date);
+			$cross_check->addCondition('created_at','<',$this->api->nextDate($f_year['end_date'])); // ! important next date
 
+			$cross_check->tryLoadAny();
+
+			if($cross_check->loaded()){
+				$cross_check_2 = $this->add('Model_Transaction');
+				$cross_check_2->addCondition('branch_id',$branch_id);
+				$cross_check_2->addCondition('voucher_no','like',round($max_voucher).'%');
+				$cross_check_2->addCondition('created_at','>=',$start_date);
+				$cross_check_2->addCondition('created_at','<',$this->api->nextDate($f_year['end_date'])); // ! important next date				
+				$max_voucher_check = $cross_check_2->count()->getOne();
+				if($max_voucher_check > 0) 
+					return $max_voucher + ( 0.1 * $max_voucher_check);
+			}
+			
+		}
+
+		return $max_voucher+1;
 	}
 }

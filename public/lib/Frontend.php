@@ -40,7 +40,7 @@ class Frontend extends ApiFrontend {
 
             $auth = $this->add('BasicAuth');
             $auth->allowPage(array('corrections'));
-            $auth->setModel('Staff','name','password');
+            $auth->setModel('Staff','username','password');
             $auth->check();
 
             $this->current_branch = $this->auth->model->ref('branch_id');

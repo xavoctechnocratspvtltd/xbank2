@@ -22,7 +22,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('LoanType')->type('boolean')->defaultValue($this->loanType);
 		$this->addField('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->addField('Commission');
-		$this->addField('ActiveStatus')->type('boolean')->caption('Is Active');
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('ProcessingFees')->caption('Processing Fees');
@@ -68,29 +68,8 @@ class Model_Scheme extends Model_Table {
 		}
 	}
 
-	// function manageForm($form){
-	// 	if($form->hasElement('balance_sheet_id'))
-	// 		$form->getElement('balance_sheet_id')->setEmptyText('Please Select ...');
-	// 	if($form->hasElement('PremiumMode'))
-	// 		$form->getElement('PremiumMode')->setEmptyText('Please Select ...');
-	// 	if($form->hasElement('ReducingOrFlatRate'))
-	// 		$form->getElement('ReducingOrFlatRate')->setEmptyText('Please Select ...');
-	// 	$this->hook('schemeFormCreated',array($form));
-	// 	if($form->isSubmitted()){
-	// 		$this->hook('schemeFormSubmitted',array($form));
-	// 		$values = $form->getAllFields();
-	// 		$this->createNewScheme($values);
-	// 		$form->js()->univ()->successMessage('HI')->execute();
-	// 	}
-	// }
-
 	function getDefaultAccounts(){
 		throw $this->exception('RE Declare The function in Specific Scheme Models');
-
-		// if(!$this->schemeType) throw $this->exception('DefaultAccounts must be called from Specific Scheme Model not generic scheme Model');
-		// $default_account_model = $this->add('Model_DefaultAccounts');
-		// $default_account_model->filterFor($this->schemeType);
-		// return $default_account_model->getAll();
 	}
 
 	// Overrides by Child Classes to add values and called as parent::...

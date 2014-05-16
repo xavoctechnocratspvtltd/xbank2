@@ -1,6 +1,6 @@
 <?php
 
-class page_tests_01branch extends Page_Tester {
+class page_tests_010Branch extends Page_Tester {
     public $title = 'Branch Testing';
 
     public $proper_responses=array(
@@ -19,9 +19,10 @@ class page_tests_01branch extends Page_Tester {
         $branch['Code']='x'.rand(1000,9999);
 
         $this->proper_responses['Test_branchCreate'] += array('default_member_name'=>substr($branch['Code'],0,3). ' Default');
+        $this->proper_responses['Test_branchCreate'] += array('new_staff_username'=>$this->api->normalizeName($branch['name'].' admin'));
+        $this->proper_responses['Test_branchCreate'] += array('branch_and_division_for'=>array('GOG','UDR'));
 
         $branch->save();
-        echo $branch->id;
         $this->api->memorize('newbranch_id',$branch->id);
         return array($branch->id);
     }
@@ -35,7 +36,8 @@ class page_tests_01branch extends Page_Tester {
         return array(
             'staff_count'=>$newstaff->count()->getOne(), 
             'new_staff_accessLevel'=>$newstaff['AccessLevel'],
-            'default_member_name'=>$member
+            'default_member_name'=>$member,
+            'new_staff_username'=>$newstaff['username']
             );
     }
 

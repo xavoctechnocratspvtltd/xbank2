@@ -1,5 +1,7 @@
 <?php
 
+// TODOS: voucher_no is transaction table to be double now
+
 class page_corrections extends Page {
 	public $rename_fields=array();// [] = array(table_name,old_field,new_field)
 	public $new_fields=array();// [] = array(table_name,old_field,new_field)

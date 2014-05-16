@@ -9,6 +9,7 @@ class Model_Staff extends Model_Table {
 		$this->hasOne('Branch','branch_id')->mandatory(true);
 
 		$this->addField('name')->mandatory(true);
+		$this->addField('username')->mandatory(true);
 		$this->addField('password');
 
 		$this->addField('AccessLevel')->setValueList(array('100'=>'Super Admin','80'=>'CEO','60'=>'Branch Admin','40'=>'Power Staff', '20'=>'Staff','10'=>'Guest'));
@@ -19,6 +20,7 @@ class Model_Staff extends Model_Table {
 		if(!$branch_id) $branch_id = $this->api->current_branch->id;
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Staff');
 		
+		$this['username']= $name;
 		$this['name'] = $name;
 		$this['password'] = $password;
 		$this['AccessLevel'] = $AccessLevel;

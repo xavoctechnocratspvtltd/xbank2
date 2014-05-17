@@ -72,7 +72,6 @@ class page_corrections extends Page {
 				array('accounts','RdAmount','Amount'),
 				array('accounts','InterestToAccount','intrest_to_account_id'),
 				array('accounts','LoanAgainstAccount','LoanAgainstAccount_id'),
-				array('accounts','PAndLGroup','`Group`'),
 				array('staffs','StaffID','username'),
 				array('transaction','accounts_id','account_id'),
 				array('transaction_row','accounts_id','account_id'),
@@ -89,6 +88,7 @@ class page_corrections extends Page {
 				array('staffs','name','string'),
 				array('dealers','loan_panelty_per_day','int'),
 				array('agents','account_id','int'),
+				array('accounts','`Group`','string'),
 			);
 
 		foreach ($new_fields as $dtl) {

@@ -112,7 +112,8 @@ class Model_Account extends Model_Table {
 		}
 
 		// PandLGroup set default
-		$this['Group'] = $this->add('Model_Scheme')->load($this['scheme_id'])->get('SchemeGroup');
+		if(!$this['Group'])
+			$this['Group'] = $this->add('Model_Scheme')->load($this['scheme_id'])->get('SchemeGroup');
 	}
 
 	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){

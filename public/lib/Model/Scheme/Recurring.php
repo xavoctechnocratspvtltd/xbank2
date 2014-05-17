@@ -36,14 +36,8 @@ class Model_Scheme_Recurring extends Model_Scheme {
 	}
 
 	function getDefaultAccounts(){
-		return array(
-			"Indirect Expenses"=>"Commission Paid On",
-			"Indirect Expenses"=>"Interest Paid On",
-			// "Indirect Expenses"=>"Collection Charges Paid On",
-			"Provision"=>"Commission Payable On",
-			"Provision"=>"Interest Payable On",
-			// "Provision"=>"Collection Payable On"
-			);
+		"Indirect Expenses"=>array('intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On RD','PAndLGroup'=>'Commission Paid On Deposit'),
+		"Indirect Expenses"=>array('intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On RD','PAndLGroup'=>'Interest Paid On Deposit'),
 	}
 
 	function daily($branch=null,$on_date=null){

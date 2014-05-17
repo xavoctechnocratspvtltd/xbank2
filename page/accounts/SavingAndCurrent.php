@@ -7,6 +7,7 @@ class page_accounts_SavingAndCurrent extends Page {
 		$crud=$this->add('xCRUD');
 		$account_savingandcurrent_model = $this->add('Model_Account_SavingAndCurrent');
 		$account_savingandcurrent_model->add('Controller_Acl');
+		$account_savingandcurrent_model->setOrder('id','desc');
 		
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;

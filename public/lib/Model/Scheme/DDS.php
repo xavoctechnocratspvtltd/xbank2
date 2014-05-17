@@ -40,11 +40,11 @@ class Model_Scheme_DDS extends Model_Scheme {
 
 	function getDefaultAccounts(){
 		return array(
-			"Indirect Expenses"=>"Commission Paid On",
-			"Indirect Expenses"=>"Interest Paid On",
+			"Indirect Expenses"=>array('intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On DDS','PAndLGroup'=>'Commission Paid On Deposit'),
+			"Indirect Expenses"=>array('intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On DDS','PAndLGroup'=>'Interest Paid On Deposit'),
 			// "Indirect Expenses"=>"Collection Charges Paid On",
-			"Provision"=>"Commission Payable On",
-			"Provision"=>"Interest Payable On",
+			// "Provision"=>array('intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On'),
+			// "Provision"=>array('intermediate_text'=>"Interest Payable On",'Group'=>'Interest Payable On'),
 			// "Provision"=>"Collection Payable On"
 
 			);

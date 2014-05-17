@@ -48,8 +48,8 @@ class Model_Scheme_Default extends Model_Scheme {
 	}
 	function getDefaultAccounts(){
 		return array(
-				CASH_ACCOUNT => ""
-				TDS => ""
+				CASH_ACCOUNT => array('intermediate_text'=>"",'Group'=>CASH_ACCOUNT,'PAndLGroup'=>CASH_ACCOUNT),
+				TDS =>  array('intermediate_text'=>"",'Group'=>TDS,'PAndLGroup'=>TDS),
 			);
 	}
 }

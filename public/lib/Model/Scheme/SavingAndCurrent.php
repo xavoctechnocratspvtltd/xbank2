@@ -30,8 +30,7 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 		$this->getElement('DepriciationPercentBeforeSep')->destroy();
 		$this->getElement('DepriciationPercentAfterSep')->destroy();
 		
-		$this->getElement('balance_sheet_id')->caption('Head');
-
+		$this->getElement('balance_sheet_id')->caption('Head')->getModel()->addCondition('name','Deposits - Liabilities');
 
 		$this->addCondition('SchemeType',$this->schemeType);
 
@@ -40,11 +39,11 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 
 	function getDefaultAccounts(){
 		return array(
-			"Indirect Expenses"=>"Commission Paid On",
-			"Indirect Expenses"=>"Interest Paid On",
-			"Indirect Income"=>"Minimum Balance Charge Received On",
-			"Indirect Income"=>"ChequeBook Charge Received On",
-			"Indirect Income"=>"Statement Charge Received On",
+			"Indirect Expenses"=>array('intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On Saving and Current','PAndLGroup'=>'Commission Paid On Deposit'),
+			"Indirect Expenses"=>array('intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On Saving and Current','PAndLGroup'=>'Interest Paid On Deposit'),
+			"Indirect Income"=>array('intermediate_text'=>"Minimum Balance Charge Received On",'Group'=>'Minimum Balance Charge Received On Saving and Current','PAndLGroup'=>'Minimum Balance Charge Received On Saving and Current'),
+			"Indirect Income"=>array('intermediate_text'=>"ChequeBook Charge Received On",'Group'=>'ChequeBook Charge Received On Saving and Current','PAndLGroup'=>'ChequeBook Charge Received On Saving and Current'),
+			"Indirect Income"=>array('intermediate_text'=>"Statement Charge Received On",'Group'=>'Statement Charge Received On Saving and Current','PAndLGroup'=>'Statement Charge Received On Saving and Current'),
 			);
 	}
 

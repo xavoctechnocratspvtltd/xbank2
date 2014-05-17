@@ -14,15 +14,15 @@ class Model_Scheme extends Model_Table {
 		// $this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->hasOne('BalanceSheet','balance_sheet_id');
 		$this->addField('name')->caption('Scheme Name')->mandatory(true);
-		$this->addField('MinLimit')->caption('Minimum Balance/Amount');
+		$this->addField('MinLimit')->caption('Minimum Balance/Amount')->type('int')->mandatory(true);
 		$this->addField('MaxLimit')->caption('Maximum Limit');
-		$this->addField('Interest')->caption('Interest (In %)');
+		$this->addField('Interest')->caption('Interest (In %)')->type('money');
 		$this->addField('InterestMode');
 		$this->addField('InterestRateMode');
 		$this->addField('LoanType')->type('boolean')->defaultValue($this->loanType);
 		$this->addField('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->addField('Commission');
-		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active');
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active')->system(true);
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('ProcessingFees')->caption('Processing Fees');
@@ -30,7 +30,6 @@ class Model_Scheme extends Model_Table {
 		$this->addField('PremiumMode')->setValueList(array(RECURRING_MODE_YEARLY=>'Yearly',RECURRING_MODE_HALFYEARLY=>'Half Yearly',RECURRING_MODE_QUATERLY=>'Quarterly',RECURRING_MODE_MONTHLY=>'Monthly',RECURRING_MODE_WEEKLY=>'Weekly',RECURRING_MODE_DAILY=>'Daily'))->mandatory(true);
 		$this->addField('CreateDefaultAccount');
 		$this->addField('SchemeType')->enum(explode(',',ACCOUNT_TYPES))->defaultValue($this->schemeType);
-		$this->addField('SchemeGroup')->defaultValue($this->schemeType);
 		$this->addField('InterestToAnotherAccount')->type('boolean');
 		$this->addField('NumberOfPremiums')->type('int')->caption('Number Of Premiums');
 		$this->addField('MaturityPeriod')->type('int');
@@ -40,7 +39,10 @@ class Model_Scheme extends Model_Table {
 		$this->addField('DepriciationPercentAfterSep')->caption('Depriciation % after September');
 		$this->addField('ProcessingFeesinPercent')->type('boolean')->defaultValue(false);
 		$this->addField('published')->type('boolean')->defaultValue(true);
-		$this->addField('SchemePoints')->caption('Scheme Points');
+		
+		$this->addField('SchemePoints')->caption('Scheme Points')->system(true);
+		$this->addField('SchemeGroup')->defaultValue($this->schemeType)->system(true);
+		
 		$this->addField('AgentSponsorCommission');
 		$this->addField('CollectorCommissionRate');
 		$this->addField('ReducingOrFlatRate')->caption('Reducing Or Flat Rate')->enum(array('Flat','Reducing'))->mandatory(true);
@@ -107,11 +109,11 @@ class Model_Scheme extends Model_Table {
 		if(!($branch instanceof Model_Branch) and !$branch->loaded()) throw $this->exception('Argument Branch must be a loaded Branch Model');
 
 
-		foreach ($this->getDefaultAccounts() as $under_scheme => $intermediate_text) {
+		foreach ($this->getDefaultAccounts() as $under_scheme => $details) {
 
 			$scheme = $this->add('Model_Scheme')->loadBy('name',$under_scheme);
 			$account = $this->add('Model_Account');
-			$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$intermediate_text.SP.$this['name'],array('DefaultAC'=>true));
+			$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$this['name'],array('DefaultAC'=>true,'Group'=>$details['Group']));
 
 		}
 

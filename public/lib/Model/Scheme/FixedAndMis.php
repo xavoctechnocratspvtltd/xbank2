@@ -28,7 +28,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$this->getElement('NumberOfPremiums')->destroy();
 		
 		$this->getElement('balance_sheet_id')->caption('Head');
-		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD, MIS, RD, DDS(in months )');
+		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD (in Days )');
 		$this->getElement('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->getElement('InterestToAnotherAccount')->caption('Interest To Account (check if interest to be posted to other account)');
 
@@ -39,10 +39,10 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 
 	function getDefaultAccounts(){
 		return array(
-			"Indirect Expenses"=>"Commission Paid On",
-			"Indirect Expenses"=>"Interest Paid On",
-			"Provision"=>"Interest Provision On",
-			"Provision"=>"Commission Payable On"
+			"Indirect Expenses"=>array('intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On FD and MIS','PAndLGroup'=>'Commission Paid On Deposit'),
+			"Indirect Expenses"=>array('intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On FD and MIS','PAndLGroup'=>'Interest Paid On Deposit'),
+			"Provision"=>array('intermediate_text'=>"Interest Provision On",'Group'=>'Interest Provision On FD and MIS','PAndLGroup'=>'Interest Payable On Deposit'),
+			"Provision"=>array('intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On FD and MIS','PAndLGroup'=>'Commission Payable Paid On Deposit'),
 			);
 	}
 }

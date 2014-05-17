@@ -4,9 +4,6 @@ class xCRUD extends View_CRUD {
 
 	function init(){
 		parent::init();
-		if($this->grid){
-			$this->grid->addQuickSearch(array('AccountNumber'));
-		}
 	}
 
 	function formSubmit($form){

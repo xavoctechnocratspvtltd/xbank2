@@ -107,7 +107,7 @@ class Model_Account extends Model_Table {
 
 	function beforeSave(){
 
-		if(!$this->loaded() AND !$this['DefaultAC'] AND  !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber'])){
+		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber'])){
 			throw $this->exception('AccountNumber Format not accpeted')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
 
@@ -170,9 +170,10 @@ class Model_Account extends Model_Table {
 	 * @param  String [$created_at]
 	 * @return id New account model id
 	 */
-	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null,$created_at=null){
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
 		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Muct be Loaded Object of Model_Branch');
 		if(!$created_at) $created_at = $this->api->now;
+		if(!$otherValues) $otherValues=array();
 
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;
@@ -319,6 +320,10 @@ class Model_Account extends Model_Table {
 	function isActive(){
 		return $this['ActiveStatus']?:0;
 	}	
+
+	function delete($forced){
+		parent::delete();
+	}
 
 	final function daily(){
 		throw $this->exception('Daily closing function must be in scheme');

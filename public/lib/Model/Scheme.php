@@ -73,8 +73,22 @@ class Model_Scheme extends Model_Table {
 	}
 
 	// Overrides by Child Classes to add values and called as parent::...
-	function createNewScheme($values=array()){
-		foreach ($values as $field => $value) {
+	function createNewScheme($name,$balance_sheet_id, $scheme_type, $scheme_group, $is_loanType, $other_values=array(),$form=null,$on_date=null){
+		
+		$this['name'] = $name;
+		$this['balance_sheet_id'] = $balance_sheet_id;
+		$this['SchemeType'] = $scheme_type;
+		$this['SchemeGroup'] = $scheme_group;
+		$this['LoanType'] = $is_loanType;
+
+
+		unset($other_values['name']);
+		unset($other_values['balance_sheet_id']);
+		unset($other_values['SchemeType']);
+		unset($other_values['SchemeGroup']);
+		unset($other_values['loanType']);
+
+		foreach ($other_values as $field => $value) {
 			$this[$field] = $value;
 		}
 
@@ -104,6 +118,19 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function getNewSMAccountNumber(){
+		$accounts = $this->add('Model_Account');
+		$accounts->addCondition('scheme_name',CAPITAL_ACCOUNT_SCHEME);
+		$accounts->addCondition('DefaultAC',false);
+		$accounts->setOrder('id','desc');
+		$accounts->tryLoadAny();
+
+
+		preg_match_all("!\d+!", $accounts['AccountNumber'],$result);
+
+		return "SM".($result[0][0]+1);
+
+		$query = "select count(a.AccountNumber) from jos_xaccounts a join jos_xschemes s on a.schemes_id=s.id where a.DefaultAC = 0 and s.Name ='" . CAPITAL_ACCOUNT_SCHEME . "' ";
+                    $accnum = getNextCode($com_params->get("default_share_accountnumber"), $query);
 		return 0;
 	}
 

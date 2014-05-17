@@ -10,27 +10,34 @@ class page_members extends Page {
 		$crud = $this->add('xCRUD');
 
 		$member_model = $this->add('Model_Member');
-		$member_model->add('Cotroller_Acl');
+		$member_model->add('Controller_Acl');
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
 			
 			$new_member_model = $crud->add('Model_Member');
 			
-			$new_member_model->createNewMember($form['name'],$createAdmissionFeeTransaction=true, $createSMAccount=true, $isAgent=null,$other_values=array(),$form);
+			$new_member_model->createNewMember($form['name'], $admissionFee=10, $shareValue=100, $branch=null, $other_values=$form->getAllFields(),$form,$on_date=null);
 			return true;
 		});
+
+		if($crud->isEditing()){
+			$member_model->getElement('created_at')->system(true);
+			$member_model->getElement('updated_at')->system(true);
+			$member_model->getElement('is_agent')->system(true);
+		}
 		
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
 		}
 
 		if($crud->isEditing('edit')){
-			$account_cc_model->hook('editing');
+			$member_model->hook('editing');
 		}
 
 		$crud->setModel($member_model);
 		if($g= $crud->grid) {
+			$g->addQuickSearch(array('name'));
 			$g->addMethod('format_removeEdit',function($grid,$field){
 				if($grid->model['name'] == $grid->model->ref('branch_id')->get('Code').SP.'Default')
 					$grid->current_row_html[$field]='';

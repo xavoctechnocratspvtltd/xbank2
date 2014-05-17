@@ -22,11 +22,11 @@ class Model_Member extends Model_Table {
 		$this->addField('Witness2Name');
 		$this->addField('Witness2FatherName');
 		$this->addField('Witness2Address');
-		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
-		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
+		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->group('system');
+		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->group('system');
 		$this->addField('PhoneNos');
 		$this->addField('PanNo');
-		$this->addField('IsMinor');
+		$this->addField('IsMinor')->type('boolean');
 		$this->addField('MinorDOB');
 		$this->addField('ParentName');
 		$this->addField('RelationWithParent');
@@ -35,14 +35,14 @@ class Model_Member extends Model_Table {
 		$this->addField('FilledForm60')->type('boolean')->mandatory(true);
 		// $this->addField('is_customer')->type('boolean')->mandatory(true);
 		// $this->addField('is_member')->type('boolean')->mandatory(true)->defaultValue(true);
-		$this->addField('is_agent')->type('boolean')->mandatory(true)->defaultValue(false);
+		$this->addField('is_agent')->type('boolean')->mandatory(true)->defaultValue(false)->group('system');
 
-		$this->hasMany('Jointmember','member_id');
+		$this->hasMany('JointMember','member_id');
 		$this->hasMany('Account','member_id');
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function createNewMember($name, $admissionFee, $shareValue, $isAgent=null,$branch=null, $other_values=array(),$form=null,$on_date=null){
+	function createNewMember($name, $admissionFee, $shareValue, $branch=null, $other_values=array(),$form=null,$on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
 
@@ -75,20 +75,38 @@ class Model_Member extends Model_Table {
 			$share_account->createNewAccount($this->id, $sahre_capital_scheme->id ,$branch, $new_sm_number ,null,null,$on_date);
 		}
 
-		if($isAgent){
-			$this->makeAgent();
-		}
-
 	}
 
 	function makeAgent($guarenters=array()){
 		if(!$this->loaded()) throw $this->exception('Member must be loaded to make agent');
 
-		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+		// throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
 	}
 
 	function removeAgent(){
-		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+		// throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+	}
+
+	function delete($forced=false){
+		$stop_for_many=array('JointMember','Account');
+
+		if(!$forced){
+			if($this->ref('Account')->count()->getOne() > 0)
+				throw $this->exception('Member Contains Accounts');
+			if($this->ref('JointMember')->count()->getOne() > 0)
+				throw $this->exception('Member is Joint with other accounts');
+		}
+
+		foreach ($a=$this->ref('Account') as $a_array) {
+			$a->delete($forced);
+		}
+
+		foreach($jm=$this->ref('JointMember') as $jm_array){
+			$jm->delete($forced);
+		}
+
+		parent::delete();
+
 	}
 
 }

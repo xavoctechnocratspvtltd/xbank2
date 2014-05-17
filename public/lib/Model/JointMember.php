@@ -9,4 +9,8 @@ class Model_JointMember extends Model_Table {
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
+
+	function delete($forced){
+		parent::delete();
+	}
 }

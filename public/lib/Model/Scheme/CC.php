@@ -37,7 +37,9 @@ class Model_Scheme_CC extends Model_Scheme {
 	function getDefaultAccounts(){
 		return array(
 			"Indirect Income"=>"Interest Received On",
-			"Indirect Income"=>"Processing Fee Received On"
+			"Indirect Income"=>"Processing Fee Received On",
+			"Indirect Income"=>"Renewal Charges Received On",
+			"Indirect Income"=>"CC Overdue Charges Received On",
 			);
 	}
 

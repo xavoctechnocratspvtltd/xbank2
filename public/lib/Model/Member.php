@@ -106,7 +106,6 @@ class Model_Member extends Model_Table {
 		}
 
 		parent::delete();
-
 	}
 
 }

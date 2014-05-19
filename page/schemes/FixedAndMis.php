@@ -4,11 +4,36 @@ class page_schemes_FixedAndMis extends Page{
 	function init(){
 		parent::init();
 
-		$crud=$this->add('CRUD');
-		$crud->setModel('Scheme_FixedAndMis',array('name','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','InterestToAnotherAccount','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
+		$crud=$this->add('xCRUD');
+		$scheme_FixedAndMis_model =$this->add('Model_Scheme_FixedAndMis');
+		
+		$crud->addHook('myupdate',function($crud,$form){
+			if($crud->isEditing('edit')) return false;
+						
+			$FixedAndMis_scheme_model = $crud->add('Model_Scheme_FixedAndMis');
+			$FixedAndMis_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_FIXED, ACCOUNT_TYPE_FIXED, $is_loanType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
+			return true;
+		});
 
-		if($crud->grid)
+		if($crud->isEditing("add")){
+		    $o=$crud->form->add('Order');
+		}
+
+		if($crud->isEditing('edit')){
+			$scheme_FixedAndMis_model->hook('editing');
+		}
+
+		$crud->setModel($scheme_FixedAndMis_model,array('name','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','InterestToAnotherAccount','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
+
+		
+		if($crud->grid){
 			$crud->grid->addPaginator(10);
+		}
+
+		if($crud->isEditing('add')){
+			$o->now();
+		}
+
 		
 	}
 }

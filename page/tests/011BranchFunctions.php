@@ -144,8 +144,4 @@ class page_tests_011BranchFunctions extends Page_Tester {
         }
         return $result;
     }
-
-    
-
-
 }

@@ -2,8 +2,8 @@
 class Model_Scheme_FixedAndMis extends Model_Scheme {
 	
 	public $loanType = true;
-	public $schemeType = 'FixedAndMis';
-	public $schemeGroup = 'FixedAndMis';
+	public $schemeType = ACCOUNT_TYPE_FIXED;
+	public $schemeGroup = ACCOUNT_TYPE_FIXED;
 
 	function init(){
 		parent::init();
@@ -39,10 +39,10 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 
 	function getDefaultAccounts(){
 		return array(
-			"Indirect Expenses"=>array('intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On FD and MIS','PAndLGroup'=>'Commission Paid On Deposit'),
-			"Indirect Expenses"=>array('intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On FD and MIS','PAndLGroup'=>'Interest Paid On Deposit'),
-			"Provision"=>array('intermediate_text'=>"Interest Provision On",'Group'=>'Interest Provision On FD and MIS','PAndLGroup'=>'Interest Payable On Deposit'),
-			"Provision"=>array('intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On FD and MIS','PAndLGroup'=>'Commission Payable Paid On Deposit'),
+			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On FD and MIS','PAndLGroup'=>'Commission Paid On Deposit'),
+			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On FD and MIS','PAndLGroup'=>'Interest Paid On Deposit'),
+			array('under_scheme'=>"Provision",'intermediate_text'=>"Interest Provision On",'Group'=>'Interest Provision On FD and MIS','PAndLGroup'=>'Interest Payable On Deposit'),
+			array('under_scheme'=>"Provision",'intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On FD and MIS','PAndLGroup'=>'Commission Payable Paid On Deposit'),
 			);
 	}
 }

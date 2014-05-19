@@ -5,7 +5,7 @@ class page_tests_015MemberFunctions extends Page_Tester {
 
     public $proper_responses=array(
         "Test_empty"=>'',
-        "Test_createNewMember"=>array('saved'=>1,'sm_account_number'=>'SM8197'),
+        "Test_createNewMember"=>array('saved'=>1,'sm_account_number'=>'SM8196'),
         "Test_deleteMember"=>array('removed'=>1,'sm_account_number'=>0),
     );
 

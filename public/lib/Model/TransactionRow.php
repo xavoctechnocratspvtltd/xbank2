@@ -21,4 +21,13 @@ class Model_TransactionRow extends Model_Table {
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
+
+	function delete($revert_accounts_balances=true){
+		if($this['amountCr'] AND $revert_accounts_balances)
+			$this->ref('account_id')->debitOnly($this['amountCr']);
+		if($this['amountDr'] AND $revert_accounts_balances)
+			$this->ref('account_id')->creditOnly($this['amountDr']);
+
+		parent::delete();
+	}
 }

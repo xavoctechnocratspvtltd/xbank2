@@ -1,12 +1,12 @@
 <?php
 
-class page_tests_020SchemeCC extends Page_Tester {
+class page_tests_020SchemeDefault extends Page_Tester {
     public $title = 'Schemes Testing';
-    public $scheme_type = ACCOUNT_TYPE_CC;
+    public $scheme_type = ACCOUNT_TYPE_DEFAULT;
 
     public $proper_responses=array(
-        "Test_schemeName"=>ACCOUNT_TYPE_CC,
-        'Test_schemeCreate_1'=>array('udr_default_accounts_count'=>4,'jhd_default_accounts_count'=>4),
+        "Test_schemeName"=>ACCOUNT_TYPE_DEFAULT,
+        'Test_schemeCreate_1'=>array('udr_default_accounts_count'=>0,'jhd_default_accounts_count'=>0),
         'Test_schemeDelete_1'=>array('udr_default_accounts'=>0,'jhd_default_accounts_count'=>0)
         // 'Test_branchDefaultAccounts'=>20,
     );

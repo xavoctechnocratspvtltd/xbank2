@@ -1,8 +1,9 @@
 <?php
 
-// TODOS: voucher_no is transaction table to be double now
+// TODOS: voucher_no in transaction table to be double now
 // TODOS: all admission fee voucher narration is '10 (memberid)' format ... put memberid in reference id
 // TODOS: refence_account_id to reference_id name change
+// TODOS: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
 
 class page_corrections extends Page {
 	public $rename_fields=array();// [] = array(table_name,old_field,new_field)
@@ -233,7 +234,7 @@ class page_corrections extends Page {
 			    			$this->removeField($move['from'][0],$field);
 		    		}	
 		    }catch(Exception $e){
-		    	$this->add('View')->set('Coudnot move ' . $e->getMessage());
+		    	$this->add('View')->set('Coudnot move ' . $e->getMessage() . ' <br>'.$q);
 		    }
 
 		    // TODO : Empty moved columsn for perticular accounts types ...

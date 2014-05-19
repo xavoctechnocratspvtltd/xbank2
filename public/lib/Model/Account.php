@@ -50,6 +50,7 @@ class Model_Account extends Model_Table {
 		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(false);
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
 		$this->addField('Group');
+		$this->addField('PAndLGroup')->system(true);
 
 		$this->scheme_join = $this->leftJoin('schemes','scheme_id');
 		$this->scheme_join->addField('SchemeType');
@@ -322,7 +323,22 @@ class Model_Account extends Model_Table {
 		return $this['ActiveStatus']?:0;
 	}	
 
-	function delete($forced){
+	function prepareDelete($revert_accounts_balances=true){
+		// Delete all transactions of this account
+		$transactions = $this->add('Model_Transaction');
+		$tr_row_join = $transactions->join('transaction_row.transaction_id');
+		$tr_row_join->addField('account_id');
+		$transactions->addCondition('account_id',$this->id);
+
+		foreach ($transactions as $transactions_array) {
+			$transactions->delete(true);
+		}
+	}
+
+	function delete($forced =false){
+		if($forced){
+			$this->prepareDelete(true);
+		}
 		parent::delete();
 	}
 

@@ -2,8 +2,8 @@
 class Model_Scheme_Loan extends Model_Scheme {
 
 	public $loanType = true;
-	public $schemeType = 'Loan';
-	public $schemeGroup = 'Loan';
+	public $schemeType = ACCOUNT_TYPE_LOAN;
+	public $schemeGroup = ACCOUNT_TYPE_LOAN;
 
 	function init(){
 		parent::init();
@@ -43,21 +43,17 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$form->getElement('SchemeGroup')->set($this->schemeGroup);
 	}
 
-	function createNewScheme($values){
-		parent::createNewScheme($values);
-
-	}
 
 	function getDefaultAccounts(){
 		return array(
-			"Indirect Income"=>array('intermediate_text'=>"Interest Received On",'Group'=>'Interest Received On {{Loan}}','PAndLGroup'=>'Interest Received On Loan'),
-			"Indirect Income"=>array('intermediate_text'=>"Processing Fee Received On",'Group'=>'Processing Fee Received On {{Loan}}','PAndLGroup'=>'Processing Fee Received On Loan'),
-			"Indirect Income"=>array('intermediate_text'=>"Penalty Due To Late Payment On",'Group'=>'Penalty Due To Late Payment On {{Loan}}','PAndLGroup'=>'Penalty Due To Late Payment On Loan'),
-			"Indirect Income"=>array('intermediate_text'=>"For Close Account On",'Group'=>'For Close Account On {{Loan}}','PAndLGroup'=>'For Close Account On Loan'),
-			"Indirect Income"=>array('intermediate_text'=>"Time Over Charge On",'Group'=>'Time Over Charge On {{Loan}}','PAndLGroup'=>'Time Over Charge On Loan'),
-			"Indirect Income"=>array('intermediate_text'=>"Conveyence Charge Received On",'Group'=>'Conveyence Charge Received On {{Loan}}','PAndLGroup'=>'Conveyence Charge Received On Loan'),
-			"Indirect Income"=>array('intermediate_text'=>"Rent Charge Received On",'Group'=>'Rent Charge Received On {{Loan}}','PAndLGroup'=>'Rent Charge Received On Loan'),
-			"Indirect Income"=>array('intermediate_text'=>"Legal Charge Received On",'Group'=>'Legal Charge Received On {{Loan}}','PAndLGroup'=>'Legal Charge Received On Loan'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Interest Received On",'Group'=>'Interest Received On {{Loan}}','PAndLGroup'=>'Interest Received On Loan'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Processing Fee Received On",'Group'=>'Processing Fee Received On {{Loan}}','PAndLGroup'=>'Processing Fee Received On Loan'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Penalty Due To Late Payment On",'Group'=>'Penalty Due To Late Payment On {{Loan}}','PAndLGroup'=>'Penalty Due To Late Payment On Loan'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"For Close Account On",'Group'=>'For Close Account On {{Loan}}','PAndLGroup'=>'For Close Account On Loan'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Time Over Charge On",'Group'=>'Time Over Charge On {{Loan}}','PAndLGroup'=>'Time Over Charge On Loan'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Conveyence Charge Received On",'Group'=>'Conveyence Charge Received On {{Loan}}','PAndLGroup'=>'Conveyence Charge Received On Loan'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Rent Charge Received On",'Group'=>'Rent Charge Received On {{Loan}}','PAndLGroup'=>'Rent Charge Received On Loan'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Legal Charge Received On",'Group'=>'Legal Charge Received On {{Loan}}','PAndLGroup'=>'Legal Charge Received On Loan'),
 			);
 	}
 

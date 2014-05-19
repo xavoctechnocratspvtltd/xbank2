@@ -19,7 +19,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('Interest')->caption('Interest (In %)')->type('money');
 		$this->addField('InterestMode');
 		$this->addField('InterestRateMode');
-		$this->addField('LoanType')->type('boolean')->defaultValue($this->loanType);
+		$this->addField('LoanType')->defaultValue($this->loanType);
 		$this->addField('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->addField('Commission');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active')->system(true);
@@ -51,6 +51,7 @@ class Model_Scheme extends Model_Table {
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterInsert',$this);
+		$this->addHook('beforeDelete',$this);
 
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
@@ -63,11 +64,6 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function afterInsert($model,$new_id){
-		$new_scheme = $this->add('Model_Scheme_'.$model['SchemeType'])->load($new_id);
-		$all_branches = $this->add('Model_Branch');
-		foreach ($all_branches as $branch_array) {
-			$new_scheme->createDefaultAccounts($all_branches);
-		}
 	}
 
 	function getDefaultAccounts(){
@@ -75,13 +71,13 @@ class Model_Scheme extends Model_Table {
 	}
 
 	// Overrides by Child Classes to add values and called as parent::...
-	function createNewScheme($name,$balance_sheet_id, $scheme_type, $scheme_group, $is_loanType, $other_values=array(),$form=null,$on_date=null){
+	function createNewScheme($name,$balance_sheet_id, $scheme_type, $scheme_group, $loanType_if_loan, $other_values=array(),$form=null,$on_date=null){
 		
 		$this['name'] = $name;
 		$this['balance_sheet_id'] = $balance_sheet_id;
 		$this['SchemeType'] = $scheme_type;
 		$this['SchemeGroup'] = $scheme_group;
-		$this['LoanType'] = $is_loanType;
+		$this['LoanType'] = $loanType_if_loan;
 
 
 		unset($other_values['name']);
@@ -108,13 +104,13 @@ class Model_Scheme extends Model_Table {
 		if(!$this->loaded()) throw $this->exception('Scheme Must be loaded to create default accounts for');
 		if(!($branch instanceof Model_Branch) and !$branch->loaded()) throw $this->exception('Argument Branch must be a loaded Branch Model');
 
-
-		foreach ($this->getDefaultAccounts() as $under_scheme => $details) {
-
-			$scheme = $this->add('Model_Scheme')->loadBy('name',$under_scheme);
-			$account = $this->add('Model_Account');
-			$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$this['name'],array('DefaultAC'=>true,'Group'=>$details['Group']));
-
+		$scheme = $this->add('Model_Scheme');
+		$account = $this->add('Model_Account');
+		foreach ($this->getDefaultAccounts() as $details) {
+			$scheme->loadBy('name',$details['under_scheme']);
+			$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$this['name'],array('DefaultAC'=>true,'Group'=>$details['Group'],'PAndLGroup'=>$details['PAndLGroup']));
+			$scheme->unload();
+			$account->unload();
 		}
 
 	}
@@ -135,6 +131,49 @@ class Model_Scheme extends Model_Table {
                     $accnum = getNextCode($com_params->get("default_share_accountnumber"), $query);
 		return 0;
 	}
+
+	function prepareDelete(){
+		foreach ($b=$this->add('Model_Branch') as $b_array) {
+			$this->deleteDefaultAccounts($b);
+			$this->deleteAccounts($b);
+		}
+	}
+
+	function deleteDefaultAccounts($branch){
+		foreach ($this->getDefaultAccounts() as $details) {
+			$account = $this->add('Model_Account');
+			$account->addCondition('AccountNumber',$branch['Code'].SP.$details['intermediate_text'].SP.$this['name']);
+			foreach ($account as $acc_array) {
+				$account->prepareDelete($revert_accounts_balances=true);
+				$account->delete();
+			}
+		}
+	}
+
+	function deleteAccounts($branch){
+		$accounts = $this->add('Model_Account');
+		$accounts->addCondition('branch_id',$branch->id);
+		$accounts->addCondition('scheme_id',$this->id);
+		foreach ($accounts as $acc_array) {
+			$accounts->prepareDelete($revert_accounts_balances=true);
+			$accounts->delete();
+		}
+	}
+
+	function beforeDelete(){
+		foreach ($this->getDefaultAccounts() as $details) {
+			$account = $this->add('Model_Account');
+			$account->addCondition('AccountNumber','like','%'.$details['intermediate_text'].SP.$this['name']);
+			$account->tryLoadAny();
+			if($account->loaded()) throw $this->exception('Scheme Contains Default Accounts, Cannot Delete');
+		}
+
+		$scheme_accounts = $this->add('Model_Account');
+		$scheme_accounts->addCondition('scheme_id',$this->id);
+		$scheme_accounts->tryLoadAny();
+		if($scheme_accounts->loaded()) throw $this->exception('Scheme Contains Accounts created under this, cannot delete');
+	}
+
 
 	function daily(){
 		throw $this->exception('Daily closing function must be in scheme');

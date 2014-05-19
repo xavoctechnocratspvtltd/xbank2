@@ -12,6 +12,8 @@ class Model_Staff extends Model_Table {
 		$this->addField('username')->mandatory(true);
 		$this->addField('password');
 
+		$this->hasMany('Transaction','staff_id');
+
 		$this->addField('AccessLevel')->setValueList(array('100'=>'Super Admin','80'=>'CEO','60'=>'Branch Admin','40'=>'Power Staff', '20'=>'Staff','10'=>'Guest'));
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -26,5 +28,17 @@ class Model_Staff extends Model_Table {
 		$this['AccessLevel'] = $AccessLevel;
 		$this['branch_id'] = $branch_id;
 		$this->save();
+	}
+
+	function delete($forced=false){
+		if(!$forced){
+			if($this->ref('Transaction')->count()->getOne() > 0)
+				throw $this->exception('Cannot delete Staff, contains transactions done by staff');
+		}
+
+		foreach($t=$this->ref('Transaction') as $t_array){
+			$t->delete($forced,true);
+		}
+		parent::delete();
 	}
 }

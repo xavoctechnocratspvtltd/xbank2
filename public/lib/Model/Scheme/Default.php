@@ -2,8 +2,8 @@
 class Model_Scheme_Default extends Model_Scheme {
 	
 	public $loanType = true;
-	public $schemeType = 'Default';
-	public $schemeGroup = 'Default';
+	public $schemeType = ACCOUNT_TYPE_DEFAULT;
+	public $schemeGroup = ACCOUNT_TYPE_DEFAULT;
 
 	function init(){
 		parent::init();
@@ -48,8 +48,9 @@ class Model_Scheme_Default extends Model_Scheme {
 	}
 	function getDefaultAccounts(){
 		return array(
-				CASH_ACCOUNT => array('intermediate_text'=>"",'Group'=>CASH_ACCOUNT,'PAndLGroup'=>CASH_ACCOUNT),
-				TDS =>  array('intermediate_text'=>"",'Group'=>TDS,'PAndLGroup'=>TDS),
+				// These default accounts are required when a new branch created not when a new scheme of this type is created
+				// array('under_scheme'=>CASH_ACCOUNT,'intermediate_text'=>"",'Group'=>CASH_ACCOUNT,'PAndLGroup'=>CASH_ACCOUNT),
+				// array('under_scheme'=>BRANCH_TDS_ACCOUNT,'intermediate_text'=>"",'Group'=>BRANCH_TDS_ACCOUNT,'PAndLGroup'=>BRANCH_TDS_ACCOUNT),
 			);
 	}
 }

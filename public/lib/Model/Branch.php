@@ -13,6 +13,8 @@ class Model_Branch extends Model_Table {
 		$this->addField('published')->type('boolean')->defaultValue(true);
 
 		$this->hasMany('Staff','branch_id');
+		$this->hasMany('Member','branch_id');
+		$this->hasMany('Account','branch_id');
 
 		$this->addHook('afterInsert',$this);
 
@@ -63,7 +65,7 @@ class Model_Branch extends Model_Table {
 	function createDefaultMember(){
 		if(!$this->loaded()) throw $this->exception('Branch Must be loaded before creating default member');
 		$member=$this->add('Model_Member');
-		$member->createNewMember($this['Code']. SP . "Default",false,false, true,array('branch_id'=>$this->id));
+		$member->createNewMember($name=$this['Code']. SP . "Default", $admissionFee=false, $shareValue=false, $branch=$this, $other_values=array(),$form=null,$on_date=null);
 	}
 
 
@@ -135,5 +137,30 @@ class Model_Branch extends Model_Table {
 		}
 
 		return $max_voucher+1;
+	}
+
+	function delete($forced=false){
+		if(!$forced){
+			if($this->ref('Staff')->count()->getOne() > 0)
+				throw $this->exception('Branch Contains Staff, Cannot delete');
+
+			if($this->ref('Member')->count()->getOne() > 0)
+				throw $this->exception('Branch Contains Member, Cannot Delete');
+
+			if($this->ref('Account')->count()->getOne() > 0)
+				throw $this->exception('Branch Contains Accounts, cannot delete');
+		}
+
+		foreach ($m=$this->ref('Member') as $m_array) {
+			$m->delete($forced);
+		}
+		foreach ($s=$this->ref('Staff') as $s_array) {
+			$s->delete($forced);
+		}
+
+		foreach ($a=$this->ref('Account') as $a_array) {
+			$a->delete($forced);
+		}
+		parent::delete();
 	}
 }

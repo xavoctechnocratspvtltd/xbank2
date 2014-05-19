@@ -220,6 +220,13 @@ class Model_Transaction extends Model_Table {
 		return true;
 	}
 
+	function delete($forced=false,$revert_accounts_balances=true){
+		foreach ($tr=$this->ref('TransactionRow') as $tr_array) {
+			$tr->delete($revert_accounts_balances);
+		}
+		parent::delete();
+	}
+
 	function filterBy($SchemeType, $from_date=null,$to_date=null,$branch=null){
 		if($this->loaded()) throw $this->exception('Model is already loaded, cannot apply filter');
 

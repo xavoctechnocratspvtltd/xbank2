@@ -36,10 +36,10 @@ class Model_Scheme_CC extends Model_Scheme {
 
 	function getDefaultAccounts(){
 		return array(
-			"Indirect Income"=>array('intermediate_text'=>"Interest Received On",'Group'=>'Interest Received on CC'),
-			"Indirect Income"=>array('intermediate_text'=>"Processing Fee Received On",'Group'=>'Processing Fee Received On CC'),
-			"Indirect Income"=>array('intermediate_text'=>"Renewal Charges Received On",'Group'=>'Renewal Charges Received On CC'),
-			"Indirect Income"=>array('intermediate_text'=>"CC Overdue Charges Received On",'Group'=>'CC Overdue Charges Received On CC'),
+			array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Interest Received On",'Group'=>'Interest Received on CC','PAndLGroup'=>'Interest Received on CC'),
+			array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Processing Fee Received On",'Group'=>'Processing Fee Received On CC','PAndLGroup'=>'Processing Fee Received On CC'),
+			array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Renewal Charges Received On",'Group'=>'Renewal Charges Received On CC','PAndLGroup'=>'Renewal Charges Received On CC'),
+			array('under_scheme'=>"Indirect Income",'intermediate_text'=>"CC Overdue Charges Received On",'Group'=>'CC Overdue Charges Received On CC','PAndLGroup'=>'CC Overdue Charges Received On CC'),
 			);
 	}
 

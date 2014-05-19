@@ -137,7 +137,7 @@ class Page_Tester extends Page {
                     $result=$this->formatResult($row,$key,$result);
 
                     $k=$key.'_'.$m;
-                    if($this->proper_responses[$k]==$result && isset($this->proper_responses[$k])){
+                    if($this->checkResult($this->proper_responses[$k],$result) && isset($this->proper_responses[$k])){
                         $success++;
                     }else{
                         $failures[]=$method;

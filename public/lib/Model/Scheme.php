@@ -19,7 +19,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('Interest')->caption('Interest (In %)')->type('money');
 		$this->addField('InterestMode');
 		$this->addField('InterestRateMode');
-		$this->addField('LoanType')->defaultValue($this->loanType);
+		$this->addField('type')->enum(array('Two Wheeler Loan','Auto Loan','Personal Loan','Loan Againest Deposit','Home Loan','Mortgage Loan','Agriculture Loan','Education Loan','Gold Loan','Other'));
 		$this->addField('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->addField('Commission');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active')->system(true);
@@ -27,11 +27,11 @@ class Model_Scheme extends Model_Table {
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('ProcessingFees')->caption('Processing Fees');
 		$this->addField('PostingMode');
-		$this->addField('PremiumMode')->setValueList(array(RECURRING_MODE_YEARLY=>'Yearly',RECURRING_MODE_HALFYEARLY=>'Half Yearly',RECURRING_MODE_QUATERLY=>'Quarterly',RECURRING_MODE_MONTHLY=>'Monthly',RECURRING_MODE_WEEKLY=>'Weekly',RECURRING_MODE_DAILY=>'Daily'))->mandatory(true);
+		$this->addField('PremiumMode')->setValueList(array(RECURRING_MODE_YEARLY=>'Yearly',RECURRING_MODE_HALFYEARLY=>'Half Yearly',RECURRING_MODE_QUATERLY=>'Quarterly',RECURRING_MODE_MONTHLY=>'Monthly',RECURRING_MODE_WEEKLY=>'Weekly',RECURRING_MODE_DAILY=>'Daily'));
 		$this->addField('CreateDefaultAccount');
 		$this->addField('SchemeType')->enum(explode(',',ACCOUNT_TYPES))->defaultValue($this->schemeType);
 		$this->addField('InterestToAnotherAccount')->type('boolean');
-		$this->addField('NumberOfPremiums')->type('int')->caption('Number Of Premiums');
+		$this->addField('NumberOfPremiums')->mandatory(true)->type('int')->caption('Number Of Premiums');
 		$this->addField('MaturityPeriod')->type('int');
 		$this->addField('InterestToAnotherAccountPercent');
 		$this->addField('isDepriciable')->type('boolean');
@@ -45,7 +45,7 @@ class Model_Scheme extends Model_Table {
 		
 		$this->addField('AgentSponsorCommission');
 		$this->addField('CollectorCommissionRate');
-		$this->addField('ReducingOrFlatRate')->caption('Reducing Or Flat Rate')->enum(array('Flat','Reducing'))->mandatory(true);
+		$this->addField('ReducingOrFlatRate')->caption('Interest Type')->enum(array('Flat','Reducing'));
 
 		$this->hasMany('Account','scheme_id');
 
@@ -61,6 +61,15 @@ class Model_Scheme extends Model_Table {
 		if(!$this['balance_sheet_id'])
 			throw $this->exception('Head / Balance Sheet Id is must to define','ValidityCheck')->setField('balance_sheet_id');
 		
+		if($this->hasElement('ReducingOrFlatRate') and !$this['ReducingOrFlatRate'])
+			throw $this->exception('Please Specify Interest Type', 'ValidityCheck')->setField('ReducingOrFlatRate');
+
+		if($this->hasElement('PremiumMode') and !$this['PremiumMode'])
+			throw $this->exception('Please Specify Premium Mode', 'ValidityCheck')->setField('PremiumMode');
+
+		if($this->hasElement('type') and !$this['type'])
+			throw $this->exception('Please Specify Type', 'ValidityCheck')->setField('type');
+
 	}
 
 	function afterInsert($model,$new_id){

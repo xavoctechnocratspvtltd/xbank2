@@ -6,16 +6,21 @@ class Model_Member extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
+		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'));
 		$this->addField('name')->mandatory(true);
 		$this->addField('CurrentAddress');
-		$this->addField('FatherName');
+		$this->addField('landmark');
+		$this->addField('tehsil');
+		$this->addField('district');
+		$this->addField('city');
+		$this->addField('pin_code');
+		$this->addField('state');
+		$this->addField('FatherName')->caption('Father / Husband Name');
 		$this->addField('Cast');
-		$this->addField('PermanentAddress');
-		$this->addField('Occupation');
-		$this->addField('Age');
-		$this->addField('Nominee');
-		$this->addField('RelationWithNominee');
-		$this->addField('NomineeAge');
+		$this->addField('PermanentAddress')->type('text');
+		$this->addField('Occupation')->enum(array('Business','Service','Self-Employed','Student','House Wife'));
+		$this->addField('DOB')->type('date');
+		// $this->addField('Age');
 		$this->addField('Witness1Name');
 		$this->addField('Witness1FatherName');
 		$this->addField('Witness1Address');
@@ -25,21 +30,39 @@ class Model_Member extends Model_Table {
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->group('system');
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->group('system');
 		$this->addField('PhoneNos');
-		$this->addField('PanNo');
 		$this->addField('IsMinor')->type('boolean');
 		$this->addField('MinorDOB');
 		$this->addField('ParentName');
 		$this->addField('RelationWithParent');
 		$this->addField('ParentAddress');
-		$this->addField('DOB')->type('date');
-		$this->addField('FilledForm60')->type('boolean')->mandatory(true);
+		$this->addField('FilledForm60')->caption('Filled Form 60/61')->type('boolean')->mandatory(true);
+		$this->addField('PanNo');
+		$this->addField('Nominee');
+		$this->addField('RelationWithNominee');
+		$this->addField('NomineeAge');
+
 		// $this->addField('is_customer')->type('boolean')->mandatory(true);
 		// $this->addField('is_member')->type('boolean')->mandatory(true)->defaultValue(true);
 		$this->addField('is_agent')->type('boolean')->mandatory(true)->defaultValue(false)->group('system');
 
+		$this->addExpression('age')->set(function($m,$q){
+			return "25";
+		});
+
 		$this->hasMany('JointMember','member_id');
 		$this->hasMany('Account','member_id');
+
+		$this->addHook('beforeSave',$this);
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave(){
+		if(!$this['title'])
+			throw $this->exception('Please Select Title', 'ValidityCheck')->setField('title');
+		if(!$this['Occupation'])
+			throw $this->exception('Please Select Occupation', 'ValidityCheck')->setField('Occupation');
+
 	}
 
 	function createNewMember($name, $admissionFee, $shareValue, $branch=null, $other_values=array(),$form=null,$on_date=null){

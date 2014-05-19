@@ -11,7 +11,7 @@ class Model_Scheme_Default extends Model_Scheme {
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
-		$this->getElement('LoanType')->destroy();
+		$this->getElement('type')->destroy();
 		$this->getElement('Commission')->destroy();
 		$this->getElement('PostingMode')->destroy();
 		$this->getElement('PremiumMode')->destroy();

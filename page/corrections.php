@@ -66,6 +66,7 @@ class page_corrections extends Page {
 				array('documents','Name','name'),
 				array('members','Name','name'),
 				array('schemes','Name','name'),
+				array('schemes','LoanType','type'),
 				array('staffs','Name','name'),
 				array('transaction_types','Transaction','name'), //CHECK
 				array('accounts','schemes_id','scheme_id'),
@@ -86,10 +87,17 @@ class page_corrections extends Page {
 
 		$new_fields=array(
 				array('members','is_agent','boolean'),
+				array('members','landmark','string'),
+				array('members','tehsil','string'),
+				array('members','district','string'),
+				array('members','city','string'),
+				array('members','pin_code','string'),
+				array('members','state','string'),
 				array('staffs','name','string'),
 				array('dealers','loan_panelty_per_day','int'),
 				array('agents','account_id','int'),
 				array('accounts','`Group`','string'),
+				array('accounts','`account_type`','string'),
 			);
 
 		foreach ($new_fields as $dtl) {
@@ -104,6 +112,7 @@ class page_corrections extends Page {
 				array('members','IsMember'),
 				array('schemes','branch_id'),
 				array('members','collector_id'),
+				array('members','Age'),
 			);
 
 		foreach ($remove_fields as $dtl) {

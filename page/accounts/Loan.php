@@ -37,11 +37,6 @@ class page_accounts_Loan extends Page {
 					'*'=>array($this->api->normalizeName($documents['name'].' value'))
 					),'div .atk-form-row');
 			}
-			$f1=$crud->form->addField('checkbox','LoanAgSecurity');
-			$f1->js(true)->univ()->bindConditionalShow(array(
-					''=>array(''),
-					'*'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
-					),'div .atk-form-row');
 			$loan_from_account_field = $crud->form->addField('autocomplete/Basic','loan_from_account')->validateNotNull();
 			$loan_from_account_field->setModel('Account');
 		}
@@ -52,11 +47,18 @@ class page_accounts_Loan extends Page {
 			$account_loan_model->hook('editing');
 		}
 		
-		$crud->setModel($account_loan_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer'));
+		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer'));
 		
 		if($crud->isEditing('add')){
+
+			$f1=$crud->form->getElement('account_type');
+			$f1->js(true)->univ()->bindConditionalShow(array(
+					''=>array(''),
+					'Loan Againest Deposit'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
+					),'div .atk-form-row');
+
 			$crud->form->add('Order')
-						->move('LoanAgSecurity','after','LoanInsurranceDate')
+						// ->move('LoanAgSecurity','after','LoanInsurranceDate')
 						->move($loan_from_account_field->other_field,'after','LoanInsurranceDate')
 						->now();
 			$o->now();

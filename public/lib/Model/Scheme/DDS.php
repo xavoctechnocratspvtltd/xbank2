@@ -11,7 +11,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
-		$this->getElement('LoanType')->destroy();
+		$this->getElement('type')->destroy();
 		$this->getElement('Commission')->destroy();
 		$this->getElement('PostingMode')->destroy();
 		$this->getElement('PremiumMode')->destroy();
@@ -29,7 +29,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$this->getElement('DepriciationPercentAfterSep')->destroy();
 		
 		$this->getElement('balance_sheet_id')->caption('Head');
-		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD, MIS, RD, DDS(in months)');
+		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD, MIS, RD, DDS (in months)');
 
 		
 

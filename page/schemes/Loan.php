@@ -17,14 +17,15 @@ class page_schemes_Loan extends Page{
 
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
-		    $crud->form->addField('DropDown','loan_type')->setEmptyText('Please select')->setValueList(array('VL'=>'VL','PL'=>'PL','SL'=>'SL'))->validateNotNull();
+		    // $t=array('Two Wheeler Loan','Auto Loan','Personal Loan','Loan Againest Deposit','Home Loan','Mortgage Loan','Agriculture Loan','Education Loan','Gold Loan','Other');
+		    // $crud->form->addField('DropDown','loan_type')->setEmptyText('Please select')->setValueList(array_combine($t,$t))->validateNotNull();
 		}
 
 		if($crud->isEditing('edit')){
 			$scheme_Loan_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_Loan_model,array('name','MinLimit','MaxLimit','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet_id','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
+		$crud->setModel($scheme_Loan_model,array('type','name','MinLimit','MaxLimit','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet_id','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
 
 		
 		if($crud->grid){

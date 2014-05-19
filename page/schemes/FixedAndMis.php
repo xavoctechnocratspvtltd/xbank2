@@ -23,7 +23,7 @@ class page_schemes_FixedAndMis extends Page{
 			$scheme_FixedAndMis_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_FixedAndMis_model,array('name','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','InterestToAnotherAccount','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
+		$crud->setModel($scheme_FixedAndMis_model,array('type','name','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','InterestToAnotherAccount','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
 
 		
 		if($crud->grid){

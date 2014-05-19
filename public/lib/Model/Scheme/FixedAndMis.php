@@ -7,11 +7,12 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 
 	function init(){
 		parent::init();
+		
+		$this->getElement('type')->enum(array('FD','MIS'));
 
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
-		$this->getElement('LoanType')->destroy();
 		$this->getElement('Commission')->destroy();
 		$this->getElement('PostingMode')->destroy();
 		$this->getElement('PremiumMode')->destroy();

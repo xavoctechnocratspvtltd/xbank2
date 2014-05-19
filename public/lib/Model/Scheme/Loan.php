@@ -13,7 +13,6 @@ class Model_Scheme_Loan extends Model_Scheme {
 		
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
-		$this->getElement('LoanType')->destroy();
 		$this->getElement('AccountOpenningCommission')->destroy();
 		$this->getElement('Commission')->destroy();
 		$this->getElement('PostingMode')->destroy();
@@ -31,7 +30,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		
 		$this->addCondition('SchemeType',$this->schemeType);
 
-		$this->addHook('schemeFormCreated',$this);
+		$this->addHook('beforeSave',array($this,'beforeLoanSchemeSave'));
 		// $this->addHook('schemeFormSubmitted',$this);
 		
 		//$this->add('dynamic_model/Controller_AutoCreator');
@@ -39,8 +38,9 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 
 
-	function schemeFormCreated($model,$form){
-		$form->getElement('SchemeGroup')->set($this->schemeGroup);
+	function beforeLoanSchemeSave(){
+		if(!$this['LoanType'])
+			throw $this->exception('Please Specify Loan type', 'ValidityCheck')->setField('LoanType');
 	}
 
 

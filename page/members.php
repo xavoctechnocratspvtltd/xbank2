@@ -26,10 +26,18 @@ class page_members extends Page {
 			$member_model->getElement('updated_at')->system(true);
 			$member_model->getElement('is_agent')->system(true);
 		}
+
+		if($crud->isEditing('edit')){
+			$member_model->getElement('Nominee')->system(true);
+			$member_model->getElement('RelationWithNominee')->system(true);
+			$member_model->getElement('NomineeAge')->system(true);
+		}
 		
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
+		    $crud->form->addField('CheckBox','open_share_account');
 		}
+
 
 		if($crud->isEditing('edit')){
 			$member_model->hook('editing');
@@ -51,7 +59,28 @@ class page_members extends Page {
 			$g->addPaginator(10);
 		}
 
+		if($crud->isEditing()){
+			$is_minor_field = $crud->form->getElement('IsMinor');
+			$is_minor_field->js(true)->univ()->bindConditionalShow(array(
+				''=>array(''),
+				'*'=>array('MinorDOB','ParentName','RelationWithParent','ParentAddress')
+				),'div .atk-form-row');
+
+			$form_60_field = $crud->form->getElement('FilledForm60');
+			$form_60_field->js(true)->univ()->bindConditionalShow(array(
+				''=>array('PanNo'),
+				'*'=>array()
+				),'div .atk-form-row');
+
+		}
+
 		if($crud->isEditing('add')){
+		    $o->move('open_share_account','before','Nominee');
+			$open_share_account_field = $crud->form->getElement('open_share_account');
+			$open_share_account_field->js(true)->univ()->bindConditionalShow(array(
+				''=>array(''),
+				'*'=>array('Nominee','RelationWithNominee','NomineeAge')
+				),'div .atk-form-row');
 			$o->now();
 		}
 	}

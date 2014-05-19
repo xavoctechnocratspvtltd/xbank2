@@ -20,6 +20,7 @@ class Model_Account extends Model_Table {
 		// $this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));		
 		
 		//New Fields added//
+		$this->addField('account_type');
 		$this->addField('AccountNumber')->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Name');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true);

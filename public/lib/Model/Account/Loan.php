@@ -10,20 +10,29 @@ class Model_Account_Loan extends Model_Account{
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','Loan');
 		$this->addCondition('SchemeType','Loan');
 
+		$this->getElement('agent_id')->destroy();
 		$this->getElement('Amount')->caption('Loan Amount');
 		$this->getElement('CurrentInterest')->caption('Panelty');
+		$this->getElement('account_type')->enum(array('Two Wheeler Loan','Auto Loan','Personal Loan','Loan Againest Deposit','Home Loan','Mortgage Loan','Agriculture Loan','Education Loan','Gold Loan','Other'));
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
 
+		$this->addHook('beforeSave',$this);
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave(){
+		if(!$this['account_type'])
+			throw $this->exception('Please Specify Account Type', 'ValidityCheck')->setField('account_type');
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null, $created_at = null ){
 
-		throw $this->exception($form['LoanAgainstAccount_id'], 'ValidityCheck')->setField('AccountNumber');
-		throw $this->exception('Check Loan Against Security', 'ValidityCheck')->setField('AccountNumber');
+		// throw $this->exception($form['LoanAgainstAccount_id'], 'ValidityCheck')->setField('AccountNumber');
+		// throw $this->exception('Check Loan Against Security', 'ValidityCheck')->setField('AccountNumber');
 
 		if(!$created_at) $created_at = $this->api->now;
 
@@ -49,8 +58,11 @@ class Model_Account_Loan extends Model_Account{
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),null, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
 		
+		$loan_from_other_account = $this->add('Model_Account')->load($otherValues['loan_from_account']);
+
 		$transaction->addDebitAccount($this, $ProcessingFees);
 		$transaction->addCreditAccount($this['Code'] . SP . PROCESSING_FEE_RECEIVED . $this['scheme_name'], $ProcessingFees);
+		$transaction->addCreditAccount($loan_from_other_account, $this['Amount']-$ProcessingFees);
 		
 		$transaction->execute();
 

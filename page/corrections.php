@@ -86,6 +86,7 @@ class page_corrections extends Page {
 		$this->add('View_Info')->set('fields renamed adding new ');
 
 		$new_fields=array(
+				array('members','title','string'),
 				array('members','is_agent','boolean'),
 				array('members','landmark','string'),
 				array('members','tehsil','string'),

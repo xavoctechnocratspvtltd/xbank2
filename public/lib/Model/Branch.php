@@ -65,7 +65,7 @@ class Model_Branch extends Model_Table {
 	function createDefaultMember(){
 		if(!$this->loaded()) throw $this->exception('Branch Must be loaded before creating default member');
 		$member=$this->add('Model_Member');
-		$member->createNewMember($name=$this['Code']. SP . "Default", $admissionFee=false, $shareValue=false, $branch=$this, $other_values=array(),$form=null,$on_date=null);
+		$member->createNewMember($name=$this['Code']. SP . "Default", $admissionFee=false, $shareValue=false, $branch=$this, $other_values=array('Occupation'=>'Service'),$form=null,$on_date=null);
 	}
 
 

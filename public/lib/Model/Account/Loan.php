@@ -29,7 +29,7 @@ class Model_Account_Loan extends Model_Account{
 			throw $this->exception('Please Specify Account Type', 'ValidityCheck')->setField('account_type');
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null, $created_at = null ){
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $created_at = null ){
 
 		// throw $this->exception($form['LoanAgainstAccount_id'], 'ValidityCheck')->setField('AccountNumber');
 		// throw $this->exception('Check Loan Against Security', 'ValidityCheck')->setField('AccountNumber');
@@ -41,7 +41,7 @@ class Model_Account_Loan extends Model_Account{
 			if($security_account['LockingStatus']) throw $this->exception('Account is Already Locked','ValidityCheck')->setField('LoanAgainstAccount');
 		}
 
-		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form,$created_at);
+		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 
 		if($form['LoanAgSecurity']){
 			$security_account['LockingStatus']=true;
@@ -50,19 +50,21 @@ class Model_Account_Loan extends Model_Account{
 
 		$scheme = $this->ref('scheme_id');
 		$ProcessingFees = $scheme['ProcessingFees'];
+		$AccountCredt = $this['Amount'] - $ProcessingFees;
 		
 		if($scheme['ProcessingFeesinPercent']){
 			$ProcessingFees = $ProcessingFees * $this['Amount'] / 100;
+			$AccountCredt = $this['Amount'] - ((100-$ProcessingFees) * $this['Amount'] / 100);
 		}
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),null, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$created_at, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
 		
 		$loan_from_other_account = $this->add('Model_Account')->load($otherValues['loan_from_account']);
 
-		$transaction->addDebitAccount($this, $ProcessingFees);
-		$transaction->addCreditAccount($this['Code'] . SP . PROCESSING_FEE_RECEIVED . $this['scheme_name'], $ProcessingFees);
-		$transaction->addCreditAccount($loan_from_other_account, $this['Amount']-$ProcessingFees);
+		$transaction->addDebitAccount($this, $this['Amount']);
+		$transaction->addCreditAccount($branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this['scheme_name'], $ProcessingFees);
+		$transaction->addCreditAccount($loan_from_other_account, $AccountCredt);
 		
 		$transaction->execute();
 
@@ -108,7 +110,7 @@ class Model_Account_Loan extends Model_Account{
             $emi = ($this('Amount') * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
         } else {
 //          FOR FLAT RATE OF INTEREST
-            $emi = (($this('Amount') * $rate * ($premiums + 1)) / 1200 + $this['Amount']) / $premiums;
+            $emi = (($this['Amount'] * $rate * ($premiums + 1)) / 1200 + $this['Amount']) / $premiums;
         }
         $emi = round($emi);
         

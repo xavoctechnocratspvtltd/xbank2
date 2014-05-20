@@ -21,7 +21,7 @@ class page_tests_020SchemeCC extends Page_Tester {
 
     function prepare_schemeCreate_1(){
         $scheme = $this->add('Model_Scheme_'.$this->scheme_type);
-        $scheme->createNewScheme('TEST '. $this->scheme_type.' '.rand(1000,9999),2, $this->scheme_type,$this->scheme_type, $loanType_if_loan = $this->scheme_type, $other_values=array(),$form=null,$on_date=null);
+        $scheme->createNewScheme('TEST '. $this->scheme_type.' '.rand(1000,9999),2, $this->scheme_type,$this->scheme_type, $loanType_if_loan = $this->scheme_type, $other_values=array('ReducingOrFlatRate'=>'Flat'),$form=null,$on_date=null);
         $this->api->memorize('new_scheme_id',$scheme->id);
         return array($scheme->id);
     }

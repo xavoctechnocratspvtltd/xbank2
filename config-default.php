@@ -153,6 +153,8 @@ define('FIELD_TEMP_PENALTY',                    'CurrentInterest');
 
 define('SIGNATURE_FILE_PATH',                   '/administrator/components/com_xbank/signatures/' );
 
+define('LOAN_TYPES','Two Wheeler Loan,Auto Loan,Personal Loan,Loan Againest Deposit,Home Loan,Mortgage Loan,Agriculture Loan,Education Loan,Gold Loan,Other');
+
 /* Defining Access Level Constants  */
 
 define('xADMIN',  100);

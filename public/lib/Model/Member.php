@@ -6,7 +6,7 @@ class Model_Member extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
-		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'));
+		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.');
 		$this->addField('name')->mandatory(true);
 		$this->addField('CurrentAddress');
 		$this->addField('landmark');

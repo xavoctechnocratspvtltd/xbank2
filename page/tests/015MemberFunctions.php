@@ -15,7 +15,7 @@ class page_tests_015MemberFunctions extends Page_Tester {
 
     function prepare_createNewMember(){
     	$m=$this->add('Model_Member');
-    	$m->createNewMember('test_user_name', $admissionFee=10, $shareValue=100);
+    	$m->createNewMember('test_user_name', $admissionFee=10, $shareValue=100,null,array('Occupation'=>'Service'));
 
         // +++++++++
         $this->proper_responses['Test_createNewMember'] += array('sm_account_member_id'=>$m->id);

@@ -10,7 +10,8 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 		$this->getElement('ProcessingFeesinPercent')->caption('Check if Processing Fee in %');
 		$this->getElement('balance_sheet_id')->caption('Head');
-		
+		$this->getElement('type')->enum(explode(",",LOAN_TYPES));
+
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
 		$this->getElement('AccountOpenningCommission')->destroy();
@@ -39,7 +40,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 
 	function beforeLoanSchemeSave(){
-		if(!$this['LoanType'])
+		if(!$this['type'])
 			throw $this->exception('Please Specify Loan type', 'ValidityCheck')->setField('LoanType');
 	}
 

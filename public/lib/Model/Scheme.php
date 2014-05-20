@@ -19,7 +19,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('Interest')->caption('Interest (In %)')->type('money');
 		$this->addField('InterestMode');
 		$this->addField('InterestRateMode');
-		$this->addField('type')->enum(array('Two Wheeler Loan','Auto Loan','Personal Loan','Loan Againest Deposit','Home Loan','Mortgage Loan','Agriculture Loan','Education Loan','Gold Loan','Other'));
+		$this->addField('type');
 		$this->addField('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->addField('Commission');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active')->system(true);
@@ -49,15 +49,15 @@ class Model_Scheme extends Model_Table {
 
 		$this->hasMany('Account','scheme_id');
 
-		$this->addHook('beforeSave',$this);
-		$this->addHook('afterInsert',$this);
-		$this->addHook('beforeDelete',$this);
+		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
+		$this->addHook('afterInsert',array($this,'defaultAfterInsert'));
+		$this->addHook('beforeDelete',array($this,'defaultBeforeDelete'));
 
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function beforeSave(){
+	function defaultBeforeSave(){
 		if(!$this['balance_sheet_id'])
 			throw $this->exception('Head / Balance Sheet Id is must to define','ValidityCheck')->setField('balance_sheet_id');
 		
@@ -72,7 +72,7 @@ class Model_Scheme extends Model_Table {
 
 	}
 
-	function afterInsert($model,$new_id){
+	function defaultAfterInsert($model,$new_id){
 	}
 
 	function getDefaultAccounts(){
@@ -86,14 +86,14 @@ class Model_Scheme extends Model_Table {
 		$this['balance_sheet_id'] = $balance_sheet_id;
 		$this['SchemeType'] = $scheme_type;
 		$this['SchemeGroup'] = $scheme_group;
-		$this['LoanType'] = $loanType_if_loan;
+		$this['type'] = $loanType_if_loan;
 
 
 		unset($other_values['name']);
 		unset($other_values['balance_sheet_id']);
 		unset($other_values['SchemeType']);
 		unset($other_values['SchemeGroup']);
-		unset($other_values['loanType']);
+		unset($other_values['type']);
 
 		foreach ($other_values as $field => $value) {
 			$this[$field] = $value;
@@ -169,7 +169,7 @@ class Model_Scheme extends Model_Table {
 		}
 	}
 
-	function beforeDelete(){
+	function defaultBeforeDelete(){
 		foreach ($this->getDefaultAccounts() as $details) {
 			$account = $this->add('Model_Account');
 			$account->addCondition('AccountNumber','like','%'.$details['intermediate_text'].SP.$this['name']);

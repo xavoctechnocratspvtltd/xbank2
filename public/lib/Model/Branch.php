@@ -15,6 +15,7 @@ class Model_Branch extends Model_Table {
 		$this->hasMany('Staff','branch_id');
 		$this->hasMany('Member','branch_id');
 		$this->hasMany('Account','branch_id');
+		$this->hasMany('Closing','branch_id');
 
 		$this->addHook('afterInsert',$this);
 
@@ -136,7 +137,7 @@ class Model_Branch extends Model_Table {
 			
 		}
 
-		return $max_voucher+1;
+		return $max_voucher + 1 ;
 	}
 
 	function delete($forced=false){
@@ -163,4 +164,58 @@ class Model_Branch extends Model_Table {
 		}
 		parent::delete();
 	}
+
+	function performClosing($on_date=null, $test_account = null){
+		if(!$on_date) $on_date = $this->api->today;
+		if(!$this->loaded()) throw $this->exception('Branch Must be loaded to perform closing');
+
+		$on_date = date('Y-m-d',strtotime($on_date));
+
+		if(strtotime($on_date) <= ($last_closing_date = $this->ref('Closing')->tryLoadAny()->get('daily'))){
+			throw $this->exception('Daily Closing is already done before this date')->addMoreInfo('last_closing_date',$last_closing_date);
+		}
+
+		$diff=$this->api->my_date_diff($on_date,$last_closing_date);
+		
+		if($diff['days_total'] > 1)
+			$this->performClosing(date('Y-m-d',strtotime($on_date.'-1 days')),$test_account);
+
+		$schemes = $this->add('Model_Scheme');
+		foreach($schemes as $s){
+			
+			$schemes->daily($this, $on_date,$test_account);
+			
+			if($this->is_MonthEndDate($on_date))
+				$schemes->monthly($this, $on_date,$test_account);
+			
+			if($this->is_HalfYearEnding($on_date,$test_account))
+				$schemes->halfYearly($this, $on_date,$test_account);
+			
+			if($this->is_YearEnd($on_date))
+				$schemes->yearly($this, $on_date,$test_account);
+		}
+	}
+
+	function is_MonthEndDate($on_date){
+		if(strtotime($on_date) == strtotime(date("Y-m-t", strtotime($on_date))) )
+			return true;
+		else
+			return false;
+	}
+
+	function is_HalfYearEnding($on_date){
+		if(date('m',strtotime($on_date)) == 8 AND date('d',strtotime($on_date)) == 31 )
+			return true;
+		if(date('m',strtotime($on_date)) == 3 AND date('d',strtotime($on_date)) == 31 )
+			return true;
+
+		return false;
+	}
+
+	function is_YearEnd($on_date){
+		if(date('m',strtotime($on_date)) == 3 AND date('d',strtotime($on_date)) == 31 )
+			return true;
+		return false;		
+	}
+
 }

@@ -43,32 +43,37 @@ class Model_Scheme_CC extends Model_Scheme {
 			);
 	}
 
-	function monthly($branch=null,$on_date=null){
+	function daily($branch=null,$on_date=null,$test_account=null){
+
+	}
+
+	function monthly($branch=null,$on_date=null,$test_account=null){
 
 		if(!$on_date) $on_date = $this->api->today;
 		if(!$branch) $branch=$this->api->current_branch;
 
-		$this->resetCurrentInterest();
+		$this->resetCurrentInterest($branch, $test_account);
 
-		$cc_accounts = $this->add('Model_Account_CC');
-		$cc_accounts->addCondition('ActiveStatus',true);
+		$cc_accounts = $this->add('Model_Active_Account_CC');
 		$cc_accounts->addCondition('branch_id',$branch->id);
 		$cc_accounts->addCondition('created_at','<',$on_date);
 		$cc_accounts->scheme_join->addField('Interest');
+
+		if($test_account)
+			$cc_accounts->addCondition('id',$test_account->id);
 
 		foreach ($cc_accounts as $accounts_array) {
 			$cc_accounts->applyMonthlyInterest($on_date);
 		}
 	}
 
-	function resetCurrentInterest(){
-		$accounts = $this->add('Model_Account');
-		$accounts->addCondition('SchemeType',ACCOUNT_TYPE_CC);
-		$accounts->addCondition('branch_id',$this->api->current_branch->id);
+	function resetCurrentInterest($branch, $test_account=null){
+		$accounts = $this->add('Model_Active_Account_CC');
+		$accounts->addCondition('branch_id',$branch);
+
+		if($test_account) $accounts->addCondition('id',$test_account->id);
 
 		$accounts->_dsql()
-			// May need to uncomment this for first closing through this application version
-			// ->set('LastCurrentInterestUpdatedAt',$this->api->db->dsql()->expr("DATE_ADD('" . $this->api->today . "',INTERVAL -1 MONTH)"))
 			->set('CurrentInterest',0)
 			;
 		$accounts->_dsql()->update();

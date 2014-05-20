@@ -46,7 +46,7 @@ class Model_Account extends Model_Table {
 		$this->addField('CurrentBalanceCr')->type('money');
 		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime')->defaultValue($this->api->now);
 		// $this->addField('InterestToAccount')->type('int'); now converted to hasOne Account
-		$this->addField('Amount')->type('money');
+		$this->addField('Amount')->type('money')->defaultValue(0);
 		$this->addField('LockingStatus')->type('boolean')->defaultValue(false);
 		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(false);
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
@@ -116,6 +116,8 @@ class Model_Account extends Model_Table {
 		// PandLGroup set default
 		if(!$this['Group'])
 			$this['Group'] = $this->add('Model_Scheme')->load($this['scheme_id'])->get('SchemeGroup');
+		if(!$this['PAndLGroup'])
+			$this['PAndLGroup'] = $this['Group'];
 	}
 
 	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){

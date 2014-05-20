@@ -25,7 +25,9 @@ class Model_Account_CC extends Model_Account{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null,$created_at=null){
-		
+
+		$otherValues += array('account_type'=>ACCOUNT_TYPE_CC);
+
 		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form,$created_at);
 		if($this['Amount'])
 			$this->doProsessingFeesTransactions();
@@ -45,11 +47,30 @@ class Model_Account_CC extends Model_Account{
 
 	}
 
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null){
+		
+	}
+
 	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null){
 		$ccbalance = $this['Amount'] - ($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']);
 		if ($ccbalance < $amount)
 			throw $this->exception('Cannot withdraw more than '. $ccbalance,'ValidityCheck')->setField('amount');
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form);
+	}
+
+	function getCCInterest($on_date=null,$from_date=null,$on_amount=null, $at_interest_rate=null){
+		if(!$on_date) $on_date = $this->api->today;
+		if(!$from_date) $from_date = $this['LastCurrentInterestUpdatedAt'];
+		if(!$on_amount){
+			$openning_balance = $this->getOpeningBalance($this->api->nextDate($$from_date));
+			$on_amount = ($openning_balance['DR']) - ($openning_balance['CR'])>0?  :0;
+		}
+		if(!$at_interest_rate) $at_interest_rate = $this->ref('scheme_id')->get('Interest');
+
+		$days = $this->api->my_date_diff($on_date,$from_date);
+
+		$interest = $on_amount * $at_interest_rate * $days['days_total'] / 36500;
+		return $interest;
 	}
 
 	/**

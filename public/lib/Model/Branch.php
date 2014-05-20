@@ -165,7 +165,7 @@ class Model_Branch extends Model_Table {
 		parent::delete();
 	}
 
-	function performClosing($on_date=null, $test_account = null){
+	function performClosing($on_date=null, $test_scheme=null, $test_account = null){
 		if(!$on_date) $on_date = $this->api->today;
 		if(!$this->loaded()) throw $this->exception('Branch Must be loaded to perform closing');
 
@@ -181,6 +181,9 @@ class Model_Branch extends Model_Table {
 			$this->performClosing(date('Y-m-d',strtotime($on_date.'-1 days')),$test_account);
 
 		$schemes = $this->add('Model_Scheme');
+		
+		if($test_scheme) $schemes->addCondition('id',$test_scheme->id);
+
 		foreach($schemes as $s){
 			
 			$schemes->daily($this, $on_date,$test_account);

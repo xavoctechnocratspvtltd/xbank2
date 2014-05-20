@@ -52,7 +52,6 @@ class Model_Scheme_CC extends Model_Scheme {
 		if(!$on_date) $on_date = $this->api->today;
 		if(!$branch) $branch=$this->api->current_branch;
 
-		$this->resetCurrentInterest($branch, $test_account);
 
 		$cc_accounts = $this->add('Model_Active_Account_CC');
 		$cc_accounts->addCondition('branch_id',$branch->id);
@@ -63,8 +62,10 @@ class Model_Scheme_CC extends Model_Scheme {
 			$cc_accounts->addCondition('id',$test_account->id);
 
 		foreach ($cc_accounts as $accounts_array) {
-			$cc_accounts->applyMonthlyInterest($on_date);
+			$cc_accounts->postInterestEntry($on_date);
 		}
+		
+		$this->resetCurrentInterest($branch, $test_account);
 	}
 
 	function resetCurrentInterest($branch, $test_account=null){

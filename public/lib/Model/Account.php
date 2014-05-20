@@ -30,11 +30,11 @@ class Model_Account extends Model_Table {
 		//New Fields added//
 		$this->addField('LoanInsurranceDate')->type('datetime');
 		
-		$this->addField('OpeningBalanceDr')->type('money');
-		$this->addField('OpeningBalanceCr')->type('money');
-		$this->addField('ClosingBalance')->type('money');
-		$this->addField('CurrentBalanceDr')->type('money');
-		$this->addField('CurrentInterest');
+		$this->addField('OpeningBalanceDr')->type('money')->defaultValue(0);
+		$this->addField('OpeningBalanceCr')->type('money')->defaultValue(0);
+		$this->addField('ClosingBalance')->type('money')->defaultValue(0);
+		$this->addField('CurrentBalanceDr')->type('money')->defaultValue(0);
+		$this->addField('CurrentInterest')->defaultValue(0);
 		$this->addField('Nominee');
 		$this->addField('NomineeAge');
 		$this->addField('RelationWithNominee');
@@ -95,7 +95,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('AccountGaurantor','account_id');
 		$this->hasMany('TransactionRow','account_id');
 
-		$this->addHook('beforeSave',$this);
+		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
 		$this->addHook('editing',array($this,'editing_default'));
 
 
@@ -107,7 +107,7 @@ class Model_Account extends Model_Table {
 		$this->getElement('AccountNumber')->system(true);
 	}
 
-	function beforeSave(){
+	function defaultBeforeSave(){
 
 		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber'])){
 			throw $this->exception('AccountNumber Format not accpeted')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
@@ -185,6 +185,7 @@ class Model_Account extends Model_Table {
 		$this['AccountNumber'] = $AccountNumber;
 		$this['branch_id'] = $branch->id;
 		$this['created_at'] = $created_at;
+		$this['LastCurrentInterestUpdatedAt']=isset($otherValues['LastCurrentInterestUpdatedAt'])? :$created_at;
 
 		foreach ($otherValues as $field => $value) {
 			$this[$field] = $value;
@@ -221,7 +222,7 @@ class Model_Account extends Model_Table {
 		$document_submitted->save();
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null){
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
 		if(!isset($this->transaction_deposit_type)) throw $this->exception('transaction_deposit_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_deposit_narration)) throw $this->exception('default_transaction_deposit_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
@@ -229,9 +230,10 @@ class Model_Account extends Model_Table {
 		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace('{{SchemeType}}', $this['SchemeType'], $this->default_transaction_deposit_narration));
 		if(!$transaction_date) $transaction_date = $this->api->now;
 		if(!$accounts_to_debit) $accounts_to_debit = array();
+		if(!$in_branch) $in_branch = $this->api->current_branch;
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_deposit_type,null,$transaction_date,$narration);
+		$transaction->createNewTransaction($this->transaction_deposit_type,$in_branch,$transaction_date,$narration);
 		
 		$transaction->addCreditAccount($this,$amount);			
 
@@ -251,7 +253,7 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Withdrawing amount');
 		if(!isset($this->transaction_withdraw_type)) throw $this->exception('transaction_withdraw_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_withdraw_narration)) throw $this->exception('default_transaction_withdraw_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
@@ -259,9 +261,10 @@ class Model_Account extends Model_Table {
 		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace("{{SchemeType}}", $this['SchemeType'], $this->default_transaction_withdraw_narration));
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$accounts_to_debit) $accounts_to_debit = array();
+		if(!$in_branch) $in_branch = $this->api->current_branch;
 		
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_withdraw_type,null,$on_date,$narration);
+		$transaction->createNewTransaction($this->transaction_withdraw_type,$in_branch,$on_date,$narration);
 		
 		$transaction->addDebitAccount($this,$amount);			
 

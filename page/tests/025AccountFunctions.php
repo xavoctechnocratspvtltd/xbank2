@@ -1,6 +1,6 @@
 <?php
 
-class page_tests_011BranchFunctions extends Page_Tester {
+class page_tests_025AccountFunctions extends Page_Tester {
     public $title = 'Account Function Testing';
 
     public $proper_responses=array(

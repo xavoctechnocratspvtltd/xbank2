@@ -52,6 +52,9 @@ class page_corrections extends Page {
 		$this->page_transactionsUpdate();
 		$this->agentAccountToRelation();
 
+		// Make currentInterest = 0 for Account_CC
+		$this->add('Model_Account_CC')->_dsql()->set('CurrentInterest',0)->update();
+
 		$this->query('SET FOREIGN_KEY_CHECKS = 1');
 	}
 

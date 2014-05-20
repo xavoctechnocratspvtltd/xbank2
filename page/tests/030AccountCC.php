@@ -19,9 +19,12 @@ class page_tests_030AccountCC extends Page_Tester {
     public $account_flow=array(
             'open'=>'2014-04-07',
             'flow'=>array(
-                    '7-4-2014'=>500,
-                    '20-4-2014'=>-4000
-                )
+                    '2014-04-07'=> 500,
+                    '2014-04-20'=> array(-4000,'from_branch_code'=>'JHD'),
+                    '2014-05-05'=> -8000,
+                    '2014-06-26'=> 10000
+                ),
+            'test_till'=>'2014-07-31';
         );
 
     function prepare(){
@@ -30,6 +33,30 @@ class page_tests_030AccountCC extends Page_Tester {
 
         $s = $this->scheme = $this->add('Model_Scheme');
         $s->load(184); // C C 18% FILE CHARGE 2.5%
+
+        // Make All Other Used Accounts Balance to ZERO so that easy checking is possible for each scheme
+        // OTHERWISE.. proper_responses will be always change on the base of flow of test running
+
+        $accounts_that_will_be_checked = array(
+                $this->api->current_branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this->scheme['name'],
+            );
+
+        $reset_account = $this->add('Model_Account');
+        foreach($accounts_that_will_be_checked as $acc){
+            $reset_account->unload();
+            $reset_account->loadBy('AccountNumber',$acc);
+
+            $reset_account['OpeningBalanceDr']=0;
+            $reset_account['OpeningBalanceCr']=0;
+            $reset_account['CurrentBalanceDr']=0;
+            $reset_account['CurrentBalanceCr']=0;
+
+            $transactions = $this->add('Model_Transaction');
+            $transactions->join('transaction_rows.transaction_id');
+            $transactions->deleteAll();
+
+            $reset_account->saveAndUnload();
+        }
 
         return null;
     }
@@ -59,7 +86,7 @@ class page_tests_030AccountCC extends Page_Tester {
     function prepare_otherAccountsBalance(){
         // +++++++++++++
         $this->proper_responses['Test_otherAccountsBalance'] += array(
-                $this->api->current_branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this->scheme['name'] => (25000+4600),
+                $this->api->current_branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this->scheme['name'] => 4600,
             );
         
     }
@@ -95,6 +122,29 @@ class page_tests_030AccountCC extends Page_Tester {
     }
 
     function test_accountFlow(){
-        
+        $date = $this->account_flow['open'];
+        $test_till = $this->account_flow['test_till'];
+
+        while(strtotime($date) <= strtotime($test_till)){
+
+            if(isset($this->account_flow['flow'][$date])){
+                $date_value = $this->account_flow['flow'][$date];
+                if(is_array($date_value)){
+                    $amount = $date_value[0];
+                    $transaction_in_branch = $this->add('Model_Branch')->loadBy('Code',$date_value['from_branch_code']);
+                }else{
+                    $amount=$date_value;
+                    $transaction_in_branch = $this->account->ref('branch_id');
+                }
+
+                if($amount > 0)
+                    $this->account->deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=$date, $transaction_in_branch);
+                else
+                    $this->account->withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=$date, $transaction_in_branch);
+            }
+            $this->account->ref('branch_id')->performClosing($on_date=$date, $test_scheme=$this->scheme, $test_account = $this->account);
+            $date = date('Y-m-d',strtotime($date .' +1 days'));
+        }
+
     }
 }

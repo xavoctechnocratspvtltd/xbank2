@@ -7,6 +7,7 @@ class page_tests_030AccountCC extends Page_Tester {
     public $member;
     public $scheme;
     public $Amount; // CC Limit in CC Account
+    public $accounts_that_will_be_checked=array();
 
     public $proper_responses=array(
         "Test_accountType"=>array('type'=>ACCOUNT_TYPE_CC,'member'=>'GOWRAV VISHWAKARMA ','scheme'=>'C C 18% FILE CHARGE 2.5%'),
@@ -37,12 +38,13 @@ class page_tests_030AccountCC extends Page_Tester {
         // Make All Other Used Accounts Balance to ZERO so that easy checking is possible for each scheme
         // OTHERWISE.. proper_responses will be always change on the base of flow of test running
 
-        $accounts_that_will_be_checked = array(
-                $this->api->current_branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this->scheme['name'],
+        $this->accounts_that_will_be_checked = array(
+                // ACCOUNT_NUMBER => array(array(after_create_account_transaction_DR,CR),array('after_closing_done,DR,CR'))
+                $this->api->current_branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this->scheme['name'] => array(),
             );
 
         $reset_account = $this->add('Model_Account');
-        foreach($accounts_that_will_be_checked as $acc){
+        foreach($this->accounts_that_will_be_checked as $acc){
             $reset_account->unload();
             $reset_account->loadBy('AccountNumber',$acc);
 

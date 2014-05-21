@@ -1,8 +1,8 @@
 <?php
 
-class page_tests_030AccountCC extends Page_Tester {
-    public $title = 'CC Account Testing';
-    public $account_type = ACCOUNT_TYPE_CC;
+class page_tests_030AccountDDS extends Page_Tester {
+    public $title = 'DDS Account Testing';
+    public $account_type = ACCOUNT_TYPE_DDS;
     public $account;
     public $member;
     public $scheme;
@@ -10,7 +10,7 @@ class page_tests_030AccountCC extends Page_Tester {
     public $accounts_that_will_be_checked=array();
 
     public $proper_responses=array(
-        "Test_accountType"=>array('type'=>ACCOUNT_TYPE_CC,'member'=>'GOWRAV VISHWAKARMA ','scheme'=>'C C 18% FILE CHARGE 2.5%'),
+        "Test_accountType"=>array('type'=>ACCOUNT_TYPE_DDS,'member'=>'GOWRAV VISHWAKARMA ','scheme'=>'DDS 1 YEAR PLAN'),
         'Test_CreateAccount'=>array(),
         'Test_otherAccountsBalance'=>array(),
         'Test_createTimeTransactions'=>array(),
@@ -21,12 +21,12 @@ class page_tests_030AccountCC extends Page_Tester {
             'open'=>'2014-05-07',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
-                    '2014-05-07'=> 5000,
+                    '2014-05-07'=> 50000,
                     '2014-05-20'=> array(-4000,'from_branch_code'=>'JHD'),
                     '2014-06-05'=> -8000,
-                    '2014-06-26'=> -10000,
+                    '2014-06-26'=> -100000,
                     '2014-06-27'=> -1000,
-                    '2014-07-21'=> -6000,
+                    '2014-07-21'=> 6000,
                     '2014-08-01'=> -6000,
                 ),
             'test_till'=>'2014-08-30'
@@ -38,7 +38,7 @@ class page_tests_030AccountCC extends Page_Tester {
         $m->load(1035); // Gowrav Vishwakarma
 
         $s = $this->scheme = $this->add('Model_Scheme');
-        $s->load(184); // C C 18% FILE CHARGE 2.5%
+        $s->load(81); // DDS 1 YEAR PLAN
 
         $this->add('Model_Closing')
             ->addCondition('branch_id',$this->api->current_branch->id)
@@ -54,7 +54,7 @@ class page_tests_030AccountCC extends Page_Tester {
 
         $this->accounts_that_will_be_checked = array(
                 // ACCOUNT_NUMBER => array(array(after_create_account_transaction_DR,CR),array('after_closing_done,DR,CR'))
-                $this->api->current_branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this->scheme['name'] => array(array(0,750),array(4600,0)),
+                $this->api->current_branch['Code'].SP.BRANCH_TDS_ACCOUNT =>array(array(0,0),array(0,0,))
             );
 
         $reset_account = $this->add('Model_Account');

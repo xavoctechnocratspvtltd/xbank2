@@ -54,7 +54,7 @@ class Model_Scheme_CC extends Model_Scheme {
 
 
 		$cc_accounts = $this->add('Model_Active_Account_CC');
-		$cc_accounts->addCondition('branch_id',$branch->id);
+		$cc_accounts->addCondition('branch_id', $branch->id);
 		$cc_accounts->addCondition('created_at','<',$on_date);
 		$cc_accounts->scheme_join->addField('Interest');
 
@@ -65,7 +65,7 @@ class Model_Scheme_CC extends Model_Scheme {
 			$cc_accounts->postInterestEntry($on_date);
 		}
 		
-		$this->resetCurrentInterest($branch, $test_account);
+		// $this->resetCurrentInterest($branch, $test_account);
 	}
 
 	function resetCurrentInterest($branch, $test_account=null){

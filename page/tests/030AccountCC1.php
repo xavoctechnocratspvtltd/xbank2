@@ -1,6 +1,6 @@
 <?php
 
-class page_tests_030AccountCC extends Page_Tester {
+class page_tests_030AccountCC1 extends Page_Tester {
     public $title = 'CC Account Testing';
     public $account_type = ACCOUNT_TYPE_CC;
     public $account;
@@ -21,12 +21,12 @@ class page_tests_030AccountCC extends Page_Tester {
             'open'=>'2014-05-07',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
-                    '2014-05-07'=> 5000,
+                    '2014-05-07'=> 50000,
                     '2014-05-20'=> array(-4000,'from_branch_code'=>'JHD'),
                     '2014-06-05'=> -8000,
-                    '2014-06-26'=> -10000,
+                    '2014-06-26'=> -100000,
                     '2014-06-27'=> -1000,
-                    '2014-07-21'=> -6000,
+                    '2014-07-21'=> 6000,
                     '2014-08-01'=> -6000,
                 ),
             'test_till'=>'2014-08-30'

@@ -34,7 +34,7 @@ class Model_Account extends Model_Table {
 		$this->addField('OpeningBalanceCr')->type('money')->defaultValue(0);
 		$this->addField('ClosingBalance')->type('money')->defaultValue(0);
 		$this->addField('CurrentBalanceDr')->type('money')->defaultValue(0);
-		$this->addField('CurrentInterest')->defaultValue(0);
+		$this->addField('CurrentInterest')->type('money')->defaultValue(0);
 		$this->addField('Nominee');
 		$this->addField('NomineeAge');
 		$this->addField('RelationWithNominee');
@@ -301,7 +301,7 @@ class Model_Account extends Model_Table {
 	 * @return mixed  Array [CR/DR] or value based in side variable value
 	 */
 	function getOpeningBalance($date=null,$side='both',$forPandL=false) {
-		if(!$date) $date = '1970-01-01';
+		if(!$date) $date = '1970-01-02';
 		if(!$this->loaded()) throw $this->exception('Model Must be loaded to get opening Balance','Logic');
 		
 
@@ -315,14 +315,14 @@ class Model_Account extends Model_Table {
 			$transaction_row->addCondition('created_at','>=',$financial_start_date);
 		}
 
-		$transaction_row->_dsql()->del('fields')->field('SUM(amountDr)')->field('SUM(amountCr)');
+		$transaction_row->_dsql()->del('fields')->field('SUM(amountDr) sdr')->field('SUM(amountCr) scr');
 		$result = $transaction_row->_dsql()->getHash();
 
-		$cr = $result['SUM(amountCr)'];
+		$cr = $result['scr'];
 		if(!$forPandL) $cr = $cr + $this['OpeningBalanceCr'];
 		if(strtolower($side) =='cr') return $cr;
 
-		$dr = $result['SUM(amountDr)'];		
+		$dr = $result['sdr'];		
 		if(!$forPandL) $dr = $dr + $this['OpeningBalanceDr'];
 		if(strtolower($side) =='dr') return $dr;
 

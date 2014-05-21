@@ -49,11 +49,12 @@ class Model_Account_CC extends Model_Account{
 
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$transaction_in_branch=null){
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null,$transaction_in_branch=null){
 		if(!$transaction_in_branch) $transaction_in_branch = $this->api->current_branch;
-		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($transaction_date);
+		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($on_date);
+		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 		$this->save();
-		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$transaction_in_branch);
+		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date,$transaction_in_branch);
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$transaction_in_branch=null){
@@ -63,22 +64,25 @@ class Model_Account_CC extends Model_Account{
 			throw $this->exception('Cannot withdraw more than '. $ccbalance,'ValidityCheck')->setField('amount');
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($on_date);
+		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 		$this->save();
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date,$transaction_in_branch);
 	}
 
-	function getCCInterest($on_date=null,$from_date=null,$on_amount=null, $at_interest_rate=null){
+	function getCCInterest($on_date=null,$after_date=null,$on_amount=null, $at_interest_rate=null){
 		if(!$on_date) $on_date = $this->api->today;
-		if(!$from_date) $from_date = $this['LastCurrentInterestUpdatedAt'];
+		if(!$after_date) $after_date = $this['LastCurrentInterestUpdatedAt'];
 		if(!$on_amount){
-			$openning_balance = $this->getOpeningBalance($this->api->nextDate($from_date));
-			$on_amount = ($openning_balance['DR']) - ($openning_balance['CR'])>0?  :0;
+			$openning_balance = $this->getOpeningBalance($after_date);
+			$on_amount = ($openning_balance['DR'] - $openning_balance['CR']) > 0 ? ($openning_balance['DR'] - $openning_balance['CR']) :0;
 		}
 		if(!$at_interest_rate) $at_interest_rate = $this->ref('scheme_id')->get('Interest');
 
-		$days = $this->api->my_date_diff($on_date,$from_date);
-
+		$days = $this->api->my_date_diff($on_date,$after_date);
 		$interest = $on_amount * $at_interest_rate * $days['days_total'] / 36500;
+
+		echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
+
 		return $interest;
 	}
 
@@ -88,9 +92,10 @@ class Model_Account_CC extends Model_Account{
 	 * @param  boolean $return    if set true, no changes or trnsaction will be saved to database only interest will get calculate and returned 
 	 * @return number             returns interest as number if argument return is set true
 	 */
-	function postInterestEntry($on_date=null, $return=false){
+	function postInterestEntry($on_date=null, $return=false, $branch=null){
 		if(!$on_date) $on_date = $this->api->today;
 		if(!$this->loaded()) throw $this->exception('Account must be loaded to apply monthly interest');
+		if(!$branch) $branch = $this->ref('branch_id');
 
 		// Interest from last transaction to month end
 		$current_interest = $this['CurrentInterest'] + $this->getCCInterest($on_date);
@@ -104,7 +109,7 @@ class Model_Account_CC extends Model_Account{
 		if($current_interest == 0 ) return; //no need to save a new transaction of zero interest
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_CC_ACCOUNT, null, $on_date, "Interest posting in CC Account",null,array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_CC_ACCOUNT, $branch, $on_date, "Interest posting in CC Account",null,array('reference_account_id'=>$this->id));
 
 		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . $this['scheme_name'], $current_interest);
 		$transaction->addDebitAccount($this,$current_interest);

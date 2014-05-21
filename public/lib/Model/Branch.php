@@ -185,9 +185,9 @@ class Model_Branch extends Model_Table {
 		$schemeTypes = explode(',',ACCOUNT_TYPES);
 
 		foreach ($schemeTypes as $st) {
-			$schemes = $this->add('Model_Scheme_'.$st);
-			
 			if($test_scheme and $test_scheme['SchemeType'] != $st) continue;
+			
+			$schemes = $this->add('Model_Scheme_'.$st)->setLimit(1);
 
 			foreach($schemes as $s){				
 

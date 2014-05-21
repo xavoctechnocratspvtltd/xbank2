@@ -79,4 +79,37 @@ class Model_Account_DDS extends Model_Account{
 
 		$transaction->execute();
 	}
+
+	function postInterestEntry($on_date=null, $return=false){
+        $agentAccount = $this['agent_AccountNumber'];
+        $branch_code =$this->ref('branch_id')->get('Code');
+//            $amount = $ac->amountCr;
+
+//------------CALCULATING COMMISSION FOR DDS----------------
+        $DA = $this['Amount']; // DA => Monthly DDS Amount
+        $x = $this['monthly_credited_amount']; // x => Amount Submitted in the current month
+        $tA = $this['CurrentBalanceCr'] - $x; // tA => Total amount till date given excluding x ???? Interest Given Included ????
+
+        while($x > 0){
+            $y = $DA- ($tA - ((int)($tA / $DA)) * $DA);
+            $z = $tA / $DA;
+            $old = ($x / $DA > 1 ? $y : $x);
+
+            $percent = explode(",", $this['AccountOpenningCommission']);
+            $percent = (isset($percent[$z])) ? $percent[$z] : $percent[count($percent) - 1];
+            $amount = $old * $percent / 100;
+
+            $transaction = $this->add('Model_Transaction');
+            $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $branch, $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_account_id'=>$this->id));
+            
+            $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . $this['scheme_name'], $amount);
+            $transaction->addCreditAccount($agentAccount ,($amount - ($amount * TDS_PERCENTAGE / 100)));
+            $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,($amount - ($amount * TDS_PERCENTAGE / 100)));
+            
+            $transaction->execute();
+
+            $x = $x - $old;
+            $tA = $tA + $old;
+        }
+	}
 }

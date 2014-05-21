@@ -28,6 +28,7 @@ class page_corrections extends Page {
 				'jos_xdocuments_submitted'=>'documents_submitted',
 				'jos_xagents'=>'agents',
 				'jos_xpremiums'=>'premiums',
+				'jos_xclosings'=>'closings',
 
 				);
 

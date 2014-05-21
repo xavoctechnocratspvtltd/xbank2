@@ -24,20 +24,22 @@ class Model_Account_CC extends Model_Account{
 		
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null,$created_at=null){
+	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null,$on_date=null){
 
 		$otherValues += array('account_type'=>ACCOUNT_TYPE_CC);
 
-		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form,$created_at);
+		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form,$on_date);
 		if($this['Amount'])
-			$this->doProsessingFeesTransactions();
+			$this->doProsessingFeesTransactions($on_date);
 	}
 
-	function doProsessingFeesTransactions(){
+	function doProsessingFeesTransactions($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+
 		$processing_fee = $this->ref('scheme_id')->get('ProcessingFees') * $this['Amount'] / 100;
 		$transaction = $this->add('Model_Transaction');
 		
-		$transaction->createNewTransaction(TRA_CC_ACCOUNT_OPEN, null, null, "CC Account Opened",null,array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_CC_ACCOUNT_OPEN, null, $on_date, "CC Account Opened",null,array('reference_account_id'=>$this->id));
 		$transaction->addDebitAccount($this,$processing_fee);
 	
 		$credit_account = $this->ref('branch_id')->get('Code') . SP . PROCESSING_FEE_RECEIVED . $this->ref('scheme_id')->get('name');		
@@ -47,20 +49,22 @@ class Model_Account_CC extends Model_Account{
 
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null){
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$transaction_in_branch=null){
+		if(!$transaction_in_branch) $transaction_in_branch = $this->api->current_branch;
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($transaction_date);
 		$this->save();
-		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date);
+		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$transaction_in_branch);
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$transaction_in_branch=null){
+		if(!$transaction_in_branch) $transaction_in_branch = $this->api->current_branch;
 		$ccbalance = $this['Amount'] - ($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']);
 		if ($ccbalance < $amount)
 			throw $this->exception('Cannot withdraw more than '. $ccbalance,'ValidityCheck')->setField('amount');
 
-		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($transaction_date);
+		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($on_date);
 		$this->save();
-		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
+		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date,$transaction_in_branch);
 	}
 
 	function getCCInterest($on_date=null,$from_date=null,$on_amount=null, $at_interest_rate=null){

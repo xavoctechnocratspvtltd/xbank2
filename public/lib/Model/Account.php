@@ -180,12 +180,20 @@ class Model_Account extends Model_Table {
 		if(!$created_at) $created_at = $this->api->now;
 		if(!$otherValues) $otherValues=array();
 
+
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;
 		$this['AccountNumber'] = $AccountNumber;
 		$this['branch_id'] = $branch->id;
 		$this['created_at'] = $created_at;
 		$this['LastCurrentInterestUpdatedAt']=isset($otherValues['LastCurrentInterestUpdatedAt'])? :$created_at;
+
+		unset($otherValues['member_id']);
+		unset($otherValues['scheme_id']);
+		unset($otherValues['AccountNumber']);
+		unset($otherValues['branch_id']);
+		unset($otherValues['created_at']);
+		unset($otherValues['LastCurrentInterestUpdatedAt']);
 
 		foreach ($otherValues as $field => $value) {
 			$this[$field] = $value;
@@ -245,7 +253,7 @@ class Model_Account extends Model_Table {
 				}
 			}
 		}else{				
-			$transaction->addDebitAccount(@$this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount);
+			$transaction->addDebitAccount($in_branch['Code'].SP.CASH_ACCOUNT,$amount);
 		}
 		$transaction->execute();
 
@@ -260,9 +268,9 @@ class Model_Account extends Model_Table {
 
 		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace("{{SchemeType}}", $this['SchemeType'], $this->default_transaction_withdraw_narration));
 		if(!$on_date) $on_date = $this->api->now;
-		if(!$accounts_to_debit) $accounts_to_debit = array();
+		if(!$accounts_to_credit) $accounts_to_credit = array();
 		if(!$in_branch) $in_branch = $this->api->current_branch;
-		
+
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction($this->transaction_withdraw_type,$in_branch,$on_date,$narration);
 		
@@ -276,7 +284,7 @@ class Model_Account extends Model_Table {
 				}
 			}
 		}else{				
-			$transaction->addCreditAccount(@$this->api->current_branch['Code'].SP.CASH_ACCOUNT,$amount);
+			$transaction->addCreditAccount($in_branch['Code'].SP.CASH_ACCOUNT,$amount);
 		}
 		$transaction->execute();
 

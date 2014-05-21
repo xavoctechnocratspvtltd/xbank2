@@ -70,7 +70,7 @@ class Model_Scheme_CC extends Model_Scheme {
 
 	function resetCurrentInterest($branch, $test_account=null){
 		$accounts = $this->add('Model_Active_Account_CC');
-		$accounts->addCondition('branch_id',$branch);
+		$accounts->addCondition('branch_id',$branch->id);
 
 		if($test_account) $accounts->addCondition('id',$test_account->id);
 

@@ -170,33 +170,41 @@ class Model_Branch extends Model_Table {
 		if(!$this->loaded()) throw $this->exception('Branch Must be loaded to perform closing');
 
 		$on_date = date('Y-m-d',strtotime($on_date));
+		$last_closing_date = $this->ref('Closing')->tryLoadAny()->get('daily');
 
-		if(strtotime($on_date) <= ($last_closing_date = $this->ref('Closing')->tryLoadAny()->get('daily'))){
+		if(strtotime($on_date) <= strtotime($last_closing_date)){
 			throw $this->exception('Daily Closing is already done before this date')->addMoreInfo('last_closing_date',$last_closing_date);
 		}
 
 		$diff=$this->api->my_date_diff($on_date,$last_closing_date);
-		
+//		throw $this->exception($diff['days_total']);
 		if($diff['days_total'] > 1)
-			$this->performClosing(date('Y-m-d',strtotime($on_date.'-1 days')),$test_account);
+			$this->performClosing(date('Y-m-d',strtotime($on_date.'-1 days')),$test_scheme, $test_account);
 
-		$schemes = $this->add('Model_Scheme');
-		
-		if($test_scheme) $schemes->addCondition('id',$test_scheme->id);
 
-		foreach($schemes as $s){
+		$schemeTypes = explode(',',ACCOUNT_TYPES);
+
+		foreach ($schemeTypes as $st) {
+			$schemes = $this->add('Model_Scheme_'.$st);
 			
-			$schemes->daily($this, $on_date,$test_account);
-			
-			if($this->is_MonthEndDate($on_date))
-				$schemes->monthly($this, $on_date,$test_account);
-			
-			if($this->is_HalfYearEnding($on_date,$test_account))
-				$schemes->halfYearly($this, $on_date,$test_account);
-			
-			if($this->is_YearEnd($on_date))
-				$schemes->yearly($this, $on_date,$test_account);
+			if($test_scheme and $test_scheme['SchemeType'] != $st) continue;
+
+			foreach($schemes as $s){				
+
+				$schemes->daily($this, $on_date,$test_account);
+
+				if($this->is_MonthEndDate($on_date))
+					$schemes->monthly($this, $on_date,$test_account);
+				
+				if($this->is_HalfYearEnding($on_date,$test_account))
+					$schemes->halfYearly($this, $on_date,$test_account);
+				
+				if($this->is_YearEnd($on_date))
+					$schemes->yearly($this, $on_date,$test_account);
+			}
 		}
+
+		$this->ref('Closing')->tryLoadAny()->set('daily',$on_date)->save();
 	}
 
 	function is_MonthEndDate($on_date){

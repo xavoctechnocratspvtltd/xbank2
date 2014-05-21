@@ -79,7 +79,7 @@ class Model_Transaction extends Model_Table {
 		
 		if($account['branch_id'] != $this['branch_id']){
 			$this->all_debit_accounts_are_mine = false;
-			$this->other_branches_involved[$account['branch_id']] = 1;
+			$this->other_branches_involved[$account['branch_id']] = $account->ref('branch_id');
 		}
 
 		$this->dr_accounts += array($account['AccountNumber']=>array('amount'=>$amount,'account'=>$account));
@@ -147,12 +147,10 @@ class Model_Transaction extends Model_Table {
 	function executeInterBranch(){
 
 		$other_branch = array_values($this->other_branches_involved);
-		$other_branch = $other_branch[0];
-
-		
+		$other_branch = $other_branch[0];		
 
 		$my_transaction = $this->add('Model_Transaction');
-		$my_transaction->createNewTransaction($this->transaction_type,null,$this->transaction_date,$this->Narration,$this->only_transaction,$this->options);
+		$my_transaction->createNewTransaction($this->transaction_type,$this->ref('branch_id'),$this->transaction_date,$this->Narration,$this->only_transaction,$this->options);
 
 		$other_transaction = $this->add('Model_Transaction');
 		$other_transaction->createNewTransaction($this->transaction_type,$other_branch,$this->transaction_date,$this->Narration,$this->only_transaction,$this->options);
@@ -169,7 +167,7 @@ class Model_Transaction extends Model_Table {
 			}
 		}
 
-		$my_branch_and_division_account = $other_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $this->api->current_branch['Code'];
+		$my_branch_and_division_account = $other_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $this->ref('branch_id')->get('Code');
 		
 		if($this->all_debit_accounts_are_mine)
 			$my_transaction->addCreditAccount($my_branch_and_division_account,$dr_total_amount);
@@ -190,7 +188,7 @@ class Model_Transaction extends Model_Table {
 			}
 		}
 
-		$other_branch_and_division_account = $this->api->current_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $other_branch['Code'];
+		$other_branch_and_division_account = $this->ref('branch_id')->get('Code') . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $other_branch['Code'];
 
 		if($this->all_credit_accounts_are_mine)
 			$other_transaction->addCreditAccount($other_branch_and_division_account,$cr_total_amount);		

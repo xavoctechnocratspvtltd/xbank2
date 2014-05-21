@@ -5,7 +5,7 @@ tests/log/
 *.bak
 *.sql.fail
 *.sql.ok
-/nbproject
+nbproject
 .project
 .buildpath
 .settings
@@ -15,3 +15,4 @@ tests/log/
 *.orig
 *.codekit
 signatures
+/public/nbproject/private/

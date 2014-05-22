@@ -69,19 +69,19 @@ class Model_Account_CC extends Model_Account{
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date,$transaction_in_branch);
 	}
 
-	function getCCInterest($on_date=null,$after_date=null,$on_amount=null, $at_interest_rate=null){
+	function getCCInterest($on_date=null,$after_date_not_included=null,$on_amount=null, $at_interest_rate=null){
 		if(!$on_date) $on_date = $this->api->today;
-		if(!$after_date) $after_date = $this['LastCurrentInterestUpdatedAt'];
+		if(!$after_date_not_included) $after_date_not_included = $this['LastCurrentInterestUpdatedAt'];
 		if(!$on_amount){
-			$openning_balance = $this->getOpeningBalance($after_date);
+			$openning_balance = $this->getOpeningBalance($this->api->nextDate($after_date_not_included));
 			$on_amount = ($openning_balance['DR'] - $openning_balance['CR']) > 0 ? ($openning_balance['DR'] - $openning_balance['CR']) :0;
 		}
 		if(!$at_interest_rate) $at_interest_rate = $this->ref('scheme_id')->get('Interest');
 
-		$days = $this->api->my_date_diff($on_date,$after_date);
+		$days = $this->api->my_date_diff($on_date,$after_date_not_included);
 		$interest = $on_amount * $at_interest_rate * $days['days_total'] / 36500;
 
-		echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
+		// echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
 
 		return $interest;
 	}

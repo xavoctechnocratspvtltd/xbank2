@@ -18,10 +18,22 @@ class Model_Account_DDS extends Model_Account{
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null){
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null);
+
+		if($agent_id = $otherValues['agent_id'])
+			$this->addAgent($agent_id);
+
+		if($otherValues['initial_opening_amount'])
+			$this->deposit($otherValues['initial_opening_amount'],null,null,$form);
+	}
+
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
 		throw new Exception("Check For Premiums and Commissions etc first", 1);
-		parent::deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null);
-		
+		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$in_branch);
+		if($this->ref('agent_id')->loaded()){
+			$this->giveAgentCommission($on_amount = $amount, $transaction_date);
+		}
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
@@ -34,18 +46,18 @@ class Model_Account_DDS extends Model_Account{
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
 	}
 
-	function giveAgentCommission(){
+	function giveAgentCommission($on_amount,$on_date){
 		if(!$this['agent_id']) return;
 
-		$monthDifference = $this->api->my_date_diff($this->api->today, $this['created_at']);
+		$monthDifference = $this->api->my_date_diff($on_date, $this['created_at']);
         $monthDifference = $monthDifference["months_total"]+1;
         $percent = explode(",", $this->ref('scheme_id')->get('AccountOpenningCommission'));
         $percent = (isset($percent[$monthDifference])) ? $percent[$monthDifference] : $percent[count($percent) - 1];
-        $amount = $amount * $percent /100;
-        $agentAccount = $this->ref('agent_id')->get('AccountNumber');
+        $amount = $on_amount * $percent /100;
+        $agentAccount = $this->ref('agent_id')->ref('agent_id')->get('AccountNumber');
 
         $transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,null,null,"DDS Premium Commission",null,array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,null,$on_date,"DDS Premium Commission",null,array('reference_account_id'=>$this->id));
 
         $comm_acc = $this->ref('branch_id')->get('Code') . SP . COMMISSION_PAID_ON . $this->ref('scheme_id')->get('name');
 		$transaction->addDebitAccount($comm_acc,$amount);
@@ -67,6 +79,8 @@ class Model_Account_DDS extends Model_Account{
 		$interest = $this['CurrentInterest']= $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days / 36500);
 		$this['MaturityStatus']=true;
 		$this['CurrentInterest'] = 0; // No more needed to store interest in this field
+
+		$this->_dsql()->del('limit');
 
 		$this->save();
 		if(!$interest) return;

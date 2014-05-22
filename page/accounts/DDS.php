@@ -9,7 +9,11 @@ class page_accounts_DDS extends Page {
 		$account_dds_model->add('Controller_Acl');
 
 		$crud->addHook('myupdate',function($crud,$form){
-			$form->js()->univ()->errorMessage($form['aaa'])->execute();
+			if($crud->isEditing('edit')) return false;
+			
+			$dds_account_model = $crud->add('Model_Account_DDS');			
+			$dds_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			return true;
 		});
 
 		if($crud->isEditing("add")){
@@ -18,7 +22,7 @@ class page_accounts_DDS extends Page {
 			for($k=2;$k<=4;$k++) {
 			    $f=$crud->form->addField('autocomplete/Basic','member_ID'.$k);
 			   	$f->setModel('Member');
-			   	$o->move($f,'before','Nominee');
+			   	$o->move($f->other_field,'before','Nominee');
 			}
 
 		}
@@ -32,14 +36,13 @@ class page_accounts_DDS extends Page {
 		if($crud->grid)
 			$crud->grid->addPaginator(10);
 
-		if($form=$crud->form){
+		if($crud->isEditing('add')){
 			$crud->form->addField('line','initial_opening_amount');
 			
-			$crud->form->add('Order')
-						->move('initial_opening_amount','before','Amount')
-						// ->move('collector_saving_account','after','collector_id')
-						->now();
-					}
+			$o->move('initial_opening_amount','before','Amount')
+				// ->move('collector_saving_account','after','collector_id')
+				->now();
+		}
 
 	}
 }

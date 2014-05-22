@@ -295,23 +295,24 @@ class Model_Account extends Model_Table {
 	/**
 	 * getOpeningBalance returns Array or String as openning balance on a perticular given
 	 * date. Any transactions on that date is not taken into account.
-	 * @param  MySQl_Date_String  $date     Date on which you want openning balance. transactions on perticular date are not included.
+	 * @param  MySQl_Date_String  $on_date     Date on which you want openning balance. transactions on perticular date are not included.
 	 * @param  string  $side     cr/dr/both in case of both an array is returned
 	 * @param  boolean $forPandL if set true only transactions from start of financial year of given date is considered, default false
 	 * @return mixed  Array [CR/DR] or value based in side variable value
 	 */
-	function getOpeningBalance($date=null,$side='both',$forPandL=false) {
-		if(!$date) $date = '1970-01-02';
+	function getOpeningBalance($on_date=null,$side='both',$forPandL=false) {
+		if(!$on_date) $on_date = '1970-01-02';
 		if(!$this->loaded()) throw $this->exception('Model Must be loaded to get opening Balance','Logic');
 		
 
 		$transaction_row=$this->add('Model_TransactionRow');
 		$transaction_join=$transaction_row->join('transactions.id','transaction_id');
-		$transaction_row->addCondition('created_at','<',$date);
+		$transaction_join->addField('transaction_date','created_at');
+		$transaction_row->addCondition('transaction_date','<',$on_date);
 		$transaction_row->addCondition('account_id',$this->id);
 
 		if($forPandL){
-			$financial_start_date = $this->api->getFinancialYear($date,'start');
+			$financial_start_date = $this->api->getFinancialYear($on_date,'start');
 			$transaction_row->addCondition('created_at','>=',$financial_start_date);
 		}
 
@@ -354,6 +355,18 @@ class Model_Account extends Model_Table {
 			$this->prepareDelete(true);
 		}
 		parent::delete();
+	}
+
+	function addAgent($agent, $replace_existing=false){
+		if($this->ref('agent_id')->loaded() and !$replace_existing)
+			throw $this->exception('Account already have an agent, cannot add');
+
+		if(($agent instanceof Model_Agent)){
+			$agent = $agent->id;
+		}
+
+		$this['agent_id'] = $agent;
+		$this->save();
 	}
 
 	final function daily(){

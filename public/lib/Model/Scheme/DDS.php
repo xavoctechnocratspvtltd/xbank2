@@ -60,7 +60,8 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$matured_dds_accounts->addCondition('MaturedStatus',false);
 		$matured_dds_accounts->addCondition('branch_id',$branch->id);
 		$matured_dds_accounts->addCondition("maturity_date",$on_date);
-		$matured_dds_accounts->setLimit(1);
+
+		if($test_account) $matured_dds_accounts->addCondition('id',$test_account->id);
 
 		foreach ($matured_dds_accounts as $acc) {
 			$matured_dds_accounts->markMatured($on_date);

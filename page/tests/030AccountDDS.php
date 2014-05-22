@@ -10,7 +10,7 @@ class page_tests_030AccountDDS extends Page_Tester {
     public $accounts_that_will_be_checked=array();
 
     public $proper_responses=array(
-        "Test_accountType"=>array('type'=>ACCOUNT_TYPE_DDS,'member'=>'GOWRAV VISHWAKARMA ','scheme'=>'DDS 1 YEAR PLAN'),
+        "Test_accountType"=>array('type'=>ACCOUNT_TYPE_DDS,'member'=>'GOWRAV VISHWAKARMA ','scheme'=>'DDS 1 YEAR PLAN', 'Agent'=>'MEENA DEVRA'),
         'Test_CreateAccount'=>array(),
         'Test_otherAccountsBalance'=>array(),
         'Test_createTimeTransactions'=>array(),
@@ -39,6 +39,9 @@ class page_tests_030AccountDDS extends Page_Tester {
 
         $s = $this->scheme = $this->add('Model_Scheme');
         $s->load(81); // DDS 1 YEAR PLAN
+
+        $a = $this->agent = $this->add('Model_Agent');
+        $a->load(11);
 
         $this->add('Model_Closing')
             ->addCondition('branch_id',$this->api->current_branch->id)
@@ -77,7 +80,7 @@ class page_tests_030AccountDDS extends Page_Tester {
     }
 
     function test_accountType(){
-        return array('type'=>$this->account_type,'member'=>$this->member['name'],'scheme'=>$this->scheme['name'],'Amount'=>$this->Amount);
+        return array('type'=>$this->account_type,'member'=>$this->member['name'],'scheme'=>$this->scheme['name'],'Amount'=>$this->Amount,'Agent'=>$this->agent->ref('member_id')->get('name'));
     }
 
     function prepare_CreateAccount(){

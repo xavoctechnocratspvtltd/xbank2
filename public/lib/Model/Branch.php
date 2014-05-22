@@ -193,8 +193,10 @@ class Model_Branch extends Model_Table {
 
 				$schemes->daily($this, $on_date,$test_account);
 
-				if($this->is_MonthEndDate($on_date))
+				if($this->is_MonthEndDate($on_date)){
+					// echo "<br>Monthly</br>";
 					$schemes->monthly($this, $on_date,$test_account);
+				}
 				
 				if($this->is_HalfYearEnding($on_date,$test_account))
 					$schemes->halfYearly($this, $on_date,$test_account);

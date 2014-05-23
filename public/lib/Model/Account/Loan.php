@@ -38,16 +38,19 @@ class Model_Account_Loan extends Model_Account{
 
 		if($form['LoanAgSecurity']){
 			$security_account = $this->add('Model_Account')->load($form['LoanAgainstAccount_id']);
-			if($security_account['LockingStatus']) throw $this->exception('Account is Already Locked','ValidityCheck')->setField('LoanAgainstAccount');
+			$security_account->lock();
 		}
 
-		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+		
+		$this->createProcessingFeeTransaction();
+		
+		$this->addDocumentDetails();
+		
+		$this->createPremiums();
+	}
 
-		if($form['LoanAgSecurity']){
-			$security_account['LockingStatus']=true;
-			$security_account->save();
-		}
-
+	function createProcessingFeeTransaction(){
 		$scheme = $this->ref('scheme_id');
 		$ProcessingFees = $scheme['ProcessingFees'];
 		$AccountCredt = $this['Amount'] - $ProcessingFees;
@@ -67,17 +70,15 @@ class Model_Account_Loan extends Model_Account{
 		$transaction->addCreditAccount($loan_from_other_account, $AccountCredt);
 		
 		$transaction->execute();
+	}
 
+	function addDocumentDetails(){
 		$documents=$this->add('Model_Document');
 		foreach ($documents as $d) {
 		 	if($form[$this->api->normalizeName($documents['name'])])
 		 		$this->updateDocument($documents, $form[$this->api->normalizeName($documents['name'].' value')]);
 		}
-
-		$this->createPremiums();
-
 	}
-
 
 	function createPremiums(){
 		if(!$this->loaded()) throw $this->exception('Account Must Be loaded to create premiums');
@@ -106,10 +107,10 @@ class Model_Account_Loan extends Model_Account{
         $rate = $scheme['Interest'];
         $premiums = $scheme['NumberOfPremiums'];
         if ($scheme['ReducingOrFlatRate'] == REDUCING_RATE) {
-//          FOR REDUCING RATE OF INTEREST
+		//          FOR REDUCING RATE OF INTEREST
             $emi = ($this('Amount') * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
         } else {
-//          FOR FLAT RATE OF INTEREST
+		//          FOR FLAT RATE OF INTEREST
             $emi = (($this['Amount'] * $rate * ($premiums + 1)) / 1200 + $this['Amount']) / $premiums;
         }
         $emi = round($emi);
@@ -121,7 +122,6 @@ class Model_Account_Loan extends Model_Account{
             $lastPremiumPaidDate = $prem['DueDate'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($lastPremiumPaidDate)) . $toAdd));
             $prem->saveAndUnload();
         }
-
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$on_date=null){
@@ -144,7 +144,8 @@ class Model_Account_Loan extends Model_Account{
 		$rate = $this->ref('scheme_id')->get('Interest');
 		$premiums = $this->ref('scheme_id')->get('NumberOfPremiums');
 
-		$interest = round((($emi * $premiums) - $this['Amount']) / $premiums); // Access amount then loan amount per premium is actually interest
+		// Access amount then loan amount per premium is actually interest
+		$interest = round((($emi * $premiums) - $this['Amount']) / $premiums);
 
 		$PremiumAmountAdjusted = $PaidEMI * $emi;
 		$AmountForPremiums = ($ac->CurrentBalanceCr + $amount) - $PremiumAmountAdjusted;
@@ -159,13 +160,13 @@ class Model_Account_Loan extends Model_Account{
 		        $prem->save();
 		    }
 		}
-
 	}
 
 	function closeIfPaidCompletely(){
-		if (($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']) <= 0) {
+		if (($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']) == 0) {
 		    $this['ActiveStatus'] = false;
 		    $this['affectsBalanceSheet'] = true;
+		    $this['MaturedStatus'] = true;
 		    $this->save();
 		}
 	}
@@ -212,7 +213,6 @@ class Model_Account_Loan extends Model_Account{
 		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . $this['scheme_name'], $amount);
 		
 		$transaction->execute();
-
 	}
 
 }

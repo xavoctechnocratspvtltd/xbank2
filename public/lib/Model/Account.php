@@ -202,12 +202,12 @@ class Model_Account extends Model_Table {
 		$this->save();
 		for($k=2;$k<=4;$k++) {
 		    if($j_m_id=$form['member_ID'.$k])
-		    	$this->addJointAccountMember($j_m_id);
+		    	$this->jointAccountMember($j_m_id);
 		}
 		return $this->id;
 	}
 
-	function addJointAccountMember($j_m_id){
+	function jointAccountMember($j_m_id){
 		if(!$this->loaded()) throw $this->exception('Account Must Be loaded to add Joint Member');
 		$member = $this->add('Model_Member')->load($j_m_id);
 		$joint_member = $this->ref('JointMember')->addCondition('member_id',$j_m_id);
@@ -292,6 +292,26 @@ class Model_Account extends Model_Table {
 
 	}
 
+	function postInterestEntry(){
+
+	}
+
+	function postAgentCommission(){
+		throw $this->exception('Interest Receive must be redefined in account if required', 'ValidityCheck')->setField('FieldName');
+	}
+
+	function postPanelty(){
+		throw $this->exception('Post Panelty must be redefined in account if required', 'ValidityCheck')->setField('FieldName');
+	}
+
+	function forClose(){
+		throw $this->exception('For Close must be redefined in account if required', 'ValidityCheck')->setField('FieldName');
+	}
+
+	function markMature(){
+		throw $this->exception('Mark Mature must be redefined in account if required', 'ValidityCheck')->setField('FieldName');
+	}
+
 	/**
 	 * getOpeningBalance returns Array or String as openning balance on a perticular given
 	 * date. Any transactions on that date is not taken into account.
@@ -336,7 +356,18 @@ class Model_Account extends Model_Table {
 
 	function isActive(){
 		return $this['ActiveStatus']?:0;
-	}	
+	}
+
+	function lock(){
+		if(!$this->loaded()) throw $this->exception('Load an Account before lock it', 'ValidityCheck')->setField('LoanAgainstAccount');
+		if($this->isLocked()) throw $this->exception('Account is already Loacked', 'ValidityCheck')->setField('LoanAgainstAccount');
+		$this['LockingStatus'] = true;
+		$this->save();
+	}
+
+	function isLocked(){
+		return $this['LockingStatus']?:0;
+	}
 
 	function prepareDelete($revert_accounts_balances=true){
 		// Delete all transactions of this account

@@ -10,38 +10,39 @@ class page_tests_030AccountDDS extends Page_Tester {
     public $accounts_that_will_be_checked=array();
 
     public $proper_responses=array(
-        "Test_accountType"=>array('type'=>ACCOUNT_TYPE_DDS,'member'=>'GOWRAV VISHWAKARMA ','scheme'=>'DDS 1 YEAR PLAN', 'Agent'=>'MEENA DEVRA'),
+        "Test_accountType"=>array('type'=>ACCOUNT_TYPE_DDS,'member'=>'GOWRAV VISHWAKARMA ','scheme'=>'new 3 Month DDS', 'Agent'=>'MEENA DEVRA'),
         'Test_CreateAccount'=>array(),
         'Test_otherAccountsBalance'=>array(),
         'Test_createTimeTransactions'=>array(),
         'Test_accountFlow'=>array(),
+        'Test_accountMaturity'=>array('maturity_date'=>'2014-08-07','MaturedStatus'=>1),
     );
 
     public $account_flow=array(
             'open'=>'2014-05-07',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
-                    '2014-05-07'=> 50000,
-                    '2014-05-20'=> array(-4000,'from_branch_code'=>'JHD'),
-                    '2014-06-05'=> -8000,
-                    '2014-06-26'=> -100000,
-                    '2014-06-27'=> -1000,
-                    '2014-07-21'=> 6000,
-                    '2014-08-01'=> -6000,
+                    '2014-05-07'=> 500,
+                    '2014-05-08'=> array(4000,'from_branch_code'=>'JHD'),
+                    '2014-06-05'=> 800,
+                    '2014-06-26'=> 100,
+                    '2014-06-27'=> 100,
+                    '2014-07-21'=> 600,
+                    '2014-08-01'=> 600,
                 ),
-            'test_till'=>'2014-08-30'
+            'test_till'=>'2014-08-31'
         );
 
     function prepare(){
-
         $m = $this->member = $this->add('Model_Member');
         $m->load(1035); // Gowrav Vishwakarma
 
         $s = $this->scheme = $this->add('Model_Scheme');
-        $s->load(81); // DDS 1 YEAR PLAN
+        // $s->load(81); // DDS 1 YEAR PLAN
+        $s->load(208); // new 3 Month DDS
 
         $a = $this->agent = $this->add('Model_Agent');
-        $a->load(11);
+        $a->load(11); // Meena Devra
 
         $this->add('Model_Closing')
             ->addCondition('branch_id',$this->api->current_branch->id)
@@ -57,7 +58,8 @@ class page_tests_030AccountDDS extends Page_Tester {
 
         $this->accounts_that_will_be_checked = array(
                 // ACCOUNT_NUMBER => array(array(after_create_account_transaction_DR,CR),array('after_closing_done,DR,CR'))
-                $this->api->current_branch['Code'].SP.BRANCH_TDS_ACCOUNT =>array(array(0,0),array(0,0,))
+                $this->api->current_branch['Code'].SP.BRANCH_TDS_ACCOUNT =>array(array(0,0),array(0,0,)),
+                'UDRSB373' =>array(array(0,0),array(10,20,)),
             );
 
         $reset_account = $this->add('Model_Account');
@@ -89,13 +91,14 @@ class page_tests_030AccountDDS extends Page_Tester {
         $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $AccountNumber,$otherValues=array('Amount'=>$this->Amount),$form=null,$created_at=$this->account_flow['open']);
         $this->api->memorize('new_account_number',$AccountNumber);
         // ++++++++
-        $this->proper_responses['Test_CreateAccount'] +=array('AccountNumber'=>$AccountNumber,'member_id'=>$this->member->id);
+        $this->proper_responses['Test_CreateAccount'] +=array('AccountNumber'=>$AccountNumber,'member_id'=>$this->member->id, 'maturity_date'=>'2014-08-07');
     }
 
     function test_CreateAccount(){
         return array(
             'AccountNumber'=>$this->account['AccountNumber'],
-            'member_id'=>$this->account['member_id']
+            'member_id'=>$this->account['member_id'],
+            'maturity_date'=>$this->account['maturity_date']
             );
     } 
 
@@ -157,7 +160,7 @@ class page_tests_030AccountDDS extends Page_Tester {
             throw $this->exception('Must run complete page tests, individual test not permitted','SkipTests');
 
         $date = $this->account_flow['open'];
-        $test_till = $this->account_flow['test_till'];
+        $test_till = $this->api->nextDate($this->account_flow['test_till']);
 
         while(strtotime($date) <= strtotime($test_till)){
 
@@ -204,5 +207,14 @@ class page_tests_030AccountDDS extends Page_Tester {
         }
 
         return $result;
+    }
+
+    function prepare_accountMaturity(){
+
+    }
+
+    function test_accountMaturity(){
+        $account = $this->add('Model_Account_'.$this->account_type)->loadBy('AccountNumber',$this->api->recall('new_account_number'));
+        return  array('maturity_date'=>$account['maturity_date'],'MaturedStatus'=>$account['MaturedStatus']);
     }
 }

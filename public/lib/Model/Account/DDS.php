@@ -12,14 +12,14 @@ class Model_Account_DDS extends Model_Account{
 		$this->getElement('Amount')->caption('DDS amount (in multiples of Rs.300 like 300, 600, 900....3000 etc.)');
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
-			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
+			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
-		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null);
+		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 
 		if($agent_id = $otherValues['agent_id'])
 			$this->addAgent($agent_id);
@@ -29,7 +29,6 @@ class Model_Account_DDS extends Model_Account{
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
-		throw new Exception("Check For Premiums and Commissions etc first", 1);
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$in_branch);
 		if($this->ref('agent_id')->loaded()){
 			$this->giveAgentCommission($on_amount = $amount, $transaction_date);
@@ -77,13 +76,15 @@ class Model_Account_DDS extends Model_Account{
 		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
 		$days = $days['days_total'];
 		$interest = $this['CurrentInterest']= $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days / 36500);
-		$this['MaturityStatus']=true;
+		$this['MaturedStatus']=true;
 		$this['CurrentInterest'] = 0; // No more needed to store interest in this field
 
 		$this->_dsql()->del('limit');
 
-		$this->save();
-		if(!$interest) return;
+		if(!$interest){
+			$this->saveAndUnload();
+			return;
+		}
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_DDS,null,$on_date,"Interst posting in DDS Account " . $this['AccountNumber'],null, array('reference_account_id'=>$this->id));
@@ -92,6 +93,10 @@ class Model_Account_DDS extends Model_Account{
 		$transaction->addCreditAccount($this, $interest);
 
 		$transaction->execute();
+
+		throw $this->exception($transaction->id);
+
+		$this->saveAndUnload();
 	}
 
 	function postInterestEntry($on_date=null, $return=false){

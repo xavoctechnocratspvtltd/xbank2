@@ -55,7 +55,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		if(!$on_date) $on_date = $this->api->today;
 
 		$matured_dds_accounts = $this->add('Model_Account_DDS');
-		$matured_dds_accounts->scheme_join->addField('MaturityPeriod');
+		// $matured_dds_accounts->scheme_join->addField('MaturityPeriod');
 		$matured_dds_accounts->addCondition('ActiveStatus',true);
 		$matured_dds_accounts->addCondition('MaturedStatus',false);
 		$matured_dds_accounts->addCondition('branch_id',$branch->id);
@@ -73,24 +73,16 @@ class Model_Scheme_DDS extends Model_Scheme {
 		if(!$branch) $branch = $this->api->current_branch;
 		if(!$on_date) $on_date = $this->api->today;
 
-		// $q = "select t.accounts_id as accounts_id,t.created_at as created_at,sum(t.amountCr) as amountCr
-  //       from jos_xtransactions t
-  //       left Join jos_xaccounts a on t.accounts_id=a.id
-  //       left Join jos_xschemes s on a.schemes_id=s.id
-  //       where a.id = t.accounts_id and
-  //       s.SchemeType ='" . ACCOUNT_TYPE_DDS . "' and
-  //       t.created_at >= DATE_ADD('" . getNow("Y-m-d") . "',INTERVAL -1 MONTH) and
-  //       t.created_at < '" . getNow("Y-m-d") . "' and
-  //       a.branch_id=" . Branch::getCurrentBranch()->id . "
-  //       group By t.accounts_id
-  //       order By t.created_at ASC";
-
         $accounts_to_work_on = $this->add('Model_Active_Account_DDS');
-        $agent_join = $accounts_to_work_on->join('agents','agent_id');
-        $agent_account_join = $agent_join->join('accounts','account_id');
+
+        // Compulsory Transactions
         $tr_row_join = $accounts_to_work_on->join('transaction_row.account_id');
         $tr_join = $tr_row_join->join('transactions','transaction_id');
         $tr_type_join = $tr_join->join('transaction_types','transaction_type_id');
+        
+        // Agent is left joint becoz even in case of no agent the account need to be posted by interest entry
+        $agent_join = $accounts_to_work_on->leftJoin('agents','agent_id');
+        $agent_account_join = $agent_join->join('accounts','account_id');
 
         $accounts_to_work_on->scheme_join->addField('AccountOpenningCommission');
         $agent_account_join->addField('agent_AccountNumber','AccountNumber');
@@ -112,6 +104,14 @@ class Model_Scheme_DDS extends Model_Scheme {
         }
 
         $this->owner->add('Grid')->setModel($accounts_to_work_on);
+
+	}
+
+	function halfYearly($branch=null,$on_date=null,$test_account=null){
+
+	}
+
+	function yearly($branch=null,$on_date=null,$test_account=null){
 
 	}
 

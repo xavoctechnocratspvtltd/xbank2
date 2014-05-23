@@ -42,9 +42,7 @@ class page_accounts_statement extends Page {
 			}
 			$grid->addOpeningBalance($opening_amount,$opening_column,array('Narration'=>$opening_narration),$opening_side);
 			$grid->addCurrentBalanceInEachRow();
-		}
-
-		else{
+		}else{
 			$transactions->addCondition('id',-1);
 		}
 

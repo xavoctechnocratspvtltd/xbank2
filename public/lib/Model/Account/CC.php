@@ -81,7 +81,7 @@ class Model_Account_CC extends Model_Account{
 		$days = $this->api->my_date_diff($on_date,$after_date_not_included);
 		$interest = $on_amount * $at_interest_rate * $days['days_total'] / 36500;
 
-		// echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
+		echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
 
 		return $interest;
 	}

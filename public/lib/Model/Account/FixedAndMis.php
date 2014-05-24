@@ -20,4 +20,10 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
+
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+		$this->createInitialTransaction();
+		$this->giveAgentCommission();
+	}
 }

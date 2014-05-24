@@ -100,6 +100,7 @@ class page_corrections extends Page {
 				array('members','state','string'),
 				array('staffs','name','string'),
 				array('dealers','loan_panelty_per_day','int'),
+				array('dealers','dealer_monthly_date','int'),
 				array('agents','account_id','int'),
 				array('accounts','`Group`','string'),
 				array('accounts','`account_type`','string'),

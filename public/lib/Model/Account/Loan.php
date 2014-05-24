@@ -19,6 +19,10 @@ class Model_Account_Loan extends Model_Account{
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
 
+		$this->addExpression('dealer_monthly_date')->set(function ($m,$q){
+			return $m->refSQL('dealer_id')->fieldQuery('dealer_monthly_date');
+		});		
+
 		$this->addHook('beforeSave',$this);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
@@ -78,6 +82,10 @@ class Model_Account_Loan extends Model_Account{
 
 	}
 
+	function getFirstEMIDate(){
+		// ??? .... $this['created_at'] with dealer_monthly_date ... relation
+
+	}
 
 	function createPremiums(){
 		if(!$this->loaded()) throw $this->exception('Account Must Be loaded to create premiums');
@@ -102,7 +110,7 @@ class Model_Account_Loan extends Model_Account{
                 break;
         }
 
-        $lastPremiumPaidDate = $this['created_at'];
+        $lastPremiumPaidDate = $this->getFirstEMIDate();
         $rate = $scheme['Interest'];
         $premiums = $scheme['NumberOfPremiums'];
         if ($scheme['ReducingOrFlatRate'] == REDUCING_RATE) {
@@ -203,16 +211,40 @@ class Model_Account_Loan extends Model_Account{
 	function postPaneltyTransaction($on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
 
+		$my_premiums = $this->ref('Premium');
+		$my_premiums->addCondition('PaneltyCharged','<>',$this->dsql()->expr('PaneltyPosted'));
+		
+		$amount = $my_premiums->sum('panelty_to_post')->getOne();
+
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penalty deposited on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_account_id'=>$this->id));
 
-		$amount = $this['CurrentInerest'] < 300?:300;
-		
 		$transaction->addDebitAccount($this, $amount);
 		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . $this['scheme_name'], $amount);
 		
 		$transaction->execute();
 
+		$my_premiums->_dsql()->set('PaneltyCharged','PaneltyPosted')->update();
+	}
+
+	// Not related with this ... general for all accounts
+	function putPaneltiesOnAllUnpaidLoanPremiums($branch=null,$on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+		if(!$branch) $branch = $this->api->current_branch;
+
+		$premiums = $this->add('Model_Premium');
+		$account_join = $premiums->leftJoin('accounts','account_id');
+		$account_join->addField('branch_id');
+		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
+		$dealer_join->addField('loan_panelty_per_day');
+
+		$premiums->addCondition('DueDate','<',$on_date);
+		$premiums->addCondition('PaneltyCharged','<',$this->api->db->dsql()->expr('loan_panelty_per_day * 30'));
+		$premiums->addCondition('Paid',false);
+		$premiums->addCondition('branch_id',$branch->id);
+
+		$premiums->_dsql()->set('PaneltyCharged',$this->api->db->dsql()->expr('PaneltyCharged +'. $dealer_join->table_alias.'.loan_panelty_per_day'));
+		$premiums->_dsql()->update();
 	}
 
 }

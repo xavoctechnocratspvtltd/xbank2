@@ -117,6 +117,18 @@ class Frontend extends ApiFrontend {
         "seconds_total" => $diff_secs,
         "seconds" => (int) date("s", $diff)
         );
+    }
+
+    function markProgress($what, $running, $detail=null, $total=null){
+        $data =$this->api->recall('progress_data',array());
+        $data[$what] = array('running'=>$running)
+        if($detail) $data[$what] += array('detail'=>$detail);
+        if($total) $data[$what] += array('total'=>$total);
+
+        if($running ==0 and isset($data[$what]))
+            unset($data[$what]);
+
+        $this->api->memorize('progress_data',$data);
 
     }
 }

@@ -175,17 +175,23 @@ class Model_Branch extends Model_Table {
 		if(strtotime($on_date) <= strtotime($last_closing_date)){
 			throw $this->exception('Daily Closing is already done before this date')->addMoreInfo('last_closing_date',$last_closing_date);
 		}
+		
+		$this->api->markProgress('daily',$on_date);
 
 		$diff=$this->api->my_date_diff($on_date,$last_closing_date);
 //		throw $this->exception($diff['days_total']);
 		if($diff['days_total'] > 1)
 			$this->performClosing(date('Y-m-d',strtotime($on_date.'-1 days')),$test_scheme, $test_account);
-
-
+		
+		$s=1;
+		
 		$schemeTypes = explode(',',ACCOUNT_TYPES);
+		$this->api->markProgress('schemes',$s,count($schemeTypes),'About to run schemes');
 
 		foreach ($schemeTypes as $st) {
 			if($test_scheme and $test_scheme['SchemeType'] != $st) continue;
+			
+			$this->api->markProgress('schemes',$s++,null,$st);
 			
 			$schemes = $this->add('Model_Scheme_'.$st)->setLimit(1);
 
@@ -194,7 +200,6 @@ class Model_Branch extends Model_Table {
 				$schemes->daily($this, $on_date,$test_account);
 
 				if($this->is_MonthEndDate($on_date)){
-					// echo "<br>Monthly</br>";
 					$schemes->monthly($this, $on_date,$test_account);
 				}
 				

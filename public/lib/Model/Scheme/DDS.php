@@ -64,6 +64,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		if($test_account) $matured_dds_accounts->addCondition('id',$test_account->id);
 
 		foreach ($matured_dds_accounts as $acc) {
+			$matured_dds_accounts->postInterestEntry($on_date);
 			$matured_dds_accounts->markMatured($on_date);
 		}
 
@@ -100,10 +101,8 @@ class Model_Scheme_DDS extends Model_Scheme {
         $accounts_to_work_on->_dsql()->group($tr_row_join->table_alias.'.account_id');
 
         foreach ($accounts_to_work_on as $acc_array) {
-        	$accounts_to_work_on->postInterestEntry($on_date);
+        	$accounts_to_work_on->postAgentCommissionEntry($on_date);
         }
-
-        $this->owner->add('Grid')->setModel($accounts_to_work_on);
 
 	}
 
@@ -112,6 +111,18 @@ class Model_Scheme_DDS extends Model_Scheme {
 	}
 
 	function yearly($branch=null,$on_date=null,$test_account=null){
+		if(!$branch) $branch = $this->api->current_branch;
+		if(!$on_date) $on_date = $this->api->now; 
+
+		$active_dds_accounts = $this->add('Model_Active_Account_DDS');
+		$active_dds_accounts->addCondition('MaturedStatus',false);
+		$active_dds_accounts->addCondition('branch_id',$branch->id);
+
+		if($test_account) $active_dds_accounts->addCondition('id',$test_account);
+
+		foreach ($active_dds_accounts as $active_dds_accounts_array) {
+			$active_dds_accounts->postInterestEntry($on_date)
+		}
 
 	}
 

@@ -60,4 +60,29 @@ class Model_Premium extends Model_Table {
 
 	}
 
+	function getAllForPaneltyPosting($on_date=null){
+
+		$this->getElement('account_id')->destroy();
+
+		if(!$on_date) $on_date = $this->api->now;
+
+		$loan_premiums = $this;
+		$loan_premiums->dsql()->del('fields');//->fieldQuery('sum(PaneltyCharged - PaneltyPosted )');
+
+		$account_join = $loan_premiums->join('accounts','account_id');
+		$scheme_join = $account_join->join('schemes','scheme_id');
+
+		$account_join->addField('ActiveStatus');
+		$scheme_join->addField('SchemeType');
+
+		$loan_premiums->addCondition('ActiveStatus',true);
+		$loan_premiums->addCondition('SchemeType',ACCOUNT_TYPE_LOAN);
+		$loan_premiums->addCondition('PaneltyCharged','<>',$this->dsql()->expr('PaneltyPosted'));
+		
+
+		$loan_premiums->_dsql()->debug()->group('account_id');
+
+		return $this;
+	}
+
 }

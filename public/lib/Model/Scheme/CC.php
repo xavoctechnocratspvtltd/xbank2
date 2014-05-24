@@ -68,15 +68,7 @@ class Model_Scheme_CC extends Model_Scheme {
 		// $this->resetCurrentInterest($branch, $test_account);
 	}
 
-	function resetCurrentInterest($branch, $test_account=null){
-		$accounts = $this->add('Model_Active_Account_CC');
-		$accounts->addCondition('branch_id',$branch->id);
-
-		if($test_account) $accounts->addCondition('id',$test_account->id);
-
-		$accounts->_dsql()
-			->set('CurrentInterest',0)
-			;
-		$accounts->_dsql()->update();
+	function yearly($branch=null,$on_date=null,$test_account=null){
+		throw $this->exception('Renewal Chrges to be done');
 	}
 }

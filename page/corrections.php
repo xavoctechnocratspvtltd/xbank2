@@ -4,6 +4,7 @@
 // TODOS: all admission fee voucher narration is '10 (memberid)' format ... put memberid in reference id
 // TODOS: refence_account_id to reference_id name change
 // TODOS: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
+// TODOS: Saving account current interests till date as now onwards its keep saved on transaction
 
 class page_corrections extends Page {
 	public $rename_fields=array();// [] = array(table_name,old_field,new_field)

@@ -73,18 +73,25 @@ class Model_Account_DDS extends Model_Account{
 		if(!$this->isActive()) throw $this->exception('DDS Account is de-active...');
 		if(!$on_date) $on_date = $this->api->today;
 
-		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
-		$days = $days['days_total'];
-		$interest = $this['CurrentInterest']= $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days / 36500);
 		$this['MaturedStatus']=true;
 		$this['CurrentInterest'] = 0; // No more needed to store interest in this field
-
+		
 		$this->_dsql()->del('limit');
 
-		if(!$interest){
-			$this->saveAndUnload();
-			return;
-		}
+		$this->saveAndUnload();
+	}
+
+	function postInterestEntry($on_date){
+		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
+		$days = $days['days_total'];
+		$interest = $this['CurrentInterest'] = $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days / 36500);
+
+		$this['LastCurrentInterestUpdatedAt'] = $on_date;
+
+		$this->_dsql()->del('limit');
+		$this->save();
+
+		if(!$interest) return;
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_DDS,null,$on_date,"Interst posting in DDS Account " . $this['AccountNumber'],null, array('reference_account_id'=>$this->id));
@@ -93,13 +100,9 @@ class Model_Account_DDS extends Model_Account{
 		$transaction->addCreditAccount($this, $interest);
 
 		$transaction->execute();
-
-		throw $this->exception($transaction->id);
-
-		$this->saveAndUnload();
 	}
 
-	function postInterestEntry($on_date=null, $return=false){
+	function postAgentCommissionEntry($on_date=null, $return=false){
         $agentAccount = $this['agent_AccountNumber'];
         $branch_code =$this->ref('branch_id')->get('Code');
 //            $amount = $ac->amountCr;

@@ -58,13 +58,13 @@ class Model_Scheme_Loan extends Model_Scheme {
 			);
 	}
 
-	function daily($branch= null,$on_date=null){
+	function daily($branch= null,$on_date=null,$test_account=null){
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
 
+		$this->putPaneltiesOnAllUnpaidLoanPremiums($branch,$on_date,$test_account);
+		
 		$loan_accounts  = $this->add('Model_Active_Account_Loan');
-
-		$loan_accounts->putPaneltiesOnAllUnpaidLoanPremiums($branch,$on_date);
 		
 		$loan_accounts->scheme_join->addField('Interest');
 		$loan_accounts->scheme_join->addField('NumberOfPremiums');
@@ -76,26 +76,49 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$loan_accounts->addCondition('DueDate','like',$on_date.' %');
 		$loan_accounts->addCondition('branch_id',$branch->id);
 
+		$loan_accounts->addExpression('due_panelty')->set(function($m,$q)use($on_date){
+			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>','PaneltyPosted')->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+		});
+
+		if($test_account) $loan_accounts->addCondition('id',$test_account->id);
+
 		foreach ($loan_accounts as $acc_array) {
 			$loan_accounts->postInterestEntry($on_date);
-			$loan_accounts->postPaneltyTransaction($on_date);
+			if($loan_accounts['due_panelty'] > 0)
+				$loan_accounts->postPanelty($on_date);
 		}
 
+		$this->add('Model_Premium')->_dsql()->set('PaneltyCharged','PaneltyPosted')->update();
+	}
+
+	// Not related with Any account ... general for all accounts
+	function putPaneltiesOnAllUnpaidLoanPremiums($branch=null,$on_date=null,$test_account=null){
+		if(!$on_date) $on_date = $this->api->now;
+		if(!$branch) $branch = $this->api->current_branch;
+
+		$premiums = $this->add('Model_Premium');
+		$account_join = $premiums->leftJoin('accounts','account_id');
+		$account_join->addField('branch_id');
+		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
+		$dealer_join->addField('loan_panelty_per_day');
+
+		$premiums->addCondition('DueDate','<',$on_date);
+		$premiums->addCondition('PaneltyCharged','<',$this->api->db->dsql()->expr('loan_panelty_per_day * 30'));
+		$premiums->addCondition('Paid',false);
+		$premiums->addCondition('branch_id',$branch->id);
+
+		if($test_account) $premiums->addCondition('account_id',$test_account->id);
+
+		$premiums->_dsql()->set('PaneltyCharged',$this->api->db->dsql()->expr('PaneltyCharged +'. $dealer_join->table_alias.'.loan_panelty_per_day'));
+		$premiums->_dsql()->update();
 	}
 
 
 
-	function monthly($branch=null, $on_date=null){
+	function monthly($branch=null, $on_date=null,$test_account=null){
 		if(!$branch) $branch = $this->api->current_branch;
 		if(!$on_date) $on_date = $this->api->now;
 
-		$accounts_with_panelty = $this->add('Model_Active_Account_Loan');
-		$accounts_with_panelty->addCondition('CurrentInterest','<>',0);
-		$accounts_with_panelty->addCondition('branch_id',$branch->id);
-
-		foreach ($accounts_with_panelty as $acc) {
-			$accounts_with_panelty->postPaneltyTransaction($on_date);
-		}
 
 	}
 

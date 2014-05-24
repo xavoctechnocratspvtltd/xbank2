@@ -46,4 +46,77 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 			array('under_scheme'=>"Provision",'intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On FD and MIS','PAndLGroup'=>'Commission Payable Paid On Deposit'),
 			);
 	}
+
+	function daily($branch=null,$on_date=null,$test_account=null){
+		$active_fd_accounts = $this->add('Model_Active_Account_FixedAndMis');
+		$scheme_join = $active_fd_accounts->join('schemes','scheme_id');
+
+		$scheme_join->addField('InterestToAnotherAccount');
+		$scheme_join->addField('Interest');
+
+		$active_fd_accounts->addCondition('MaturedStatus',false);
+		$active_fd_accounts->addCondition('created_at','<',$on_date);
+		$active_fd_accounts->addCondition('branch_id',$branch->id);
+		
+		$active_fd_accounts->addCondition('maturity_date','like',$on_date. ' %');
+
+		foreach ($active_fd_accounts as $active_fd_accounts_array) {
+			if($active_fd_accounts['InterestToAnotherAccount']){
+				// This is MIS
+				$active_fd_accounts->interstToAnotherAccountEntry($on_date);
+			}else{
+				// This is FD
+				$active_fd_accounts->doInterestProvision($on_date, $mark_matured=true);
+				$active_fd_accounts->revertProvision($on_date, $mark_matured=true);
+			}
+		}
+	}
+
+	function monthly($branch=null,$on_date=null,$test_account=null){
+		// Do Provisions
+		$active_fd_accounts = $this->add('Model_Active_Account_FixedAndMis');
+		$scheme_join = $active_fd_accounts->join('schemes','scheme_id');
+
+		$scheme_join->addField('InterestToAnotherAccount');
+		$scheme_join->addField('Interest');
+
+		$active_fd_accounts->addCondition('MaturedStatus',false);
+		$active_fd_accounts->addCondition('InterestToAnotherAccount',false);
+		$active_fd_accounts->addCondition('created_at','<',$on_date);
+		$active_fd_accounts->addCondition('branch_id',$branch->id);
+
+		if($test_account) $active_fd_accounts->addCondition('id',$test_account->id);
+
+		foreach ($active_fd_accounts as $active_fd_accounts_array) {
+			if($active_fd_accounts['InterestToAnotherAccount']){
+				// This is MIS
+				$active_fd_accounts->interstToAnotherAccountEntry($on_date);
+			}else{
+				// This is FD
+				$active_fd_accounts->doInterestProvision($on_date);
+			}
+		}
+
+
+	}
+
+	function yearly($branch=null,$on_date=null,$test_account=null){
+		$active_fd_accounts = $this->add('Model_Active_Account_FixedAndMis');
+		$scheme_join = $active_fd_accounts->join('schemes','scheme_id');
+
+		$scheme_join->addField('InterestToAnotherAccount');
+		$scheme_join->addField('Interest');
+
+		$active_fd_accounts->addCondition('MaturedStatus',false);
+		$active_fd_accounts->addCondition('InterestToAnotherAccount',false);
+		$active_fd_accounts->addCondition('created_at','<',$on_date);
+		$active_fd_accounts->addCondition('branch_id',$branch->id);
+
+		foreach ($active_fd_accounts as $active_fd_accounts_array) {
+			$active_fd_accounts->revertProvision($on_date);
+		}
+
+
+	}
+
 }

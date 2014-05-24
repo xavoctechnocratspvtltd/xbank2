@@ -17,6 +17,10 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null,$created_at=null){
+		
+		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
+		$this['LastCurrentInterestUpdatedAt'] = $on_date;
+
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 		if($this['Amount'])
 			$this->deposit($this['Amount'],null,null,null,$created_at);
@@ -29,7 +33,31 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 		if($amount > ($balance - $min_limit))
 			throw $this->exception('You Cannot withdraw by crossing minimum limit. ' .($balance - $min_limit),'ValidityCheck')->setField('amount');
+		
+		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
+		$this['LastCurrentInterestUpdatedAt'] = $on_date;
+
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
+	}
+
+	function getSavingInterest($on_date=null,$after_date_not_included=null,$on_amount=null, $at_interest_rate=null,$add_last_day=false){
+		if(!$on_date) $on_date = $this->api->today;
+		if(!$after_date_not_included) $after_date_not_included = $this['LastCurrentInterestUpdatedAt'];
+		if(!$on_amount){
+			$openning_balance = $this->getOpeningBalance($this->api->nextDate($after_date_not_included));
+			$on_amount = ($openning_balance['DR'] - $openning_balance['CR']) > 0 ? ($openning_balance['DR'] - $openning_balance['CR']) :0;
+		}
+		if(!$at_interest_rate) $at_interest_rate = $this->ref('scheme_id')->get('Interest');
+
+		$days = $this->api->my_date_diff($on_date,$after_date_not_included);
+
+		if($add_last_day) $days['days_total']++;
+		
+		$interest = $on_amount * $at_interest_rate * $days['days_total'] / 36500;
+
+		// echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
+
+		return $interest;
 	}
 
 	/**
@@ -42,32 +70,13 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		if(!$till_date) $till_date = $this->api->today;
 		if(!$this->loaded()) throw $this->exception('Account must be loaded to apply monthly interest');
 
-		$this->scheme_join->addField('Interest');
+		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date=$till_date ,$after_date_not_included=null,$on_amount=null, $at_interest_rate=null,$add_last_day=true);
+		$this['LastCurrentInterestUpdatedAt'] = $till_date;
 
-		$last_interest_posting_date = $this['LastCurrentInterestUpdatedAt'];
-		$current_interest = 0;
-
-		$my_transactions = $this->ref('TransactionRow');
-		$my_transactions->addCondition('created_at','>',$last_interest_posting_date);
-
-
-		foreach ($my_transactions->getRows() as $t) {
-			$openning_balance = $this->getOpeningBalance($this->api->nextDate($last_interest_posting_date));
-			$days = $this->api->my_date_diff($t['created_at'],$last_interest_posting_date);
-			$interest = round((((($openning_balance['CR']) - ($openning_balance['DR'])) > 0 ? (($openning_balance['CR']) - ($openning_balance['DR'])) : 0) * $this['Interest'] * $days['days_total'] / 36500), ROUND_TO);
-			$current_interest += $interest;
-			$last_interest_posting_date = $t['created_at'];
-		}
-		// From Last Transaction to today / month_end
-		$openning_balance = $this->getOpeningBalance($this->api->nextDate($till_date));
-		$days = $this->api->my_date_diff($till_date,$last_interest_posting_date);
-		$interest = round((((($openning_balance['CR']) - ($openning_balance['DR'])) > 0 ? (($openning_balance['CR']) - ($openning_balance['DR'])) : 0) * $this['Interest'] * $days['days_total'] / 36500), ROUND_TO);
-		$current_interest += $interest;
+		$current_interest = $this['CurrentInterest'];
 
 		if($return) return $current_interest;
 
-		$this['LastCurrentInterestUpdatedAt'] = $till_date;
-		$this['CurrentInterest'] = $current_interest;
 		$this->save();
 
 		if($current_interest == 0 ) return; //no need to save a new transaction of zero interest

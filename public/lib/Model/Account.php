@@ -57,6 +57,9 @@ class Model_Account extends Model_Table {
 		$this->scheme_join->addField('SchemeType');
 		$this->scheme_join->addField('scheme_name','name');
 
+		$this->addExpression('branch_code')->set(function($m,$q){
+			return $m->refSQL('branch_id')->fieldQuery('Code');
+		});
 
 		$this->addExpression('name')->set(function($m,$q){
 			

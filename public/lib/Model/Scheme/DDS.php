@@ -121,7 +121,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		if($test_account) $active_dds_accounts->addCondition('id',$test_account);
 
 		foreach ($active_dds_accounts as $active_dds_accounts_array) {
-			$active_dds_accounts->postInterestEntry($on_date)
+			$active_dds_accounts->postInterestEntry($on_date);
 		}
 
 	}

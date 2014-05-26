@@ -49,7 +49,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$all_todays_matured_Accounts = $this->add('Model_Active_Account_Recurring');
 		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
 		$all_todays_matured_Accounts->addCondition('maturity_date',$on_date);
-		$all_todays_matured_Accounts->addCondition('MaturityStatus',false);
+		$all_todays_matured_Accounts->addCondition('MaturedStatus',false);
 
 		foreach ($all_todays_matured_Accounts as $acc_array) {
 			$all_todays_matured_Accounts->markMatured($on_date);

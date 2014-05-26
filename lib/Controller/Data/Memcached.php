@@ -49,7 +49,7 @@ class Controller_Data_Memcached extends Controller_Data {
         return $this;
     }
 
-    function save($model,$id=null){
+    function save($model,$id=null,$data){
 
         if(is_null($model->id)){
             $id=uniqid();

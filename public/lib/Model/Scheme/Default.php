@@ -53,4 +53,7 @@ class Model_Scheme_Default extends Model_Scheme {
 				// array('under_scheme'=>BRANCH_TDS_ACCOUNT,'intermediate_text'=>"",'Group'=>BRANCH_TDS_ACCOUNT,'PAndLGroup'=>BRANCH_TDS_ACCOUNT),
 			);
 	}
+
+	function daily($branch=null,$on_date=null,$test_account=null){
+	}
 }

@@ -121,7 +121,7 @@ class Frontend extends ApiFrontend {
 
     function markProgress($what, $running, $detail=null, $total=null){
         $data =$this->api->recall('progress_data',array());
-        $data[$what] = array('running'=>$running)
+        $data[$what] = array('running'=>$running);
         if($detail) $data[$what] += array('detail'=>$detail);
         if($total) $data[$what] += array('total'=>$total);
 
@@ -129,6 +129,10 @@ class Frontend extends ApiFrontend {
             unset($data[$what]);
 
         $this->api->memorize('progress_data',$data);
+
+        $m=new Memcache();
+        $m->addServer('localhost',11211);
+        $m->set('data',$data);
 
     }
 }

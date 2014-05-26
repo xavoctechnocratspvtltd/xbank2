@@ -15,12 +15,10 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','FixedAndMis');
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
-			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod DAYS)";
+			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod DAY)";
 		});
 
-		$this->addExpression('Interest')->set(function($m,$q){
-			return $m->refSQL('scheme_id')->fieldQuery('Interest');
-		});
+		$this->scheme_join->addField('Interest');
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}

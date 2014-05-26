@@ -47,6 +47,9 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 			);
 	}
 
+	function daily($branch=null,$on_date=null,$test_account=null){
+	}
+
 	function halfYearly($branch=null){
 		if(!$branch) $branch=$this->api->current_branch;
 		

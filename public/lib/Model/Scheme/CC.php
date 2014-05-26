@@ -60,9 +60,12 @@ class Model_Scheme_CC extends Model_Scheme {
 
 		if($test_account)
 			$cc_accounts->addCondition('id',$test_account->id);
-
+ 		
+ 		$a=1;
+ 		$this->api->markProgress('accounts',$a,$cc_accounts->count()->getOne());
 		foreach ($cc_accounts as $accounts_array) {
 			$cc_accounts->postInterestEntry($on_date);
+	 		$this->api->markProgress('accounts',++$a,null,$cc_accounts['AccountNumber']);
 		}
 		
 		// $this->resetCurrentInterest($branch, $test_account);

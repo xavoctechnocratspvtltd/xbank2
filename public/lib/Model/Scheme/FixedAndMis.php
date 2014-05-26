@@ -52,7 +52,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$scheme_join = $active_fd_accounts->join('schemes','scheme_id');
 
 		$scheme_join->addField('InterestToAnotherAccount');
-		$scheme_join->addField('Interest');
+		// $scheme_join->addField('Interest');
 
 		$active_fd_accounts->addCondition('MaturedStatus',false);
 		$active_fd_accounts->addCondition('created_at','<',$on_date);

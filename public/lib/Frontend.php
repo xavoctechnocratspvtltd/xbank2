@@ -19,6 +19,10 @@ class Frontend extends ApiFrontend {
             'addons'=>'atk4-addons'
             ))->setBasePath($this->pathfinder->base_location->base_path);
 
+        $this->pathfinder->addLocation(array(
+            'addons'=>'my-addons'
+            ))->setBasePath($this->pathfinder->base_location->base_path.'/public');
+
 
         $this->pathfinder->addLocation(array(
             'php'=>'lib'
@@ -119,13 +123,14 @@ class Frontend extends ApiFrontend {
         );
     }
 
-    function markProgress($what, $running, $detail=null, $total=null){
+    function markProgress($what, $running=0, $detail=null, $total=null){
         $data =$this->api->recall('progress_data',array());
-        $data[$what] = array('running'=>$running);
+        
+        if($running !== null or $running !== "") $data[$what] = array('running'=>$running);
         if($detail) $data[$what] += array('detail'=>$detail);
         if($total) $data[$what] += array('total'=>$total);
 
-        if($running ==0 and isset($data[$what]))
+        if($running === null and isset($data[$what]))
             unset($data[$what]);
 
         $this->api->memorize('progress_data',$data);
@@ -133,6 +138,17 @@ class Frontend extends ApiFrontend {
         $m=new Memcache();
         $m->addServer('localhost',11211);
         $m->set('data',$data);
-
     }
+
+    function getProgress(){
+        $m=new Memcache();
+        $m->addServer('localhost',11211);
+        $data=$m->get('data');
+        return $data;
+    }
+
+    function resetProgress(){
+        $this->api->memorize('progress_data',array());
+    }
+
 }

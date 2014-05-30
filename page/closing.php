@@ -1,7 +1,6 @@
 <?php
 
 class page_closing extends Page {
-
 	function page_index(){
 		if($_GET['do']){
 			$this->api->forget('progress_data');
@@ -16,21 +15,10 @@ class page_closing extends Page {
 				throw $e;
 			}
 		}else{
-
-			$m=new Memcache();
-			$m->addServer('localhost',11211);
-			$data=$m->get('data');
-
-			$no = $this->api->recall('sno',1);
-			$v = $this->add('View');
-			$v->set($no. ' :: '.json_encode($data));
-			$v->js(true)->reload(null,null,null,2000);
-			$this->api->memorize('sno',$no+1);			
-		}
-	}
-
-	function page_do(){
-		if(!$_GET['cut_page']){
+			$this->api->markProgress('branch',2,'Udaipur branch',5);
+			$this->api->markProgress('schemes',rand(100,1024),'CC 4% Interest',1024);
+			$this->api->markProgress('daily','2014-04-01','Running Daily','2014-05-31');
+			$this->add('progressview/View_Progress');
 		}
 	}
 }

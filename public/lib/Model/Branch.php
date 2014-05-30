@@ -166,7 +166,7 @@ class Model_Branch extends Model_Table {
 	}
 
 	function performClosing($on_date=null, $test_scheme=null, $test_account = null){
-		$this->api->markProgress('branch',$$this['Code']);
+		$this->api->markProgress('branch',$this['Code']);
 		
 		if(!$on_date) $on_date = $this->api->today;
 		if(!$this->loaded()) throw $this->exception('Branch Must be loaded to perform closing');
@@ -189,7 +189,7 @@ class Model_Branch extends Model_Table {
 		$s=1;
 		
 		$schemeTypes = explode(',',ACCOUNT_TYPES);
-		$this->api->markProgress('schemes',$s,count($schemeTypes),'About to run schemes');
+		$this->api->markProgress('schemes',$s,'About to run schemes',count($schemeTypes));
 
 		foreach ($schemeTypes as $st) {
 			if($test_scheme and $test_scheme['SchemeType'] != $st) continue;
@@ -202,12 +202,12 @@ class Model_Branch extends Model_Table {
 				$schemes->daily($this, $on_date,$test_account);
 
 				if($this->is_MonthEndDate($on_date)){
-					$this->api->markProgress('monthly',$s++,null,$st);
+					$this->api->markProgress('monthly',$s++,$st,null);
 					$schemes->monthly($this, $on_date,$test_account);
 				}
 				
 				if($this->is_HalfYearEnding($on_date,$test_account)){
-					$this->api->markProgress('halfyearly',$s++,null,$st);
+					$this->api->markProgress('halfyearly',$s++,$st,null);
 					$schemes->halfYearly($this, $on_date,$test_account);
 				}
 				

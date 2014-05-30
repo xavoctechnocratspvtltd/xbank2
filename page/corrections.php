@@ -7,14 +7,61 @@
 // TODOS: Saving account current interests till date as now onwards its keep saved on transaction
 
 class page_corrections extends Page {
-	public $rename_fields=array();// [] = array(table_name,old_field,new_field)
-	public $new_fields=array();// [] = array(table_name,old_field,new_field)
-	public $remove_fields=array();// [] = array(table_name,old_field,new_field)
-
+	public $total_taks=7;
+	public $title = "Correction";
+	function init(){
+		parent::init();
+		$this->add('progressview/View_Progress',array('interval'=>500));
+	}
 
 	function page_index(){
-		$this->add('View_Info')->set('Start');
+
+		if(!$_GET['execute']) return;
+
+		if($jmp=$_GET['jump_to']){
+			$this->$jmp();
+			return;
+		}
+
+		$this->api->resetProgress();
+
 		$this->query('SET FOREIGN_KEY_CHECKS = 0');
+
+		$this->api->markProgress('Corrections',"",'Renaming tables',$this->total_taks);
+		$this->renameTables();
+		
+		$this->add('Model_AgentGuarantor');
+		$this->add('Model_AccountGuarantor');
+		$this->add('Model_Transaction');
+		
+		$this->api->markProgress('Corrections',1,'Adding, Editing, Removing Fields ...',$this->total_taks);
+		$this->page_fields();
+	
+		$this->api->markProgress('Corrections',2,'Moving To Many ...',$this->total_taks);
+		$this->page_movetomany();
+
+		$this->api->markProgress('Corrections',3,'Transactions Table Refactoring ...',$this->total_taks);
+		$this->page_transactionsUpdate();
+		
+		$this->api->markProgress('Corrections',4,'Agent AccountNumber to account_id ...',$this->total_taks);
+		$this->agentAccountToRelation();
+
+		$this->api->markProgress('Corrections',5,'Saving Account Interests ...',$this->total_taks);
+		$this->savingInterestTillNow();
+		
+		$this->api->markProgress('Corrections',6,'CC Account Interest',$this->total_taks);
+		$this->ccInterestTillNow();
+
+		$this->api->markProgress('Corrections',7,'done',$this->total_taks);
+
+		// Make currentInterest = 0 for Account_CC
+		$this->add('Model_Account_CC')->_dsql()->set('CurrentInterest',0)->update();
+
+		$this->query('SET FOREIGN_KEY_CHECKS = 1');
+	}
+
+	// task 1
+	function renameTables(){
 		$rename_tables =array(
 				'jos_xbalance_sheet'=>'balance_sheet',
 				'jos_xbranch'=>'branches',
@@ -32,37 +79,21 @@ class page_corrections extends Page {
 				'jos_xclosings'=>'closings',
 
 				);
+		$this->api->markProgress('Renaming_Tables',0,'...',count($rename_tables));
 
-
+		$i=1;
 		foreach ($rename_tables as $old_table_name => $new_table_name) {
 			try{
 				$this->query("RENAME TABLE $old_table_name TO $new_table_name");
+				$this->api->markProgress('Renaming_Tables',$i++,$old_table_name . ' => ' . $new_table_name);
 			}catch(Exception $e){
 				$this->add('View')->set("Could not rename table $old_table_name  -- " . $e->getMessage());
 			}
 		}
-
-		$this->add('View_Info')->set('Tables Renamed, Creating new tables from models');
-
-		$this->add('Model_AgentGuarantor');
-		$this->add('Model_AccountGuarantor');
-		$this->add('Model_Transaction');
-
-		
-		$this->page_fields();
-		$this->page_movetomany();
-		$this->page_transactionsUpdate();
-		$this->agentAccountToRelation();
-
-		// Make currentInterest = 0 for Account_CC
-		$this->add('Model_Account_CC')->_dsql()->set('CurrentInterest',0)->update();
-
-		$this->query('SET FOREIGN_KEY_CHECKS = 1');
 	}
 
 	function page_fields(){
 
-		
 		$this->add('View_Info')->set('Renaming fields');
 		$renameFields =array(
 				array('balance_sheet','Name','name'),
@@ -85,8 +116,11 @@ class page_corrections extends Page {
 				array('premiums','accounts_id','account_id'),
 			);
 
+		$this->api->markProgress('Rename_Fields',0,'...',count($renameFields));		
+		$i=1;
 		foreach ($renameFields as $dtl) {
 			$this->renameField($dtl[0],$dtl[1],$dtl[2]);
+			$this->api->markProgress('Rename_Fields',$i++,print_r($dtl,true));		
 		}
 		$this->add('View_Info')->set('fields renamed adding new ');
 
@@ -106,9 +140,11 @@ class page_corrections extends Page {
 				array('accounts','`Group`','string'),
 				array('accounts','`account_type`','string'),
 			);
-
+		$this->api->markProgress('New_Field',0,'...',count($new_fields));
+		$i=1;
 		foreach ($new_fields as $dtl) {
 			$this->addField($dtl[0],$dtl[1],$dtl[2]);
+			$this->api->markProgress('New_Field',$i++,print_r($dtl,true));
 		}
 
 		$this->query('UPDATE staffs SET name=username');
@@ -121,9 +157,11 @@ class page_corrections extends Page {
 				array('members','collector_id'),
 				array('members','Age'),
 			);
-
+		$this->api->markProgress('Remove_Fields',0,'...',count($remove_fields));
+		$i=1;
 		foreach ($remove_fields as $dtl) {
 			$this->removeField($dtl[0],$dtl[1]);
+			$this->api->markProgress('Remove_Fields',$i++,print_r($dtl,true));
 		}
 
 		$drop_table=array('jos_banner','jos_bannerclient','jos_bannertrack',
@@ -137,10 +175,12 @@ class page_corrections extends Page {
 						'jos_poll_date','jos_poll_menu','jos_polls','jos_sections','jos_session','jos_stats_agents',
 						'jos_templates_menu','jos_users','jos_weblinks');
 
-
+		$this->api->markProgress('Drop_Table',0,'...',count($drop_table));
+		$i=1;
 		foreach ($drop_table as $table_name) {
 			try{
 				$this->query("DROP Table $table_name");
+				$this->api->markProgress('Drop_Table',$i++,$table_name);
 			}catch(Exception $e){
 				$this->add('View')->set($table_name.' can not drop');
 			}
@@ -210,11 +250,6 @@ class page_corrections extends Page {
         if(isset($cast[$type]))return $cast[$type];
         return 'varchar(255)';
     }
-
-
-
-
-
 
     function page_movetomany(){
 
@@ -300,6 +335,42 @@ class page_corrections extends Page {
 				SET
 					ag.account_id = ac.id
     		");
+    }
+
+    function savingInterestTillNow($on_date=null){
+    	$sa_update=$this->add('Model_Account_SavingAndCurrent');
+    	$sa_update->dsql()->set('CurrentInterest',0)->set('LastCurrentInterestUpdatedAt','2014-03-31')->update();
+
+    	$sa=$this->add('Model_Active_Account_SavingAndCurrent');
+
+    	$total = $sa->count()->getOne();
+    	$i=1;
+    	foreach ($sa as $sa_array) {
+    		$this->api->markProgress('Saving_Interest',$i++,$sa['AccountNumber'],$total);
+	    	$transaction_row = $sa->ref('TransactionRow');
+	    	$transaction_row->addCondition('created_at','>','2014-03-31');
+	    	
+	    	$last_tr=null;
+	    	foreach ($transaction_row->getRows() as $tr) {
+	    		$sa['CurrentInterest'] = $sa['CurrentInterest'] + $sa->getSavingInterest($tr['created_at']);
+				$sa['LastCurrentInterestUpdatedAt'] = $on_date;	
+				$last_tr=$tr;
+	    	}
+
+	    	if(strtotime(date('Y-m-d',strtotime($last_tr['created_at']))) != strtotime(date('Y-m-d',strtotime('2014-05-31')))){
+	    		$sa['CurrentInterest'] = $sa['CurrentInterest'] + $sa->getSavingInterest('2014-05-31',null,null,null,true);
+				$sa['LastCurrentInterestUpdatedAt'] = '2014-05-31';
+	    	}
+
+	    	$sa->save();
+    	}
+    	$this->api->markProgress('Saving_Interest',null,'');
+    }
+
+    function ccInterestTillNow($on_date=false){
+    	$cc_update=$this->add('Model_Account_CC');
+    	$cc_update->dsql()->set('CurrentInterest',0)->set('LastCurrentInterestUpdatedAt','2014-05-31')->update();
+    	
     }
 
 }

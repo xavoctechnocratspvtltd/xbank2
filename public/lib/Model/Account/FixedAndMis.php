@@ -63,16 +63,45 @@ class Model_Account_FixedAndMis extends Model_Account{
 	// 	return $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days['days_total'] / 36500);
 	// }
 
-	function doInterestProvision($on_date,$mark_matured=false){
+	function getAmountForInterest($on_date=null,$on_years_completed=false){
+		
+		if(!$on_date) $on_date = $this->api->today;
+
+		$on_amount = $this['Amount'];
+
+		$days = $this->api->my_date_diff($on_date,$this['created_at']);
+
+		if($on_years_completed) $days['days_total']--;
+		
+		$years_completed = (int) ($days['days_total'] / 365) ;
+		
+
+		for ($i=0; $i < $years_completed; $i++) { 
+			$interest = $on_amount * $this['Interest'] / 100;
+			$on_amount += $interest;
+		}
+		echo "doing provision on $on_amount on $on_date for ".$days['days_total']." days and years completed = $years_completed <br/>";
+		return $on_amount;
+	}
+
+	function doInterestProvision($on_date,$maturity_day=false,$on_years_completed=false){
 		// a.CurrentInterest=(a.CurrentBalanceCr * s.Interest * DATEDIFF('" . getNow("Y-m-d") . "', a.LastCurrentInterestUpdatedAt)/36500), a.LastCurrentInterestUpdatedAt='" . getNow("Y-m-d") . "' WHERE
 		if(!$this->loaded()) throw $this->exception('Account Must be loaded to post Interest in it');
 
 		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
-		$interest = $this['CurrentBalanceCr'] * $this['Interest'] * $days['days_total'] / 36500;
+
+
+		// Count One more day when FD is openned
+		if($this['LastCurrentInterestUpdatedAt'] == $this['created_at']) $days['days_total']++;
+		// Deduct One Day from last day of maturity
+		if($maturity_day) $days['days_total']--;
+
+		$interest = $this->getAmountForInterest($on_date,$on_years_completed) * $this['Interest'] * $days['days_total'] / 36500;
+	
+	
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $interest;
-
 
 	    $debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . $this['scheme_name'];
 		$creditAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . $this['scheme_name'];
@@ -85,18 +114,23 @@ class Model_Account_FixedAndMis extends Model_Account{
 		
 		$transaction->execute();
 
-		if($mark_matured){
-			$this['MaturedStatus'] = true;
-			if($maturity_to_account = $this->ifMaturitytoAnotherAccount()){
-				throw $this->exception('Maturity to account entry ??? ')->adddMoreInfo('Account',$this['AccountNumber']);
-			}
+		$this->api->markProgress('Doing_Provision',2,$on_date,5);
 
-			if($this->isAutoRenewed()){
-				throw $this->exception('Auto Renew Process');
-			}
+		$this->save();
+	}
+
+	function markMature(){
+		$this['MaturedStatus'] = true;
+		if($maturity_to_account = $this->ifMaturitytoAnotherAccount()){
+			throw $this->exception('Maturity to account entry ??? ')->adddMoreInfo('Account',$this['AccountNumber']);
 		}
 
-		return $this->saveAs('Model_Account_FixedAndMis');
+		if($this->isAutoRenewed()){
+			throw $this->exception('Auto Renew Process');
+		}
+		$id=$this->id;
+		$this->saveAndUnload();
+		$this->load($id);
 	}
 
 	function isAutoRenewed(){

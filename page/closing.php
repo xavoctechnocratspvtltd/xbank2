@@ -15,9 +15,9 @@ class page_closing extends Page {
 				throw $e;
 			}
 		}else{
-			$this->api->markProgress('branch',2,'Udaipur branch',5);
-			$this->api->markProgress('schemes',rand(100,1024),'CC 4% Interest',1024);
-			$this->api->markProgress('daily','2014-04-01','Running Daily','2014-05-31');
+			// $this->api->markProgress('branch',2,'Udaipur branch',5);
+			// $this->api->markProgress('schemes',rand(100,1024),'CC 4% Interest',1024);
+			// $this->api->markProgress('daily','2014-04-01','Running Daily','2014-05-31');
 			$this->add('progressview/View_Progress');
 		}
 	}

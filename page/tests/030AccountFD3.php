@@ -2,7 +2,7 @@
 
 // 100 DAYS FD CHECK
 
-class page_tests_030AccountFD1 extends Page_Tester {
+class page_tests_030AccountFD3 extends Page_Tester {
     public $title = 'FD Account Testing';
 
     public $account;
@@ -15,14 +15,12 @@ class page_tests_030AccountFD1 extends Page_Tester {
     // FEED
     public $account_type = ACCOUNT_TYPE_FIXED;
     // FEED
-    public $maturity_date='2014-09-18';
-    // FEED
     public $proper_responses=array(
         "Test_accountType"=>array(
-        			'type'=>ACCOUNT_TYPE_FIXED,
-        			'member'=>'GOWRAV VISHWAKARMA ',
-        			'scheme'=>'FD 3 MONTH 12% Spcl sCHIM', 
-        			'Agent'=>'MEENA DEVRA'),
+                    'type'=>ACCOUNT_TYPE_FIXED,
+                    'member'=>'GOWRAV VISHWAKARMA ',
+                    'scheme'=>'FD 36 MONTHS',
+                    'Agent'=>'MEENA DEVRA'),
         'Test_CreateAccount'=>array(),
         'Test_otherAccountsBalance'=>array(),
         'Test_createTimeTransactions'=>array(),
@@ -31,14 +29,16 @@ class page_tests_030AccountFD1 extends Page_Tester {
 
     // FEED
     public $account_flow=array(
-            'open'=>'2014-06-10',
+            'open'=>'2014-06-11',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
                     // '2014-05-08'=> array(4000,'from_branch_code'=>'JHD'),
                     // '2014-06-05'=> 800,
                 ),
-            'test_till'=>'2014-09-20'
+            'test_till'=>'2017-06-13'
         );
+    // FEED
+    public $maturity_date='2017-06-10';
 
     function prepare_accountType(){
         $m = $this->member = $this->add('Model_Member');
@@ -48,7 +48,7 @@ class page_tests_030AccountFD1 extends Page_Tester {
         $s = $this->scheme = $this->add('Model_Scheme');
         // $s->load(81); // DDS 1 YEAR PLAN
         // FEED
-        $s->load(115); // FD 3 MONTH 12% Spcl sCHIM
+        $s->load(61); // FD 36 MONTHS
 
         $a = $this->agent = $this->add('Model_Agent');
         // FEED
@@ -105,7 +105,7 @@ class page_tests_030AccountFD1 extends Page_Tester {
         $this->accounts_that_will_be_checked += array(
         		$this->AccountNumber =>array(
                 		array(0,$this->Amount), // After account create
-                		array(0,31154) // After Closings
+                		array(0,30986.301369863) // After Closings
                 	)
         	);
         return null;

@@ -46,7 +46,7 @@ class Model_Account extends Model_Table {
 		$this->addField('created_at')->type('datetime');//->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime');//->defaultValue($this->api->now);
 		$this->addField('CurrentBalanceCr')->type('money');
-		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime')->defaultValue($this->api->now);
+		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime');//->defaultValue($this->api->now);
 		// $this->addField('InterestToAccount')->type('int'); now converted to hasOne Account
 		$this->addField('Amount')->type('money')->defaultValue(0);
 		$this->addField('LockingStatus')->type('boolean')->defaultValue(false);

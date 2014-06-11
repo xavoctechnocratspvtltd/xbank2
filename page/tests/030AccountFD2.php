@@ -2,7 +2,7 @@
 
 // 100 DAYS FD CHECK
 
-class page_tests_030AccountFD1 extends Page_Tester {
+class page_tests_030AccountFD2 extends Page_Tester {
     public $title = 'FD Account Testing';
 
     public $account;
@@ -15,7 +15,7 @@ class page_tests_030AccountFD1 extends Page_Tester {
     // FEED
     public $account_type = ACCOUNT_TYPE_FIXED;
     // FEED
-    public $maturity_date='2014-09-18';
+    public $maturity_date='2015-05-20';
     // FEED
     public $proper_responses=array(
         "Test_accountType"=>array(
@@ -31,13 +31,13 @@ class page_tests_030AccountFD1 extends Page_Tester {
 
     // FEED
     public $account_flow=array(
-            'open'=>'2014-06-10',
+            'open'=>'2015-02-10',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
                     // '2014-05-08'=> array(4000,'from_branch_code'=>'JHD'),
                     // '2014-06-05'=> 800,
                 ),
-            'test_till'=>'2014-09-20'
+            'test_till'=>'2015-05-22'
         );
 
     function prepare_accountType(){
@@ -105,7 +105,7 @@ class page_tests_030AccountFD1 extends Page_Tester {
         $this->accounts_that_will_be_checked += array(
         		$this->AccountNumber =>array(
                 		array(0,$this->Amount), // After account create
-                		array(0,31154) // After Closings
+                		array(0,30986.301369863) // After Closings
                 	)
         	);
         return null;

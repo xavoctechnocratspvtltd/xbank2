@@ -49,11 +49,11 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 	}
 
 	function daily($branch=null,$on_date=null,$test_account=null){
-		$active_fd_accounts = $this->add('Model_Active_Account_FixedAndMis');
+		$active_fd_accounts = $this->add('Model_Active_Account_FixedAndMis',array('table_alias'=>'main_table'));
 		$scheme_join = $active_fd_accounts->join('schemes','scheme_id');
 
 		$scheme_join->addField('InterestToAnotherAccount');
-		// $scheme_join->addField('Interest');
+		$scheme_join->addField('Interest');
 
 		$active_fd_accounts->addCondition('MaturedStatus',false);
 		$active_fd_accounts->addCondition('created_at','<',$on_date);
@@ -61,16 +61,27 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 
 		if($test_account) $active_fd_accounts->addCondition('id',$test_account->id);
 		
-		$active_fd_accounts->addCondition('maturity_date','like',$on_date. '%');
+		$active_fd_accounts->addExpression('days_collapsed')->set('DATEDIFF('.$active_fd_accounts->table_alias.'.created_at,"'.$on_date.'")');
 
+		// $active_fd_accounts->addCondition('maturity_date','like',$on_date. '%');
+		$active_fd_accounts->_dsql()->having($active_fd_accounts->dsql()->expr('days_collapsed % 365 = 0'));
+		
 		foreach ($active_fd_accounts as $active_fd_accounts_array) {
 			if($active_fd_accounts['InterestToAnotherAccount']){
 				// This is MIS
 				$active_fd_accounts->interstToAnotherAccountEntry($on_date);
 			}else{
 				// This is FD
-				$active_fd_accounts = $active_fd_accounts->doInterestProvision($on_date, $mark_matured=true);
-				$active_fd_accounts->revertProvision($on_date, $mark_matured=true);
+				$maturity_day=false;
+				$year_completed = true;
+				if(strtotime(date('Y-m-d',strtotime($on_date))) == strtotime(date('Y-m-d',strtotime($active_fd_accounts['maturity_date']))) ){
+					$maturity_day=true;
+				}
+				$active_fd_accounts = $active_fd_accounts->doInterestProvision($on_date,$maturity_day,$year_completed);
+				if(strtotime(date('Y-m-d',strtotime($on_date))) == strtotime(date('Y-m-d',strtotime($active_fd_accounts['maturity_date']))) ){
+					$active_fd_accounts->revertProvision($on_date);
+					$active_fd_accounts->markMature();
+				}
 			}
 		}
 	}
@@ -116,11 +127,11 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$active_fd_accounts->addCondition('created_at','<',$on_date);
 		$active_fd_accounts->addCondition('branch_id',$branch->id);
 
+		if($test_account) $active_fd_accounts->addCondition('id',$test_account->id);
+
 		foreach ($active_fd_accounts as $active_fd_accounts_array) {
+			$active_fd_accounts->doInterestProvision($on_date);
 			$active_fd_accounts->revertProvision($on_date);
 		}
-
-
 	}
-
 }

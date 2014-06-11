@@ -140,6 +140,7 @@ define('CC_AMOUNT'                   ,'RdAmount');
 define('LOAN_AMOUNT'                   ,'RdAmount');
 
 define('TRA_INTEREST_POSTING_IN_SAVINGS',       'InterestPostingsInSavingAccounts');
+define('TRA_INTEREST_PROVISION_IN_FIXED_ACCOUNT', 'InterestProvisionInFixedAccounts');
 define('TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT', 'InterestPostingsInFixedAccounts');
 define('TRA_INTEREST_POSTING_IN_MIS_ACCOUNT', 'InterestPostingsInMISAccounts');
 define('TRA_INTEREST_POSTING_IN_HID_ACCOUNT', 'InterestPostingsInHIDAccounts');

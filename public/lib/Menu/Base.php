@@ -56,6 +56,7 @@ class Menu_Base extends Menu {
 
 		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_rdCommissionAndTds','RD Comm & TDS');
+		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');
 		$deposit_reports->js('click',$deposit_reports_sub_menus_popover->showJS());
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');

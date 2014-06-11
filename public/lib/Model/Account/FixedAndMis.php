@@ -73,20 +73,34 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $interest;
 
-		if($mark_matured) $this['MaturedStatus'] = true;
-
 
 	    $debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . $this['scheme_name'];
 		$creditAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . $this['scheme_name'];
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, "FD monthly Interest Deposited in ".$this['AccountNumber'], $only_transaction=null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_PROVISION_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, "FD monthly Interest Deposited in ".$this['AccountNumber'], $only_transaction=null, array('reference_account_id'=>$this->id));
 		
 		$transaction->addDebitAccount($debitAccount, $interest);
 		$transaction->addCreditAccount($creditAccount, $interest);
 		
 		$transaction->execute();
+
+		if($mark_matured){
+			$this['MaturedStatus'] = true;
+			if($maturity_to_account = $this->ifMaturitytoAnotherAccount()){
+				throw $this->exception('Maturity to account entry ??? ')->adddMoreInfo('Account',$this['AccountNumber']);
+			}
+
+			if($this->isAutoRenewed()){
+				throw $this->exception('Auto Renew Process');
+			}
+		}
+
 		return $this->saveAs('Model_Account_FixedAndMis');
+	}
+
+	function isAutoRenewed(){
+		return false;
 	}
 
 	function revertProvision($on_date){
@@ -104,6 +118,14 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$this['CurrentInterest'] = 0;
 		$this->save();
 
+	}
+
+	function ifMaturitytoAnotherAccount(){
+		$account=$this->ref('MaturityToAccount_id');
+		if($account->loaded())
+			return $account;
+		else
+			return false;
 	}
 
 	function interstToAnotherAccountEntry($on_date,$mark_matured=false){
@@ -128,6 +150,22 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$transaction->addCreditAccount($creditAccount, $interest);
 		
 		$transaction->execute();
-		throw $this->exception(' interstToAnotherAccountEntry post entry to be checked');
+		// throw $this->exception('interstToAnotherAccountEntry post entry to be checked');
+	}
+
+	function provisions($from_date, $to_date, $for_scheme=null, $for_account=null){
+		$provision_transactions_rows = $this->add('Model_TransactionRow');
+		
+		$provision_transactions_join = $provision_transactions_rows->join('transactions','transaction_type_id');
+		$transaction_type_join = $provision_transactions_join->join('transaction_types','transaction_type_id');
+		
+
+		$transaction_type_model = $this->add('Model_TransactionType');
+		$transaction_type_model->tryLoadBy('name',TRA_INTEREST_PROVISION_IN_FIXED_ACCOUNT);
+
+		if(!$transaction_type_model->loaded()) $transaction_type_model->save();
+
+		$provision_transactions_rows->addCondition('');
+
 	}
 }

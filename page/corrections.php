@@ -144,6 +144,7 @@ class page_corrections extends Page {
 				array('accounts','`account_type`','string'),
 				array('premiums','`PaneltyCharged`','money'),
 				array('premiums','`PaneltyPosted`','money'),
+				array('accounts','`MaturityToAccount_id`','int'),
 			);
 		$this->api->markProgress('New_Field',0,'...',count($new_fields));
 		$i=1;

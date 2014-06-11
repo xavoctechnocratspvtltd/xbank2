@@ -33,6 +33,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$this->getElement('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->getElement('InterestToAnotherAccount')->caption('Interest To Account (check if interest to be posted to other account)');
 
+		$this->getElement('balance_sheet_id')->caption('Head')->getModel()->addCondition('name','Deposits - Liabilities');
 		$this->addCondition('SchemeType',$this->schemeType);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
@@ -40,10 +41,10 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 
 	function getDefaultAccounts(){
 		return array(
-			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On FD and MIS','PAndLGroup'=>'Commission Paid On Deposit'),
-			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On FD and MIS','PAndLGroup'=>'Interest Paid On Deposit'),
-			array('under_scheme'=>"Provision",'intermediate_text'=>"Interest Provision On",'Group'=>'Interest Provision On FD and MIS','PAndLGroup'=>'Interest Payable On Deposit'),
-			array('under_scheme'=>"Provision",'intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On FD and MIS','PAndLGroup'=>'Commission Payable Paid On Deposit'),
+				array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On FD and MIS','PAndLGroup'=>'Commission Paid On Deposit'),
+				array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On FD and MIS','PAndLGroup'=>'Interest Paid On Deposit'),
+				array('under_scheme'=>"Provision",'intermediate_text'=>"Interest Provision On",'Group'=>'Interest Provision On FD and MIS','PAndLGroup'=>'Interest Payable On Deposit'),
+				array('under_scheme'=>"Provision",'intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On FD and MIS','PAndLGroup'=>'Commission Payable Paid On Deposit'),
 			);
 	}
 
@@ -57,8 +58,10 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$active_fd_accounts->addCondition('MaturedStatus',false);
 		$active_fd_accounts->addCondition('created_at','<',$on_date);
 		$active_fd_accounts->addCondition('branch_id',$branch->id);
+
+		if($test_account) $active_fd_accounts->addCondition('id',$test_account->id);
 		
-		$active_fd_accounts->addCondition('maturity_date','like',$on_date. ' %');
+		$active_fd_accounts->addCondition('maturity_date','like',$on_date. '%');
 
 		foreach ($active_fd_accounts as $active_fd_accounts_array) {
 			if($active_fd_accounts['InterestToAnotherAccount']){
@@ -66,7 +69,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 				$active_fd_accounts->interstToAnotherAccountEntry($on_date);
 			}else{
 				// This is FD
-				$active_fd_accounts->doInterestProvision($on_date, $mark_matured=true);
+				$active_fd_accounts = $active_fd_accounts->doInterestProvision($on_date, $mark_matured=true);
 				$active_fd_accounts->revertProvision($on_date, $mark_matured=true);
 			}
 		}
@@ -96,8 +99,9 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 				$active_fd_accounts->doInterestProvision($on_date);
 			}
 		}
+	}
 
-
+	function halfYearly($branch=null,$on_date=null,$test_account=null){
 	}
 
 	function yearly($branch=null,$on_date=null,$test_account=null){

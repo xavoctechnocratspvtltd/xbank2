@@ -137,9 +137,7 @@ class Model_Account_Recurring extends Model_Account{
 	}
 
 	function interestPaid($as_on_date=null){
-
 		if(!$as_on_date) $as_on_date = $this->api->now;
-
 
 		$transactions = $this->add('Model_Transactions');
 		$rows_join = $transactions->join('transaction_row.transaction_id');

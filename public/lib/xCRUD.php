@@ -8,7 +8,8 @@ class xCRUD extends View_CRUD {
 
 	function formSubmit($form){
 		try {
-			if($this->hook('myupdate',array($form))){
+			$hook_value = $this->hook('myupdate',array($form));
+			if($hook_value[0]){
 	            $self = $this;
 	            $this->api->addHook('pre-render', function () use ($self) {
 	                $self->formSubmitSuccess()->execute();

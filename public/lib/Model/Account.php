@@ -2,7 +2,8 @@
 class Model_Account extends Model_Table {
 	var $table= "accounts";
 	public $scheme_join=null;
-
+	public $allow_any_name = false;
+	
 	function init(){
 		parent::init();
 
@@ -112,7 +113,7 @@ class Model_Account extends Model_Table {
 
 	function defaultBeforeSave(){
 
-		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber'])){
+		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber']) AND !@$this->allow_any_name ){
 			throw $this->exception('AccountNumber Format not accpeted')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
 
@@ -182,7 +183,6 @@ class Model_Account extends Model_Table {
 		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Muct be Loaded Object of Model_Branch');
 		if(!$created_at) $created_at = $this->api->now;
 		if(!$otherValues) $otherValues=array();
-
 
 		$this['member_id'] = $member_id;
 		$this['scheme_id'] = $scheme_id;

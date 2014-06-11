@@ -20,7 +20,7 @@ class Frontend extends ApiFrontend {
             ))->setBasePath($this->pathfinder->base_location->base_path);
 
         $this->pathfinder->addLocation(array(
-            'addons'=>'my-addons'
+            'addons'=>'my-addons',
             ))->setBasePath($this->pathfinder->base_location->base_path.'/public');
 
 

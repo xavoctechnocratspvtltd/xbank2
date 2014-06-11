@@ -11,6 +11,7 @@ class page_members extends Page {
 
 		$member_model = $this->add('Model_Member');
 		$member_model->add('Controller_Acl');
+		$member_model->setOrder('id','desc');
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
@@ -31,6 +32,7 @@ class page_members extends Page {
 			$member_model->getElement('Nominee')->system(true);
 			$member_model->getElement('RelationWithNominee')->system(true);
 			$member_model->getElement('NomineeAge')->system(true);
+			$member_model->hook('editing');
 		}
 		
 		if($crud->isEditing("add")){
@@ -39,12 +41,9 @@ class page_members extends Page {
 		}
 
 
-		if($crud->isEditing('edit')){
-			$member_model->hook('editing');
-		}
-
 		$crud->setModel($member_model);
-		if($g= $crud->grid) {
+		if(!$crud->isEditing()) {
+			$g=$crud->grid;
 			$g->addQuickSearch(array('name'));
 			$g->addMethod('format_removeEdit',function($grid,$field){
 				if($grid->model['name'] == $grid->model->ref('branch_id')->get('Code').SP.'Default')
@@ -57,6 +56,7 @@ class page_members extends Page {
 			$g->addFormatter('edit','removeEdit');
 			$g->addFormatter('delete','removeDelete');
 			$g->addPaginator(10);
+
 		}
 
 		if($crud->isEditing()){

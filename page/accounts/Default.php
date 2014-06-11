@@ -7,6 +7,7 @@ class page_accounts_Default extends Page {
 		$crud=$this->add('xCRUD');
 		$account_Default_model = $this->add('Model_Account_Default');
 		$account_Default_model->add('Controller_Acl');
+		$account_Default_model->setOrder('id','desc');
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
@@ -31,7 +32,7 @@ class page_accounts_Default extends Page {
 			$account_Default_model->hook('editing');
 		}
 
-		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','agent_id','ActiveStatus'));
+		$crud->setModel($account_Default_model,array('AccountNumber','member','scheme','agent_id','ActiveStatus'));
 		
 		if($crud->grid)
 			$crud->grid->addPaginator(10);

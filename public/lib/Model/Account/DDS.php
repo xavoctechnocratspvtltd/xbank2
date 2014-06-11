@@ -30,9 +30,9 @@ class Model_Account_DDS extends Model_Account{
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$in_branch);
-		if($this->ref('agent_id')->loaded()){
-			$this->giveAgentCommission($on_amount = $amount, $transaction_date);
-		}
+		// if($this->ref('agent_id')->loaded()){
+		// 	$this->giveAgentCommission($on_amount = $amount, $transaction_date);
+		// }
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
@@ -45,27 +45,28 @@ class Model_Account_DDS extends Model_Account{
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
 	}
 
-	function giveAgentCommission($on_amount,$on_date){
-		if(!$this['agent_id']) return;
+	// AGENT COMMISSION FOR DDS IS SHIFTED TO MONTHLY
+	// function giveAgentCommission($on_amount,$on_date){
+	// 	if(!$this['agent_id']) return;
 
-		$monthDifference = $this->api->my_date_diff($on_date, $this['created_at']);
-        $monthDifference = $monthDifference["months_total"]+1;
-        $percent = explode(",", $this->ref('scheme_id')->get('AccountOpenningCommission'));
-        $percent = (isset($percent[$monthDifference])) ? $percent[$monthDifference] : $percent[count($percent) - 1];
-        $amount = $on_amount * $percent /100;
-        $agentAccount = $this->ref('agent_id')->ref('agent_id')->get('AccountNumber');
+	// 	$monthDifference = $this->api->my_date_diff($on_date, $this['created_at']);
+ //        $monthDifference = $monthDifference["months_total"]+1;
+ //        $percent = explode(",", $this->ref('scheme_id')->get('AccountOpenningCommission'));
+ //        $percent = (isset($percent[$monthDifference])) ? $percent[$monthDifference] : $percent[count($percent) - 1];
+ //        $amount = $on_amount * $percent /100;
+ //        $agentAccount = $this->ref('agent_id')->ref('agent_id')->get('AccountNumber');
 
-        $transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,null,$on_date,"DDS Premium Commission",null,array('reference_account_id'=>$this->id));
+ //        $transaction = $this->add('Model_Transaction');
+	// 	$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,null,$on_date,"DDS Premium Commission",null,array('reference_account_id'=>$this->id));
 
-        $comm_acc = $this->ref('branch_id')->get('Code') . SP . COMMISSION_PAID_ON . $this->ref('scheme_id')->get('name');
-		$transaction->addDebitAccount($comm_acc,$amount);
+ //        $comm_acc = $this->ref('branch_id')->get('Code') . SP . COMMISSION_PAID_ON . $this->ref('scheme_id')->get('name');
+	// 	$transaction->addDebitAccount($comm_acc,$amount);
 
-		$transaction->addCreditAccount($this->ref('agent_id')->ref('account_id')->get('AccountNumber'),($amount - ($amount * TDS_PERCENTAGE / 100)));
-		$transaction->addCreditAccount($this->ref('agent_id')->ref('account_id')->ref('branch_id')->get('Code').SP.BRANCH_TDS_ACCOUNT,($amount * TDS_PERCENTAGE / 100));
+	// 	$transaction->addCreditAccount($this->ref('agent_id')->ref('account_id')->get('AccountNumber'),($amount - ($amount * TDS_PERCENTAGE / 100)));
+	// 	$transaction->addCreditAccount($this->ref('agent_id')->ref('account_id')->ref('branch_id')->get('Code').SP.BRANCH_TDS_ACCOUNT,($amount * TDS_PERCENTAGE / 100));
 
-		$transaction->execute();
-	}
+	// 	$transaction->execute();
+	// }
 
 	function markMatured($on_date=null){
 		if(!$this->loaded()) throw $this->exception('DDS Account must be loaded to be marked matured');
@@ -103,8 +104,10 @@ class Model_Account_DDS extends Model_Account{
 	}
 
 	function postAgentCommissionEntry($on_date=null, $return=false){
-        $agentAccount = $this['agent_AccountNumber'];
+        $agentAccount = $this->ref('agent_id')->ref();
         $branch_code =$this->ref('branch_id')->get('Code');
+
+        $tds_percentage = 
 //            $amount = $ac->amountCr;
 
 //------------CALCULATING COMMISSION FOR DDS----------------

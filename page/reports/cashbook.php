@@ -1,6 +1,6 @@
 <?php
 
-class page_cashbook extends Page {
+class page_reports_cashbook extends Page {
 
 	public $title="Cash Book";
 

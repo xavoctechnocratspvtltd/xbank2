@@ -9,12 +9,12 @@ class View_Progress extends \View{
 		parent::init();
 		$this->addClass('progress-base');
 		$data = $this->api->getProgress();
-		if($_GET[$this->name.'_fetch_data']){
+		if($_GET['fetch_data']){
 			echo json_encode($data);
 			exit;
 		}
 		$this->js(true)->_load('progressview');
-		$this->js(true)->univ()->setInterval('$.univ().updateProgress("'.$this->api->url(null,array($this->name.'_fetch_data'=>1)).'")', $this->interval);
+		$this->js(true)->univ()->setInterval('$.univ().updateProgress("'.$this->api->url(null,array('fetch_data'=>1)).'")', $this->interval);
 	}
 
 	function defaultTemplate(){

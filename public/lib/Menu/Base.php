@@ -13,16 +13,20 @@ class Menu_Base extends Menu {
 		
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$books = 	$this->addMenuItem('books','Books');
+		$deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
 
 		$this->addMenuItem('logout','Logout');
 
+		// Popovers
 		$admin_sub_menus_popover=$this->add('View_Popover');
 		$account_sub_menu_popover = $this->add('View_Popover');
 		$books_sub_menus_popover = $this->add('View_Popover');
 		$transactions_sub_menus_popover = $this->add('View_Popover');
+		$deposit_reports_sub_menus_popover = $this->add('View_Popover');
 		$utilities_sub_menus_popover = $this->add('View_Popover');
 		
+		// Sub Menus
 
 		$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
 		$admin_sub_menus->addMenuItem('staffs','Staff');
@@ -44,9 +48,16 @@ class Menu_Base extends Menu {
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
 		$books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');
-		$books_sub_menus->addMenuItem('daybook','Day Book');
-		$books_sub_menus->addMenuItem('cashbook','Cash Book');
+		$books_sub_menus->addMenuItem('reports_daybook','Day Book');
+		$books_sub_menus->addMenuItem('reports_cashbook','Cash Book');
+		$books_sub_menus->addMenuItem('reports_balancesheet','Balance Sheet');
+		$books_sub_menus->addMenuItem('reports_pandl','P & L');
 		$books->js('click',$books_sub_menus_popover->showJS());
+
+		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
+		$deposit_reports_sub_menus->addMenuItem('reports_deposit_rdCommissionAndTds','RD Comm & TDS');
+		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');
+		$deposit_reports->js('click',$deposit_reports_sub_menus_popover->showJS());
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');
 		$utilities_sub_menus->addMenuItem('documents','Documents Management');

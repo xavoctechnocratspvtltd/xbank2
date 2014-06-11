@@ -90,14 +90,14 @@ class page_corrections extends Page {
 				$this->add('View')->set("Could not rename table $old_table_name  -- " . $e->getMessage());
 			}
 		}
-		$this->api->markProgress('Renaming_Tables',null,'...',count($rename_tables));
+		$this->api->markProgress('Renaming_Tables',null,'...');
 	}
 
 	function page_fields(){
 
 		$this->add('View_Info')->set('Renaming fields');
 		$renameFields =array(
-				array('balance_sheet','Name','name'),
+				array('balance_sheet','Head','name'),
 				array('branches','Name','name'),
 				array('dealers','DealerName','name'),
 				array('documents','Name','name'),
@@ -124,7 +124,6 @@ class page_corrections extends Page {
 			$this->api->markProgress('Rename_Fields',$i++,print_r($dtl,true));		
 		}
 		$this->add('View_Info')->set('fields renamed adding new ');
-		$this->api->markProgress('Rename_Fields',null,'...',count($renameFields));		
 
 		$new_fields=array(
 				array('members','title','string'),
@@ -141,6 +140,9 @@ class page_corrections extends Page {
 				array('agents','account_id','int'),
 				array('accounts','`Group`','string'),
 				array('accounts','`account_type`','string'),
+				array('premiums','`PaneltyCharged`','money'),
+				array('premiums','`PaneltyPosted`','money'),
+				array('accounts','`MaturityToAccount_id`','int'),
 			);
 		$this->api->markProgress('New_Field',0,'...',count($new_fields));
 		$i=1;
@@ -148,8 +150,8 @@ class page_corrections extends Page {
 			$this->addField($dtl[0],$dtl[1],$dtl[2]);
 			$this->api->markProgress('New_Field',$i++,print_r($dtl,true));
 		}
-		$this->api->markProgress('New_Field',null,'...',count($new_fields));
 
+		$this->api->markProgress('New_Field',null,'...');
 		$this->query('UPDATE staffs SET name=username');
 
 
@@ -166,7 +168,7 @@ class page_corrections extends Page {
 			$this->removeField($dtl[0],$dtl[1]);
 			$this->api->markProgress('Remove_Fields',$i++,print_r($dtl,true));
 		}
-		$this->api->markProgress('Remove_Fields',null,'...',count($remove_fields));
+		$this->api->markProgress('Remove_Fields',null,'...');
 
 		$drop_table=array('jos_banner','jos_bannerclient','jos_bannertrack',
 						'jos_categories','jos_components','jos_contact_details'
@@ -189,8 +191,8 @@ class page_corrections extends Page {
 				$this->add('View')->set($table_name.' can not drop');
 			}
 		}
-		$this->api->markProgress('Drop_Table',null,'...',count($drop_table));
 
+		$this->api->markProgress('Drop_Table',null,'...');
 		$this->add('Model_Account_Loan')->_dsql()
 			->set('CurrentInterest',0)
 			->update();

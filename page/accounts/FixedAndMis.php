@@ -7,6 +7,7 @@ class page_Accounts_FixedAndMis extends Page {
 		$crud=$this->add('xCRUD');
 		$account_fixedandmis_model = $this->add('Model_Account_FixedAndMis');
 		$account_fixedandmis_model->add('Controller_Acl');
+		$account_fixedandmis_model->setOrder('id','desc');
 		
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
@@ -32,15 +33,24 @@ class page_Accounts_FixedAndMis extends Page {
 			$account_fixedandmis_model->hook('editing');
 		}
 
-		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','Nominee','NomineeAge','RelationWithNominee'));
+		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','NomineeAge','RelationWithNominee'));
+
+		if($crud->isEditing()){
+			$type_field = $crud->form->getElement('account_type');
+			$type_field->js(true)->univ()->bindConditionalShow(array(
+					''=>array(),
+					'FD'=>array('MaturityToAccount_id'),
+					'MIS'=>array('intrest_to_account_id')
+					),'div .atk-form-row');
+		}
 		
 		if($crud->isEditing('add')){
 			$o->now();
 		}
 
-		if($crud->grid)
+		if($crud->grid){
 			$crud->grid->addPaginator(10);
-
-
+			$crud->grid->addQuickSearch(array('AccountNumber'));
+		}
 	}
 }

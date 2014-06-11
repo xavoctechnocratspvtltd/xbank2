@@ -47,6 +47,7 @@ class Model_Transaction extends Model_Table {
 		
 		$transaction_type_model = $this->add('Model_TransactionType');
 		$transaction_type_model->tryLoadBy('name',$transaction_type);
+		
 		if(!$transaction_type_model->loaded()) $transaction_type_model->save();
 
 		if(!$branch) $branch = $this->api->current_branch;

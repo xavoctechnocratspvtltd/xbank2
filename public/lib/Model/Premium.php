@@ -28,7 +28,8 @@ class Model_Premium extends Model_Table {
 		
 		$this['PaidOn'] = $on_date;
 		$this->save();
-		throw $this->exception('What is my Paid value');
+
+		$this->reAdjustPaidValues($on_date);
 
 		$this->giveAgentCommission($on_date);
 	}
@@ -48,13 +49,19 @@ class Model_Premium extends Model_Table {
 			$all_paid_noncommissioned_preimums->saveAndUnload();			
 		}
 
+		$tds_percentage = $account->ref('agent_id')->ref('member_id')->get('PanNo')?10:20;
+		$tds = $commission * $tds_percentage / 100;
+
+
 		$account = $this->ref('account_id');
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Commission ".$account['AccountNumber'], null, array('reference_account_id'=>$account->id));
 		
 		$transaction->addDebitAccount($account->ref('branch_id')->get('Code') . SP . COMMISSION_PAID_ON . $account['scheme_name'] , $commission);
-		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commission);
+		
+		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commission -$tds);
+		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
 		
 		$transaction->execute();
 
@@ -84,5 +91,67 @@ class Model_Premium extends Model_Table {
 
 		return $this;
 	}
+
+    function reAdjustPaidValues($on_date=null){
+
+    	if(!$on_date) $on_date=$this->api->now;
+
+        // $CI->db->query("UPDATE jos_xpremiums SET Paid=0 WHERE accounts_id = $this->accounts_id");
+    	// reset all paid  = 0 first
+    	$this->add('Model_Premium')
+    		->addCondition('account_id',$this['account_id'])
+    		->_dsql()
+    		->set('Paid',0)
+    		->update();
+
+        // $due_and_paid_query = $CI->db->query("
+        // 		SELECT 
+        // 			GROUP_CONCAT(EXTRACT(YEAR_MONTH FROM DueDate)) DueArray, 
+        // 			GROUP_CONCAT(EXTRACT(YEAR_MONTH FROM PaidOn)) PaidArray 
+        // 		FROM 
+        // 			jos_xpremiums 
+        // 		WHERE 
+        // 			accounts_id = $this->accounts_id 
+        // 		AND 
+        // 			(PaidOn < '$tilldate' OR DueDate < '$tilldate') 
+        // 		ORDER BY id
+        // 		")->row();
+
+        $due_and_paid_query = $this->api->db->dsql()
+        							->table('premiums')
+        							->field($this->dsql()->expr('GROUP_CONCAT(EXTRACT(YEAR_MONTH FROM DueDate)) DueArray'))
+        							->field($this->dsql()->expr('GROUP_CONCAT(EXTRACT(YEAR_MONTH FROM PaidOn)) PaidArray'))
+									->where('account_id',$this['account_id'])
+									->where("(PaidOn < '$tilldate' OR DueDate < '$tilldate')")
+									->order('id')
+									->getHash()
+									;						
+
+
+        $due_array=explode(",",$due_and_paid_query['DueArray']);
+        $paid_array=explode(",",$due_and_paid_query['PaidArray']);
+
+        
+        $account_premiums=$this->add('Model_Premium');
+        $account_premiums
+        ->_dsql()
+        ->where('account_id',$this['account_id'])
+        ->where("(PaidOn <= '$tilldate' OR DueDate <= '$tilldate')")
+        ->order('id');
+
+        $i=0;
+        foreach($account_premiums as $p){
+            // echo "setting";
+            $paid=0;
+            for($j=0;$j<=$i;$j++){
+                if(isset($paid_array[$j]) AND $paid_array[$j] <= $due_array[$i]) $paid++;
+                // if(isset($paid_array[$j]) AND $j==0 AND $paid_array[$j] > $due_array[$i]) $paid++;
+            }
+            $account_premiums['Paid']= $paid;
+            $account_premiums->save();
+            $i++;
+        }
+
+    }
 
 }

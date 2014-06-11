@@ -1,6 +1,6 @@
 <?php
 
-class page_daybook extends Page {
+class page_reports_daybook extends Page {
 	public $title = "Day Book ";
 	function init(){
 		parent::init();

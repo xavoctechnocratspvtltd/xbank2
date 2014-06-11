@@ -5,6 +5,9 @@ class page_index extends xPage{
 	
 	function init(){
 		parent::init();
-			
+		
+		$this->add('View_DuesReceiveList');
+		$this->add('View_DuesGiveList');
+
 	}
 }

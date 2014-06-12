@@ -116,7 +116,7 @@ class page_transactions_jv extends Page {
 			}
 		}
 
-		if($cr_amount_sum != $dr_amount_sum)
+		if(abs($cr_amount_sum - $dr_amount_sum) > 0.01)
 			$form->js()->univ()->errorMessage('Amount Not Same')->execute();
 
 		if($cr_account_no == 0 or $dr_account_no == 0)

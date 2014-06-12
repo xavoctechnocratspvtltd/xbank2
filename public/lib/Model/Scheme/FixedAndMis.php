@@ -64,7 +64,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$active_fd_accounts->addExpression('days_collapsed')->set('DATEDIFF('.$active_fd_accounts->table_alias.'.created_at,"'.$on_date.'")');
 
 		// $active_fd_accounts->addCondition('maturity_date','like',$on_date. '%');
-		$active_fd_accounts->_dsql()->having($active_fd_accounts->dsql()->expr('days_collapsed % 365 = 0'));
+		$active_fd_accounts->_dsql()->having($active_fd_accounts->dsql()->expr('((days_collapsed-1) % 365 = 0)') . ' OR maturity_date like "'.$on_date. '%"');
 		
 		foreach ($active_fd_accounts as $active_fd_accounts_array) {
 			if($active_fd_accounts['InterestToAnotherAccount']){
@@ -73,12 +73,11 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 			}else{
 				// This is FD
 				$maturity_day=false;
-				$year_completed = true;
 				if(strtotime(date('Y-m-d',strtotime($on_date))) == strtotime(date('Y-m-d',strtotime($active_fd_accounts['maturity_date']))) ){
 					$maturity_day=true;
 				}
-				$active_fd_accounts = $active_fd_accounts->doInterestProvision($on_date,$maturity_day,$year_completed);
-				if(strtotime(date('Y-m-d',strtotime($on_date))) == strtotime(date('Y-m-d',strtotime($active_fd_accounts['maturity_date']))) ){
+				$active_fd_accounts->doInterestProvision($on_date,$maturity_day);
+				if($maturity_day ){
 					$active_fd_accounts->revertProvision($on_date);
 					$active_fd_accounts->markMature();
 				}

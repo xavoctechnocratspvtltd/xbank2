@@ -15,7 +15,7 @@ class page_tests_030AccountFD2 extends Page_Tester {
     // FEED
     public $account_type = ACCOUNT_TYPE_FIXED;
     // FEED
-    public $maturity_date='2015-05-20';
+    public $maturity_date='2015-05-21';
     // FEED
     public $proper_responses=array(
         "Test_accountType"=>array(
@@ -105,7 +105,7 @@ class page_tests_030AccountFD2 extends Page_Tester {
         $this->accounts_that_will_be_checked += array(
         		$this->AccountNumber =>array(
                 		array(0,$this->Amount), // After account create
-                		array(0,30986.301369863) // After Closings
+                		array(0,30986.3) // After Closings
                 	)
         	);
         return null;

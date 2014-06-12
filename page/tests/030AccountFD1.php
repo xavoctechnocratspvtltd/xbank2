@@ -105,7 +105,7 @@ class page_tests_030AccountFD1 extends Page_Tester {
         $this->accounts_that_will_be_checked += array(
         		$this->AccountNumber =>array(
                 		array(0,$this->Amount), // After account create
-                		array(0,31154) // After Closings
+                		array(0,30986.3) // After Closings
                 	)
         	);
         return null;

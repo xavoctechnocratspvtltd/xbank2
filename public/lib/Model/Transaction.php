@@ -77,6 +77,8 @@ class Model_Transaction extends Model_Table {
 		if(is_string($account)){
 			$account = $this->add('Model_Account')->loadBy('AccountNumber',$account);
 		}
+
+		$amount = round($amount,2);
 		
 		if($account['branch_id'] != $this['branch_id']){
 			$this->all_debit_accounts_are_mine = false;
@@ -90,6 +92,8 @@ class Model_Transaction extends Model_Table {
 		if(is_string($account)){
 			$account = $this->add('Model_Account')->loadBy('AccountNumber',$account);
 		}
+
+		$amount = round($amount,2);
 		
 		if($account['branch_id'] != $this['branch_id']){
 			$this->all_credit_accounts_are_mine = false;
@@ -105,8 +109,11 @@ class Model_Transaction extends Model_Table {
 
 		if(!$this->create_called) throw $this->exception('Create Account Function Must Be Called First');
 		
+		// $this->senitizeTransaction();
+		
 		if(($msg=$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id'])) !== true)
 			throw $this->exception('Transaction is Not Valid')->addMoreInfo('message',$msg);
+
 
 		if($this->all_debit_accounts_are_mine and $this->all_credit_accounts_are_mine)
 			$this->executeSingleBranch();
@@ -116,6 +123,38 @@ class Model_Transaction extends Model_Table {
 		$this->executed=true;
 	}
 
+	function senitizeTransaction(){
+		$dr_sum=0;
+		$cr_sum=0;
+		$cr_delta=0;
+		$dr_delta=0;
+		
+		foreach ($this->dr_accounts as $AccountNumber => $dtl) {
+			$original_amount = $dtl['amount'];
+			$dtl['amount'] = round($dtl['amount'],3);
+			$cr_delta += $original_amount - $dtl['amount'];
+			$cr_sum += $dtl['amount'];
+		}
+		
+		foreach ($this->cr_accounts as $AccountNumber => $dtl) {
+			$original_amount = $dtl['amount'];
+			$dtl['amount'] = round($dtl['amount'],3);
+			$dr_delta += $original_amount - $dtl['amount'];
+			$dr_sum += $dtl['amount'];
+		}
+
+		$delta = $cr_delta - $dr_delta;
+		echo $delta;
+
+		if($delta < 0){
+			$this->dr_accounts[count($this->dr_accounts)-1]['amount'] -= $delta;
+		}
+
+		if($delta > 0){
+			$this->cr_accounts[count($this->dr_accounts)-1]['amount'] -= $delta;
+		}
+
+	}
 
 	function executeSingleBranch(){
 

@@ -47,7 +47,7 @@ class Grid_AccountsBase extends Grid{
 		$this->addColumn($title);
 		$this->order->move($title,$position);
 		$this->addHook('formatRow',function($grid)use($title,$cr_column,$dr_column,$negative){
-			$grid->current_row_balance = $grid->current_row_balance  + ($grid->current_row[$dr_column] - $grid->current_row[$cr_column]);
+			$grid->current_row_balance = round($grid->current_row_balance  + ($grid->current_row[$dr_column] - $grid->current_row[$cr_column]),3);
 			if($grid->current_row_balance < 0 )
 				$grid->current_row[$title]= abs($grid->current_row_balance) ." ". $negative;
 			else

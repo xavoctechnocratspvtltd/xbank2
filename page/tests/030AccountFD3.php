@@ -1,6 +1,6 @@
 <?php
 
-// 100 DAYS FD CHECK
+// 3 years FD CHECK
 
 class page_tests_030AccountFD3 extends Page_Tester {
     public $title = 'FD Account Testing';

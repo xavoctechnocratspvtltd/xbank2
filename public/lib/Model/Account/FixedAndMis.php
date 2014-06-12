@@ -4,6 +4,9 @@ class Model_Account_FixedAndMis extends Model_Account{
 	public $transaction_deposit_type = TRA_FIXED_ACCOUNT_DEPOSIT;	
 	public $default_transaction_deposit_narration = "Amount submited in FD Account {{AccountNumber}}";	
 
+	public $transaction_withdraw_type = TRA_FD_ACCOUNT_AMOUNT_WITHDRAWL;	
+	public $default_transaction_withdraw_narration = "Amount withdrawl from {{SchemeType}} Account {{AccountNumber}}";
+
 	function init(){
 		parent::init();
 
@@ -117,16 +120,18 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$this->save();
 	}
 
-	function markMature(){
-		$this['MaturedStatus'] = true;
+	function markMature($on_date=null){
+		if(!$on_date) $on_date = $this->api->today;
+		
 		if($maturity_to_account = $this->ifMaturitytoAnotherAccount()){
-			throw $this->exception('Maturity to account entry ??? ')->adddMoreInfo('Account',$this['AccountNumber']);
+			$this->withdrawl($this['CurrentBalanceCr'],$narration='Maturity Amount Transfered to '. $maturity_to_account['AccountNumber'],$accounts_to_credit=array(array($maturity_to_account['AccountNumber']=>$this['CurrentBalanceCr'])),$form=null,$on_date,$in_branch=null,$reference_account_id=$this->id);
 		}
 
 		if($this->isAutoRenewed()){
 			throw $this->exception('Auto Renew Process');
 		}
 		$id=$this->id;
+		$this['MaturedStatus'] = true;
 		$this->saveAndUnload();
 		return $this->add('Model_Account_FixedAndMis')->load($id);
 	}

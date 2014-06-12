@@ -1,8 +1,8 @@
 <?php
 
-// 100 DAYS FD CHECK 31 March cross
+// 100 DAYS FD CHECK 31 March cross MATURITY TO ANOTHER ACCOUNT
 
-class page_tests_030AccountFD2 extends Page_Tester {
+class page_tests_030AccountFD4 extends Page_Tester {
     public $title = 'FD Account Testing';
 
     public $account;
@@ -14,15 +14,18 @@ class page_tests_030AccountFD2 extends Page_Tester {
     public $AccountNumber;
     // FEED
     public $account_type = ACCOUNT_TYPE_FIXED;
+
+    // FEED
+    public $MaturityToAccount_id;
     // FEED
     public $maturity_date='2015-05-21';
     // FEED
     public $proper_responses=array(
         "Test_accountType"=>array(
-        			'type'=>ACCOUNT_TYPE_FIXED,
-        			'member'=>'GOWRAV VISHWAKARMA ',
-        			'scheme'=>'FD 3 MONTH 12% Spcl sCHIM', 
-        			'Agent'=>'MEENA DEVRA'),
+                    'type'=>ACCOUNT_TYPE_FIXED,
+                    'member'=>'GOWRAV VISHWAKARMA ',
+                    'scheme'=>'FD 3 MONTH 12% Spcl sCHIM', 
+                    'Agent'=>'MEENA DEVRA'),
         'Test_CreateAccount'=>array(),
         'Test_otherAccountsBalance'=>array(),
         'Test_createTimeTransactions'=>array(),
@@ -53,6 +56,9 @@ class page_tests_030AccountFD2 extends Page_Tester {
         $a = $this->agent = $this->add('Model_Agent');
         // FEED
         $a->load(11); // Meena Devra
+
+        // FEED
+        $this->MaturityToAccount_id=4667; // UDRSB584
         
         $this->AccountNumber = 'UDR'.$this->account_type.'X'.rand(1000,9999);
 
@@ -73,13 +79,17 @@ class page_tests_030AccountFD2 extends Page_Tester {
         $this->accounts_that_will_be_checked = array(
                 // ACCOUNT_NUMBER => array(array(after_create_account_transaction_DR,CR),array('after_closing_done,DR,CR'))
                 $this->api->current_branch['Code'].SP.BRANCH_TDS_ACCOUNT =>array(
-									                							array(0,0),
-									                							array(0,0,)
-									                							),
+                                                                                array(0,0),
+                                                                                array(0,0,)
+                                                                                ),
                 'UDRSB373' =>array(
-                					array(0,0), // After Account Create
-                					array(10,20,) // After Closings
-                					)
+                                array(0,0), // After Account Create
+                                array(10,20,) // After Closings
+                            ),
+                'UDRSB584'=>array(
+                                array(0,0), // After Account Create
+                                array(0,30908) // After Closing
+                            )
             );
 
 
@@ -103,11 +113,11 @@ class page_tests_030AccountFD2 extends Page_Tester {
         $this->proper_responses['Test_accountMaturity']=array('maturity_date'=>$this->maturity_date,'MaturedStatus'=>1);
         // FEED
         $this->accounts_that_will_be_checked += array(
-        		$this->AccountNumber =>array(
-                		array(0,$this->Amount), // After account create
-                		array(0,30986.3) // After Closings
-                	)
-        	);
+                $this->AccountNumber =>array(
+                        array(0,$this->Amount), // After account create
+                        array(0,30986.3) // After Closings
+                    )
+            );
         return null;
     }
 
@@ -118,7 +128,7 @@ class page_tests_030AccountFD2 extends Page_Tester {
     function prepare_CreateAccount(){
         $this->account = $account = $this->add('Model_Account_'.$this->account_type);
         $account->allow_any_name = true;
-        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id),$form=null,$created_at=$this->account_flow['open']);
+        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id,'MaturityToAccount_id'=>$this->MaturityToAccount_id),$form=null,$created_at=$this->account_flow['open']);
         $this->api->memorize('new_account_number',$this->AccountNumber);
         // ++++++++
         $this->proper_responses['Test_CreateAccount'] +=array('AccountNumber'=>$this->AccountNumber,'member_id'=>$this->member->id, 'maturity_date'=>$this->maturity_date,'scheme'=>$this->scheme['name'],'agent'=>$this->agent['name']);

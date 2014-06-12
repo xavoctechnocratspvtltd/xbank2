@@ -50,15 +50,25 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 	function daily($branch=null,$on_date=null,$test_account=null){
 	}
 
-	function halfYearly($branch=null){
+	function monthly($branch=null,$on_date=null,$test_account=null){
+	}
+
+	function halfYearly($branch=null,$on_date=null,$test_account=null){
 		if(!$branch) $branch=$this->api->current_branch;
 		
-		$sbca_accounts = $this->add('Model_Account_SavingAndCurrent');
+		$sbca_account = $this->add('Model_Account_SavingAndCurrent');
 		$sbca_account->addCondition('ActiveStatus',true);
 		$sbca_account->addCondition('branch_id',$branch->id);
-		$sbca_account->addCondition('created_at','<',$this->api->today);
+		$sbca_account->addCondition('created_at','<',$on_date);
+
+		if($test_account) $sbca_account->addCondition('id',$test_account->id);
+
 		foreach ($sbca_account as $accounts_array) {
-			$sbca_account->applyHalfYearlyInterest($this->api->today);
+			$x=$sbca_account->applyHalfYearlyInterest($on_date,true);
+			throw $this->exception($x);
 		}
+	}
+
+	function yearly($branch=null,$on_date=null,$test_account=null){
 	}
 }

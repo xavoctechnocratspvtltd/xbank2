@@ -90,10 +90,10 @@ class Model_Branch extends Model_Table {
 		
 	}
 
-	function newVoucherNumber($branch_id=null, $transaction_date=null){
+	function newVoucherNumber($branch=null, $transaction_date=null){
 		$cross_check=false;
 
-		if(!$branch_id) $branch_id = $this->id;
+		if(!$branch) $branch = $this;
 
 		$f_year = $this->api->getFinancialYear($transaction_date);	
 		$start_date = $f_year['start_date'];
@@ -107,7 +107,7 @@ class Model_Branch extends Model_Table {
 
 
 		$transaction_model = $this->add('Model_Transaction');
-		$transaction_model->addCondition('branch_id',$branch_id);
+		$transaction_model->addCondition('branch_id',$branch->id);
 		$transaction_model->addCondition('created_at','>=',$start_date);
 		$transaction_model->addCondition('created_at','<',$this->api->nextDate($end_date)); // ! important next date
 
@@ -117,7 +117,7 @@ class Model_Branch extends Model_Table {
 		
 		if($cross_check){
 			$cross_check = $this->add('Model_Transaction');
-			$cross_check->addCondition('branch_id',$branch_id);
+			$cross_check->addCondition('branch_id',$branch->id);
 			$cross_check->addCondition('voucher_no',$max_voucher+1);
 			$cross_check->addCondition('created_at','>=',$start_date);
 			$cross_check->addCondition('created_at','<',$this->api->nextDate($f_year['end_date'])); // ! important next date
@@ -126,7 +126,7 @@ class Model_Branch extends Model_Table {
 
 			if($cross_check->loaded()){
 				$cross_check_2 = $this->add('Model_Transaction');
-				$cross_check_2->addCondition('branch_id',$branch_id);
+				$cross_check_2->addCondition('branch_id',$branch->id);
 				$cross_check_2->addCondition('voucher_no','like',round($max_voucher).'%');
 				$cross_check_2->addCondition('created_at','>=',$start_date);
 				$cross_check_2->addCondition('created_at','<',$this->api->nextDate($f_year['end_date'])); // ! important next date				

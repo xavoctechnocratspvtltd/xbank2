@@ -58,7 +58,7 @@ class Model_Transaction extends Model_Table {
 		$this['transaction_type_id'] = $transaction_type_model->id;
 		$this['reference_account_id'] = isset($options['reference_account_id'])?:0;
 		$this['branch_id'] = $branch->id;
-		$this['voucher_no'] = $branch->newVoucherNumber();
+		$this['voucher_no'] = $branch->newVoucherNumber($branch,$transaction_date);
 		$this['Narration'] = $Narration;
 		$this['created_at'] = $transaction_date;
 

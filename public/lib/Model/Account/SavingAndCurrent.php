@@ -2,8 +2,8 @@
 class Model_Account_SavingAndCurrent extends Model_Account{
 	
 	public $transaction_deposit_type = TRA_SAVING_ACCOUNT_AMOUNT_DEPOSIT;	
-	public $transaction_withdraw_type = TRA_SAVING_ACCOUNT_AMOUNT_WITHDRAWL;	
 	public $default_transaction_deposit_narration = "Amount submited in {{SchemeType}} Account {{AccountNumber}}";	
+	public $transaction_withdraw_type = TRA_SAVING_ACCOUNT_AMOUNT_WITHDRAWL;	
 	public $default_transaction_withdraw_narration = "Amount withdrawl from {{SchemeType}} Account {{AccountNumber}}";	
 
 
@@ -17,17 +17,19 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null,$created_at=null){
-		
-		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
-		$this['LastCurrentInterestUpdatedAt'] = $on_date;
-
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 		if($this['Amount'])
-			$this->deposit($this['Amount'],null,null,null,$created_at);
+			$this->deposit($this['Amount'],null,null,null,$on_date=$created_at);
+	}
+
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null,$in_branch=null){
+		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
+		$this['LastCurrentInterestUpdatedAt'] = $on_date;
+		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date,$in_branch);
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null,$on_date=null){
-		$balance = $this->getOpeningBalance($this->api->nextDate($this->api->today));
+		$balance = $this->getOpeningBalance($this->api->nextDate($on_date));
 		$balance = $balance['CR'] - $balance['DR'];
 		$min_limit= $this->ref('scheme_id')->get('MinLimit');
 

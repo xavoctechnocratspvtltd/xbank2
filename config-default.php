@@ -116,6 +116,8 @@ define('TRA_RECURRING_ACCOUNT_COLLECTION_CHARGES_DEPOSIT',  'RecurringAccountCol
 define('ACCOUNT_TYPES',                         "Loan,CC,FixedAndMis,Default,SavingAndCurrent,Recurring,DDS");
 define('ACCOUNT_TYPE_DEFAULT',                  "Default");
 define('ACCOUNT_TYPE_BANK',                     "SavingAndCurrent");
+define('ACCOUNT_TYPE_SAVING',                     "SavingAndCurrent");
+define('ACCOUNT_TYPE_CURRENT',                     "SavingAndCurrent");
 define('ACCOUNT_TYPE_FIXED',                    "FixedAndMis");
 define('ACCOUNT_TYPE_RECURRING',                "Recurring");
 define('ACCOUNT_TYPE_DDS',                      "DDS");

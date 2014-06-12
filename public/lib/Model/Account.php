@@ -11,6 +11,7 @@ class Model_Account extends Model_Table {
 		$this->hasOne('Scheme','scheme_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
 		// $this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
 		// $this->hasOne('Account','account_to_debit_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Account','related_account_id')->system(true);
 		$this->hasOne('Account','intrest_to_account_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','MaturityToAccount_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
@@ -99,6 +100,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('DocumentSubmitted','account_id');
 		$this->hasMany('AccountGaurantor','account_id');
 		$this->hasMany('TransactionRow','account_id');
+		$this->hasMany('Account','related_account_id');
 
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
 		$this->addHook('editing',array($this,'editing_default'));
@@ -265,18 +267,18 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null,$reference_account_id=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Withdrawing amount');
 		if(!isset($this->transaction_withdraw_type)) throw $this->exception('transaction_withdraw_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_withdraw_narration)) throw $this->exception('default_transaction_withdraw_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 
 		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace("{{SchemeType}}", $this['SchemeType'], $this->default_transaction_withdraw_narration));
 		if(!$on_date) $on_date = $this->api->now;
-		if(!$accounts_to_credit) $accounts_to_credit = array();
+		if(!$accounts_to_credit OR !is_array($accounts_to_credit)) $accounts_to_credit = array();
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_withdraw_type,$in_branch,$on_date,$narration);
+		$transaction->createNewTransaction($this->transaction_withdraw_type,$in_branch,$on_date,$narration,null,array('reference_account_id'=>$reference_account_id));
 		
 		$transaction->addDebitAccount($this,$amount);			
 

@@ -100,6 +100,54 @@ class Frontend extends ApiFrontend {
 
     }
 
+    function getFinancialQuarter($date=null,$start_end = 'both'){
+        if(!$date) $date = $this->api->today;
+
+        $month = date('m',strtotime($date));
+        $year = date('Y',strtotime($date));
+        
+        switch ($month) {
+            case 1:
+            case 2:
+            case 3:
+                $q_month_start='-01-01';
+                $q_month_end='-03-31';
+                break;
+            case 4:
+            case 5:
+            case 6:
+                $q_month_start='-04-01';
+                $q_month_end='-06-30';
+                break;
+            case 7:
+            case 8:
+            case 9:
+                $q_month_start='-07-01';
+                $q_month_end='-09-30';
+                break;
+            case 10:
+            case 11:
+            case 12:
+                $q_month_start='-10-01';
+                $q_month_end='-12-31';
+                break;
+        }
+
+        
+        if(strpos($start_end, 'start') !== false){
+            return $year.$q_month_start;
+        }
+        if(strpos($start_end, 'end') !== false){
+            return $year.$q_month_end;
+        }
+
+        return array(
+                'start_date'=>$year.$q_month_start,
+                'end_date'=>$year.$q_month_end
+            );
+
+    }
+
     function my_date_diff($d1, $d2){
         $d1 = (is_string($d1) ? strtotime($d1) : $d1);
         $d2 = (is_string($d2) ? strtotime($d2) : $d2);

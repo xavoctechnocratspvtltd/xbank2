@@ -42,10 +42,11 @@ class page_tests_sbca_040AccountSB1 extends Page_Tester {
                     '2014-07-07' => -5000,
                     '2014-07-28' => array(-5000,'from_branch_code'=>'JHD'),
                     '2014-08-25'=> array(3000,'from_branch_code'=>'JHD'),
+                    '2014-09-30' => 1000,
                     '2015-02-14' => -2000,
                     '2015-04-15' => 1000,
                 ),
-            'test_till'=>'2015-10-02'
+            'test_till'=>'2015-10-02',
         );
 
     function prepare_accountType(){
@@ -227,11 +228,13 @@ class page_tests_sbca_040AccountSB1 extends Page_Tester {
                         $this->account->deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=$date, $transaction_in_branch);
                     else
                         $this->account->withdrawl(abs($amount),$narration=null,$accounts_to_credit=null,$form=null,$on_date=$date, $transaction_in_branch);
+
                 }catch(Exception $e){
                     $this->add('View_Error')->setHTML('<b>'.$date. '</b> with amount <b>'.$amount.'</b> generated exception <i><u>'. $e->getMessage().'</u></i>');
                 }
             }
             $this->account->ref('branch_id')->performClosing($on_date=$date, $test_scheme=$this->scheme, $test_account = $this->account);
+            $this->account->reload();
             $date = date('Y-m-d',strtotime($date .' +1 days'));
         }
 

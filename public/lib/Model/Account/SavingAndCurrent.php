@@ -27,6 +27,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date,$in_branch);
+		$this->save();
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null,$on_date=null){
@@ -41,6 +42,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
+		$this->save();
 	}
 
 	function getSavingInterest($on_date=null,$after_date_not_included=null,$on_amount=null, $at_interest_rate=null,$add_last_day=false){
@@ -54,11 +56,12 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 		$days = $this->api->my_date_diff($on_date,$after_date_not_included);
 
-		if($add_last_day) $days['days_total']++;
+		// Month end or Halfyearly extra last day as there may not be any transaction on last day
+		if($add_last_day) $days['days_total']++; 
 		
 		$interest = $on_amount * $at_interest_rate * $days['days_total'] / 36500;
 
-		// echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
+		// echo $this['AccountNumber'] .' :: on-date '.$on_date . ' from date '. $after_date_not_included .' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
 
 		return round($interest,2);
 	}
@@ -70,16 +73,18 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 	 * @return number             returns interest as number if argument return is set true
 	 */
 	function applyHalfYearlyInterest($till_date=null,$return=false){
+		
 		if(!$till_date) $till_date = $this->api->today;
 		if(!$this->loaded()) throw $this->exception('Account must be loaded to apply monthly interest');
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date=$till_date ,$after_date_not_included=null,$on_amount=null, $at_interest_rate=null,$add_last_day=true);
-		$this['LastCurrentInterestUpdatedAt'] = $till_date;
+		$this['LastCurrentInterestUpdatedAt'] = $this->api->nextDate($till_date);
 
 		$current_interest = $this['CurrentInterest'];
 
 		if($return) return $current_interest;
 
+		$this['CurrentInterest'] = 0;
 		$this->save();
 
 		if($current_interest == 0 ) 
@@ -91,5 +96,30 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		$transaction->addCreditAccount($this,$current_interest);
 		$transaction->addDebitAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_PAID_ON . $this['scheme_name'], $current_interest);
 		$transaction->execute();
+	}
+
+	function isMinBalanceChargeAppliedInThisQuarter($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+
+		$qrtr = $this->api->getFinancialQuarter($on_date);
+
+		$transaction_type_model = $this->add('Model_TransactionType');
+		$transaction_type_model->tryLoadBy('name',TRA_MINIMUM_BALANCE_CHARGES);
+		
+		if(!$transaction_type_model->loaded()) $transaction_type_model->save();
+
+		$tr = $this->add('Model_TransactionRow');
+		$tr->addCondition('account_id',$this->id);
+		$tr->addCondition('created_at','>=',$qrtr['start_date']);
+		$tr->addCondition('created_at','<',$this->api->nextDate($qrtr['end_date']));
+		$tr->addCondition('transaction_type_id',$transaction_type_model->id);
+
+		return $tr->tryLoadAny()->loaded();
+
+
+	}
+
+	function applyMinBalanceCharge($on_date=null){
+
 	}
 }

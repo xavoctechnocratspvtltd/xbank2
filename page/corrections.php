@@ -57,6 +57,8 @@ class page_corrections extends Page {
 		// Make currentInterest = 0 for Account_CC
 		$this->add('Model_Account_CC')->_dsql()->set('CurrentInterest',0)->update();
 
+		$this->checkAndCreateDefaultAccounts();
+
 		$this->query('SET FOREIGN_KEY_CHECKS = 1');
 	}
 
@@ -374,6 +376,10 @@ class page_corrections extends Page {
     	}
     	$this->api->markProgress('Saving_Interest',null,'');
     }
+
+   	function checkAndCreateDefaultAccounts(){
+   		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+   	}
 
     function ccInterestTillNow($on_date=false){
     	$cc_update=$this->add('Model_Account_CC');

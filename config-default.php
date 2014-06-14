@@ -77,12 +77,16 @@ define('INTEREST_RECEIVED_ON',				'Interest Received On ');
 define('PROCESSING_FEE_RECEIVED',				'Processing Fee Received On ');
 define('PENALTY_DUE_TO_LATE_PAYMENT_ON',		'Penalty Due To Late Payment On ');
 define('FOR_CLOSE_ACCOUNT_ON',		'For Close Account On ');
-define('INTEREST_PAID_ON',				'Interest Paid On ');
-define('COMMISSION_PAID_ON',				'Commission Paid On ');
+define('INTEREST_PAID_ON',				'Interest Paid On');
+define('COMMISSION_PAID_ON',				'Commission Paid On');
 define('ADMISSION_FEE_ACCOUNT',			'Admission Fee');
 define('CASH_ACCOUNT',					'Cash Account');
 define('INTEREST_PROVISION_ON',                         'Interest Provision On ');
 define('DEPRECIATION_ON_FIXED_ASSETS',                  'Depreciation On Fixed Assets');
+define('MINIMUM_BALANCE_CHARGE_RECEIVED_ON',                  'Minimum Balance Charge Received On');
+define('CHEQUEBOOK_CHARGE_RECEIVED_ON',                  'ChequeBook Charge Received On');
+define('STATEMENT_CHARGE_RECEIVED_ON',                  'Statement Charge Received On');
+
 
 
 define('TRA_SAVING_ACCOUNT_AMOUNT_DEPOSIT',	'SavingAccountAmountDeposit');
@@ -108,6 +112,7 @@ define('TRA_CC_ACCOUNT_AMOUNT_WITHDRAWL',	'CCAccountAmountWithdrawl');
 define('TRA_DEPRICIATION_AMOUNT_CALCULATED',	'DepriciationAmountCalculated');
 define('TRA_SHARE_ACCOUNT_OPEN',                 'ShareAccountOpen');
 define('TRA_RECURRING_ACCOUNT_COLLECTION_CHARGES_DEPOSIT',  'RecurringAccountCollectionChargesDeposit');
+define('TRA_MINIMUM_BALANCE_CHARGES',  'MinimumBalanceChargesApplied');
 
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')

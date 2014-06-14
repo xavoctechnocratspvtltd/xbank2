@@ -201,6 +201,10 @@ class Model_Branch extends Model_Table {
 
 				$schemes->daily($this, $on_date,$test_account);
 
+				if($this->isQuarterEnd($on_date)){
+
+				}
+
 				if($this->is_MonthEndDate($on_date)){
 					$this->api->markProgress('monthly',$s++,$st,null);
 					$schemes->monthly($this, $on_date,$test_account);
@@ -226,8 +230,21 @@ class Model_Branch extends Model_Table {
 			return false;
 	}
 
+	function isQuarterEnd($on_date){
+		if(date('m',strtotime($on_date)) == 6 AND date('d',strtotime($on_date)) == 30 ) // June
+			return true;
+		if(date('m',strtotime($on_date)) == 9 AND date('d',strtotime($on_date)) == 30 ) //Sept
+			return true;
+		if(date('m',strtotime($on_date)) == 12 AND date('d',strtotime($on_date)) == 31 ) // Dec
+			return true;
+		if(date('m',strtotime($on_date)) == 3 AND date('d',strtotime($on_date)) == 31 ) // March
+			return true;
+
+		return false;
+	}
+
 	function is_HalfYearEnding($on_date){
-		if(date('m',strtotime($on_date)) == 8 AND date('d',strtotime($on_date)) == 31 )
+		if(date('m',strtotime($on_date)) == 9 AND date('d',strtotime($on_date)) == 30 ) // Sept
 			return true;
 		if(date('m',strtotime($on_date)) == 3 AND date('d',strtotime($on_date)) == 31 )
 			return true;

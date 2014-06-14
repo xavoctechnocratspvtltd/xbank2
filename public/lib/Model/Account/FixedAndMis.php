@@ -129,6 +129,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		if($this->isAutoRenewed()){
 			throw $this->exception('Auto Renew Process');
+			$this->autoRenewFD();
 		}
 		$id=$this->id;
 		$this['MaturedStatus'] = true;
@@ -138,6 +139,10 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 	function isAutoRenewed(){
 		return false;
+	}
+
+	function autoRenewFD(){
+
 	}
 
 	function revertProvision($on_date){

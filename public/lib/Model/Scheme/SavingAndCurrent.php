@@ -39,11 +39,11 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 
 	function getDefaultAccounts(){
 		return array(
-				array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On Saving and Current','PAndLGroup'=>'Commission Paid On Deposit'),
-				array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On Saving and Current','PAndLGroup'=>'Interest Paid On Deposit'),
-				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Minimum Balance Charge Received On",'Group'=>'Minimum Balance Charge Received On Saving and Current','PAndLGroup'=>'Minimum Balance Charge Received On Saving and Current'),
-				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"ChequeBook Charge Received On",'Group'=>'ChequeBook Charge Received On Saving and Current','PAndLGroup'=>'ChequeBook Charge Received On Saving and Current'),
-				array('under_scheme'=>"Indirect Income",'intermediate_text'=>"Statement Charge Received On",'Group'=>'Statement Charge Received On Saving and Current','PAndLGroup'=>'Statement Charge Received On Saving and Current'),
+				array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>COMMISSION_PAID_ON,'Group'=>'Commission Paid On Saving and Current','PAndLGroup'=>'Commission Paid On Deposit'),
+				array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>INTEREST_PAID_ON,'Group'=>'Interest Paid On Saving and Current','PAndLGroup'=>'Interest Paid On Deposit'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>MINIMUM_BALANCE_CHARGE_RECEIVED_ON,'Group'=>'Minimum Balance Charge Received On Saving and Current','PAndLGroup'=>'Minimum Balance Charge Received On Saving and Current'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>CHEQUEBOOK_CHARGE_RECEIVED_ON,'Group'=>'ChequeBook Charge Received On Saving and Current','PAndLGroup'=>'ChequeBook Charge Received On Saving and Current'),
+				array('under_scheme'=>"Indirect Income",'intermediate_text'=>STATEMENT_CHARGE_RECEIVED_ON,'Group'=>'Statement Charge Received On Saving and Current','PAndLGroup'=>'Statement Charge Received On Saving and Current'),
 			);
 	}
 

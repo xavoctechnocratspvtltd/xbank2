@@ -13,9 +13,10 @@ class Model_TransactionRow extends Model_Table {
 
 		$join_transaction = $this->leftJoin('transactions','transaction_id');
 		$join_transaction->addField('voucher_no');
-		$join_transaction->hasOne('Branch','branch_id');
 		$join_transaction->addField('Narration');
 		$join_transaction->addField('created_at');
+		$join_transaction->hasOne('TransactionType','transaction_type_id');
+		$join_transaction->hasOne('Branch','branch_id');
 
 		$this->setOrder('created_at');
 

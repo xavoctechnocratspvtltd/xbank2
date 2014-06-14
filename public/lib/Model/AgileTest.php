@@ -6,7 +6,8 @@
  * to that class for more info. 
  */
 class Model_AgileTest extends Model {
-    public $dir='page';
+    public $type='page';
+    public $dir='tests';
 
     function init(){
         parent::init();
@@ -24,7 +25,8 @@ class Model_AgileTest extends Model {
          * This model automatically sets its source by traversing 
          * and searching for suitable files
          */
-        $p=$this->api->pathfinder->searchDir($this->dir,'tests');
+        // $p=$this->api->pathfinder->searchDir($this->dir,'tests');
+        $p=$this->api->pathfinder->searchDir($this->type,$this->dir);
         sort($p);
         $this->setSource('Array',$p);
         $this->addHook('afterLoad',$this);
@@ -42,7 +44,7 @@ class Model_AgileTest extends Model {
             return $this->skipped();
         }
 
-        $page='page_tests_'.str_replace('/','_',str_replace('.php','',$this['name']));
+        $page='page_'.str_replace('/','_',str_replace('.php','',$this->dir.'/'.$this['name']));
         try {
             $p=$this->api->add($page,array('auto_test'=>false));
 

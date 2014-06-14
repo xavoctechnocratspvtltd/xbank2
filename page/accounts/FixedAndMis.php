@@ -42,8 +42,9 @@ class page_Accounts_FixedAndMis extends Page {
 					'FD'=>array('MaturityToAccount_id'),
 					'MIS'=>array('intrest_to_account_id')
 					),'div .atk-form-row');
+			$crud->form->getElement('account_type')->setEmptyText('Please Select');
 		}
-		
+
 		if($crud->isEditing('add')){
 			$o->now();
 		}

@@ -64,8 +64,7 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 		if($test_account) $sbca_account->addCondition('id',$test_account->id);
 
 		foreach ($sbca_account as $accounts_array) {
-			$x=$sbca_account->applyHalfYearlyInterest($on_date,true);
-			throw $this->exception($x);
+			$sbca_account->applyHalfYearlyInterest($on_date);
 		}
 	}
 

@@ -13,7 +13,7 @@ class Model_Account_Loan extends Model_Account{
 		$this->getElement('agent_id')->destroy();
 		$this->getElement('Amount')->caption('Loan Amount');
 		$this->getElement('CurrentInterest')->caption('Panelty');
-		$this->getElement('account_type')->enum(array('Two Wheeler Loan','Auto Loan','Personal Loan','Loan Againest Deposit','Home Loan','Mortgage Loan','Agriculture Loan','Education Loan','Gold Loan','Other'));
+		$this->getElement('account_type')->enum(explode(",",LOAN_TYPES))->mandatory(true);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
@@ -49,7 +49,7 @@ class Model_Account_Loan extends Model_Account{
 		
 		$this->createProcessingFeeTransaction();
 		
-		$this->addDocumentDetails();
+		$this->addDocumentDetails($form);
 		
 		$this->createPremiums();
 	}
@@ -76,7 +76,7 @@ class Model_Account_Loan extends Model_Account{
 		$transaction->execute();
 	}
 
-	function addDocumentDetails(){
+	function addDocumentDetails($form){
 		$documents=$this->add('Model_Document');
 		foreach ($documents as $d) {
 		 	if($form[$this->api->normalizeName($documents['name'])])

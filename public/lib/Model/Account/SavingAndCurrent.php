@@ -10,6 +10,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 	function init(){
 		parent::init();
 
+		$this->getElement('account_type')->enum(array('Saving','Current'))->mandatory(true);
 		$this->addCondition('SchemeType','SavingAndCurrent');
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','SavingAndCurrent');
 		$this->getElement('Amount')->caption('Initial Opening Amount');
@@ -47,7 +48,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		if(!$after_date_not_included) $after_date_not_included = $this['LastCurrentInterestUpdatedAt'];
 		if(!$on_amount){
 			$openning_balance = $this->getOpeningBalance($this->api->nextDate($after_date_not_included));
-			$on_amount = ($openning_balance['DR'] - $openning_balance['CR']) > 0 ? ($openning_balance['DR'] - $openning_balance['CR']) :0;
+			$on_amount = ($openning_balance['CR'] - $openning_balance['DR']) > 0 ? ($openning_balance['CR'] - $openning_balance['DR']) :0;
 		}
 		if(!$at_interest_rate) $at_interest_rate = $this->ref('scheme_id')->get('Interest');
 
@@ -59,7 +60,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 		// echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
 
-		return $interest;
+		return round($interest,2);
 	}
 
 	/**
@@ -81,13 +82,14 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 		$this->save();
 
-		if($current_interest == 0 ) return; //no need to save a new transaction of zero interest
+		if($current_interest == 0 ) 
+			return; //no need to save a new transaction of zero interest
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_CC_ACCOUNT, null, $till_date, "Interest posting in CC Account",null,array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_SAVINGS, null, $till_date, "Interest posting in Saving Account",null,array('reference_account_id'=>$this->id));
 
-		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . $this['scheme_name'], $current_interest);
-		$transaction->addDebitAccount($this,$current_interest);
+		$transaction->addCreditAccount($this,$current_interest);
+		$transaction->addDebitAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_PAID_ON . $this['scheme_name'], $current_interest);
 		$transaction->execute();
 	}
 }

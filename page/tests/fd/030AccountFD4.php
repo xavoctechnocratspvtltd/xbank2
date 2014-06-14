@@ -2,7 +2,7 @@
 
 // 100 DAYS FD CHECK 31 March cross MATURITY TO ANOTHER ACCOUNT
 
-class page_tests_030AccountFD4 extends Page_Tester {
+class page_tests_fd_030AccountFD4 extends Page_Tester {
     public $title = 'FD Account Testing';
 
     public $account;

@@ -2,7 +2,7 @@
 
 // 
 
-class page_tests_040AccountSB1 extends Page_Tester {
+class page_tests_sbca_040AccountSB1 extends Page_Tester {
     public $title = 'SB Account Testing';
 
     public $account;

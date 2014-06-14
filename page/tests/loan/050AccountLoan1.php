@@ -1,43 +1,51 @@
 <?php
 
-// 100 DAYS FD CHECK
-
-class page_tests_030AccountFD1 extends Page_Tester {
-    public $title = 'FD Account Testing';
+class page_tests_loan_050AccountLoan1 extends Page_Tester {
+    public $title = 'Loan Account Testing';
 
     public $account;
     public $member;
     public $scheme;
-    public $Amount; // CC Limit in CC Account
     public $accounts_that_will_be_checked=array();
 
     public $AccountNumber;
+ 
     // FEED
-    public $account_type = ACCOUNT_TYPE_FIXED;
+    public $Amount = 1000 ; // Loan Amount
     // FEED
-    public $maturity_date='2014-09-18';
+    public $account_type = ACCOUNT_TYPE_LOAN;
+    // FEED
+    public $MaturityToAccount_id = 4667; // UDRSB584
+    // FEED
+    public $maturity_date='2015-05-21';
     // FEED
     public $proper_responses=array(
         "Test_accountType"=>array(
-        			'type'=>ACCOUNT_TYPE_FIXED,
-        			'member'=>'GOWRAV VISHWAKARMA ',
-        			'scheme'=>'FD 3 MONTH 12% Spcl sCHIM', 
-        			'Agent'=>'MEENA DEVRA'),
+                    'type'=>ACCOUNT_TYPE_LOAN,
+                    'member'=>'GOWRAV VISHWAKARMA ',
+                    'scheme'=>'Saving Account', // FEED 
+                    'Agent'=>'MEENA DEVRA'),
         'Test_CreateAccount'=>array(),
         'Test_otherAccountsBalance'=>array(),
         'Test_createTimeTransactions'=>array(),
         'Test_accountFlow'=>array(),
+        'Test_premiumTableEntries'=>array(),
     );
 
     // FEED
     public $account_flow=array(
-            'open'=>'2014-06-10',
+            'open'=>'2014-06-13',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
-                    // '2014-05-08'=> array(4000,'from_branch_code'=>'JHD'),
-                    // '2014-06-05'=> 800,
+                    '2014-06-13'=> 800,
+                    '2014-06-23' => 10000,
+                    '2014-07-07' => -5000,
+                    '2014-07-28' => array(-5000,'from_branch_code'=>'JHD'),
+                    '2014-08-25'=> array(3000,'from_branch_code'=>'JHD'),
+                    '2015-02-14' => -2000,
+                    '2015-04-15' => 1000,
                 ),
-            'test_till'=>'2014-09-20'
+            'test_till'=>'2015-10-02'
         );
 
     function prepare_accountType(){
@@ -48,12 +56,12 @@ class page_tests_030AccountFD1 extends Page_Tester {
         $s = $this->scheme = $this->add('Model_Scheme');
         // $s->load(81); // DDS 1 YEAR PLAN
         // FEED
-        $s->load(115); // FD 3 MONTH 12% Spcl sCHIM
+        $s->load(1); // Saving Account
 
         $a = $this->agent = $this->add('Model_Agent');
         // FEED
         $a->load(11); // Meena Devra
-        
+
         $this->AccountNumber = 'UDR'.$this->account_type.'X'.rand(1000,9999);
 
         $this->add('Model_Closing')
@@ -62,8 +70,6 @@ class page_tests_030AccountFD1 extends Page_Tester {
             ->set('daily',date('Y-m-d',strtotime($this->account_flow['open'].' -1 days')))
             ->update();
 
-        // FEED
-        $this->Amount=30000;
         $this->proper_responses['Test_accountType'] += array('Amount'=>$this->Amount);
 
         // Make All Other Used Accounts Balance to ZERO so that easy checking is possible for each scheme
@@ -72,19 +78,31 @@ class page_tests_030AccountFD1 extends Page_Tester {
         // FEED
         $this->accounts_that_will_be_checked = array(
                 // ACCOUNT_NUMBER => array(array(after_create_account_transaction_DR,CR),array('after_closing_done,DR,CR'))
+                $this->AccountNumber =>array(
+                        array(0,$this->Amount), // After account create
+                        array(0,30986.3) // After Closings
+                    ),
+
                 $this->api->current_branch['Code'].SP.BRANCH_TDS_ACCOUNT =>array(
-									                							array(0,0),
-									                							array(0,0,)
-									                							),
+                                                                                array(0,0),
+                                                                                array(0,0,)
+                                                                                ),
                 'UDRSB373' =>array(
-                					array(0,0), // After Account Create
-                					array(10,20,) // After Closings
-                					)
+                                array(0,0), // After Account Create
+                                array(10,20,) // After Closings
+                            ),
+                'UDRSB584'=>array(
+                                array(0,0), // After Account Create
+                                array(0,30908) // After Closing
+                            ),
             );
 
 
         $reset_account = $this->add('Model_Account');
         foreach($this->accounts_that_will_be_checked as $AccountNumber=>$arrays){
+
+            if($AccountNumber == $this->AccountNumber) continue;
+            
             $reset_account->unload();
             $reset_account->loadBy('AccountNumber',$AccountNumber);
 
@@ -99,15 +117,6 @@ class page_tests_030AccountFD1 extends Page_Tester {
         $this->add('Model_Transaction')->deleteAll();
         $this->add('Model_TransactionRow')->deleteAll();
 
-        // FEED
-        $this->proper_responses['Test_accountMaturity']=array('maturity_date'=>$this->maturity_date,'MaturedStatus'=>1);
-        // FEED
-        $this->accounts_that_will_be_checked += array(
-        		$this->AccountNumber =>array(
-                		array(0,$this->Amount), // After account create
-                		array(0,30986.3) // After Closings
-                	)
-        	);
         return null;
     }
 
@@ -118,7 +127,7 @@ class page_tests_030AccountFD1 extends Page_Tester {
     function prepare_CreateAccount(){
         $this->account = $account = $this->add('Model_Account_'.$this->account_type);
         $account->allow_any_name = true;
-        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id),$form=null,$created_at=$this->account_flow['open']);
+        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id,'MaturityToAccount_id'=>$this->MaturityToAccount_id),$form=null,$created_at=$this->account_flow['open']);
         $this->api->memorize('new_account_number',$this->AccountNumber);
         // ++++++++
         $this->proper_responses['Test_CreateAccount'] +=array('AccountNumber'=>$this->AccountNumber,'member_id'=>$this->member->id, 'maturity_date'=>$this->maturity_date,'scheme'=>$this->scheme['name'],'agent'=>$this->agent['name']);
@@ -243,11 +252,27 @@ class page_tests_030AccountFD1 extends Page_Tester {
     }
 
     function prepare_accountMaturity(){
-
+        // FEED
+        $this->proper_responses['Test_accountMaturity']=array('maturity_date'=>$this->maturity_date,'MaturedStatus'=>1);
     }
 
     function test_accountMaturity(){
         $account = $this->add('Model_Account_'.$this->account_type)->loadBy('AccountNumber',$this->api->recall('new_account_number'));
         return  array('maturity_date'=>$account['maturity_date'],'MaturedStatus'=>$account['MaturedStatus']);
+    }
+
+    function prepare_premiumTableEntries(){
+        $this->proper_responses['Test_premiumTableEntries']=array(
+            1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+            );
+    }
+
+    function test_premiumTableEntries(){
+        $paid =array();
+        foreach($prem = $this->account->ref('Premium') as $junk){
+            $paid[] = $prem['Paid'];
+        }
+
+        return $paid;
     }
 }

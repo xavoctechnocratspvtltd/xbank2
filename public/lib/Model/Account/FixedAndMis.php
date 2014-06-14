@@ -10,7 +10,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 	function init(){
 		parent::init();
 
-		$this->getElement('account_type')->enum(array('FD','MIS'));
+		$this->getElement('account_type')->enum(array('FD','MIS'))->mandatory(true);
 		$this->addCondition('SchemeType',ACCOUNT_TYPE_FIXED);
 
 		$this->getElement('Amount')->caption('FD/MIS Amount');

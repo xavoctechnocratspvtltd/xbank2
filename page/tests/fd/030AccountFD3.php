@@ -2,7 +2,7 @@
 
 // 3 years FD CHECK
 
-class page_tests_030AccountFD3 extends Page_Tester {
+class page_tests_fd_030AccountFD3 extends Page_Tester {
     public $title = 'FD Account Testing';
 
     public $account;

@@ -49,6 +49,11 @@ class page_accounts_Loan extends Page {
 		}
 		
 		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer'));
+
+		if($crud->isEditing()){
+			$crud->form->getElement('account_type')->setEmptyText('Please Select');
+		}
+
 		if($crud->isEditing('add')){
 
 			$f1=$crud->form->getElement('account_type');

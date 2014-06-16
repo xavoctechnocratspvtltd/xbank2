@@ -37,13 +37,14 @@ class page_tests_sbca_040AccountSB1 extends Page_Tester {
             'open'=>'2014-06-13',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
-                    '2014-06-13'=> 800,
-                    '2014-06-23' => 10000,
-                    '2014-07-07' => -5000,
+                    '2014-06-13'=> -800,
+                    '2014-06-23' => -100,
+                    '2014-07-07' => 5000,
                     '2014-07-28' => array(-5000,'from_branch_code'=>'JHD'),
                     '2014-08-25'=> array(3000,'from_branch_code'=>'JHD'),
                     '2014-09-30' => 1000,
                     '2015-02-14' => -2000,
+                    '2015-02-16' => -2000,
                     '2015-04-15' => 1000,
                 ),
             'test_till'=>'2015-10-02',
@@ -57,7 +58,7 @@ class page_tests_sbca_040AccountSB1 extends Page_Tester {
         $s = $this->scheme = $this->add('Model_Scheme');
         // $s->load(81); // DDS 1 YEAR PLAN
         // FEED
-        $s->load(1); // Saving Account
+        $s->load(211); // Saving Account Min Check 
 
         $a = $this->agent = $this->add('Model_Agent');
         // FEED

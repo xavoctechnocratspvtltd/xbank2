@@ -210,4 +210,5 @@ define("REDUCING_RATE", 'Reducing');
 define("FLAT_RATE", "Flat");
 
 define("BALANCE_SHEET", true);
+define("MIN_BALANCE_CHARGE", 20);
 

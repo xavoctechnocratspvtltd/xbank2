@@ -30,18 +30,19 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		$this->save();
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null,$on_date=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null,$on_date=null,$in_branch=null){
 		$balance = $this->getOpeningBalance($this->api->nextDate($on_date));
 		$balance = $balance['CR'] - $balance['DR'];
 		$min_limit= $this->ref('scheme_id')->get('MinLimit');
 
-		if($amount > ($balance - $min_limit))
-			throw $this->exception('You Cannot withdraw by crossing minimum limit. ' .($balance - $min_limit),'ValidityCheck')->setField('amount');
+		if($amount > ($balance)){
+			throw $this->exception('Cannot withdraw more ammount');
+		}
 		
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 
-		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
+		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date,$in_branch);
 		$this->save();
 	}
 
@@ -94,7 +95,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_SAVINGS, null, $till_date, "Interest posting in Saving Account",null,array('reference_account_id'=>$this->id));
 
 		$transaction->addCreditAccount($this,$current_interest);
-		$transaction->addDebitAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_PAID_ON . $this['scheme_name'], $current_interest);
+		$transaction->addDebitAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $current_interest);
 		$transaction->execute();
 	}
 
@@ -120,6 +121,18 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 	}
 
 	function applyMinBalanceCharge($on_date=null){
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction(TRA_MINIMUM_BALANCE_CHARGES, $this->ref('branch_id'), $on_date, 'Min Balance Charge REceived on '. $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
+		
+		$charge = $this->getMinimumBalanceCharge();
 
+		$transaction->addDebitAccount($this, $charge);
+		$transaction->addCreditAccount($this['branch_code'].SP.MINIMUM_BALANCE_CHARGE_RECEIVED_ON.SP.$this['scheme_name'], $charge);
+		
+		$transaction->execute();
+	}
+
+	function getMinimumBalanceCharge(){
+		return MIN_BALANCE_CHARGE;
 	}
 }

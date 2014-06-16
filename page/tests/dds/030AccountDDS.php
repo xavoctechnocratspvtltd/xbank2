@@ -1,6 +1,6 @@
 <?php
 
-class page_tests_030AccountDDS extends Page_Tester {
+class page_tests_dds_030AccountDDS extends Page_Tester {
     public $title = 'DDS Account Testing';
     public $account_type = ACCOUNT_TYPE_DDS;
     public $account;

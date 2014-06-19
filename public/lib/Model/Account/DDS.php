@@ -22,13 +22,22 @@ class Model_Account_DDS extends Model_Account{
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 
 		if($agent_id = $otherValues['agent_id'])
-			$this->addAgent($agent_id);
+			$this->addAgent($agent_id, $replace_existing=true);
 
 		if($otherValues['initial_opening_amount'])
 			$this->deposit($otherValues['initial_opening_amount'],null,null,$form);
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
+		
+		$given_interest = $this->interestGiven();
+		$maturity_months = $this->ref('scheme_id')->get('MaturityPeriod');
+		$dds_amount = $this['Amount'];
+
+		$required_amount = (($dds_amount * $maturity_months) + $given_interest) - ($this['CurrentBalanceCr']);
+		if($amount > $required_amount)
+			throw $this->exception('Exceeding Amount, only required '. $required_amount, 'ValidityCheck')->setField('amount');
+
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$in_branch);
 		// if($this->ref('agent_id')->loaded()){
 		// 	$this->giveAgentCommission($on_amount = $amount, $transaction_date);
@@ -85,7 +94,8 @@ class Model_Account_DDS extends Model_Account{
 	function postInterestEntry($on_date){
 		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
 		$days = $days['days_total'];
-		$interest = $this['CurrentInterest'] = $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days / 36500);
+		echo " (".$this['CurrentBalanceCr']. " * ".$this['Interest']." / 1200) - ".$this->interestGiven() ." <br/>";
+		$interest = ($this['CurrentBalanceCr'] * $this['Interest'] / 1200)-$this->interestGiven() ;
 
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 
@@ -97,21 +107,43 @@ class Model_Account_DDS extends Model_Account{
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_DDS,null,$on_date,"Interst posting in DDS Account " . $this['AccountNumber'],null, array('reference_account_id'=>$this->id));
 		
-		$transaction->addDebitAccount($this['Code'] . SP . INTEREST_PAID_ON . $this['scheme_name'], $interest);
+		$transaction->addDebitAccount($this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $interest);
 		$transaction->addCreditAccount($this, $interest);
 
 		$transaction->execute();
 	}
 
+	function interestGiven($from_date=null,$to_date=null){
+		$transaction_row = $this->add('Model_TransactionRow');
+		$transaction_join = $transaction_row->join('transactions','transaction_id');
+		$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
+		$transaction_type_join->addField('_transaction_type','name');
+
+		$transaction_row->addCondition('_transaction_type',TRA_INTEREST_POSTING_IN_DDS);
+
+
+		if($from_date)
+			$transaction_row->addCondition('created_at','>=',$from_date);
+		if($to_date)
+			$transaction_row->addCondition('created_at','<',$this->api->nextDate($from_date));
+
+		return $transaction_row->sum('amountCr')->getOne();
+
+	}
+
 	function postAgentCommissionEntry($on_date=null, $return=false){
-        $agentAccount = $this->ref('agent_id')->ref();
+        $agentAccount = $this->ref('agent_id')->ref('account_id');
         $branch_code =$this->ref('branch_id')->get('Code');
 
-        $tds_percentage = 
+        $tds_percentage = $this->ref('agent_id')->ref('member_id')->hasPanNo()? 10 : 20 ;
 //            $amount = $ac->amountCr;
+
+        $this->interestGiven();
 
 //------------CALCULATING COMMISSION FOR DDS----------------
         $DA = $this['Amount']; // DA => Monthly DDS Amount
+
+        //  VVV--  Set in monthly closing scheme file monthly_credited_amount
         $x = $this['monthly_credited_amount']; // x => Amount Submitted in the current month
         $tA = $this['CurrentBalanceCr'] - $x; // tA => Total amount till date given excluding x ???? Interest Given Included ????
 
@@ -125,16 +157,17 @@ class Model_Account_DDS extends Model_Account{
             $amount = $old * $percent / 100;
 
             $transaction = $this->add('Model_Transaction');
-            $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $branch, $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_account_id'=>$this->id));
+            $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_account_id'=>$this->id));
             
-            $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . $this['scheme_name'], $amount);
+            $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $amount);
             $transaction->addCreditAccount($agentAccount ,($amount - ($amount * TDS_PERCENTAGE / 100)));
-            $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,($amount - ($amount * TDS_PERCENTAGE / 100)));
+            $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($amount * TDS_PERCENTAGE / 100)));
             
             $transaction->execute();
 
             $x = $x - $old;
             $tA = $tA + $old;
         }
+
 	}
 }

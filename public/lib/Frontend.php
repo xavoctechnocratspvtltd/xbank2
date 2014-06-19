@@ -73,6 +73,12 @@ class Frontend extends ApiFrontend {
         return $date;
     }
 
+    function monthFirstDate($date=null){
+        if(!$date) $dat = $this->api->now;
+
+        return date('Y-m-01',strtotime($date));
+    }
+
     function getFinancialYear($date=null,$start_end = 'both'){
         if(!$date) $date = $this->api->now;
         $month = date('m',strtotime($date));

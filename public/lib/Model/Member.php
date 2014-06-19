@@ -131,4 +131,8 @@ class Model_Member extends Model_Table {
 		parent::delete();
 	}
 
+	function hasPanNo(){
+		return (strlen($this['PanNo'])==10);
+	}
+
 }

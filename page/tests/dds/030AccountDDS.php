@@ -6,7 +6,7 @@ class page_tests_dds_030AccountDDS extends Page_Tester {
     public $account;
     public $member;
     public $scheme;
-    public $Amount; // CC Limit in CC Account
+    public $Amount; // DDS AMOUNT 
     public $accounts_that_will_be_checked=array();
 
     public $proper_responses=array(
@@ -19,18 +19,15 @@ class page_tests_dds_030AccountDDS extends Page_Tester {
     );
 
     public $account_flow=array(
-            'open'=>'2014-05-07',
+            'open'=>'2014-02-07',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
-                    '2014-05-07'=> 500,
-                    '2014-05-08'=> array(4000,'from_branch_code'=>'JHD'),
-                    '2014-06-05'=> 800,
-                    '2014-06-26'=> 100,
-                    '2014-06-27'=> 100,
-                    '2014-07-21'=> 600,
-                    '2014-08-01'=> 600,
+                    '2014-02-10'=> 300,
+                    '2014-02-12'=> 300,
+                    '2014-04-08'=> array(300,'from_branch_code'=>'JHD'),
+                    '2014-05-06'=> 300
                 ),
-            'test_till'=>'2014-08-31'
+            'test_till'=>'2014-05-07'
         );
 
     function prepare(){
@@ -50,7 +47,7 @@ class page_tests_dds_030AccountDDS extends Page_Tester {
             ->set('daily',date('Y-m-d',strtotime($this->account_flow['open'].' -1 days')))
             ->update();
 
-        $this->Amount=30000;
+        $this->Amount=300;
         $this->proper_responses['Test_accountType'] += array('Amount'=>$this->Amount);
 
         // Make All Other Used Accounts Balance to ZERO so that easy checking is possible for each scheme
@@ -82,23 +79,24 @@ class page_tests_dds_030AccountDDS extends Page_Tester {
     }
 
     function test_accountType(){
-        return array('type'=>$this->account_type,'member'=>$this->member['name'],'scheme'=>$this->scheme['name'],'Amount'=>$this->Amount,'Agent'=>$this->agent->ref('member_id')->get('name'));
+        return array('type'=>$this->account_type,'member'=>$this->member['name'],'scheme'=>$this->scheme['name'],'Amount'=>$this->Amount);
     }
 
     function prepare_CreateAccount(){
         $AccountNumber = 'UDR'.$this->account_type.'X'.rand(1000,9999);
         $this->account = $account = $this->add('Model_Account_'.$this->account_type);
-        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $AccountNumber,$otherValues=array('Amount'=>$this->Amount),$form=null,$created_at=$this->account_flow['open']);
+        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id),$form=null,$created_at=$this->account_flow['open']);
         $this->api->memorize('new_account_number',$AccountNumber);
         // ++++++++
-        $this->proper_responses['Test_CreateAccount'] +=array('AccountNumber'=>$AccountNumber,'member_id'=>$this->member->id, 'maturity_date'=>'2014-08-07');
+        $this->proper_responses['Test_CreateAccount'] +=array('AccountNumber'=>$AccountNumber,'member_id'=>$this->member->id, 'maturity_date'=>'2014-08-07','Agent'=>$this->agent->ref('member_id')->get('name'));
     }
 
     function test_CreateAccount(){
         return array(
             'AccountNumber'=>$this->account['AccountNumber'],
             'member_id'=>$this->account['member_id'],
-            'maturity_date'=>$this->account['maturity_date']
+            'maturity_date'=>$this->account['maturity_date'],
+            'Agent'=>$this->account->ref('agent_id')->ref('member_id')->get('name'),
             );
     } 
 

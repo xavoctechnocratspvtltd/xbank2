@@ -61,6 +61,8 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$matured_dds_accounts->addCondition('branch_id',$branch->id);
 		$matured_dds_accounts->addCondition("maturity_date",$on_date);
 
+		$matured_dds_accounts->join('schemes','scheme_id')->addField('Interest');
+
 		if($test_account) $matured_dds_accounts->addCondition('id',$test_account->id);
 
 		foreach ($matured_dds_accounts as $acc) {
@@ -81,23 +83,25 @@ class Model_Scheme_DDS extends Model_Scheme {
         $tr_join = $tr_row_join->join('transactions','transaction_id');
         $tr_type_join = $tr_join->join('transaction_types','transaction_type_id');
         
-        // Agent is left joint becoz even in case of no agent the account need to be posted by interest entry
-        $agent_join = $accounts_to_work_on->leftJoin('agents','agent_id');
+        // Those accounts that do not have agent are not required to work on
+        $agent_join = $accounts_to_work_on->join('agents','agent_id');
         $agent_account_join = $agent_join->join('accounts','account_id');
 
         $accounts_to_work_on->scheme_join->addField('AccountOpenningCommission');
         $agent_account_join->addField('agent_AccountNumber','AccountNumber');
         $tr_type_join->addField('transaction_type','name');
         $tr_join->addField('transaction_date','created_at');
-        $accounts_to_work_on->addExpression('monthly_credited_amount')->set('SUM('.$tr_row_join->table_alias.'.amountCr)');
 
-        $accounts_to_work_on->addCondition('transaction_type','<>','InterestPostingsInDDSAccounts');
-        $accounts_to_work_on->addCondition('transaction_date','>=',$on_date);
+        // $accounts_to_work_on->addCondition('transaction_type','<>','InterestPostingsInDDSAccounts');
+        $accounts_to_work_on->addCondition('transaction_date','>=',$this->api->monthFirstDate($on_date));
         $accounts_to_work_on->addCondition('transaction_date','<',$this->api->nextDate($on_date));
         $accounts_to_work_on->addCondition('branch_id',$branch->id);
+        $accounts_to_work_on->addCondition('MaturedStatus',false);
 
         if($test_account) $accounts_to_work_on->addCondition('id',$test_account->id);
 
+        
+        $accounts_to_work_on->addExpression('monthly_credited_amount')->set('SUM('.$tr_row_join->table_alias.'.amountCr)');
         $accounts_to_work_on->_dsql()->group($tr_row_join->table_alias.'.account_id');
 
         foreach ($accounts_to_work_on as $acc_array) {
@@ -118,7 +122,9 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$active_dds_accounts->addCondition('MaturedStatus',false);
 		$active_dds_accounts->addCondition('branch_id',$branch->id);
 
-		if($test_account) $active_dds_accounts->addCondition('id',$test_account);
+		$active_dds_accounts->join('schemes','scheme_id')->addField('Interest');
+
+		if($test_account) $active_dds_accounts->addCondition('id',$test_account->id);
 
 		foreach ($active_dds_accounts as $active_dds_accounts_array) {
 			$active_dds_accounts->postInterestEntry($on_date);

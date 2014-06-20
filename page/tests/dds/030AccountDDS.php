@@ -1,6 +1,7 @@
 <?php
 
 class page_tests_dds_030AccountDDS extends Page_Tester {
+
     public $title = 'DDS Account Testing';
     public $account_type = ACCOUNT_TYPE_DDS;
     public $account;
@@ -182,6 +183,7 @@ class page_tests_dds_030AccountDDS extends Page_Tester {
                 }
             }
             $this->account->ref('branch_id')->performClosing($on_date=$date, $test_scheme=$this->scheme, $test_account = $this->account);
+            $this->account->reload();
             $date = date('Y-m-d',strtotime($date .' +1 days'));
         }
 

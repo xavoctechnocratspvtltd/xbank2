@@ -1,7 +1,7 @@
 <?php
 
-class page_tests_sbca extends Page {
-    public $title= 'Saving And Current Tests';
+class page_tests_dds extends Page {
+    public $title= 'DDS Tests';
     public $dir='tests/dds';
     function init(){
         parent::init();

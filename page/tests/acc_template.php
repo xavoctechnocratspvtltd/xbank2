@@ -19,6 +19,9 @@ class page_tests_FEED_FEED extends Page_Tester {
             array(801,850),
         );
 
+    public $maturityToAccount = null; // Maturity to transfer to account "UDRSBxyz"
+    public $interestToAccount = null; // Interest To Account "UDRSBabcd"
+
     // Amount is what ???
     // Saving => Initial Opening Amount
     // CC => CC Limit
@@ -31,13 +34,14 @@ class page_tests_FEED_FEED extends Page_Tester {
     public $Amount = 300 ;
 
     // Account Flow
+    // 'date'  => array(amount,'cheque_no'=>cheque_no,'from_branch_code'=>CODE)
     public $account_flow=array(
             'open'=>'2014-02-07',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
                     '2014-02-10'=> array(300),
                     '2014-02-12'=> array(300,'cheque_no'=>132514),
-                    '2014-04-08'=> array(300,'from_branch_code'=>'JHD'),
+                    '2014-04-08'=> array(-300,'from_branch_code'=>'JHD'),
                     '2014-05-06'=> array(300)
                 ),
             'test_till'=>'2014-05-07'
@@ -53,8 +57,9 @@ class page_tests_FEED_FEED extends Page_Tester {
         'Test_afterAccountCreate'=>array(
                     'member'=>'GOWRAV VISHWAKARMA ',
                     'scheme'=>'new 3 Month DDS',
-                    'type'=>ACCOUNT_TYPE_DDS, // Loan,CC,FixedAndMis,Default,SavingAndCurrent,Recurring,DDS
+                    'type'=>'DDS', // Loan,CC,FixedAndMis,Default,SavingAndCurrent,Recurring,DDS
                     'Agent'=>'MEENA DEVRA',
+                    'maturity_date'=>'2014-08-07',
                     'accounts_to_check'=>array(
                             'new_account'=>array( 0,0), /* DR, CR */
                         ),
@@ -66,7 +71,6 @@ class page_tests_FEED_FEED extends Page_Tester {
                         )
             ),
         'Test_accountMaturity'=>array(
-                    'maturity_date'=>'2014-08-07',
                     'MaturedStatus'=>1,
                     'accounts_to_check'=>array(
                             'new_account'=> array( 0,0), /* DR, CR */
@@ -130,6 +134,7 @@ class page_tests_FEED_FEED extends Page_Tester {
 
         $result['type'] = $this->account->ref('scheme_id')->get('SchemeType');
         $result['Agent'] = $this->account->ref('agent_id')->get('name');
+        $result['maturity_date'] = $this->account['maturity_date'];
 
         $result['accounts_to_check'] = $this->account_to_check_balances('Test_aterAccountCreate');
 
@@ -147,12 +152,10 @@ class page_tests_FEED_FEED extends Page_Tester {
 
             if(isset($this->account_flow['flow'][$date])){
                 $date_value = $this->account_flow['flow'][$date];
-                if(is_array($date_value)){
-                    $amount = $date_value[0];
+                $amount = $date_value[0];
+                $transaction_in_branch = $this->account->ref('branch_id');
+                if(isset($date_value['from_branch_code'])){
                     $transaction_in_branch = $this->add('Model_Branch')->loadBy('Code',$date_value['from_branch_code']);
-                }else{
-                    $amount=$date_value;
-                    $transaction_in_branch = $this->account->ref('branch_id');
                 }
 
                 try{
@@ -165,6 +168,7 @@ class page_tests_FEED_FEED extends Page_Tester {
                 }
             }
             $this->account->ref('branch_id')->performClosing($on_date=$date, $test_scheme=$this->scheme, $test_account = $this->account);
+            $this->account->reload();
             $date = date('Y-m-d',strtotime($date .' +1 days'));
         }
     }
@@ -172,6 +176,13 @@ class page_tests_FEED_FEED extends Page_Tester {
     function test_afterAllTransactions(){
         $result = array();
         $result['accounts_to_check'] = $this->account_to_check_balances('Test_afterAllTransactions');
+        return $result;
+    }
+
+    function test_accountMaturity(){
+        $result= array();
+        $result['MaturedStatus'] = $this->account['MaturedStatus'];
+        $result['accounts_to_check'] = $this->account_to_check_balances('Test_accountMaturity');
         return $result;
     }
 

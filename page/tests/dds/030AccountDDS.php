@@ -1,46 +1,101 @@
 <?php
 
 class page_tests_dds_030AccountDDS extends Page_Tester {
+    // Class Variables
+    public $title = 'Account Testing';
+    public $account_type = 'DDS'; //Loan,CC,FixedAndMis,Default,SavingAndCurrent,Recurring,DDS
+    public $AccountNumber=null;
+    public $account=null;
+    public $member=null;
+    public $scheme=null;
+    public $agent=null;
 
-    public $title = 'DDS Account Testing';
-    public $account_type = ACCOUNT_TYPE_DDS;
-    public $account;
-    public $member;
-    public $scheme;
-    public $Amount; // DDS AMOUNT 
-    public $accounts_that_will_be_checked=array();
+    // ============= input starts
 
-    public $proper_responses=array(
-        "Test_accountType"=>array('type'=>ACCOUNT_TYPE_DDS,'member'=>'GOWRAV VISHWAKARMA ','scheme'=>'new 3 Month DDS', 'Agent'=>'MEENA DEVRA'),
-        'Test_CreateAccount'=>array(),
-        'Test_otherAccountsBalance'=>array(),
-        'Test_createTimeTransactions'=>array(),
-        'Test_accountFlow'=>array(),
-        'Test_accountMaturity'=>array('maturity_date'=>'2014-08-07','MaturedStatus'=>1),
-    );
+    public $member_id=1035; // Gowrav Vishwakarama
+    public $agent_id=11; // Meena Devra
+    public $cheque_issued=array(
+            array(101,150),
+            array(801,850),
+        );
+    public $scheme_name='new 3 Month DDS';
 
+    public $maturityToAccount = null; // Maturity to transfer to account UDRSBxyz
+    public $interestToAccount = null; // Interest To Account
+
+    // Amount is what ???
+    // Saving => Initial Opening Amount
+    // CC => CC Limit
+    // DDS => DDS amount 
+    // Default => Initial Opening Amount
+    // FixedAndMis => FD/MIS Amount 
+    // Loan => Loan Amount 
+    // Recurring => RECURRING amount (premium) 
+
+    public $Amount = 300 ;
+
+    // Account Flow
+    // 'date'  => array(amount,'cheque_no'=>cheque_no,'from_branch_code'=>CODE)
     public $account_flow=array(
             'open'=>'2014-02-07',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
-                    '2014-02-10'=> 300,
-                    '2014-02-12'=> 300,
+                    '2014-02-10'=> array(200),
+                    '2014-02-12'=> array(200,'cheque_no'=>132514),
                     '2014-04-08'=> array(300,'from_branch_code'=>'JHD'),
-                    '2014-05-06'=> 300
+                    '2014-05-06'=> array(300)
                 ),
-            'test_till'=>'2014-05-07'
+            'test_till'=>'2014-05-08'
         );
+    
+    // Proper_Responses
+    public $proper_responses=array(
+        "Test_beforeAccountCreate"=>array(
+                    'accounts_to_check'=>array(
+                            'UDRSB373'=>array(0,0),
+                            "UDR TDS"=>array(0,0),
+                        ),
+                ),
+        'Test_afterAccountCreate'=>array(
+                    'member'=>'GOWRAV VISHWAKARMA ',
+                    'scheme'=>'new 3 Month DDS',
+                    'type'=>'DDS', // Loan,CC,FixedAndMis,Default,SavingAndCurrent,Recurring,DDS
+                    'Agent'=>'MEENA DEVRA',
+                    'maturity_date'=>'2014-05-07',
+                    'accounts_to_check'=>array(
+                            'new_account'=>array( 0,0), /* DR, CR */
+                            'UDRSB373'=>array(0,0),
+                            "UDR TDS"=>array(0,0),
+                        ),
+                ),
+        'Test_afterAllTransactions'=>array(
+                    'accounts_to_check'=>array(
+                            'new_account'=> array( 0,907.5), /* DR, CR */
+                            'UDRSB373' => array(0,4.05),
+                            "UDR TDS"=>array(0,0.45),
+                        )
+            ),
+        'Test_accountMaturity'=>array(
+                    'MaturedStatus'=>1,
+                    'accounts_to_check'=>array(
+                            'new_account'=> array( 0,907.5), /* DR, CR */
+                            'UDRSB373' => array(0,4.05),
+                            "UDR TDS"=>array(0,0.45),
+                        ),
+                    ),
+    );
+    
+    // ============ INPUT ENDS =================
+    
+    function init(){
+        parent::init();
+    }
 
-    function prepare(){
-        $m = $this->member = $this->add('Model_Member');
-        $m->load(1035); // Gowrav Vishwakarma
-
-        $s = $this->scheme = $this->add('Model_Scheme');
-        // $s->load(81); // DDS 1 YEAR PLAN
-        $s->load(208); // new 3 Month DDS
-
-        $a = $this->agent = $this->add('Model_Agent');
-        $a->load(11); // Meena Devra
+    function prepare_beforeAccountCreate(){
+        $this->member = $this->add('Model_Member')->load($this->member_id);
+        $this->scheme = $this->add('Model_Scheme')->loadBy('name',$this->scheme_name);
+        $this->agent = $this->add('Model_Agent')->load($this->agent_id);
+        $this->AccountNumber = 'UDR'.$this->account_type.'X'.rand(1000,9999);
 
         $this->add('Model_Closing')
             ->addCondition('branch_id',$this->api->current_branch->id)
@@ -48,113 +103,62 @@ class page_tests_dds_030AccountDDS extends Page_Tester {
             ->set('daily',date('Y-m-d',strtotime($this->account_flow['open'].' -1 days')))
             ->update();
 
-        $this->Amount=300;
-        $this->proper_responses['Test_accountType'] += array('Amount'=>$this->Amount);
-
-        // Make All Other Used Accounts Balance to ZERO so that easy checking is possible for each scheme
-        // OTHERWISE.. proper_responses will be always change on the base of flow of test running
-
-        $this->accounts_that_will_be_checked = array(
-                // ACCOUNT_NUMBER => array(array(after_create_account_transaction_DR,CR),array('after_closing_done,DR,CR'))
-                $this->api->current_branch['Code'].SP.BRANCH_TDS_ACCOUNT =>array(array(0,0),array(0,0,)),
-                'UDRSB373' =>array(array(0,0),array(10,20,)),
-            );
-
+        // Make all used accounts to zero for easy checking
         $reset_account = $this->add('Model_Account');
-        foreach($this->accounts_that_will_be_checked as $AccountNumber=>$arrays){
-            $reset_account->unload();
-            $reset_account->loadBy('AccountNumber',$AccountNumber);
 
-            $reset_account['OpeningBalanceDr']=0;
-            $reset_account['OpeningBalanceCr']=0;
-            $reset_account['CurrentBalanceDr']=0;
-            $reset_account['CurrentBalanceCr']=0;
+        foreach ($this->proper_responses as $test => $values) {
+            if(!isset($values['accounts_to_check'])) continue;
 
-            $reset_account->saveAndUnload();
+            foreach ($values['accounts_to_check'] as $AccountNumber => $values) {
+                if($AccountNumber == 'new_account') continue;
+
+                $reset_account->unload();
+                $reset_account->loadBy('AccountNumber',$AccountNumber);
+
+                $reset_account['OpeningBalanceDr']=0;
+                $reset_account['OpeningBalanceCr']=0;
+                $reset_account['CurrentBalanceDr']=0;
+                $reset_account['CurrentBalanceCr']=0;
+
+                $reset_account->saveAndUnload();
+            }
         }
 
         $this->add('Model_Transaction')->deleteAll();
         $this->add('Model_TransactionRow')->deleteAll();
 
+    }
+
+    function test_beforeAccountCreate(){
+        return array(
+                'accounts_to_check'=> $this->account_to_check_balances('Test_beforeAccountCreate')
+            );
+    }
+
+    function prepare_afterAccountCreate(){
+        $this->proper_responses['Test_afterAccountCreate']['AccountNumber'] = $this->AccountNumber;
+        $this->account = $account = $this->add('Model_Account_'.$this->account_type);
+        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id),$form=null,$created_at=$this->account_flow['open']);
         return null;
     }
 
-    function test_accountType(){
-        return array('type'=>$this->account_type,'member'=>$this->member['name'],'scheme'=>$this->scheme['name'],'Amount'=>$this->Amount);
-    }
-
-    function prepare_CreateAccount(){
-        $AccountNumber = 'UDR'.$this->account_type.'X'.rand(1000,9999);
-        $this->account = $account = $this->add('Model_Account_'.$this->account_type);
-        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id),$form=null,$created_at=$this->account_flow['open']);
-        $this->api->memorize('new_account_number',$AccountNumber);
-        // ++++++++
-        $this->proper_responses['Test_CreateAccount'] +=array('AccountNumber'=>$AccountNumber,'member_id'=>$this->member->id, 'maturity_date'=>'2014-08-07','Agent'=>$this->agent->ref('member_id')->get('name'));
-    }
-
-    function test_CreateAccount(){
-        return array(
-            'AccountNumber'=>$this->account['AccountNumber'],
-            'member_id'=>$this->account['member_id'],
-            'maturity_date'=>$this->account['maturity_date'],
-            'Agent'=>$this->account->ref('agent_id')->ref('member_id')->get('name'),
-            );
-    } 
-
-    function prepare_otherAccountsBalance(){
-        if(!$this->account)
-            throw $this->exception('Must run complete page tests, individual test not permitted','SkipTests');
-
-        foreach ($this->accounts_that_will_be_checked as $AccountNumber => $arrays) {
-            // +++++++++++++
-            $this->proper_responses['Test_otherAccountsBalance'] += array(
-                    $AccountNumber => $arrays[0] // arrays[0] is array(Dr,CR)
+    function test_afterAccountCreate(){
+        $result = array(
+                    'member'=>$this->account->ref('member_id')->get('name'),
+                    'scheme'=>$this->account->ref('scheme_id')->get('name')
                 );
-        }
-        
-    }
 
-    function test_otherAccountsBalance(){
-        $result = array();
-        foreach ($this->accounts_that_will_be_checked as $AccountNumber => $arrays) {
-            $account= $this->add('Model_Account')->loadBy('AccountNumber',$AccountNumber);
-            $result += array(
-                    $AccountNumber=> array($account['CurrentBalanceDr'],$account['CurrentBalanceCr'])
-                );
-        }
+        $result['type'] = $this->account->ref('scheme_id')->get('SchemeType');
+        $result['Agent'] = $this->account->ref('agent_id')->get('name');
+        $result['maturity_date'] = $this->account['maturity_date'];
+
+        $result['accounts_to_check'] = $this->account_to_check_balances('Test_afterAccountCreate');
+        $result['AccountNumber'] = $this->account['AccountNumber'];
 
         return $result;
     }
 
-    function prepare_createTimeTransactions(){
-        if(!$this->account)
-            throw $this->exception('Must run complete page tests, individual test not permitted','SkipTests');
-
-        // ++++++++++++
-        $this->proper_responses['Test_createTimeTransactions'] += array(
-                'total_transactions'=>1,
-                'accounts_engaged_in'=>2
-            );
-    }
-
-    function test_createTimeTransactions(){
-        $transactions =$this->add('Model_Transaction');
-        $transactions->join('transaction_row.transaction_id')
-                    ->addField('account_id');
-        $transactions->addCondition('account_id',$this->account->id);
-
-        $transaction_rows = $this->add('Model_transactionRow');
-        $transaction_rows->addCondition('transaction_id',$transactions->tryLoadAny()->id);
-
-
-        return array(
-                'total_transactions'=>$transactions->count()->getOne(),
-                'accounts_engaged_in'=>$transaction_rows->count()->getOne()
-            );
-    }
-
-    function prepare_accountFlow(){
-    
+    function prepare_afterAllTransactions(){
         if(!$this->account)
             throw $this->exception('Must run complete page tests, individual test not permitted','SkipTests');
 
@@ -165,12 +169,10 @@ class page_tests_dds_030AccountDDS extends Page_Tester {
 
             if(isset($this->account_flow['flow'][$date])){
                 $date_value = $this->account_flow['flow'][$date];
-                if(is_array($date_value)){
-                    $amount = $date_value[0];
+                $amount = $date_value[0];
+                $transaction_in_branch = $this->account->ref('branch_id');
+                if(isset($date_value['from_branch_code'])){
                     $transaction_in_branch = $this->add('Model_Branch')->loadBy('Code',$date_value['from_branch_code']);
-                }else{
-                    $amount=$date_value;
-                    $transaction_in_branch = $this->account->ref('branch_id');
                 }
 
                 try{
@@ -186,35 +188,35 @@ class page_tests_dds_030AccountDDS extends Page_Tester {
             $this->account->reload();
             $date = date('Y-m-d',strtotime($date .' +1 days'));
         }
-
-        foreach ($this->accounts_that_will_be_checked as $AccountNumber => $arrays) {
-            $account= $this->add('Model_Account')->loadBy('AccountNumber',$AccountNumber);
-            $this->proper_responses['Test_accountFlow'] += array(
-                    $AccountNumber => $arrays[1] // account dr,cr after transactions
-                );
-        }
-
     }
 
-
-    function test_accountFlow(){
+    function test_afterAllTransactions(){
         $result = array();
-        foreach ($this->accounts_that_will_be_checked as $AccountNumber => $arrays) {
-            $account= $this->add('Model_Account')->loadBy('AccountNumber',$AccountNumber);
-            $result += array(
-                    $AccountNumber=> array($account['CurrentBalanceDr'],$account['CurrentBalanceCr'])
-                );
-        }
-
+        $result['accounts_to_check'] = $this->account_to_check_balances('Test_afterAllTransactions');
         return $result;
     }
 
-    function prepare_accountMaturity(){
-
-    }
-
     function test_accountMaturity(){
-        $account = $this->add('Model_Account_'.$this->account_type)->loadBy('AccountNumber',$this->api->recall('new_account_number'));
-        return  array('maturity_date'=>$account['maturity_date'],'MaturedStatus'=>$account['MaturedStatus']);
+        $result= array();
+        $result['MaturedStatus'] = $this->account['MaturedStatus'];
+        $result['accounts_to_check'] = $this->account_to_check_balances('Test_accountMaturity');
+        return $result;
     }
+
+    function account_to_check_balances($test){
+        $balances = array();
+        $account_check = $this->add('Model_Account');
+        
+        foreach ($this->proper_responses[$test]['accounts_to_check'] as $AccountNumber => $requiredValues) {
+            $loadAccountNumber=$AccountNumber;
+            if($AccountNumber == 'new_account') $loadAccountNumber = $this->AccountNumber;
+
+            $account_check->loadBy('AccountNumber',$loadAccountNumber);
+            $balances[$AccountNumber] = array($account_check['CurrentBalanceDr'],$account_check['CurrentBalanceCr']);
+            $account_check->unload();
+        }
+
+        return $balances;
+    }
+
 }

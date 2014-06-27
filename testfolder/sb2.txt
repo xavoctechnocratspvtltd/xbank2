@@ -43,25 +43,25 @@
         "Test_beforeAccountCreate"=>array(
                     'accounts_to_check'=>array(
                             'new_account'=>array( 0,0), /* DR, CR */
-				    'interest paid on Saving account	 => array(0,0)
+				    'interest paid on Saving account'	 => array(0,0)
                         ),
                 ),
         'Test_afterAccountCreate'=>array(
                     'member'=>'GOWRAV VISHWAKARMA ',
-                    'scheme'=>'Saving Account	',
+                    'scheme'=>'Saving Account',
                     'type'=>SavingAndCurrent	
                     'Agent'=>'MEENA DEVRA',
                     'maturity_date'=>'2014-06-30',
                     'accounts_to_check'=>array(
                             'new_account'=>array( 0,0), /* DR, CR */
-				    'interest paid on Saving Account =>array(0,0)
+				            'interest paid on Saving Account' =>array(0,0)
                         ),
                 ),
         'Test_afterAllTransactions'=>array(
                     'accounts_to_check'=>array(
                             'new_account'=> array( 00,1600), /* DR, CR */
                             'UDRSB1162' => array(0,0),
-					'interest paid on Saving Account'=>array(0,32)
+					       'interest paid on Saving Account'=>array(0,32)
                         )
             ),
         'Test_accountMaturity'=>array(

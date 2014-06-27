@@ -1,0 +1,75 @@
+<?php
+  // ============= input starts
+
+    public $member_id=1035; // Gowrav Vishwakarama *
+    public $agent_id=11; // Meena Devra *
+    public $cheque_issued=array(
+            array(101,150),
+            array(801,850),
+        );
+
+    public $maturityToAccount = null; // Maturity to transfer to account "UDRSB1162"
+    public $interestToAccount = null; // Interest To Account "UDRSB1162"
+
+    // Amount is what 0
+    // Saving => Saving Account
+    // CC => CC Limit
+    // DDS => DDS amount 
+    // Default => Initial Opening Amount
+    // FixedAndMis => FD
+    // Loan => Loan Amount 
+    // Recurring => RECURRING amount (premium) 
+
+    public $Amount = 0 ;
+
+    // Account Flow
+    // 'date'  => array(amount,'cheque_no'=>cheque_no,'from_branch_code'=>CODE)
+    public $account_flow=array(
+            'open'=>'2013-10-01',
+            'flow'=>array(
+                    // NO two transactions on same date .. array key will get replaced
+                    '2014-02-10'=> array(100),
+                    '2014-02-12'=> array(500,'cheque_no'=>132514),
+                    '2014-04-08'=> array(-400,'from_branch_code'=>'JHD'),
+			'2014-04-08'=> array(-100,'from_branch_code'=>'SYR'),
+                    '2014-05-06'=> array(1000),
+                    '2014-06-06'=> array(500),
+                ),
+            'test_till'=>'2014-07-01'
+        );
+    
+    // Proper_Responses
+    public $proper_responses=array(
+        "Test_beforeAccountCreate"=>array(
+                    'accounts_to_check'=>array(
+                            'new_account'=>array( 0,0), /* DR, CR */
+				    'interest paid on Saving account	 => array(0,0)
+                        ),
+                ),
+        'Test_afterAccountCreate'=>array(
+                    'member'=>'GOWRAV VISHWAKARMA ',
+                    'scheme'=>'Saving Account	',
+                    'type'=>SavingAndCurrent	
+                    'Agent'=>'MEENA DEVRA',
+                    'maturity_date'=>'2014-06-30',
+                    'accounts_to_check'=>array(
+                            'new_account'=>array( 0,0), /* DR, CR */
+				    'interest paid on Saving Account =>array(0,0)
+                        ),
+                ),
+        'Test_afterAllTransactions'=>array(
+                    'accounts_to_check'=>array(
+                            'new_account'=> array( 00,1600), /* DR, CR */
+                            'UDRSB1162' => array(0,0),
+					'interest paid on Saving Account'=>array(0,32)
+                        )
+            ),
+        'Test_accountMaturity'=>array(
+                    'MaturedStatus'=>1,
+                    'accounts_to_check'=>array(
+                            'new_account'=> array( 0,0), /* DR, 1632 */
+                        	'interest paid on Saving Account'=>array(0,1632)
+
+                        ),
+                    ),
+    );

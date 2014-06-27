@@ -24,7 +24,9 @@ class Model_Account_Recurring extends Model_Account{
 		parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form, $on_date);
 		
 		$this->createPremiums();
-		$this->deposit($form['initial_opening_amount'],null,null,null, $on_date);
+		
+		if(isset($form['initial_opening_amount']) and $form['initial_opening_amount'])
+			$this->deposit($form['initial_opening_amount'],null,null,null, $on_date);
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null){

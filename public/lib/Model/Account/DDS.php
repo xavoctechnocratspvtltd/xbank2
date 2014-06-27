@@ -30,6 +30,8 @@ class Model_Account_DDS extends Model_Account{
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
 		
+		if($this->isActive())
+
 		$given_interest = $this->interestGiven();
 		$maturity_months = $this->ref('scheme_id')->get('MaturityPeriod');
 		$dds_amount = $this['Amount'];

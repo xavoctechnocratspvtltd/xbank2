@@ -30,6 +30,8 @@ class Model_Account_DDS extends Model_Account{
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
 		
+		if($this->isActive())
+
 		$given_interest = $this->interestGiven();
 		$maturity_months = $this->ref('scheme_id')->get('MaturityPeriod');
 		$dds_amount = $this['Amount'];
@@ -94,8 +96,8 @@ class Model_Account_DDS extends Model_Account{
 	function postInterestEntry($on_date){
 		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
 		$days = $days['days_total'];
-		echo " (".$this['CurrentBalanceCr']. " * ".$this['Interest']." / 1200) - ".$this->interestGiven() ." <br/>";
-		$interest = ($this['CurrentBalanceCr'] * $this['Interest'] / 1200)-$this->interestGiven() ;
+		// echo " (".$this['CurrentBalanceCr']. " * ".$this['Interest']." / 1200) - ".$this->interestGiven() ." <br/>";
+		$interest = (($this['CurrentBalanceCr'] - $this->interestGiven()) * $this['Interest'] / 1200)-$this->interestGiven() ;
 
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 

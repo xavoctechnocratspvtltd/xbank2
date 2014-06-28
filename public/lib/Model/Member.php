@@ -90,12 +90,12 @@ class Model_Member extends Model_Table {
 		}
 
 		if($shareValue){
-			$sahre_capital_scheme = $this->add('Model_Scheme')->loadBy('name',CAPITAL_ACCOUNT_SCHEME);
+			$share_capital_scheme = $this->add('Model_Scheme')->loadBy('name',CAPITAL_ACCOUNT_SCHEME);
 
-			$new_sm_number = $sahre_capital_scheme->getNewSMAccountNumber();
+			$new_sm_number = $share_capital_scheme->getNewSMAccountNumber();
 
 			$share_account = $this->add('Model_Account');
-			$share_account->createNewAccount($this->id, $sahre_capital_scheme->id ,$branch, $new_sm_number ,null,null,$on_date);
+			$share_account->createNewAccount($this->id, $share_capital_scheme->id ,$branch, $new_sm_number ,null,null,$on_date);
 		}
 
 	}

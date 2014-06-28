@@ -3,8 +3,8 @@
 // TODOS: voucher_no in transaction table to be double now
 // TODOS: all admission fee voucher narration is '10 (memberid)' format ... put memberid in reference id
 // TODOS: refence_account_id to reference_id name change
-// TODOS: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
-// TODOS: Saving account current interests till date as now onwards its keep saved on transaction
+// DONE: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
+// DONE: Saving account current interests till date as now onwards its keep saved on transaction
 
 class page_corrections extends Page {
 	public $total_taks=7;
@@ -378,7 +378,21 @@ class page_corrections extends Page {
     }
 
    	function checkAndCreateDefaultAccounts(){
-   		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+
+   		$all_schemes = $this->add('Model_Scheme');
+   		$scheme = $this->add('Model_Scheme');
+		$account = $this->add('Model_Account');
+		foreach ($all_schemes as $junk) {
+			$branch = $this->add('Model_Branch');
+			foreach($branch as $junk){
+				foreach ($all_schemes->getDefaultAccounts() as $details) {
+					$scheme->loadBy('name',$details['under_scheme']);
+					$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$scheme['name'],array('DefaultAC'=>true,'Group'=>$details['Group'],'PAndLGroup'=>$details['PAndLGroup']));
+					$account->unload();
+					$scheme->unload();
+				}
+			}
+		}
    	}
 
     function ccInterestTillNow($on_date=false){

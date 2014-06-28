@@ -24,7 +24,8 @@ class Model_Account_Recurring extends Model_Account{
 		parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form, $on_date);
 		
 		$this->createPremiums();
-		$this->deposit($form['initial_opening_amount'],null,null,null, $on_date);
+		if(isset($form['initial_opening_amount']) and $form['initial_opening_amount'])
+			$this->deposit($form['initial_opening_amount'],null,null,null, $on_date);
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null){
@@ -151,14 +152,38 @@ class Model_Account_Recurring extends Model_Account{
 
 	}
 
-	function markMatured($on_date=null){
+	function payInterest($on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
 
+		$fy = $this->api->getFinancialYear($on_date);
+
 		$non_interest_paid_premiums_till_now = $this->ref('Premiums');
-		$non_interest_paid_premiums_till_now->addCodnition('Paid','<>',false);
+		$non_interest_paid_premiums_till_now->addCodnition('Paid',true);
+		$non_interest_paid_premiums_till_now->addCodnition('PaidOn','>=',$fy['start_date']);
+		$non_interest_paid_premiums_till_now->addCodnition('PaidOn','<',$this->api->nextDate($fy['end_date']));
 
-		throw $this->exception('Maturity Interest to give');
+		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum(Paid*Amount)');
 
+		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
+
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_RECURRING, $this->ref('branch_id'), $on_date, 'Interest posting in Recurring Account', null, array('reference_account_id'=>$this->id));
+		
+		$transaction->addDebitAccount($this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $interest);
+		$transaction->addCreditAccount($this, $interest);
+		
+		$transaction->execute();
+
+		
+	}
+
+	function markMatured($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+		
+		$this->payInterest();
+
+		$this['MaturedStatus'] = true;
+		$this->save();
 	}
 
 }

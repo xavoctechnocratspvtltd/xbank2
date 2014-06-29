@@ -49,6 +49,7 @@ class Model_Member extends Model_Table {
 			return "25";
 		});
 
+
 		$this->hasMany('JointMember','member_id');
 		$this->hasMany('Account','member_id');
 

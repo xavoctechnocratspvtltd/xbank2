@@ -195,19 +195,26 @@ class Model_Account_FixedAndMis extends Model_Account{
 		// throw $this->exception('interstToAnotherAccountEntry post entry to be checked');
 	}
 
-	function provisions($from_date, $to_date, $for_scheme=null, $for_account=null){
+	function provisions($from_date, $to_date, $branch=null, $for_scheme=null, $for_account=null){
+		if(!$branch) $branch = $this->api->currentBranch;
+		
 		$provision_transactions_rows = $this->add('Model_TransactionRow');
 		
 		$provision_transactions_join = $provision_transactions_rows->join('transactions','transaction_type_id');
 		$transaction_type_join = $provision_transactions_join->join('transaction_types','transaction_type_id');
-		
 
 		$transaction_type_model = $this->add('Model_TransactionType');
 		$transaction_type_model->tryLoadBy('name',TRA_INTEREST_PROVISION_IN_FIXED_ACCOUNT);
 
 		if(!$transaction_type_model->loaded()) $transaction_type_model->save();
 
-		$provision_transactions_rows->addCondition('');
+		$provision_transactions_rows->addCondition('transaction_type_id',$transaction_type_model->id);
+		$provision_transactions_rows->addCondition('created_at','>=',$from_date);
+		$provision_transactions_rows->addCondition('created_at','<',$this->api->nextDate($to_date));
+
+
+
+		return $provision_transactions_rows;
 
 	}
 }

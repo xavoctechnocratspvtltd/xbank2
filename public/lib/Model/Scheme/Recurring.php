@@ -50,6 +50,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
 		$all_todays_matured_Accounts->addCondition('maturity_date',$on_date);
 		$all_todays_matured_Accounts->addCondition('MaturedStatus',false);
+		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
 
 		if($test_account) $all_todays_matured_Accounts->addCondition('id',$test_account->id);
 
@@ -72,6 +73,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$all_accounts_paid_in_this_year->addCondition('PaidOn','>=',$fy['start_date']);
 		$all_accounts_paid_in_this_year->addCondition('PaidOn','<',$this->api->nextDate($fy['end_date']));
 		$all_accounts_paid_in_this_year->addCondition('MaturedStatus',false);
+		$all_accounts_paid_in_this_year->addCondition('branch_id',$branch->id);
 
 		if($test_account) $all_accounts_paid_in_this_year->addCondition('id',$test_account->id);
 

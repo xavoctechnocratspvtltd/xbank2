@@ -49,6 +49,13 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 	}
 
 	function daily($branch=null,$on_date=null,$test_account=null){
+
+		if ( !$branch ) $branch=$this->api->current_branch;
+		// Doing Daily as on each year interest percentage changes
+		// ON the year complete date give old percentage style provision and marks
+		// lastinterestgiven date .. next time in month
+		// remaining days will be provisioned as per next percentage .... 
+
 		$active_fd_accounts = $this->add('Model_Active_Account_FixedAndMis',array('table_alias'=>'main_table'));
 		$scheme_join = $active_fd_accounts->join('schemes','scheme_id');
 
@@ -86,6 +93,8 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 	}
 
 	function monthly($branch=null,$on_date=null,$test_account=null){
+		if ( !$branch ) $branch=$this->api->current_branch;
+
 		// Do Provisions
 		$active_fd_accounts = $this->add('Model_Active_Account_FixedAndMis');
 		$scheme_join = $active_fd_accounts->join('schemes','scheme_id');
@@ -115,6 +124,8 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 	}
 
 	function yearly($branch=null,$on_date=null,$test_account=null){
+		if ( !$branch ) $branch=$this->api->current_branch;
+		
 		$active_fd_accounts = $this->add('Model_Active_Account_FixedAndMis');
 		$scheme_join = $active_fd_accounts->join('schemes','scheme_id');
 

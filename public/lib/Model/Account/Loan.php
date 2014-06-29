@@ -33,45 +33,45 @@ class Model_Account_Loan extends Model_Account{
 			throw $this->exception('Please Specify Account Type', 'ValidityCheck')->setField('account_type');
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $created_at = null ){
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $on_date = null ){
 
 		// throw $this->exception($form['LoanAgainstAccount_id'], 'ValidityCheck')->setField('AccountNumber');
 		// throw $this->exception('Check Loan Against Security', 'ValidityCheck')->setField('AccountNumber');
 
-		if(!$created_at) $created_at = $this->api->now;
+		if(!$on_date) $on_date = $this->api->now;
 
 		if($form['LoanAgSecurity']){
 			$security_account = $this->add('Model_Account')->load($form['LoanAgainstAccount_id']);
 			$security_account->lock();
 		}
 
-		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$on_date);
 		
-		$this->createProcessingFeeTransaction();
+		$this->createProcessingFeeTransaction($from_account = $otherValues['loan_from_account'], $on_date);
 		
 		$this->addDocumentDetails($form);
 		
 		$this->createPremiums();
 	}
 
-	function createProcessingFeeTransaction(){
+	function createProcessingFeeTransaction($from_account, $on_date){
 		$scheme = $this->ref('scheme_id');
 		$ProcessingFees = $scheme['ProcessingFees'];
-		$AccountCredt = $this['Amount'] - $ProcessingFees;
+		$AccountCredit = $this['Amount'] - $ProcessingFees;
 		
 		if($scheme['ProcessingFeesinPercent']){
 			$ProcessingFees = $ProcessingFees * $this['Amount'] / 100;
-			$AccountCredt = $this['Amount'] - ((100-$ProcessingFees) * $this['Amount'] / 100);
+			$AccountCredit = $this['Amount'] - $ProcessingFees;
 		}
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$created_at, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$on_date, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
 		
-		$loan_from_other_account = $this->add('Model_Account')->load($otherValues['loan_from_account']);
+		$loan_from_other_account = $this->add('Model_Account')->load($from_account);
 
 		$transaction->addDebitAccount($this, $this['Amount']);
-		$transaction->addCreditAccount($branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this['scheme_name'], $ProcessingFees);
-		$transaction->addCreditAccount($loan_from_other_account, $AccountCredt);
+		$transaction->addCreditAccount($this['branch_code'] . SP . PROCESSING_FEE_RECEIVED . SP. $this['scheme_name'], $ProcessingFees);
+		$transaction->addCreditAccount($loan_from_other_account, $AccountCredit);
 		
 		$transaction->execute();
 	}

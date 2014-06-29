@@ -100,7 +100,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('DocumentSubmitted','account_id');
 		$this->hasMany('AccountGaurantor','account_id');
 		$this->hasMany('TransactionRow','account_id');
-		$this->hasMany('Account','related_account_id');
+		$this->hasMany('Account','related_account_id',null,'RelatedAccounts');
 
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
 		$this->addHook('editing',array($this,'editing_default'));

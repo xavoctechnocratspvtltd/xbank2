@@ -7,9 +7,13 @@ class page_accounts_Recurring extends Page {
 		$crud=$this->add('xCRUD');
 		$account_recurring_model = $this->add('Model_Account_Recurring');
 		$account_recurring_model->add('Controller_Acl');
+		$account_recurring_model->setOrder('id','desc');
 		
 		$crud->addHook('myupdate',function($crud,$form){
-			$form->js()->univ()->errorMessage($form['aaa'])->execute();
+			if($crud->isEditing('edit')) return false;
+			$new_account = $crud->add('Model_Account_Recurring');
+			$new_account->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			return true;
 		});
 
 		if($crud->isEditing("add")){
@@ -20,6 +24,7 @@ class page_accounts_Recurring extends Page {
 			   	$f->setModel('Member');
 			   	$o->move($f->other_field,'before','Nominee');
 			}
+			$crud->form->addField('line','initial_opening_amount');
 
 			// $c_a_f=$crud->form->addField('autocomplete/Basic','collector_saving_account');
 			// $c_a_f->setModel('Account_SavingAndCurrent');
@@ -35,7 +40,6 @@ class page_accounts_Recurring extends Page {
 			$crud->grid->addPaginator(10);
 
 		if($form=$crud->form){
-			$crud->form->addField('line','initial_opening_amount');
 			
 			$crud->form->add('Order')
 						// ->move($c_a_f->other_field,'after','Amount')

@@ -61,6 +61,7 @@ class Menu_Base extends Menu {
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');
 		$utilities_sub_menus->addMenuItem('documents','Documents Management');
+		$utilities_sub_menus->addMenuItem('utility_setdate','Change Date');
 		$utilities->js('click',$utilities_sub_menus_popover->showJS());
 
 	}

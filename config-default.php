@@ -73,15 +73,15 @@ define('BRANCH_AND_DIVISIONS_HEAD',                  'Branch/Divisions' );
 define('BRANCH_AND_DIVISIONS',                  'Branch & Divisions' );
 
 
-define('INTEREST_RECEIVED_ON',				'Interest Received On ');
-define('PROCESSING_FEE_RECEIVED',				'Processing Fee Received On ');
-define('PENALTY_DUE_TO_LATE_PAYMENT_ON',		'Penalty Due To Late Payment On ');
-define('FOR_CLOSE_ACCOUNT_ON',		'For Close Account On ');
+define('INTEREST_RECEIVED_ON',				'Interest Received On');
+define('PROCESSING_FEE_RECEIVED',				'Processing Fee Received On');
+define('PENALTY_DUE_TO_LATE_PAYMENT_ON',		'Penalty Due To Late Payment On');
+define('FOR_CLOSE_ACCOUNT_ON',		'For Close Account On');
 define('INTEREST_PAID_ON',				'Interest Paid On');
 define('COMMISSION_PAID_ON',				'Commission Paid On');
 define('ADMISSION_FEE_ACCOUNT',			'Admission Fee');
 define('CASH_ACCOUNT',					'Cash Account');
-define('INTEREST_PROVISION_ON',                         'Interest Provision On ');
+define('INTEREST_PROVISION_ON',                         'Interest Provision On');
 define('DEPRECIATION_ON_FIXED_ASSETS',                  'Depreciation On Fixed Assets');
 define('MINIMUM_BALANCE_CHARGE_RECEIVED_ON',                  'Minimum Balance Charge Received On');
 define('CHEQUEBOOK_CHARGE_RECEIVED_ON',                  'ChequeBook Charge Received On');

@@ -10,7 +10,7 @@ class Model_Account_DDS extends Model_Account{
 		$this->addCondition('SchemeType','DDS');
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','DDS');
 		$this->getElement('Amount')->caption('DDS amount (in multiples of Rs.300 like 300, 600, 900....3000 etc.)');
-
+		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_DDS);
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
@@ -19,6 +19,7 @@ class Model_Account_DDS extends Model_Account{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+		
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 
 		if($agent_id = $otherValues['agent_id'])

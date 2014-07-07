@@ -33,6 +33,11 @@ class Model_Account_Loan extends Model_Account{
 			throw $this->exception('Please Specify Account Type', 'ValidityCheck')->setField('account_type');
 	}
 
+	function createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+		$pending_account = parent::createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+		return $pending_account;
+	}
+
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $on_date = null ){
 
 		// throw $this->exception($form['LoanAgainstAccount_id'], 'ValidityCheck')->setField('AccountNumber');
@@ -40,8 +45,8 @@ class Model_Account_Loan extends Model_Account{
 
 		if(!$on_date) $on_date = $this->api->now;
 
-		if($form['LoanAgSecurity']){
-			$security_account = $this->add('Model_Account')->load($form['LoanAgainstAccount_id']);
+		if($otherValues['LoanAgainstAccount_id']){
+			$security_account = $this->add('Model_Account')->load($otherValues['LoanAgainstAccount_id']);
 			$security_account->lock();
 		}
 
@@ -49,7 +54,10 @@ class Model_Account_Loan extends Model_Account{
 		
 		$this->createProcessingFeeTransaction($from_account = $otherValues['loan_from_account'], $on_date);
 		
-		$this->addDocumentDetails($form);
+		if($form)
+			$this->addDocumentDetails($form);
+		else
+			$this->addDocumentDetailsFromPending(json_decode($otherValues['extra_info'],true));
 		
 		$this->createPremiums();
 	}
@@ -81,6 +89,15 @@ class Model_Account_Loan extends Model_Account{
 		foreach ($documents as $d) {
 		 	if($form[$this->api->normalizeName($documents['name'])])
 		 		$this->updateDocument($documents, $form[$this->api->normalizeName($documents['name'].' value')]);
+		}
+	}
+
+
+	function addDocumentDetailsFromPending($extra_info){
+		$doc_info = $extra_info['documents_feeded'];
+		foreach ($doc_info as $doc_name => $value) {
+			$document = $this->add('Model_Document')->tryLoadBy('name',$doc_name);
+			$this->updateDocument($document, $value);
 		}
 	}
 

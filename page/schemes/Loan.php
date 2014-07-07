@@ -30,6 +30,7 @@ class page_schemes_Loan extends Page{
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(10);
+			$crud->grid->addQuickSearch(array('name'));
 		}
 
 		if($crud->isEditing('add')){

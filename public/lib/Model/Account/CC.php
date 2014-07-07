@@ -14,6 +14,7 @@ class Model_Account_CC extends Model_Account{
 		$this->getElement('agent_id')->destroy();
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','CC');
 		$this->getElement('Amount')->caption('CC Limit');
+		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_CC);
 
 		$this->addHook('editing',$this);
 
@@ -25,9 +26,7 @@ class Model_Account_CC extends Model_Account{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null,$on_date=null){
-
-		$otherValues += array('account_type'=>ACCOUNT_TYPE_CC);
-
+		
 		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form,$on_date);
 		if($this['Amount'])
 			$this->doProsessingFeesTransactions($on_date);

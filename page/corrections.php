@@ -3,11 +3,13 @@
 // TODOS: voucher_no in transaction table to be double now
 // TODOS: all admission fee voucher narration is '10 (memberid)' format ... put memberid in reference id
 // TODOS: refence_account_id to reference_id name change
+// TODOS: account_type of existing accounts 
+
 // DONE: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
 // DONE: Saving account current interests till date as now onwards its keep saved on transaction
 
 class page_corrections extends Page {
-	public $total_taks=7;
+	public $total_taks=9;
 	public $title = "Correction";
 	function init(){
 		parent::init();
@@ -15,51 +17,65 @@ class page_corrections extends Page {
 	}
 
 	function page_index(){
+		$this->api->resetProgress();
 
-		if(!$_GET['execute']) return;
+		if(!$_GET['execute']) {
+			// $this->add('View_Error')->set('Execute Another thread with execute=1 Querry parameter');
+			return;
+		}
 
 		if($jmp=$_GET['jump_to']){
 			$this->$jmp();
 			return;
 		}
 
-		$this->api->resetProgress();
+		try{
+			$this->api->db->beginTransaction();
 
-		$this->query('SET FOREIGN_KEY_CHECKS = 0');
 
-		$this->api->markProgress('Corrections',"",'Renaming tables',$this->total_taks);
-		$this->renameTables();
+			$this->query('SET FOREIGN_KEY_CHECKS = 0');
+
+			$this->api->markProgress('Corrections',"",'Renaming tables',$this->total_taks);
+			$this->renameTables();
+			
+			$this->add('Model_AgentGuarantor');
+			$this->add('Model_AccountGuarantor');
+			$this->add('Model_Transaction');
+			
+			$this->api->markProgress('Corrections',1,'Adding, Editing, Removing Fields ...',$this->total_taks);
+			$this->page_fields();
 		
-		$this->add('Model_AgentGuarantor');
-		$this->add('Model_AccountGuarantor');
-		$this->add('Model_Transaction');
-		
-		$this->api->markProgress('Corrections',1,'Adding, Editing, Removing Fields ...',$this->total_taks);
-		$this->page_fields();
-	
-		$this->api->markProgress('Corrections',2,'Moving To Many ...',$this->total_taks);
-		$this->page_movetomany();
+			$this->api->markProgress('Corrections',2,'Moving To Many ...',$this->total_taks);
+			$this->page_movetomany();
 
-		$this->api->markProgress('Corrections',3,'Transactions Table Refactoring ...',$this->total_taks);
-		$this->page_transactionsUpdate();
-		
-		$this->api->markProgress('Corrections',4,'Agent AccountNumber to account_id ...',$this->total_taks);
-		$this->agentAccountToRelation();
+			$this->api->markProgress('Corrections',3,'Transactions Table Refactoring ...',$this->total_taks);
+			$this->page_transactionsUpdate();
+			
+			$this->api->markProgress('Corrections',4,'Agent AccountNumber to account_id ...',$this->total_taks);
+			$this->agentAccountToRelation();
 
-		$this->api->markProgress('Corrections',5,'Saving Account Interests ...',$this->total_taks);
-		$this->savingInterestTillNow();
-		
-		$this->api->markProgress('Corrections',6,'CC Account Interest',$this->total_taks);
-		$this->ccInterestTillNow();
+			$this->api->markProgress('Corrections',5,'Account Type set for existing accounts',$this->total_taks);
+			$this->setAccountType();
+			
+			$this->api->markProgress('Corrections',6,'Saving Account Interests ...',$this->total_taks);
+			$this->savingInterestTillNow();
+			
+			$this->api->markProgress('Corrections',7,'CC Account Interest',$this->total_taks);
+			$this->ccInterestTillNow();
 
-		$this->api->markProgress('Corrections',7,'done',$this->total_taks);
+			$this->api->markProgress('Corrections',8,'done',$this->total_taks);
 
-		// Make currentInterest = 0 for Account_CC
-		$this->add('Model_Account_CC')->_dsql()->set('CurrentInterest',0)->update();
+			// Make currentInterest = 0 for Account_CC
+			$this->add('Model_Account_CC')->_dsql()->set('CurrentInterest',0)->update();
 
-		$this->checkAndCreateDefaultAccounts();
+			$this->api->markProgress('Corrections',9,'Creating Default Accounts',$this->total_taks);
+			$this->checkAndCreateDefaultAccounts();
 
-		$this->query('SET FOREIGN_KEY_CHECKS = 1');
+			$this->query('SET FOREIGN_KEY_CHECKS = 1');
+			$this->api->db->commit();
+		}catch(Exception $e){
+			$this->api->db->rollBack();
+		}
 	}
 
 	// task 1
@@ -138,10 +154,12 @@ class page_corrections extends Page {
 				array('members','state','string'),
 				array('staffs','name','string'),
 				array('dealers','loan_panelty_per_day','int'),
+				array('dealers','time_over_charge','int'),
 				array('dealers','dealer_monthly_date','int'),
 				array('agents','account_id','int'),
 				array('accounts','`Group`','string'),
 				array('accounts','`account_type`','string'),
+				array('accounts','`extra_info`','text'),
 				array('premiums','`PaneltyCharged`','money'),
 				array('premiums','`PaneltyPosted`','money'),
 				array('accounts','`MaturityToAccount_id`','int'),
@@ -334,7 +352,7 @@ class page_corrections extends Page {
 			tr.transaction_id = t.id');
 
     	// Remove unwanted columns
-    	
+    	// TODOS: 
     	
     }
 
@@ -398,7 +416,66 @@ class page_corrections extends Page {
     function ccInterestTillNow($on_date=false){
     	$cc_update=$this->add('Model_Account_CC');
     	$cc_update->dsql()->set('CurrentInterest',0)->set('LastCurrentInterestUpdatedAt','2014-05-31')->update();
-    	
+    	// TODOS: Take every date transaction for each CC account aftre 31 march and update Interest in CurrentInterest Field
+
+    }
+
+    function setAccountType(){
+    	/*
+			SELECT
+	accounts.AccountNumber,
+	schemes.SchemeType,
+
+IF (
+	schemes.SchemeType = 'Loan',
+
+IF (
+	LOCATE('pl ', schemes. NAME),
+	'Personal Loan',
+	'Two Wheeler Loan'
+),
+
+IF (
+	schemes.SchemeType = 'FixedAndMis',
+	IF (
+		LOCATE(
+			accounts.AccountNumber,
+			'MIS'
+		),
+		'MIS',
+		'FD'
+	),
+	IF (
+		schemes.SchemeType = 'SavingAndCurrent',
+		IF (
+			LOCATE(
+				'SB',
+				accounts.AccountNumber
+			)
+			OR LOCATE(
+				'_SA_',
+				accounts.AccountNumber
+			)
+			OR LOCATE(
+				'Saving',
+				accounts.AccountNumber
+			)
+		
+,
+			'Saving',
+			'Current'
+		),
+		schemes.SchemeType
+	)
+)
+) as should_be
+FROM
+	jos_xaccounts accounts
+INNER JOIN jos_xschemes schemes ON accounts.schemes_id = schemes.id
+HAVING
+should_be='DDS'
+LIMIT 500
+    	*/
     }
 
 }

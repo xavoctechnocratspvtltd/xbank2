@@ -10,6 +10,7 @@ class Model_Account_Recurring extends Model_Account{
 		$this->addCondition('SchemeType','Recurring');
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','Recurring');
 		$this->getElement('Amount')->caption('RECURRING amount (premium)');
+		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_RECURRING);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";

@@ -55,6 +55,8 @@ class Model_Account extends Model_Table {
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
 		$this->addField('Group');
 		$this->addField('PAndLGroup')->system(true);
+		
+		$this->addField('extra_info')->type('text')->system(true); // Put json style extra info in this field
 
 		$this->scheme_join = $this->leftJoin('schemes','scheme_id');
 		$this->scheme_join->addField('SchemeType');
@@ -171,6 +173,65 @@ class Model_Account extends Model_Table {
 		$this->hook('afterAccountCredited',array($amount));
 	}
 
+	function createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Must be Loaded Object of Model_Branch');
+		if(!$created_at) $created_at = $this->api->now;
+		if(!$otherValues) $otherValues=array();
+
+		$pending_account = $this->add('Model_PendingAccount');
+		$pending_account->allow_any_name = true;
+
+		$pending_account['member_id'] = $member_id;
+		$pending_account['scheme_id'] = $scheme_id;
+		$pending_account['AccountNumber'] = 'new_account';
+		$pending_account['branch_id'] = $branch->id;
+		$pending_account['created_at'] = $created_at;
+		$pending_account['LastCurrentInterestUpdatedAt']=isset($otherValues['LastCurrentInterestUpdatedAt'])? :$created_at;
+
+		unset($otherValues['member_id']);
+		unset($otherValues['scheme_id']);
+		unset($otherValues['AccountNumber']);
+		unset($otherValues['branch_id']);
+		unset($otherValues['created_at']);
+		unset($otherValues['LastCurrentInterestUpdatedAt']);
+
+		foreach ($otherValues as $field => $value) {
+			$pending_account[$field] = $value;
+		}
+
+		$extra_info=array();
+		
+		$joint_members=array();
+		for($k=2;$k<=4;$k++) {
+		    if($j_m_id=$otherValues['member_ID'.$k])
+		    	$joint_members[] = $j_m_id;
+		}
+
+		$documents=$this->add('Model_Document');
+		$documents_feeded = array();
+		foreach ($documents as $d) {
+		 	if($form[$this->api->normalizeName($documents['name'])]){
+				$documents_feeded[$this->api->normalizeName($documents['name'])]=$form[$this->api->normalizeName($documents['name'].' value')];
+		 	}
+		}
+
+		$extra_info['joint_members'] = $joint_members;
+		$extra_info['documents_feeded'] = $documents_feeded;
+
+ 		$pending_account['extra_info'] = json_encode($extra_info);
+		$pending_account->save();
+
+		return $pending_account;
+	}
+
+	function getNewAccountNumber($account_type=null,$branch=null){
+		if(!$account_type) $account_type = $this['account_type'];
+		if(!$account_type) throw $this->exception('Could not Identify Account Type to generate Account Number', 'ValidityCheck')->setField('AccountNumber');
+
+		
+
+	}
+
 	/**
 	 * Create new account on an empty AccountModel, overrided in child classes but required to call this parent::function
 	 * @param  id $member_id     
@@ -207,7 +268,7 @@ class Model_Account extends Model_Table {
 
 		$this->save();
 		for($k=2;$k<=4;$k++) {
-		    if($j_m_id=$form['member_ID'.$k])
+		    if($j_m_id=$otherValues['member_ID'.$k])
 		    	$this->jointAccountMember($j_m_id);
 		}
 		return $this->id;
@@ -224,7 +285,7 @@ class Model_Account extends Model_Table {
 			$joint_member->save();
 	}
 
-	function updateDocument(Model_Document $document,$value){
+	function updateDocument($document,$value){
 		$document_submitted = $this->add('Model_DocumentSubmitted');
 		$document_submitted->addCondition('documents_id',$document->id);
 		$document_submitted->addCondition('accounts_id',$this->id);

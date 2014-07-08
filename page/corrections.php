@@ -75,6 +75,7 @@ class page_corrections extends Page {
 			$this->api->db->commit();
 		}catch(Exception $e){
 			$this->api->db->rollBack();
+			throw $e;
 		}
 	}
 
@@ -421,61 +422,70 @@ class page_corrections extends Page {
     }
 
     function setAccountType(){
-    	/*
+    	$q="
+    	UPDATE 
+		accounts a 
+		JOIN
+    	(
 			SELECT
-	accounts.AccountNumber,
-	schemes.SchemeType,
-
-IF (
-	schemes.SchemeType = 'Loan',
-
-IF (
-	LOCATE('pl ', schemes. NAME),
-	'Personal Loan',
-	'Two Wheeler Loan'
-),
-
-IF (
-	schemes.SchemeType = 'FixedAndMis',
-	IF (
-		LOCATE(
+			accounts.id,
 			accounts.AccountNumber,
-			'MIS'
-		),
-		'MIS',
-		'FD'
-	),
-	IF (
-		schemes.SchemeType = 'SavingAndCurrent',
+			schemes.SchemeType,
+
 		IF (
-			LOCATE(
-				'SB',
-				accounts.AccountNumber
-			)
-			OR LOCATE(
-				'_SA_',
-				accounts.AccountNumber
-			)
-			OR LOCATE(
-				'Saving',
-				accounts.AccountNumber
-			)
-		
-,
-			'Saving',
-			'Current'
+			schemes.SchemeType = 'Loan',
+
+		IF (
+			LOCATE('pl ', schemes. NAME),
+			'Personal Loan',
+			'Two Wheeler Loan'
 		),
-		schemes.SchemeType
-	)
-)
-) as should_be
-FROM
-	jos_xaccounts accounts
-INNER JOIN jos_xschemes schemes ON accounts.schemes_id = schemes.id
-HAVING
-should_be='DDS'
-LIMIT 500
-    	*/
+
+		IF (
+			schemes.SchemeType = 'FixedAndMis',
+			IF (
+				LOCATE(
+					accounts.AccountNumber,
+					'MIS'
+				),
+				'MIS',
+				'FD'
+			),
+			IF (
+				schemes.SchemeType = 'SavingAndCurrent',
+				IF (
+					LOCATE(
+						'SB',
+						accounts.AccountNumber
+					)
+					OR LOCATE(
+						'_SA_',
+						accounts.AccountNumber
+					)
+					OR LOCATE(
+						'Saving',
+						accounts.AccountNumber
+					)
+				
+		,
+					'Saving',
+					'Current'
+				),
+				schemes.SchemeType
+			)
+		)
+		) as should_be
+		FROM
+			jos_xaccounts accounts
+		INNER JOIN jos_xschemes schemes ON accounts.schemes_id = schemes.id
+		) as Temp on Temp.id=a.id
+	
+		SET
+		a.account_type = Temp.should_be
+    	";
+
+    	$this->query($q);
+
     }
 
 }

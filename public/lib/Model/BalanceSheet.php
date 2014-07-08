@@ -30,14 +30,17 @@ class Model_BalanceSheet extends Model_Table {
 		$account_join = $transaction_row->join('accounts','account_id');
 		$account_join->addField('ActiveStatus');
 		$account_join->addField('affectsBalanceSheet');
+		$aj_ta = $account_join->table_alias;
 
 		$scheme_join = $account_join->join('schemes','scheme_id');
 		$scheme_join->addField('balance_sheet_id');
 
 		$transaction_row->addCondition('balance_sheet_id',$this->id);
 		$transaction_row->addCondition('created_at','<',$on_date);
-		$transaction_row->addCondition('ActiveStatus',true);
-		$transaction_row->addCondition('affectsBalanceSheet',false);
+		// $transaction_row->addCondition('ActiveStatus',true);
+		// $transaction_row->addCondition('affectsBalanceSheet',false);
+
+		$transaction_row->_dsql()->where("(($aj_ta.ActiveStatus = 1 OR $aj_ta.affectsBalanceSheet = 1))");
 
 		if($branch)
 			$transaction_row->addCondition('branch_id',$branch->id);

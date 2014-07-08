@@ -22,10 +22,14 @@ class Model_PendingAccount extends Model_Account {
 			$model='_'.$this['account_type'];
 		}
 
+		$extra_info = json_decode($this['extra_info'],true);
+
 		$new_account = $this->add('Model_Account'.$model);
 		$otherValues = $this->data;
+		$otherValues['loan_from_account'] = $extra_info['loan_from_account'];
+                unset($otherValues['id']);
 
-		$new_account->createNewAccount($this['member_id'],$this['scheme_id'],$this->ref('branch_id'), $new_account->getNewAccountNumber() ,$otherValues,$form=null, $on_date = $this['created_at'] );
+		$new_account->createNewAccount($this['member_id'],$this['scheme_id'],$this->ref('branch_id'), $new_account->getNewAccountNumber($this['account_type'],$this->ref('branch_id')) ,$otherValues,$form=null, $on_date = $this['created_at'] );
 
 		$this['is_approved'] = true;
 		$this->save();

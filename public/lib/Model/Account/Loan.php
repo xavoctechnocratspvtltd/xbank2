@@ -96,13 +96,18 @@ class Model_Account_Loan extends Model_Account{
 	function addDocumentDetailsFromPending($extra_info){
 		$doc_info = $extra_info['documents_feeded'];
 		foreach ($doc_info as $doc_name => $value) {
-			$document = $this->add('Model_Document')->tryLoadBy('name',$doc_name);
+			$document = $this->add('Model_Document')->loadBy('name',$doc_name);
 			$this->updateDocument($document, $value);
 		}
 	}
 
 	function getFirstEMIDate(){
 		// ??? .... $this['created_at'] with dealer_monthly_date ... relation
+		if($this['dealer_id']){
+			$dd=$this['dealer_monthly_date'];
+			if(!$dd) throw $this->exception('Dealer Monthly date is not defined');
+			return date('Y-m-'.$dd, strtotime($this->api->today));
+		}
 		throw $this->exception('Through Dealer Date ... ???', 'ValidityCheck')->setField('FieldName');
 	}
 

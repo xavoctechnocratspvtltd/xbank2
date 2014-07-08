@@ -211,13 +211,14 @@ class Model_Account extends Model_Table {
 		$documents_feeded = array();
 		foreach ($documents as $d) {
 		 	if($form[$this->api->normalizeName($documents['name'])]){
-				$documents_feeded[$this->api->normalizeName($documents['name'])]=$form[$this->api->normalizeName($documents['name'].' value')];
+				$documents_feeded[$documents['name']]=$form[$this->api->normalizeName($documents['name'].' value')];
 		 	}
 		}
 
 		$extra_info['joint_members'] = $joint_members;
 		$extra_info['documents_feeded'] = $documents_feeded;
-
+		$extra_info['loan_from_account'] = $otherValues['loan_from_account'];
+		
  		$pending_account['extra_info'] = json_encode($extra_info);
 		$pending_account->save();
 
@@ -227,16 +228,27 @@ class Model_Account extends Model_Table {
 	function getNewAccountNumber($account_type=null,$branch=null){
 		if(!$account_type) $account_type = $this['account_type'];
 		if(!$account_type) throw $this->exception('Could not Identify Account Type to generate Account Number', 'ValidityCheck')->setField('AccountNumber');
+                if(!$branch) $branch= $this->api->currentBranch;
 
-		$ac_code = $this->api->getConfig('account_code/'.$this['account_type'],false);
+		$ac_code = $this->api->getConfig('account_code/'.$account_type,false);
 		if(!$ac_code) throw $this->exception('Account type Code is not proper ')->addMoreInfo('Account account_type',$this['account_type']);
 
 		$max_account_number = $this->add('Model_Account');
 		$new_number = $max_account_number->_dsql()->del('fields')
-			->field($this->dsql()->expr('MAX(CAST(SUBSTRING(AccountNumber,6,LENGTH(AccountNumber)-5)) AS UNSIGNED)'))
-			->where('LEFT(AccountNumber,3) = '.$this['branch_code'])
+			->field($this->dsql()->expr('	MAX(
+                                                                CAST(
+                                                                        SUBSTRING(
+                                                                                AccountNumber,
+                                                                                6,
+                                                                                LENGTH(AccountNumber) - 5
+                                                                        ) AS UNSIGNED
+                                                                )
+                                                        )'))
+			->where('LEFT(AccountNumber,3) = "'.$branch['Code'].'"')
+                        ->where('account_type',$account_type)
 			->getOne();
-		return $this['branch_code'].$ac_code.$new_number;
+                
+		return $branch['Code'].$ac_code.($new_number+1);
 	}
 
 	/**
@@ -425,7 +437,7 @@ class Model_Account extends Model_Table {
 	}
 
 	function isMatured(){
-		return $this['MaturedStatus']?:0;
+		return $this['MaturedStatus']?true:false;
 	}
 
 	function isActive(){
@@ -440,7 +452,7 @@ class Model_Account extends Model_Table {
 	}
 
 	function isLocked(){
-		return $this['LockingStatus']?:0;
+		return $this['LockingStatus']?true:false;
 	}
 
 	function prepareDelete($revert_accounts_balances=true){
@@ -456,10 +468,10 @@ class Model_Account extends Model_Table {
 	}
 
 	function delete($forced =false){
-		if($forced){
+		if($forced===true){
 			$this->prepareDelete(true);
 		}
-		parent::delete();
+		parent::delete($forced);
 	}
 
 	function addAgent($agent, $replace_existing=false){

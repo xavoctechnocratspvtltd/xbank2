@@ -256,6 +256,7 @@ class Model_Scheme extends Model_Table {
 		$account_join->addField('scheme_id');
 		$account_join->addField('AccountActiveStatus','ActiveStatus');
 		$account_join->addField('affectsBalanceSheet');
+		$aj_ta = $account_join->table_alias;
 
 		$scheme_join = $account_join->join('schemes','scheme_id');
 		$scheme_join->addField('SchemeType');
@@ -266,9 +267,8 @@ class Model_Scheme extends Model_Table {
 		$head_join->addField('subtract_from');
 
 		$transaction_row->addCondition('created_at','<',$on_date);
-		$transaction_row->addCondition('AccountActiveStatus',1);
-		$transaction_row->addCondition('affectsBalanceSheet',0);
 		$transaction_row->addCondition('balance_sheet_id',$underHead->id);
+		$transaction_row->_dsql()->where("($aj_ta.ActiveStatus=1 OR $aj_ta.affectsBalanceSheet=1)");
 
 		if($branch)
 			$transaction_row->addCondition('branch_id',$branch->id);

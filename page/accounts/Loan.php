@@ -11,12 +11,19 @@ class page_accounts_Loan extends Page {
 	function page_pendingAccounts(){
 		$crud=$this->add('xCRUD');
 		$account_loan_model = $this->add('Model_Account_Loan',array('table'=>'accounts_pending'));
+		$account_loan_model->addField('is_approved')->type('boolean')->defaultValue(false);
+		$account_loan_model->addCondition('is_approved',false);
 
 		$account_loan_model->add('Controller_Acl');
 		$account_loan_model->setOrder('id','desc');
 		
 		$crud->addHook('myupdate',function($crud,$form){
-			if($crud->isEditing('edit')) return;
+			if($crud->isEditing('edit')) {
+				$extra_info = json_decode($crud->form->model['extra_info'],true);
+				$extra_info['loan_from_account'] = $form['loan_from_account'];
+				$crud->form->model['extra_info'] = json_encode($extra_info);
+				return;
+			}
 			
 			if($form['LoanAgSecurity'] AND !$form['LoanAgainstAccount_id'])
 				$form->displayError('LoanAgainstAccount','Please Specify Loan Against Account Number');
@@ -30,6 +37,7 @@ class page_accounts_Loan extends Page {
 		/**
 		 * Add Documents Fields ...
 		 */
+
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
 			$documents=$this->add('Model_Document');
@@ -44,13 +52,17 @@ class page_accounts_Loan extends Page {
 					'*'=>array($this->api->normalizeName($documents['name'].' value'))
 					),'div .atk-form-row');
 			}
+		}
+
+		if($crud->isEditing()){
 			$loan_from_account_field = $crud->form->addField('autocomplete/Basic','loan_from_account')->validateNotNull();
 			$loan_from_account_field->setModel('Account');
 		}
-
+		
 
 
 		if($crud->isEditing('edit')){
+			
 			// $account_loan_model->hook('editing');
 		}
 		
@@ -58,15 +70,19 @@ class page_accounts_Loan extends Page {
 
 		if($crud->isEditing()){
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
-		}
-
-		if($crud->isEditing('add')){
-
+            $loan_from_account = json_decode($crud->form->model['extra_info'],true);
+			$loan_from_account = $loan_from_account['loan_from_account'];
+			$crud->form->getElement('loan_from_account')->set($loan_from_account);
+			
 			$f1=$crud->form->getElement('account_type');
 			$f1->js(true)->univ()->bindConditionalShow(array(
 					''=>array(''),
 					'Loan Againest Deposit'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
 					),'div .atk-form-row');
+		}
+
+		if($crud->isEditing('add')){
+
 
 			$crud->form->add('Order')
 						// ->move('LoanAgSecurity','after','LoanInsurranceDate')
@@ -77,6 +93,8 @@ class page_accounts_Loan extends Page {
 
 
 		if($crud->grid){
+			$crud->grid->addClass('pending_grid');
+			$crud->grid->js('reload')->reload();
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','edit_pendingDocument');
 			$crud->grid->addColumn('expander','action');
@@ -127,7 +145,7 @@ class page_accounts_Loan extends Page {
 
 
 
-		if($crud->isEditing('edit')){
+		if($crud->isEditing('edit')){ 
 			$account_loan_model->hook('editing');
 		}
 		
@@ -178,9 +196,9 @@ class page_accounts_Loan extends Page {
 		   	$o->move($f1,'last');
 		    $f2=$form->addField('line',$this->api->normalizeName($documents['name'].' value'));
 		   	$o->move($f2,'last');
-		   	if($doc_info[$this->api->normalizeName($documents['name'])]){
+		   	if($doc_info[$documents['name']]){
 		   		$f1->set(1);
-		   		$f2->set($doc_info[$this->api->normalizeName($documents['name'])]);
+		   		$f2->set($doc_info[$documents['name']]);
 		   	}
 		   	$f1->js(true)->univ()->bindConditionalShow(array(
 				''=>array(''),
@@ -195,9 +213,9 @@ class page_accounts_Loan extends Page {
 			$documents_feeded = array();
 			foreach ($documents as $d) {
 			 	if($form[$this->api->normalizeName($documents['name'])]){
-					$doc_info[$this->api->normalizeName($documents['name'])]=$form[$this->api->normalizeName($documents['name'].' value')];
+					$doc_info[$documents['name']]=$form[$this->api->normalizeName($documents['name'].' value')];
 			 	}else{
-			 		unset($doc_info[$this->api->normalizeName($documents['name'])]);
+			 		unset($doc_info[$documents['name']]);
 			 	}
 			}
 			$extra_info['documents_feeded'] = $doc_info;
@@ -218,7 +236,15 @@ class page_accounts_Loan extends Page {
 		$reject_btn = $this->add('Button')->set('REJECT');
 
 		if($approve_btn->isClicked('Are you sure to approve and create account')){
-			$pending_account->approve();
+			try{
+				$this->api->db->beginTransaction();
+					$pending_account->approve();
+				$this->api->db->commit();
+			}catch(Exception $e){
+				$this->api->db->rollBack();
+				throw $e;
+			}
+			$this->js()->_selector('pending_grid')->trigger('reload')->execute();
 		}
 
 		if($reject_btn->isClicked('Are you sure')){

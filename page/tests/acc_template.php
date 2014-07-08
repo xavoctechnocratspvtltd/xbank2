@@ -22,6 +22,7 @@ class page_tests_FEED_FEED extends Page_Tester {
 
     public $maturityToAccount = null; // Maturity to transfer to account "UDRSBxyz"
     public $interestToAccount = null; // Interest To Account "UDRSBabcd"
+    public $loan_from_account = null; // Loan Amount From Account "SBBJ sdsd"
 
     // Amount is what ???
     // Saving => Initial Opening Amount

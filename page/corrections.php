@@ -398,19 +398,28 @@ class page_corrections extends Page {
 
    	function checkAndCreateDefaultAccounts(){
 
-   		$all_schemes = $this->add('Model_Scheme');
+   		$i=1;
    		$scheme = $this->add('Model_Scheme');
 		$account = $this->add('Model_Account');
-		foreach ($all_schemes as $junk) {
-			$branch = $this->add('Model_Branch');
-			foreach($branch as $junk){
-				foreach ($all_schemes->getDefaultAccounts() as $details) {
-					$scheme->loadBy('name',$details['under_scheme']);
-					$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$scheme['name'],array('DefaultAC'=>true,'Group'=>$details['Group'],'PAndLGroup'=>$details['PAndLGroup']));
-					$account->unload();
-					$scheme->unload();
+		foreach (explode(",", ACCOUNT_TYPES) as $st) {
+	   		$all_schemes = $this->add('Model_Scheme_'.$st);
+			$branch = $this->add('Model_Branch')->addCondition('published',true);
+			foreach($branch as $b){
+				foreach ($all_schemes as $sc) {
+					foreach ($all_schemes->getDefaultAccounts() as $details) {
+			    		$this->api->markProgress('Default_Accounts_Create',$i++,$st . ' in ' . $branch['name']. ' - ' .$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'] );
+						$scheme->loadBy('name',$details['under_scheme']);
+						if(!$this->add('Model_Account')->tryLoadBy('AccountNumber',$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'])->loaded())
+							$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'],array('DefaultAC'=>true,'Group'=>$details['Group'],'PAndLGroup'=>$details['PAndLGroup']));
+						else
+							$this->add('View_Error')->setHtml("<b>".$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name']. '</b> Already exists');
+						$account->unload();
+						$scheme->unload();
+					}
 				}
 			}
+			$branch->destroy();
+			$all_schemes->destroy();
 		}
    	}
 
@@ -432,14 +441,18 @@ class page_corrections extends Page {
 			accounts.AccountNumber,
 			schemes.SchemeType,
 
-		IF (
-			schemes.SchemeType = 'Loan',
 
-		IF (
-			LOCATE('pl ', schemes. NAME),
-			'Personal Loan',
-			'Two Wheeler Loan'
-		),
+                        IF (
+                                schemes.SchemeType = 'Loan',
+                        IF(accounts.LoanAgainstAccount_id is not null,
+                        'Loan Againest Deposit',
+                        IF (
+                                LOCATE('pl ', schemes. NAME),
+                                'Personal Loan',
+                                'Two Wheeler Loan'
+                        )
+                        ),
+
 
 		IF (
 			schemes.SchemeType = 'FixedAndMis',
@@ -476,8 +489,8 @@ class page_corrections extends Page {
 		)
 		) as should_be
 		FROM
-			jos_xaccounts accounts
-		INNER JOIN jos_xschemes schemes ON accounts.schemes_id = schemes.id
+			accounts
+		INNER JOIN schemes ON accounts.scheme_id = schemes.id
 		) as Temp on Temp.id=a.id
 	
 		SET

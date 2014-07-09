@@ -94,6 +94,9 @@ class Model_Account_Loan extends Model_Account{
 
 
 	function addDocumentDetailsFromPending($extra_info){
+
+		if(!isset($extra_info['documents_feeded'])) return;
+		
 		$doc_info = $extra_info['documents_feeded'];
 		foreach ($doc_info as $doc_name => $value) {
 			$document = $this->add('Model_Document')->loadBy('name',$doc_name);
@@ -101,14 +104,27 @@ class Model_Account_Loan extends Model_Account{
 		}
 	}
 
-	function getFirstEMIDate(){
+	function getFirstEMIDate($return_date_string=false){
 		// ??? .... $this['created_at'] with dealer_monthly_date ... relation
+
+		$date = new MyDateTime($this['created_at']);
+
+		$toAdd = 'P1M';
+
 		if($this['dealer_id']){
 			$dd=$this['dealer_monthly_date'];
-			if(!$dd) throw $this->exception('Dealer Monthly date is not defined');
-			return date('Y-m-'.$dd, strtotime($this->api->today));
+			if($dd){
+				if((int)$dd < (int)date('d',strtotime($this['created_at'])))
+					$toAdd='P2M';
+				$date->add(new DateInterval($toAdd));
+				return $date->format('Y-m-'.$dd);
+			}
 		}
-		throw $this->exception('Through Dealer Date ... ???', 'ValidityCheck')->setField('FieldName');
+		$date->add(new DateInterval($toAdd));
+		if($return_date_string)
+			return $date->format('Y-m-d');
+		else
+			return $date;
 	}
 
 	function createPremiums(){
@@ -118,23 +134,26 @@ class Model_Account_Loan extends Model_Account{
 
 		switch ($scheme['PremiumMode']) {
             case RECURRING_MODE_YEARLY:
-                $toAdd = " +1 year";
+                $toAdd = "P1Y";
                 break;
             case RECURRING_MODE_HALFYEARLY:
-                $toAdd = " +6 month";
+                $toAdd = "P6M";
                 break;
             case RECURRING_MODE_QUATERLY:
-                $toAdd = " +3 month";
+                $toAdd = "P3D";
                 break;
             case RECURRING_MODE_MONTHLY:
-                $toAdd = " +1 month";
+                $toAdd = "P1M";
                 break;
             case RECURRING_MODE_DAILY:
-                $toAdd = " +1 day";
+                $toAdd = "P1D";
                 break;
         }
 
-        $lastPremiumPaidDate = $this->getFirstEMIDate();
+        $date_obj = $this->getFirstEMIDate();
+        $lastPremiumPaidDate = $date_obj->format('Y-m-d');
+        
+
         $rate = $scheme['Interest'];
         $premiums = $scheme['NumberOfPremiums'];
         if ($scheme['ReducingOrFlatRate'] == REDUCING_RATE) {
@@ -150,7 +169,9 @@ class Model_Account_Loan extends Model_Account{
         for ($i = 1; $i <= $premiums ; $i++) {
             $prem['account_id'] = $this->id;
             $prem['Amount'] = $emi;
-            $lastPremiumPaidDate = $prem['DueDate'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($lastPremiumPaidDate)) . $toAdd));
+            if($i!=1) // First Emi is already a month ahead
+	            $date_obj->add(new DateInterval($toAdd));
+            $lastPremiumPaidDate = $prem['DueDate'] = $date_obj->format('Y-m-d');
             $prem->saveAndUnload();
         }
 	}
@@ -179,7 +200,7 @@ class Model_Account_Loan extends Model_Account{
 		$interest = round((($emi * $premiums) - $this['Amount']) / $premiums);
 
 		$PremiumAmountAdjusted = $PaidEMI * $emi;
-		$AmountForPremiums = ($ac->CurrentBalanceCr + $amount) - $PremiumAmountAdjusted;
+		$AmountForPremiums = ($this['CurrentBalanceCr'] + $amount) - $PremiumAmountAdjusted;
 
 		$premiumsSubmited = (int) ($AmountForPremiums / $emi);
 
@@ -188,7 +209,7 @@ class Model_Account_Loan extends Model_Account{
 		    foreach ($prem as $prem_array) {
 		        $prem['PaidOn'] = $on_date;
 		        $prem['Paid'] = true;
-		        $prem->save();
+		        $prem->saveAndUnload();
 		    }
 		}
 	}
@@ -227,7 +248,7 @@ class Model_Account_Loan extends Model_Account{
 	    $transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_LOAN,$this->ref('branch_id'),$on_date, "Interest posting in Loan Account ".$this['AccountNumber'],null, array('reference_account_id'=>$this->id));
 	    
 	    $transaction->addDebitAccount($this, $interest);
-	    $transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . $this['scheme_name'], $interest);
+	    $transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . SP. $this['scheme_name'], $interest);
 	    
 	    $transaction->execute();
 	}

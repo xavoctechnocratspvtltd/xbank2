@@ -67,6 +67,10 @@ class page_reports_BSAndPANL extends Page {
 		}
 	}
 
+	function page_pandlDetails(){
+		echo "okey";
+	}
+
 	function page_Details(){
 		$this->api->stickyGET('_id');
 
@@ -110,6 +114,52 @@ class page_reports_BSAndPANL extends Page {
 
 	function page_Details_details2scheme(){
 		$this->api->stickyGET('SchemeGroup');
+		$fy = $this->api->getFinancialYear();
+
+		if(!$_GET['from_date'])
+			$from_date = $fy['start_date'];
+		else{
+			$from_date = $_GET['from_date'];
+			$this->api->stickyGET('from_date');
+		}
+
+		if(!$_GET['to_date'])
+			$to_date = $fy['end_date'];
+		else{
+			$to_date = $_GET['to_date'];
+			$this->api->stickyGET('to_date');
+		}
+
+		if($this->api->auth->model['AccessLevel'] <=80)
+			$for_branch = $this->api->current_branch;
+		else
+			$for_branch = false;
+
+		$schemes = $this->add('Model_Scheme');
+		$schemes->addCondition('SchemeGroup',$_GET['SchemeGroup']);
+
+		$result_array=array();
+		foreach ($schemes as $s) {
+			$op_bal = $s->getOpeningBalance($this->api->nextDate($to_date),$side='both',$forPandL=false,$branch=$for_branch);
+			$result_array[] = array('Scheme'=>$s['name'],'Amount'=>$op_bal['Dr']-$op_bal['Cr']);
+		}
+
+		$grid = $this->add('Grid_BalanceSheet');
+		$grid->setSource($result_array);
+
+		$grid->addColumn('text,SchemeNameToAccounts','Scheme');
+		$grid->addColumn('money','Amount');
+
+		$grid->addTotals(array('Amount'));
+
+	}
+
+	function page_Details_details2scheme_scheme2account(){
+		echo "level2";
+		return;
+
+		$this->api->stickyGET('Scheme');
+
 		$fy = $this->api->getFinancialYear();
 
 		if(!$_GET['from_date'])

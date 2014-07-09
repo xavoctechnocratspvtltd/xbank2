@@ -282,7 +282,8 @@ class Model_Account extends Model_Table {
 		unset($otherValues['LastCurrentInterestUpdatedAt']);
 
 		foreach ($otherValues as $field => $value) {
-			$this[$field] = $value;
+			if(!is_array($value))
+				$this[$field] = $value;
 		}
 
 		$this->save();

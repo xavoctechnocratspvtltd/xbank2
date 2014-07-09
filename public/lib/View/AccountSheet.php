@@ -75,8 +75,13 @@ class View_AccountSheet extends View {
 
 		$right_grid->setSource($right_array);
 
-		$left_grid->addColumn('Expander,details','Details');
-		$right_grid->addColumn('Expander,details','Details');
+		if(!$this->pandl)
+			$details_caption='Details';
+		else
+			$details_caption='pandlDetails';
+
+		$left_grid->addColumn('Expander,details',$details_caption,'Details');
+		$right_grid->addColumn('Expander,details',$details_caption,'Details');
 
 		$left_grid->addTotals(array('Amount'));
 		$right_grid->addTotals(array('Amount'));

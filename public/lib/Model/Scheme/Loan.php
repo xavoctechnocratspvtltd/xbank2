@@ -88,7 +88,10 @@ class Model_Scheme_Loan extends Model_Scheme {
 				$loan_accounts->postPanelty($on_date);
 		}
 
-		$this->add('Model_Premium')->_dsql()->set('PaneltyCharged','PaneltyPosted')->update();
+				$p_m=$this->add('Model_Premium');
+                $p_m->_dsql()->set('PaneltyCharged','PaneltyPosted');
+                if($test_account) $p_m->_dsql()->where('account_id',$test_account->id);
+                $p_m->_dsql()->update();
 	}
 
 	// Not related with Any account ... general for all accounts
@@ -110,7 +113,8 @@ class Model_Scheme_Loan extends Model_Scheme {
 		if($test_account) $premiums->addCondition('account_id',$test_account->id);
 
 		$premiums->_dsql()->set('PaneltyCharged',$this->api->db->dsql()->expr('PaneltyCharged +'. $dealer_join->table_alias.'.loan_panelty_per_day'));
-		$premiums->_dsql()->update();
+		if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
+                $premiums->_dsql()->update();
 	}
 
 
@@ -120,6 +124,12 @@ class Model_Scheme_Loan extends Model_Scheme {
 		if(!$on_date) $on_date = $this->api->now;
 
 
+	}
+
+	function halfYearly( $branch=null, $on_date=null, $test_account=null ) {
+	}
+
+	function yearly( $branch=null, $on_date=null, $test_account=null ) {
 	}
 
 }

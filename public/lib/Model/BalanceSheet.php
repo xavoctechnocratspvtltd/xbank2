@@ -15,6 +15,10 @@ class Model_BalanceSheet extends Model_Table {
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
+	function getClosingBalance($on_date=null,$side='both',$forPandL=false,$branch=null,$from_date=null){
+		return $this->getOpeningBalance($this->api->nextDate($on_date),$side,$forPandL,$branch,$from_date);
+	}
+
 	function getOpeningBalance($on_date=null,$side='both',$forPandL=false,$branch=null,$from_date=null) {
 
 		if(!$this->loaded()) throw $this->exception('Balance Sheet Head Must be Loaded');
@@ -76,4 +80,79 @@ class Model_BalanceSheet extends Model_Table {
 
 		return array('CR'=>$cr,'DR'=>$dr,'cr'=>$cr,'dr'=>$dr,'Cr'=>$cr,'Dr'=>$dr);
 	}
+
+	function getOpeningBalanceBySchemeGroup(){
+		
+	}
+
+	// function digIn($groupBy,$on_date,$condition=null, $forPandL=false, $from_date=null, $branch=null){
+		
+	// 	$allowed_array=array('BalanceSheet','SchemeGroup','SchemeName','PAndLGroup','Account');
+		
+	// 	if(!in_array($groupBy, $allowed_array))
+	// 		throw $this->exception('Group By must be one of '. print_r($allowed_array,true), 'ValidityCheck')->setField('FieldName');
+
+	// 	if(!$forPandL and $from_date )
+	// 		throw $this->exception('from_date must be specified only for panl');
+
+	// 	$transaction_row=$this->add('Model_TransactionRow');
+		
+	// 	$account_join = $transaction_row->join('accounts','account_id');
+	// 	$account_join->addField('ActiveStatus');
+	// 	$account_join->addField('affectsBalanceSheet');
+	// 	$aj_ta = $account_join->table_alias;
+
+	// 	$scheme_join = $account_join->join('schemes','scheme_id');
+	// 	$scheme_join->addField('balance_sheet_id');
+	// 	$sj_ta = $scheme_join->table_alias;
+
+	// 	$balance_sheet_join = $scheme_join->join('balance_sheet','balance_sheet_id');
+	// 	$balance_sheet_join->addField('positive_side');
+	// 	$balance_sheet_join->addField('subtract_from');
+	// 	$bsj_ta = $balance_sheet_join->table_alias;
+
+	// 	$transaction_row->_dsql()->field('SUM(amountDr) sdr')->field('SUM(amountCr) scr');
+
+	// 	if($branch)
+	// 		$transaction_row->addCondition($transaction_row->table_alias.'.branch_id',$branch->id);
+
+	// 	if($condition){
+	// 		$transaction_row->_dsql()->where("($condition)");
+	// 	}
+
+	// 	$transaction_row->_dsql()->where("(($aj_ta.ActiveStatus = 1 OR $aj_ta.affectsBalanceSheet = 1))");
+	// 	$transaction_row->addCondition('created_at','<',$on_date);
+
+	// 	$transaction_row->_dsql()->group($groupBy);
+
+	// 	$transaction_array = $transaction_row->getHash();
+
+
+	// 	// Opening balance SUM Now
+		
+	// 	$account = $this->add('Model_Account');
+	// 	$scheme_join = $account->join('schemes','scheme_id');
+	// 	$scheme_join->addField('balance_sheet_id');
+	// 	$sj_ta = $scheme_join->table_alias;
+
+	// 	$balance_sheet_join = $scheme_join->join('balance_sheet','balance_sheet_id');
+	// 	$balance_sheet_join->addField('positive_side');
+	// 	$balance_sheet_join->addField('subtract_from');
+	// 	$bsj_ta = $balance_sheet_join->table_alias;
+
+	// 	if($branch)
+	// 		$account->addCondition('branch_id',$branch->id);
+
+	// 	$account->_dsql()->del('fields')->field('SUM(OpeningBalanceCr) opcr')->field('SUM(OpeningBalanceDr) opdr');
+	// 	$account->_dsql()->group($groupBy);
+
+	// 	$result_op = $account->_dsql()->getHash();
+
+	// 	$result=array();
+	// 	foreach ($variable as $key => $value) {
+	// 		# code...
+	// 	}
+
+	// }
+
 }

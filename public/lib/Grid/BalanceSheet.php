@@ -2,8 +2,9 @@
 
 class Grid_BalanceSheet extends Grid_AccountsBase{
 	function format_details($field){
-		if($this->current_row['Amount']==0)
-			$this->current_row_html[$field]='';
+		if($this->current_row['Amount']==0){
+            $this->current_row_html[$field]='';
+        }
 	}
 	/**
      * Initialize expander

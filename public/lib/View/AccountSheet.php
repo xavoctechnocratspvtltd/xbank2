@@ -47,6 +47,14 @@ class View_AccountSheet extends View {
 			}
 		}
 
+		// Get Pand L Values
+		$pandl_val = $bs->getPandLClosingValue($this->from_date,$this->to_date,$this->for_branch);
+		if(($bal = $pandl_val['sdr'] - $pandl_val['scr']) < 0){
+			$left_array[] =array('id'=>0,$left_title=>'Profit','Amount'=>abs($bal),'Details'=>'');
+		}else{
+			$right_array[] =array('id'=>0,$right_title=>'Loss','Amount'=>abs($bal),'Details'=>'');
+		}
+
 		// Fill Extra pad /rows in shorten grid
 		if(count($left_array) < count($right_array)){
 			$to_fill_in = 'left_array';
@@ -60,7 +68,7 @@ class View_AccountSheet extends View {
 
 		// Fill rows now
 		for ($i=1; $i <= $no_of_rows; $i++) { 
-			${$to_fill_in}[] = array('id'=>0,$field=>'-','Amount'=>0,'Details'=>'');
+			${$to_fill_in}[] = array('id'=>$i+100,$field=>'-','Amount'=>0,'Details'=>'');
 		}
 
 		$left_grid = $left_col->add('Grid_BalanceSheet');

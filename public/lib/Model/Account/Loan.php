@@ -117,7 +117,8 @@ class Model_Account_Loan extends Model_Account{
 				if((int)$dd < (int)date('d',strtotime($this['created_at'])))
 					$toAdd='P2M';
 				$date->add(new DateInterval($toAdd));
-				return $date->format('Y-m-'.$dd);
+				$date = new MyDateTime($date->format('Y-m-'.$dd));
+				return $date;
 			}
 		}
 		$date->add(new DateInterval($toAdd));
@@ -176,18 +177,18 @@ class Model_Account_Loan extends Model_Account{
         }
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$on_date=null){
+	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$on_date=null,$in_branch=null){
 		if(!$on_date) $on_date = $this->api->now;
 
-		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date);
+		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date,$in_branch);
 
 		$this->payPremiums($amount,$on_date);
 		$this->closeIfPaidCompletely();
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null){
 		throw $this->exception('Withdrawl not supported in loan accounts', 'ValidityCheck')->setField('AccountNumber');
-		// parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
+		// parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date,$in_branch);
 	}
 
 	function payPremiums($amount,$on_date){
@@ -200,7 +201,7 @@ class Model_Account_Loan extends Model_Account{
 		$interest = round((($emi * $premiums) - $this['Amount']) / $premiums);
 
 		$PremiumAmountAdjusted = $PaidEMI * $emi;
-		$AmountForPremiums = ($this['CurrentBalanceCr'] + $amount) - $PremiumAmountAdjusted;
+		$AmountForPremiums = ($this['CurrentBalanceCr']) - $PremiumAmountAdjusted; // This amount is already credit to account in deposit function parent::deposit 
 
 		$premiumsSubmited = (int) ($AmountForPremiums / $emi);
 
@@ -255,7 +256,7 @@ class Model_Account_Loan extends Model_Account{
 
 	function postPanelty($on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
-		if(!$this->hasElement('due_panelty')) throw $this->exception('The Account must be called via getAllForPaneltyPosting function');
+		if(!$this->hasElement('due_panelty')) throw $this->exception('The Account must be called via scheme daily function');
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penalty deposited on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_account_id'=>$this->id));
@@ -263,9 +264,17 @@ class Model_Account_Loan extends Model_Account{
 		$amount = $this['due_panelty'];
 		
 		$transaction->addDebitAccount($this, $amount);
-		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . $this['scheme_name'], $amount);
+		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . SP.  $this['scheme_name'], $amount);
 		
 		$transaction->execute();
+
+		// Make all penaltyPosted = penaltyCharged
+
+		$premiums = $this->add('Model_Premium');
+		$premiums->addCondition('account_id',$this->id);
+		$premiums->_dsql()->set('PaneltyPosted',$this->dsql()->expr('PaneltyCharged'));
+		$premiums->_dsql()->update();
+
 	}
 
 }

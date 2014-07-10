@@ -60,7 +60,7 @@ class View_AccountSheet extends View {
 
 		// Fill rows now
 		for ($i=1; $i <= $no_of_rows; $i++) { 
-			${$to_fill_in}[] = array('id'=>0,$field=>'-','Amount'=>'','Details'=>'');
+			${$to_fill_in}[] = array('id'=>0,$field=>'-','Amount'=>0,'Details'=>'');
 		}
 
 		$left_grid = $left_col->add('Grid_BalanceSheet');
@@ -68,23 +68,18 @@ class View_AccountSheet extends View {
 		$left_grid->addColumn('money','Amount');
 
 		$left_grid->setSource($left_array);
+		$left_grid->addTotals(array('Amount'));
 
 		$right_grid = $right_col->add('Grid_BalanceSheet');
 		$right_grid->addColumn('text',$right_title);
 		$right_grid->addColumn('money','Amount');
 
 		$right_grid->setSource($right_array);
-
-		if(!$this->pandl)
-			$details_caption='Details';
-		else
-			$details_caption='pandlDetails';
-
-		$left_grid->addColumn('Expander,details',$details_caption,'Details');
-		$right_grid->addColumn('Expander,details',$details_caption,'Details');
-
-		$left_grid->addTotals(array('Amount'));
 		$right_grid->addTotals(array('Amount'));
+
+		$left_grid->addColumn('Expander,details','Details');
+		$right_grid->addColumn('Expander,details','Details');
+
 
 	}
 }

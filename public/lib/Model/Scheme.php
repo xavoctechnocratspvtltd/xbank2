@@ -197,15 +197,18 @@ class Model_Scheme extends Model_Table {
 		$account_join->addField('scheme_id');
 		$account_join->addField('AccountActiveStatus','ActiveStatus');
 		$account_join->addField('affectsBalanceSheet');
+		$aj_ta = $account_join->table_alias;
 
 		$scheme_join = $account_join->join('schemes','scheme_id');
 		$scheme_join->addField('SchemeType');
 		$scheme_join->addField('SchemeGroup');
+		$sj_ta=$scheme_join->table_alias;
+
 
 		$transaction_row->addCondition('scheme_id',$this->id);
 		$transaction_row->addCondition('created_at','<',$on_date);
-		$transaction_row->addCondition('AccountActiveStatus',true);
-		$transaction_row->addCondition('affectsBalanceSheet',false);
+		// $transaction_row->addCondition('AccountActiveStatus',true);
+		// $transaction_row->addCondition('affectsBalanceSheet',false);
 		if($branch)
 			$transaction_row->addCondition('branch_id',$branch->id);
 
@@ -215,18 +218,21 @@ class Model_Scheme extends Model_Table {
 		}
 
 		$transaction_row->_dsql()->del('fields')->field('SUM(amountDr) sdr')->field('SUM(amountCr) scr');
+		$transaction_row->_dsql()->where("($aj_ta.ActiveStatus=1 OR $aj_ta.affectsBalanceSheet=1)");
 
 		$result = $transaction_row->_dsql()->getHash();
 
 		// Opening balance SUM Now
 		
-		$account = $this->add('Model_Account');
+		$account = $this->add('Model_Account',array('table_alias'=>'accounts'));
 		$account->addCondition('scheme_id',$this->id);
 
 		if($branch)
 			$account->addCondition('branch_id',$branch->id);
 
 		$account->_dsql()->del('fields')->field('SUM(OpeningBalanceCr) opcr')->field('SUM(OpeningBalanceDr) opdr');
+		$aj_ta = $account->table_alias;
+		$account->_dsql()->where("($aj_ta.ActiveStatus=1 OR $aj_ta.affectsBalanceSheet=1)");
 		$result_op = $account->_dsql()->getHash();
 
 
@@ -241,7 +247,10 @@ class Model_Scheme extends Model_Table {
 		return array('CR'=>$cr,'DR'=>$dr,'cr'=>$cr,'dr'=>$dr,'Cr'=>$cr,'Dr'=>$dr);
 	}
 
-	function getOpeningBalanceByGroup($on_date=null,$forPandL=false,$branch=null,$underHead, $groupByField='SchemeGroup') {
+	function getOpeningBalanceByGroup($on_date=null,$forPandL=false,$branch=null,$underHead=null, $groupByField='SchemeGroup',$filter_by_schemes=null) {
+
+		if(!is_array($groupByField) or count($groupByField)!=3)
+			throw $this->exception('groupByField should be array(field, from,new_name)', 'ValidityCheck')->setField('FieldName');
 
 		// Only on Non Loaded Scheme
 		if($this->loaded()) throw $this->exception('Scheme Must NOT be Loaded');
@@ -262,12 +271,15 @@ class Model_Scheme extends Model_Table {
 		$scheme_join->addField('SchemeType');
 		$scheme_join->addField('SchemeGroup');
 		$scheme_join->addField('balance_sheet_id');
+		$sj_ta = $scheme_join->table_alias;
 
 		$head_join = $scheme_join->join('balance_sheet','balance_sheet_id');
 		$head_join->addField('subtract_from');
+		$hj_ta = $head_join->table_alias;
 
 		$transaction_row->addCondition('created_at','<',$on_date);
-		$transaction_row->addCondition('balance_sheet_id',$underHead->id);
+		if($underHead)
+			$transaction_row->addCondition('balance_sheet_id',$underHead->id);
 		$transaction_row->_dsql()->where("($aj_ta.ActiveStatus=1 OR $aj_ta.affectsBalanceSheet=1)");
 
 		if($branch)
@@ -278,46 +290,106 @@ class Model_Scheme extends Model_Table {
 			$transaction_row->addCondition('created_at','>=',$financial_start_date);
 		}
 
+		if($filter_by_schemes)
+			$transaction_row->addCondition('scheme_id',$filter_by_schemes->id);
+
 		// SPECIAL GROUP BY CONDITION
 		// $transaction_row->addCondition($groupByField,$groupBy);
 		
+		if(is_array($groupByField)){
+			$saved_group_by= $groupByField;
+			switch (strtolower($groupByField[1])) {
+				case 'account':
+				case 'accounts':
+					$groupByField = $aj_ta.'.'.$groupByField[0];
+					break;
+				case 'scheme':
+				case 'schemes':
+					$groupByField = $sj_ta.'.'.$groupByField[0];
+					break;
+				case 'head':
+				case 'bs':
+				case 'balancesheet':
+				case 'balance_sheet':
+					$groupByField = $hj_ta.'.'.$groupByField[0];
+					break;
+				
+				default:
+					$groupByField = $groupByField[0];
+					break;
+			}
+		}
+
 		$transaction_row->_dsql()->del('fields')
 			->field('SUM(amountDr) sDr')
 			->field('SUM(amountCr) sCr')
 			->field('(SUM(amountDr) - SUM(amountCr)) amt')
 			->field('subtract_from')
-			->field($groupByField)
+			->field($groupByField . ' ' .$saved_group_by[2])
 			->group($groupByField);
 
 		$results = $transaction_row->_dsql()->get();
 
 		// Opening balance SUM Now
 		
-		$account = $this->add('Model_Account');
-		$scheme_join = $account->join('schemes','scheme_id');
-		$head_join = $scheme_join->join('balance_sheet','balance_sheet_id');
+		$account = $this->add('Model_Account',array('table_alias'=>'accounts'));
+		$scheme_join = $account->scheme_join;
+		$head_join = $account->scheme_join->join('balance_sheet','balance_sheet_id');
 
-		$scheme_join->addField($groupByField);
+		if(!$account->hasElement($groupByField) and $account->scheme_join->hasElement($groupByField))
+			$account->scheme_join->addField($groupByField);
+		
 		$head_join->addField('subtract_from');
 
 
 		if($branch)
 			$account->addCondition('branch_id',$branch->id);
 
+		if($filter_by_schemes)
+			$account->addCondition('scheme_id',$filter_by_schemes->id);
+
 		// SPECIAL GROUP BY CONDITION
 		// $account->addCondition($groupByField,$groupBy);
+
+		$groupByField = $saved_group_by;
+		if(is_array($groupByField)){
+			$saved_group_by= $groupByField;
+			switch (strtolower($groupByField[1])) {
+				case 'account':
+				case 'accounts':
+					$groupByField = $account->table_alias . '.'. $groupByField[0];
+					break;
+				case 'scheme':
+				case 'schemes':
+					$groupByField = $sj_ta.'.'.$groupByField[0];
+					break;
+				case 'head':
+				case 'bs':
+				case 'balancesheet':
+				case 'balance_sheet':
+					$groupByField = $hj_ta.'.'.$groupByField[0];
+					break;
+				
+				default:
+					$groupByField = $groupByField[0];
+					break;
+			}
+		}
 
 		$account->_dsql()->del('fields')
 			->field('SUM(OpeningBalanceCr) opCr')
 			->field('SUM(OpeningBalanceDr) opDr')
 			->field('subtract_from')
-			->field($scheme_join->table_alias.'.'.$groupByField)
+			->field($groupByField .' '. $saved_group_by[2])
 			->group($groupByField)
 			;
 
 		$results_op = $account->_dsql()->get();
 
 		$return_array=array();
+
+		// if(is_array($groupByField)) $groupByField = $groupByField[1]; 
+		$groupByField=$saved_group_by;
 
 		foreach ($results as $r) {
 			$_subtract_from = $r['subtract_from'];
@@ -328,7 +400,7 @@ class Model_Scheme extends Model_Table {
 			$amt = $r['s'.$_subtract_from] - $r['s'.$_subtract_what];
 
 			foreach ($results_op as $a_o) {
-				if($a_o['SchemeGroup'] == $r['SchemeGroup']){
+				if($a_o[$groupByField[2]] == $r[$groupByField[2]]){
 					$op_amount = $a_o['op'.$_subtract_from] - $a_o['op'.$_subtract_what];
 					$amt += $op_amount;
 					$amt_cr += $a_o['opcr'];
@@ -339,7 +411,7 @@ class Model_Scheme extends Model_Table {
 
 
 			if($amt != 0)
-				$return_array[] = array('id'=>$r['SchemeGroup'],'SchemeGroup'=>$r['SchemeGroup'],'Amount'=>$amt/*. ($amt_dr > $amt_cr ? ' Dr':' Cr')*/);
+				$return_array[] = array('id'=>$r[$groupByField[2]],$groupByField[2]=>$r[$groupByField[2]],'Amount'=>$amt/*. ($amt_dr > $amt_cr ? ' Dr':' Cr')*/);
 		}
 		return $return_array;
 

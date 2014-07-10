@@ -14,8 +14,8 @@ class Model_Premium extends Model_Table {
 		$this->addField('PaidOn')->type('datetime')->defaultValue(null);
 		$this->addField('AgentCommissionSend')->type('boolean')->defaultValue(false);
 		$this->addField('AgentCommissionPercentage')->type('money');
-		$this->addField('PaneltyCharged')->type('money');
-		$this->addField('PaneltyPosted')->type('money');
+		$this->addField('PaneltyCharged')->type('money')->defaultValue(0);
+		$this->addField('PaneltyPosted')->type('money')->defaultValue(0);
 		$this->addField('DueDate')->type('date');
 
 		$this->addExpression('panelty_to_post')->set('PaneltyCharged - PaneltyPosted');

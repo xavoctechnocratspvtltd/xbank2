@@ -61,7 +61,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 	function daily($branch= null,$on_date=null,$test_account=null){
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
-
+                
 		$this->putPaneltiesOnAllUnpaidLoanPremiums($branch,$on_date,$test_account);
 		
 		$loan_accounts  = $this->add('Model_Active_Account_Loan');
@@ -77,7 +77,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$loan_accounts->addCondition('branch_id',$branch->id);
 
 		$loan_accounts->addExpression('due_panelty')->set(function($m,$q)use($on_date){
-			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>','PaneltyPosted')->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
 		});
 
 		if($test_account) $loan_accounts->addCondition('id',$test_account->id);
@@ -88,10 +88,17 @@ class Model_Scheme_Loan extends Model_Scheme {
 				$loan_accounts->postPanelty($on_date);
 		}
 
-				$p_m=$this->add('Model_Premium');
-                $p_m->_dsql()->set('PaneltyCharged','PaneltyPosted');
-                if($test_account) $p_m->_dsql()->where('account_id',$test_account->id);
-                $p_m->_dsql()->update();
+		// Shifted to post Penalty Function for each account
+		// TODOS: Bring back here for performance reason.
+		// $p_m=$this->add('Model_Premium');
+  //       $p_m->join('accounts','account_id')->addField('branch_id');
+  //       $p_m->_dsql()->set('PaneltyPosted',$p_m->dsql()->expr('PaneltyCharged'));
+  //       $p_m->_dsql()->where('DueDate','<=',$on_date);
+  //       $p_m->_dsql()->where('branch_id',$branch->id);
+        
+  //       if($test_account) $p_m->_dsql()->where('account_id',$test_account->id);
+        
+  //       $p_m->_dsql()->update();
 	}
 
 	// Not related with Any account ... general for all accounts
@@ -113,7 +120,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		if($test_account) $premiums->addCondition('account_id',$test_account->id);
 
 		$premiums->_dsql()->set('PaneltyCharged',$this->api->db->dsql()->expr('PaneltyCharged +'. $dealer_join->table_alias.'.loan_panelty_per_day'));
-		if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
+//		if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
                 $premiums->_dsql()->update();
 	}
 

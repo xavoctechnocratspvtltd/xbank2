@@ -67,12 +67,13 @@ class page_reports_BSAndPANL extends Page {
 		}
 	}
 
-	function page_pandlDetails(){
-		echo "okey";
-	}
+	// function page_pandlDetails(){
+	// 	$this->api->stickyGET('_id'); //bs id
+	// 	echo "okey";
+	// }
 
 	function page_Details(){
-		$this->api->stickyGET('_id');
+		$this->api->stickyGET('_id'); // bs id
 
 		
 		$fy = $this->api->getFinancialYear();
@@ -99,17 +100,75 @@ class page_reports_BSAndPANL extends Page {
 		$bs= $this->add('Model_BalanceSheet')->load($_GET['_id']);
 
 		// DEtails based on bs
+		if($bs['show_sub']=='SchemeGroup'){
+			$this->add('View_BSPLChunks_SchemeGroup',array('under_balance_sheet_id'=>$bs->id,'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+		}elseif($bs['show_sub']=='Accounts'){
+			$this->add('View_BSPLChunks_Accounts',array('under_balance_sheet_id'=>$bs->id,'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+		}elseif($bs['show_sub']=='PAndLGroup'){
+			$this->add('View_BSPLChunks_PAndLGroup',array('under_balance_sheet_id'=>$bs->id,'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+		}else{
+			$this->add('View_Error')->set('Not Implemented yet');
+		}
 
-		$result= $this->add('Model_Scheme')->getOpeningBalanceByGroup($this->api->nextDate($to_date),$forPandL=false,$for_branch,$bs,'SchemeGroup');
+	}
 
-		$grid = $this->add('Grid_BalanceSheet');
-		$grid->setSource($result);
+	function page_group2scheme(){
+		$this->api->stickyGET('SchemeGroup');
+		$fy = $this->api->getFinancialYear();
 
-		$grid->addColumn('text,SchemeGroupToSchemeName','SchemeGroup');
-		$grid->addColumn('money','Amount');
+		if(!$_GET['from_date'])
+			$from_date = $fy['start_date'];
+		else{
+			$from_date = $_GET['from_date'];
+			$this->api->stickyGET('from_date');
+		}
 
-		$grid->addTotals(array('Amount'));
+		if(!$_GET['to_date'])
+			$to_date = $fy['end_date'];
+		else{
+			$to_date = $_GET['to_date'];
+			$this->api->stickyGET('to_date');
+		}
 
+		if($this->api->auth->model['AccessLevel'] <=80)
+			$for_branch = $this->api->current_branch;
+		else
+			$for_branch = false;
+
+		$this->add('View_BSPLChunks_Schemes',array('under_scheme_group'=>$_GET['SchemeGroup'],'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+
+
+	}
+
+	function page_scheme2accounts(){
+		$this->api->stickyGET('Scheme');
+		$fy = $this->api->getFinancialYear();
+
+		if(!$_GET['from_date'])
+			$from_date = $fy['start_date'];
+		else{
+			$from_date = $_GET['from_date'];
+			$this->api->stickyGET('from_date');
+		}
+
+		if(!$_GET['to_date'])
+			$to_date = $fy['end_date'];
+		else{
+			$to_date = $_GET['to_date'];
+			$this->api->stickyGET('to_date');
+		}
+
+		if($this->api->auth->model['AccessLevel'] <=80)
+			$for_branch = $this->api->current_branch;
+		else
+			$for_branch = false;
+
+		$this->add('View_BSPLChunks_Accounts',array('under_scheme'=>$_GET['Scheme'],'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+
+	}
+
+	function page_accounts2statement(){
+		echo $_GET['AccountNumber'];
 	}
 
 	function page_Details_details2scheme(){

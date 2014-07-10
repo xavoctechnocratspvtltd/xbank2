@@ -17,18 +17,31 @@ class page_accounts_statement extends Page {
 		$grid = $this->add('Grid_AccountStatement');
 		$transactions = $this->add('Model_TransactionRow');
 
-		if($_GET['account_id']){
+		if($_GET['account_id'] or $_GET['AccountNumber']){
 			$this->api->stickyGET('account_id');
+			$this->api->stickyGET('AccountNumber');
 			$this->api->stickyGET('from_date');
 			$this->api->stickyGET('to_date');
-			$transactions->addCondition('account_id',$_GET['account_id']);
+			if($_GET['account_id']){
+				$transactions->addCondition('account_id',$_GET['account_id']);
+			}
+			if($_GET['AccountNumber']){
+				$transactions->join('accounts','account_id')->addField('AccountNumber');
+				$transactions->addCondition('AccountNumber',$_GET['AccountNumber']);
+			}
 
 			if($_GET['from_date'])
 				$transactions->addCondition('created_at','>=',$_GET['from_date']);
 			if($_GET['to_date'])
 				$transactions->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+			if($_GET['account_id']){
+				$opening_balance = $this->add('Model_Account')->load($_GET['account_id'])->getOpeningBalance($_GET['from_date']);
+			}
 
-			$opening_balance = $this->add('Model_Account')->load($_GET['account_id'])->getOpeningBalance($_GET['from_date']);
+			if($_GET['AccountNumber']){
+				$opening_balance = $this->add('Model_Account')->loadBy('AccountNumber',$_GET['AccountNumber'])->getOpeningBalance($_GET['from_date']);
+			}
+
 			if(($opening_balance['DR'] - $opening_balance['CR']) > 0){
 				$opening_column = 'amountDr';
 				$opening_amount = $opening_balance['DR'] - $opening_balance['CR'];
@@ -47,17 +60,15 @@ class page_accounts_statement extends Page {
 		}
 
 		$transactions->add('Controller_Acl');
-		$transactions->setOrder('id');
+		$transactions->setOrder('created_at');
 		$grid->setModel($transactions,array('voucher_no','created_at','Narration','amountDr','amountCr'));
-		$grid->addPaginator(100);
+		// $grid->addPaginator(100);
 
 		$grid->addSno();
 
 		if($form->isSubmitted()){
 			
 			$a=$this->add('Model_Account');
-			$a->tryLoad($form['account']);
-			$open = $a->getOpeningBalance();
 			$grid->js()->reload(
 					array(
 						'account_id'=>$form['account'],
@@ -65,6 +76,8 @@ class page_accounts_statement extends Page {
 						'to_date'=>($form['to_date'])?:0,
 						)
 					)->execute();
+			$a->tryLoad($form['account']);
+			$open = $a->getOpeningBalance();
 			$form->displayError('accounts',($open['DR'] - $open['CR']));
 		}
 

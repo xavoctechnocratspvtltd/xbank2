@@ -15,8 +15,8 @@ class page_tests_loan_050AccountLoan1 extends Page_Tester {
     public $member_id=1035; // Gowrav Vishwakarama
     public $agent_id=11; // Meena Devra
     public $scheme_id=169; // NEW VL 18 MONTHS 
-    // public $dealer_id=32; // BMJ CHAMAN SINGH
-    public $dealer_id=0; // BMJ CHAMAN SINGH
+    public $dealer_id=32; // BMJ CHAMAN SINGH
+    // public $dealer_id=0; // BMJ CHAMAN SINGH
 
     public $cheque_issued=array(
             array(101,150),
@@ -60,7 +60,7 @@ class page_tests_loan_050AccountLoan1 extends Page_Tester {
 
                 ),
             'test_till'=>'2015-09-16',
-            // 'test_till'=>'2014-02-15'
+            // 'test_till'=>'2014-05-15'
         );
     
     // Proper_Responses
@@ -156,7 +156,7 @@ class page_tests_loan_050AccountLoan1 extends Page_Tester {
 
     function prepare_afterAccountCreate(){
         $this->account = $account = $this->add('Model_Account_'.$this->account_type,array('allow_any_name'=>true));
-        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id,'account_type'=>$this->account_type_in_account,'loan_from_account'=>$this->loan_from_account,'extra_info'=>json_encode(array())),$form=null,$created_at=$this->account_flow['open']);
+        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id,'account_type'=>$this->account_type_in_account,'loan_from_account'=>$this->loan_from_account,'dealer_id'=>$this->dealer_id, 'extra_info'=>json_encode(array())),$form=null,$created_at=$this->account_flow['open']);
         $this->proper_responses['Test_afterAccountCreate']['AccountNumber'] = $this->AccountNumber;
     }
 

@@ -89,20 +89,24 @@ class Model_Scheme_Loan extends Model_Scheme {
 		}
 
 		// all accounts that has passed their last EMI and has some panelty to be posted
-		// $time_over_accounts_with_panelty = $this->add('Model_Active_Account_Loan');
-		// $time_over_accounts_with_panelty->addExpression('due_panelty')->set(function($m,$q)use($on_date){
-		// 	return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
-		// });
+		$time_over_accounts_with_panelty = $this->add('Model_Active_Account_Loan');
+		$time_over_accounts_with_panelty->addExpression('due_panelty')->set(function($m,$q)use($on_date){
+			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+		});
 
-		// $time_over_accounts_with_panelty->addCondition('branch_id',$branch->id);
-		// $time_over_accounts_with_panelty->addCondition('due_panelty','>',0);
-  //       $time_over_accounts_with_panelty->addCondition('maturity_date','<',$on_date);
+		$time_over_accounts_with_panelty->addExpression('last_emi')->set(function($m,$q)use($on_date){
+			return $m->refSQL('Premium')->setOrder('DueDate','desc')->setLimit(1)->fieldQuery('DueDate');
+		});
 
-		// if($test_account) $time_over_accounts_with_panelty->addCondition('id',$test_account->id);
+		$time_over_accounts_with_panelty->addCondition('branch_id',$branch->id);
+		$time_over_accounts_with_panelty->addCondition('due_panelty','>',0);
+        $time_over_accounts_with_panelty->addCondition('last_emi','<=',$this->api->previousMonth($on_date));
 
-		// foreach ($time_over_accounts_with_panelty as $junk) {
-		// 	$time_over_accounts_with_panelty->postPanelty($on_date);
-		// }
+		if($test_account) $time_over_accounts_with_panelty->addCondition('id',$test_account->id);
+
+		foreach ($time_over_accounts_with_panelty as $junk) {
+			$time_over_accounts_with_panelty->postPanelty($on_date);
+		}
 
 		// Shifted to post Penalty Function for each account
 		// TODOS: Bring back here for performance reason.

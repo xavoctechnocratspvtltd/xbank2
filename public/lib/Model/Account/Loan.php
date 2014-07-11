@@ -112,12 +112,17 @@ class Model_Account_Loan extends Model_Account{
 		$toAdd = 'P1M';
 
 		if($this['dealer_id']){
-			$dd=$this['dealer_monthly_date'];
-			if($dd){
-				if((int)$dd < (int)date('d',strtotime($this['created_at'])))
-					$toAdd='P2M';
+			$dd=explode(",",$this['dealer_monthly_date']);
+			$applicable_date = (int)date('d',strtotime($this['created_at']));
+			if(count($dd)>0){
+				foreach ($dd as $dealer_date) {
+					if((int)$dealer_date >= (int)date('d',strtotime($this['created_at']))){
+						$applicable_date = $dealer_date; 
+						break;
+					}
+				}
+				$date = new MyDateTime(date('Y-m-'.$applicable_date,strtotime($this['created_at'])));
 				$date->add(new DateInterval($toAdd));
-				$date = new MyDateTime($date->format('Y-m-'.$dd));
 				return $date;
 			}
 		}

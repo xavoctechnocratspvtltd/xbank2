@@ -60,7 +60,7 @@ class page_tests_loan_050AccountLoan1 extends Page_Tester {
 
                 ),
             'test_till'=>'2015-09-16',
-            // 'test_till'=>'2014-05-15'
+            // 'test_till'=>'2014-03-11'
         );
     
     // Proper_Responses

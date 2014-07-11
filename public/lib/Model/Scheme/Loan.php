@@ -73,20 +73,36 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$loan_accounts->leftJoin('premiums.account_id')
 						->addField('DueDate');
 
-		$loan_accounts->addCondition('DueDate','like',$on_date.' %');
-		$loan_accounts->addCondition('branch_id',$branch->id);
-
 		$loan_accounts->addExpression('due_panelty')->set(function($m,$q)use($on_date){
 			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
 		});
 
+		$loan_accounts->addCondition('branch_id',$branch->id);
+
+        $loan_accounts->addCondition('DueDate','like',$on_date.' %');
 		if($test_account) $loan_accounts->addCondition('id',$test_account->id);
 
 		foreach ($loan_accounts as $acc_array) {
-			$loan_accounts->postInterestEntry($on_date);
+            $loan_accounts->postInterestEntry($on_date);
 			if($loan_accounts['due_panelty'] > 0)
 				$loan_accounts->postPanelty($on_date);
 		}
+
+		// all accounts that has passed their last EMI and has some panelty to be posted
+		// $time_over_accounts_with_panelty = $this->add('Model_Active_Account_Loan');
+		// $time_over_accounts_with_panelty->addExpression('due_panelty')->set(function($m,$q)use($on_date){
+		// 	return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+		// });
+
+		// $time_over_accounts_with_panelty->addCondition('branch_id',$branch->id);
+		// $time_over_accounts_with_panelty->addCondition('due_panelty','>',0);
+  //       $time_over_accounts_with_panelty->addCondition('maturity_date','<',$on_date);
+
+		// if($test_account) $time_over_accounts_with_panelty->addCondition('id',$test_account->id);
+
+		// foreach ($time_over_accounts_with_panelty as $junk) {
+		// 	$time_over_accounts_with_panelty->postPanelty($on_date);
+		// }
 
 		// Shifted to post Penalty Function for each account
 		// TODOS: Bring back here for performance reason.
@@ -112,7 +128,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 		$dealer_join->addField('loan_panelty_per_day');
 
-		$premiums->addCondition('DueDate','<',$on_date);
+		$premiums->addCondition('DueDate','<=',$on_date);
 		$premiums->addCondition('PaneltyCharged','<',$this->api->db->dsql()->expr('loan_panelty_per_day * 30'));
 		$premiums->addCondition('Paid',false);
 		$premiums->addCondition('branch_id',$branch->id);

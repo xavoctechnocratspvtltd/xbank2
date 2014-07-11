@@ -34,7 +34,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('NumberOfPremiums')->mandatory(true)->type('int')->caption('Number Of Premiums');
 		$this->addField('MaturityPeriod')->type('int');
 		$this->addField('InterestToAnotherAccountPercent');
-		$this->addField('isDepriciable')->type('boolean');
+		$this->addField('isDepriciable')->type('boolean')->defaultValue(false);
 		$this->addField('DepriciationPercentBeforeSep')->caption('Depriciation % before September');
 		$this->addField('DepriciationPercentAfterSep')->caption('Depriciation % after September');
 		$this->addField('ProcessingFeesinPercent')->type('boolean')->defaultValue(false);

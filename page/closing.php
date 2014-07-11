@@ -7,7 +7,7 @@ class page_closing extends Page {
 			try{
 				$this->api->db->dsql()->owner->beginTransaction();
 				foreach ($b=$this->add('Model_Branch')->addCondition('PerformClosings',true) as $branch_array) 
-					$b->performClosing('2014-06-30');
+					$b->performClosing($this->api->today);
 				$this->api->db->dsql()->owner->rollBack();
 				// $this->api->db->dsql()->owner->commit();
 			}catch(Exception $e){

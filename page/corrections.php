@@ -6,11 +6,11 @@
 // DONE: account_type of existing accounts 
 // DONE: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
 // DONE: Saving account current interests till date as now onwards its keep saved on transaction
+// DONE: penalty not implemented if applied on last emi ... LOAN SCHEME 82 line
 
 // TODOS: refence_account_id to reference_id name change
 // TODOS: PandLGroup correction as per default accounts
 // TODOS: Take every date transaction for each CC account aftre 31 march and update Interest in CurrentInterest Field
-// TODOS: penalty not implemented if applied on last emi ... LOAN SCHEME 82 line
 
 
 class page_corrections extends Page {

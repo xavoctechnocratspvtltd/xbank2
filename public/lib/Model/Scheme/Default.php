@@ -77,7 +77,7 @@ class Model_Scheme_Default extends Model_Scheme {
 		if($test_account) $accounts->addCondition('id',$test_account->id);
 
 		foreach ($accounts as $accounts_array) {
-			if (strtotime($accounts['created_at']) > strtotime(date('Y',strtotime($on_date)) - 1) . "-09-30")) {
+			if (strtotime($accounts['created_at']) > strtotime(date('Y',strtotime($on_date)) - 1 . "-09-30")) {
                 $depr = $deperecation_schemes['DepriciationPercentAfterSep'];
             } else {
                 $depr = $deperecation_schemes['DepriciationPercentBeforeSep'];

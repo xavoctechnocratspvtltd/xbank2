@@ -261,5 +261,8 @@ class page_accounts_Loan extends Page {
 
 		$crud=$this->add('CRUD',array('allow_add'=>true));
 		$crud->setModel($documents);
+		if($crud->form){
+			$crud->form->getElement('documents_id')->getModel()->addCondition('LoanAccount',true);
+		}
 	}
 }

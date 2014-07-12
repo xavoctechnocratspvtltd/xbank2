@@ -108,7 +108,7 @@ class Model_Account extends Model_Table {
 		$this->addHook('editing',array($this,'editing_default'));
 
 
-		//$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function editing_default(){

@@ -7,6 +7,7 @@ class Model_DocumentSubmitted extends Model_Table {
 		$this->hasOne('Document','documents_id');
 		$this->hasOne('Account','accounts_id');
 		$this->addField('Description');
-		//$this->add('dynamic_model/Controller_AutoCreator');
+		$this->addField('submitted_on')->type('date')->defaultValue($this->api->today);
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

@@ -5,6 +5,8 @@
 // TODOS: refence_account_id to reference_id name change
 // TODOS: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
 // TODOS: Saving account current interests till date as now onwards its keep saved on transaction
+// FD Schemes from Month to days
+
 
 class page_corrections extends Page {
 	public $total_taks=7;

@@ -1,15 +1,22 @@
 <?php
 
-// TODOS: voucher_no in transaction table to be double now
-// TODOS: all admission fee voucher narration is '10 (memberid)' format ... put memberid in reference id
+// DONE: voucher_no in transaction table to be double now
+// DONE: all admission fee voucher narration is '10 (memberid)' format ... put memberid in reference id
+//        TransactionTYpe id = same from 7 or 3 which one is in use now ie 3
+// DONE: account_type of existing accounts 
+// DONE: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
+// DONE: Saving account current interests till date as now onwards its keep saved on transaction
+// DONE: penalty not implemented if applied on last emi ... LOAN SCHEME 82 line
+// DONE: Take every date transaction for each CC account aftre 31 march and update Interest in CurrentInterest Field
+
 // TODOS: refence_account_id to reference_id name change
-// TODOS: Scheme Loan type => boolean to text PL/VL/SL or empty for non loan type accounts
-// TODOS: Saving account current interests till date as now onwards its keep saved on transaction
+// TODOS: PandLGroup correction as per default accounts
+// TODOS: Default Accounts Query should be faster
 // FD Schemes from Month to days
 
 
 class page_corrections extends Page {
-	public $total_taks=7;
+	public $total_taks=9;
 	public $title = "Correction";
 	function init(){
 		parent::init();
@@ -17,51 +24,69 @@ class page_corrections extends Page {
 	}
 
 	function page_index(){
+		$this->api->resetProgress();
 
-		if(!$_GET['execute']) return;
+		if(!$_GET['execute']) {
+			// $this->add('View_Error')->set('Execute Another thread with execute=1 Querry parameter');
+			return;
+		}
 
 		if($jmp=$_GET['jump_to']){
 			$this->$jmp();
 			return;
 		}
 
-		$this->api->resetProgress();
+		try{
+			$this->api->db->beginTransaction();
 
-		$this->query('SET FOREIGN_KEY_CHECKS = 0');
 
-		$this->api->markProgress('Corrections',"",'Renaming tables',$this->total_taks);
-		$this->renameTables();
-		
-		$this->add('Model_AgentGuarantor');
-		$this->add('Model_AccountGuarantor');
-		$this->add('Model_Transaction');
-		
-		$this->api->markProgress('Corrections',1,'Adding, Editing, Removing Fields ...',$this->total_taks);
-		$this->page_fields();
-	
-		$this->api->markProgress('Corrections',2,'Moving To Many ...',$this->total_taks);
-		$this->page_movetomany();
+			$this->query('SET FOREIGN_KEY_CHECKS = 0');
 
-		$this->api->markProgress('Corrections',3,'Transactions Table Refactoring ...',$this->total_taks);
-		$this->page_transactionsUpdate();
-		
-		$this->api->markProgress('Corrections',4,'Agent AccountNumber to account_id ...',$this->total_taks);
-		$this->agentAccountToRelation();
+			$this->api->markProgress('Corrections',"",'Renaming tables',$this->total_taks);
+			$this->renameTables();
+			
+			$this->add('Model_AgentGuarantor');
+			$this->add('Model_AccountGuarantor');
+			$this->add('Model_Transaction');
+			
+			$this->api->markProgress('Corrections',1,'Adding, Editing, Removing Fields ...',$this->total_taks);
+			$this->page_fields();
+			
+			$this->api->markProgress('Corrections',2,'member_id from narration to referecen_id',$this->total_taks);
+			$this->page_memberidToReferenceAndMisc();
 
-		$this->api->markProgress('Corrections',5,'Saving Account Interests ...',$this->total_taks);
-		$this->savingInterestTillNow();
-		
-		$this->api->markProgress('Corrections',6,'CC Account Interest',$this->total_taks);
-		$this->ccInterestTillNow();
+			$this->api->markProgress('Corrections',2.5,'Moving To Many ...',$this->total_taks);
+			$this->page_movetomany();
 
-		$this->api->markProgress('Corrections',7,'done',$this->total_taks);
+			$this->api->markProgress('Corrections',3,'Transactions Table Refactoring ...',$this->total_taks);
+			$this->page_transactionsUpdate();
+			
+			$this->api->markProgress('Corrections',4,'Agent AccountNumber to account_id ...',$this->total_taks);
+			$this->agentAccountToRelation();
 
-		// Make currentInterest = 0 for Account_CC
-		$this->add('Model_Account_CC')->_dsql()->set('CurrentInterest',0)->update();
+			$this->api->markProgress('Corrections',5,'Account Type set for existing accounts',$this->total_taks);
+			$this->setAccountType();
+			
+			$this->api->markProgress('Corrections',6,'Saving Account Interests ...',$this->total_taks);
+			$this->savingInterestTillNow();
+			
+			$this->api->markProgress('Corrections',7,'CC Account Interest',$this->total_taks);
+			$this->ccInterestTillNow();
 
-		$this->checkAndCreateDefaultAccounts();
+			$this->api->markProgress('Corrections',8,'done',$this->total_taks);
 
-		$this->query('SET FOREIGN_KEY_CHECKS = 1');
+			// Make currentInterest = 0 for Account_CC <== Now done in ccInterestTillNow function
+			// $this->add('Model_Account_CC')->_dsql()->set('CurrentInterest',0)->update();
+
+			$this->api->markProgress('Corrections',9,'Creating Default Accounts',$this->total_taks);
+			$this->checkAndCreateDefaultAccounts();
+
+			$this->query('SET FOREIGN_KEY_CHECKS = 1');
+			$this->api->db->commit();
+		}catch(Exception $e){
+			$this->api->db->rollBack();
+			throw $e;
+		}
 	}
 
 	// task 1
@@ -140,10 +165,12 @@ class page_corrections extends Page {
 				array('members','state','string'),
 				array('staffs','name','string'),
 				array('dealers','loan_panelty_per_day','int'),
+				array('dealers','time_over_charge','int'),
 				array('dealers','dealer_monthly_date','int'),
 				array('agents','account_id','int'),
 				array('accounts','`Group`','string'),
 				array('accounts','`account_type`','string'),
+				array('accounts','`extra_info`','text'),
 				array('premiums','`PaneltyCharged`','money'),
 				array('premiums','`PaneltyPosted`','money'),
 				array('accounts','`MaturityToAccount_id`','int'),
@@ -336,7 +363,7 @@ class page_corrections extends Page {
 			tr.transaction_id = t.id');
 
     	// Remove unwanted columns
-    	
+    	// TODOS: 
     	
     }
 
@@ -366,12 +393,12 @@ class page_corrections extends Page {
 	    	foreach ($transaction_row->getRows() as $tr) {
 	    		$sa['CurrentInterest'] = $sa['CurrentInterest'] + $sa->getSavingInterest($tr['created_at']);
 				$sa['LastCurrentInterestUpdatedAt'] = $on_date;	
-				$last_tr=$tr;
+				$last_tr = $tr;
 	    	}
 
-	    	if(strtotime(date('Y-m-d',strtotime($last_tr['created_at']))) != strtotime(date('Y-m-d',strtotime('2014-05-31')))){
-	    		$sa['CurrentInterest'] = $sa['CurrentInterest'] + $sa->getSavingInterest('2014-05-31',null,null,null,true);
-				$sa['LastCurrentInterestUpdatedAt'] = '2014-05-31';
+	    	if(strtotime(date('Y-m-d',strtotime($last_tr['created_at']))) != strtotime(date('Y-m-d',strtotime($on_date)))){
+	    		$sa['CurrentInterest'] = $sa['CurrentInterest'] + $sa->getSavingInterest($on_date,null,null,null,true);
+				$sa['LastCurrentInterestUpdatedAt'] = $on_date;
 	    	}
 
 	    	$sa->save();
@@ -380,13 +407,168 @@ class page_corrections extends Page {
     }
 
    	function checkAndCreateDefaultAccounts(){
-   		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+
+   		$i=1;
+   		$scheme = $this->add('Model_Scheme');
+		$account = $this->add('Model_Account');
+		foreach (explode(",", ACCOUNT_TYPES) as $st) {
+	   		$all_schemes = $this->add('Model_Scheme_'.$st);
+			$branch = $this->add('Model_Branch')->addCondition('published',true);
+			foreach($branch as $b){
+				foreach ($all_schemes as $sc) {
+					foreach ($all_schemes->getDefaultAccounts() as $details) {
+			    		$this->api->markProgress('Default_Accounts_Create',$i++,$st . ' in ' . $branch['name']. ' - ' .$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'] );
+						$scheme->loadBy('name',$details['under_scheme']);
+						if(!$this->add('Model_Account')->tryLoadBy('AccountNumber',$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'])->loaded())
+							$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'],array('DefaultAC'=>true,'Group'=>$details['Group'],'PAndLGroup'=>$details['PAndLGroup']));
+						else
+							$this->add('View_Error')->setHtml("<b>".$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name']. '</b> Already exists');
+						$account->unload();
+						$scheme->unload();
+					}
+				}
+			}
+			$branch->destroy();
+			$all_schemes->destroy();
+		}
    	}
 
     function ccInterestTillNow($on_date=false){
+    	if(!$on_date) $on_date = $this->api->today;
+
     	$cc_update=$this->add('Model_Account_CC');
     	$cc_update->dsql()->set('CurrentInterest',0)->set('LastCurrentInterestUpdatedAt','2014-05-31')->update();
-    	
+    	// TODOS: Take every date transaction for each CC account aftre 31 march and update Interest in CurrentInterest Field
+
+    	// $this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($on_date);
+		// $this['LastCurrentInterestUpdatedAt'] = $on_date;
+
+    	$cc=$this->add('Model_Active_Account_CC');
+
+    	$total = $cc->count()->getOne();
+    	$i=1;
+    	foreach ($cc as $cc_array) {
+    		$this->api->markProgress('CC_Interest',$i++,$cc['AccountNumber'],$total);
+	    	$transaction_row = $cc->ref('TransactionRow');
+	    	$transaction_row->addCondition('created_at','>','2014-03-31');
+	    	
+	    	$last_tr=null;
+	    	foreach ($transaction_row->getRows() as $tr) {
+	    		$cc['CurrentInterest'] = $cc['CurrentInterest'] + $cc->getCCInterest($tr['created_at']);
+				$cc['LastCurrentInterestUpdatedAt'] = $on_date;	
+				$last_tr = $tr;
+	    	}
+
+	    	// if last transaction is before last day of last month .. get interest as on last date of last month
+	    	$last_date_last_month = strtotime(date('Y-m-t',strtotime($on_date. ' -1 month')));
+
+	    	if(strtotime(date('Y-m-d',strtotime($last_tr['created_at']))) < $last_date_last_month){
+	    		$cc['CurrentInterest'] = $cc['CurrentInterest'] + $cc->getCCInterest(date('Y-m-d',$last_date_last_month),null,null,null,true);
+				$cc['LastCurrentInterestUpdatedAt'] = $on_date;
+	    	}
+
+	    	$cc->save();
+    	}
+    	$this->api->markProgress('CC_Interest',null,'');
+
+
+    }
+
+    function setAccountType(){
+    	$q="
+    	UPDATE 
+		accounts a 
+		JOIN
+    	(
+			SELECT
+			accounts.id,
+			accounts.AccountNumber,
+			schemes.SchemeType,
+
+
+                        IF (
+                                schemes.SchemeType = 'Loan',
+                        IF(accounts.LoanAgainstAccount_id is not null,
+                        'Loan Againest Deposit',
+                        IF (
+                                LOCATE('pl ', schemes. NAME),
+                                'Personal Loan',
+                                'Two Wheeler Loan'
+                        )
+                        ),
+
+
+		IF (
+			schemes.SchemeType = 'FixedAndMis',
+			IF (
+				LOCATE(
+					accounts.AccountNumber,
+					'MIS'
+				),
+				'MIS',
+				'FD'
+			),
+			IF (
+				schemes.SchemeType = 'SavingAndCurrent',
+				IF (
+					LOCATE(
+						'SB',
+						accounts.AccountNumber
+					)
+					OR LOCATE(
+						'_SA_',
+						accounts.AccountNumber
+					)
+					OR LOCATE(
+						'Saving',
+						accounts.AccountNumber
+					)
+				
+		,
+					'Saving',
+					'Current'
+				),
+				schemes.SchemeType
+			)
+		)
+		) as should_be
+		FROM
+			accounts
+		INNER JOIN schemes ON accounts.scheme_id = schemes.id
+		) as Temp on Temp.id=a.id
+	
+		SET
+		a.account_type = Temp.should_be
+    	";
+
+    	$this->query($q);
+
+    }
+
+    function page_memberidToReferenceAndMisc(){
+    	$q1="UPDATE transactions SET transaction_type_id = 3 WHERE transaction_type_id=7";
+    	$this->query($q1);
+
+    	$q2="ALTER TABLE `transactions` CHANGE `voucher_no` `voucher_no` DECIMAL( 10, 5 ) NULL DEFAULT NULL ";
+    	$this->query($q2);
+
+    	$q3="
+			UPDATE 
+				transactions
+				SET
+				reference_account_id = 
+				SUBSTR(
+				Narration ,
+				LOCATE('(',Narration)+1
+				,
+				LOCATE(')',Narration) - LOCATE('(',Narration)-1
+				)
+				WHERE
+				transaction_type_id=3 or transaction_type_id=7
+
+    	";
+
+    	$this->query($q3);
     }
 
 }

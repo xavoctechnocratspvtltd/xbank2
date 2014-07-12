@@ -1,9 +1,10 @@
 <?php
 
-class Grid_BalanceSheet extends Grid{
+class Grid_BalanceSheet extends Grid_AccountsBase{
 	function format_details($field){
-		if($this->current_row['Amount']==0)
-			$this->current_row_html[$field]='';
+		if($this->current_row['Amount']==0){
+            $this->current_row_html[$field]='';
+        }
 	}
 	/**
      * Initialize expander
@@ -84,16 +85,42 @@ class Grid_BalanceSheet extends Grid{
     }
 
     function format_SchemeGroupToSchemeName($field){
+        if(!isset($this->from_date))
+            throw $this->exception('Specify from_date as grid variable $grid->from_date =xyz', 'ValidityCheck')->setField('FieldName');
+        
+        if(!isset($this->to_date))
+            throw $this->exception('Specify to_date as grid variable $grid->to_date =xyz', 'ValidityCheck')->setField('FieldName');
+
         $this->current_row_html[$field]=
-                '<a href="#" onclick="$(this).univ().frameURL(\'Dig in to '.$this->current_row[$field].' \',\''.$this->api->url("./details2scheme",array('SchemeGroup'=>$this->current_row['SchemeGroup'])).'\')">
+                '<a href="#" onclick="$(this).univ().frameURL(\'Dig in to Scheme Group '.$this->current_row[$field].' \',\''.$this->api->url("reports_BSAndPANL_group2scheme",array('SchemeGroup'=>$this->current_row['SchemeGroup'], 'from_date'=>$this->from_date,'to_date'=>$this->to_date)).'\')">
                 '.$this->current_row[$field].'
                 </a>';
     }
 
     function format_SchemeNameToAccounts($field){
+
+        if(!isset($this->from_date))
+            throw $this->exception('Specify from_date as grid variable $grid->from_date =xyz', 'ValidityCheck')->setField('FieldName');
+        
+        if(!isset($this->to_date))
+            throw $this->exception('Specify to_date as grid variable $grid->to_date =xyz', 'ValidityCheck')->setField('FieldName');
+
         $this->current_row_html[$field]=
-                '<a href="#" onclick="$(this).univ().frameURL(\'Dig in to '.$this->current_row[$field].' \',\''.$this->api->url("./scheme2account",array('Scheme'=>$this->current_row['Scheme'])).'\')">
+                '<a href="#" onclick="$(this).univ().frameURL(\'Dig in to '.$this->current_row[$field].' \',\''.$this->api->url("reports_BSAndPANL_scheme2accounts",array('Scheme'=>$this->current_row['Scheme'], 'from_date'=>$this->from_date,'to_date'=>$this->to_date)).'\')">
                 '.$this->current_row[$field].'
                 </a>';   
+    }
+
+    function format_toAccountStatement($field){
+        if(!isset($this->from_date))
+            throw $this->exception('Specify from_date as grid variable $grid->from_date =xyz', 'ValidityCheck')->setField('FieldName');
+        
+        if(!isset($this->to_date))
+            throw $this->exception('Specify to_date as grid variable $grid->to_date =xyz', 'ValidityCheck')->setField('FieldName');
+
+        $this->current_row_html[$field]=
+                '<a href="#" onclick="$(this).univ().frameURL(\'Account Statement '.$this->current_row[$field].' \',\''.$this->api->url("accounts_statement",array('AccountNumber'=>$this->current_row['AccountNumber'], 'from_date'=>$this->from_date,'to_date'=>$this->to_date)).'\')">
+                '.$this->current_row[$field].'
+                </a>';  
     }
 }

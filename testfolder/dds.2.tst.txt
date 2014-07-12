@@ -1,0 +1,80 @@
+<?php
+  // ============= input starts
+
+    public $member_id=1035; // Gowrav Vishwakarama *
+    public $agent_id=11; // Meena Devra *
+    public $cheque_issued=array(
+            array(101,150),
+            array(801,850),
+        );
+
+    public $maturityToAccount = null; // Maturity to transfer to account "UDRSB1162"
+    public $interestToAccount = null; // Interest To Account "UDRSB1162"
+
+    // Amount is what 100
+    // Saving => Initial Opening Amount
+    // CC => CC Limit
+    // DDS => DDS amount 
+    // Default => Initial Opening Amount
+    // FixedAndMis => FD
+    // Loan => Loan Amount 
+    // Recurring => RECURRING amount (premium) 
+
+    public $Amount = 100 ;
+
+    // Account Flow
+    // 'date'  => array(amount,'cheque_no'=>cheque_no,'from_branch_code'=>CODE)
+    public $account_flow=array(
+            'open'=>'2013-10-01',
+            'flow'=>array(
+                    // NO two transactions on same date .. array key will get replaced
+                    '2013-10-01'=> array(100),
+			'2013-10-02'=> array(100),
+                    '2013-10-03'=> array(100,'cheque_no'=>132514),
+                    '2013-10-08'=> array(500,'from_branch_code'=>'JHD'),
+			'2014-10-15'=> array(700,'from_branch_code'=>'SYR'),
+                    '2013-11-30'=> array(4400),
+                    '2013-12-31'=> array(3000),
+		    
+                ),
+            'test_till'=>'2014-01-01'
+        );
+    
+    // Proper_Responses
+    public $proper_responses=array(
+        "Test_beforeAccountCreate"=>array(
+                    'accounts_to_check'=>array(
+                            'new_account'=>array( 0,0), /* DR, CR */
+				    'interest paid on DDS 3 MONTH=> array(0,0)
+				 'commission paid on DDS 3 MONTH=> array(0,0)
+                        ),
+                ),
+        'Test_afterAccountCreate'=>array(
+                    'member'=>'GOWRAV VISHWAKARMA ',
+                    'scheme'=>'DDS 3 MONTH',
+                    'type'=>dds
+                    'Agent'=>'MEENA DEVRA',
+                    'maturity_date'=>'2013-12-31',
+                    'accounts_to_check'=>array(
+                            'new_account'=>array( 0,0), /* DR, CR */
+				    'interest paid on DDS 3 MONTH =>array(0,0)
+				'commission paid on DDS 3 MONTH=> array(0,0)
+                        ),
+                ),
+        'Test_afterAllTransactions'=>array(
+                    'accounts_to_check'=>array(
+                            'new_account'=> array( 00,9000), /* DR, CR */
+                            'UDRSB373' => array(0,0),
+					'interest paid onDDS 3 MONTH'=>array(0,0)
+					'commission paid onDDS 3 MONTH'=>array(0,45)
+                        )
+            ),
+        'Test_accountMaturity'=>array(
+                    'MaturedStatus'=>1,
+                    'accounts_to_check'=>array(
+                            'new_account'=> array( 0,9075), /* DR, CR */
+                        	'interest paid on DDS 3 MONTH'=>array(0,75)
+
+                        ),
+                    ),
+    );

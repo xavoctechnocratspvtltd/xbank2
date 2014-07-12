@@ -47,7 +47,7 @@ class Frontend extends ApiFrontend {
             $auth->setModel('Staff','username','password');
             $auth->check();
 
-            $this->current_branch = $this->auth->model->ref('branch_id');
+            $this->currentBranch = $this->current_branch = $this->auth->model->ref('branch_id');
             $this->title = ' :: [' . $this->api->current_branch['name'].']';
         }
 
@@ -73,10 +73,28 @@ class Frontend extends ApiFrontend {
         return $date;
     }
 
+    function previousDate($date=null){
+        if(!$date) $date = $this->api->today;
+        $date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " -1 DAY"));    
+        return $date;
+    }
+
     function monthFirstDate($date=null){
-        if(!$date) $dat = $this->api->now;
+        if(!$date) $date = $this->api->now;
 
         return date('Y-m-01',strtotime($date));
+    }
+
+    function nextMonth($date=null){
+        if(!$date) $date=$this->api->today;
+
+        return date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " +1 MONTH"));
+    }
+
+    function previousMonth($date=null){
+        if(!$date) $date=$this->api->today;
+
+        return date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " -1 MONTH"));
     }
 
     function getFinancialYear($date=null,$start_end = 'both'){

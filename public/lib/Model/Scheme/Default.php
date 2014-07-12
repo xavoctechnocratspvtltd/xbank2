@@ -56,4 +56,43 @@ class Model_Scheme_Default extends Model_Scheme {
 
 	function daily($branch=null,$on_date=null,$test_account=null){
 	}
+
+	function monthly($branch=null, $on_date=null,$test_account=null){
+
+	}
+
+	function halfYearly( $branch=null, $on_date=null, $test_account=null ) {
+	}
+
+	function yearly( $branch=null, $on_date=null, $test_account=null ) {
+		
+		if(!$this['isDepriciable']) return;
+
+		// Put Deprecations 
+		$accounts = $this->ref('Account');
+		$accounts->addCondition('ActiveStatus',true);
+		$accounts->addCondition('created_at','<',$on_date);
+		$accounts->addCondition('branch_id',$branch->id);
+
+		if($test_account) $accounts->addCondition('id',$test_account->id);
+
+		foreach ($accounts as $accounts_array) {
+			if (strtotime($accounts['created_at']) > strtotime(date('Y',strtotime($on_date)) - 1 . "-09-30")) {
+                $depr = $deperecation_schemes['DepriciationPercentAfterSep'];
+            } else {
+                $depr = $deperecation_schemes['DepriciationPercentBeforeSep'];
+            }
+
+            $depAmt = ($accounts['CurrentBalanceDr'] - $accounts['CurrentBalanceCr']) * $depr / 100;
+//                    echo $depAmt;
+
+            $transaction = $this->add('Model_Transaction');
+            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated", $only_transaction=null, array('reference_account_id'=>$accounts->id));
+            
+            $transaction->addDebitAccount($b->Code . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
+            $transaction->addCreditAccount($accounts, round($depAmt,COMMISSION_ROUND_TO));
+            
+            $transaction->execute();
+		}
+	}
 }

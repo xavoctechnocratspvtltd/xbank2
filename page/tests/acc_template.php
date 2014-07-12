@@ -14,6 +14,8 @@ class page_tests_FEED_FEED extends Page_Tester {
 
     public $member_id=1035; // Gowrav Vishwakarama
     public $agent_id=11; // Meena Devra
+    public $scheme_id=null; // Meena Devra
+    public $dealer_id=null; // BMJ CHAMAN SINGH
     public $cheque_issued=array(
             array(101,150),
             array(801,850),
@@ -21,6 +23,8 @@ class page_tests_FEED_FEED extends Page_Tester {
 
     public $maturityToAccount = null; // Maturity to transfer to account "UDRSBxyz"
     public $interestToAccount = null; // Interest To Account "UDRSBabcd"
+    public $loan_from_account = null; // Loan Amount From Account "SBBJ sdsd"
+    public $account_type_in_account = 'Two Wheeler Loan'; // Account Type
 
     // Amount is what ???
     // Saving => Initial Opening Amount
@@ -87,10 +91,17 @@ class page_tests_FEED_FEED extends Page_Tester {
         $this->agent = $this->add('Model_Agent')->load($this->agent_id);
         $this->AccountNumber = 'UDR'.$this->account_type.'X'.rand(1000,9999);
 
+         // Reset Closing
+         $this->add('Model_Closing')
+            ->addCondition('branch_id',$this->api->current_branch->id)
+            ->tryLoadAny()
+            ->set('daily',date('Y-m-d',strtotime($this->account_flow['open'].' -1 days')))
+            ->update();
+        
         // Make all used accounts to zero for easy checking
         $reset_account = $this->add('Model_Account');
 
-        foreach ($this->proper_responses as $test => &$values) {
+        foreach ($this->proper_responses as $test => $values) {
             if(!isset($values['accounts_to_check'])) continue;
 
             foreach ($values['accounts_to_check'] as $AccountNumber => $values) {
@@ -122,22 +133,28 @@ class page_tests_FEED_FEED extends Page_Tester {
     }
 
     function prepare_afterAccountCreate(){
-        $this->account = $account = $this->add('Model_Account_'.$this->account_type);
-        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id),$form=null,$created_at=$this->account_flow['open']);
+        $this->account = $account = $this->add('Model_Account_'.$this->account_type,array('allow_any_name'=>true));
+        $account->createNewAccount($this->member->id,$this->scheme->id,$this->api->current_branch, $this->AccountNumber,$otherValues=array('Amount'=>$this->Amount,'agent_id'=>$this->agent->id,'account_type'=>$this->account_type_in_account,'loan_from_account'=>$this->loan_from_account,'extra_info'=>json_encode(array())),$form=null,$created_at=$this->account_flow['open']);
+        $this->proper_responses['Test_afterAccountCreate']['AccountNumber'] = $this->AccountNumber;
     }
 
-    function test_aterAccountCreate(){
+    function test_afterAccountCreate(){
         $result = array(
                     'member'=>$this->account->ref('member_id')->get('name'),
                     'scheme'=>$this->account->ref('scheme_id')->get('name')
                 );
 
         $result['type'] = $this->account->ref('scheme_id')->get('SchemeType');
-        $result['Agent'] = $this->account->ref('agent_id')->get('name');
+        if($this->account->hasElement('agent_id'))
+            $result['Agent'] = $this->account->ref('agent_id')->get('name');
+        else
+            $result['Agent'] = null;
+        
         $result['maturity_date'] = $this->account['maturity_date'];
 
-        $result['accounts_to_check'] = $this->account_to_check_balances('Test_aterAccountCreate');
-
+        $result['accounts_to_check'] = $this->account_to_check_balances('Test_afterAccountCreate');
+        $result['AccountNumber'] = $this->account['AccountNumber'];
+        
         return $result;
     }
 

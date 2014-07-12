@@ -1,8 +1,7 @@
 <?php
 
 class page_accounts_CC extends Page {
-	function init(){
-		parent::init();
+	function page_index(){
 
 		$crud=$this->add('xCRUD');
 		$account_cc_model =$this->add('Model_Account_CC');
@@ -47,11 +46,12 @@ class page_accounts_CC extends Page {
 			$account_cc_model->hook('editing');
 		}
 
-		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'));
+		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
 
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(10);
+			$crud->grid->addColumn('expander','edit_document');
 		}
 
 		if($crud->isEditing('add')){
@@ -59,4 +59,18 @@ class page_accounts_CC extends Page {
 		}
 
 	}
+
+	function page_edit_document(){
+		$this->api->stickyGET('accounts_id');
+
+		$documents=$this->add('Model_DocumentSubmitted');
+		$documents->addCondition('accounts_id',$_GET['accounts_id']);
+
+		$crud=$this->add('CRUD',array('allow_add'=>true));
+		$crud->setModel($documents);
+		if($crud->form){
+			$crud->form->getElement('documents_id')->getModel()->addCondition('CCAccount',true);
+		}
+	}
+
 }

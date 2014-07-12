@@ -50,7 +50,7 @@ class Menu_Base extends Menu {
 		$books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');
 		$books_sub_menus->addMenuItem('reports_daybook','Day Book');
 		$books_sub_menus->addMenuItem('reports_cashbook','Cash Book');
-		$books_sub_menus->addMenuItem('reports_balancesheet','Balance Sheet');
+		$books_sub_menus->addMenuItem('reports_BSAndPANL','Balance Sheet');
 		$books_sub_menus->addMenuItem('reports_pandl','P & L');
 		$books->js('click',$books_sub_menus_popover->showJS());
 
@@ -61,6 +61,7 @@ class Menu_Base extends Menu {
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');
 		$utilities_sub_menus->addMenuItem('documents','Documents Management');
+		$utilities_sub_menus->addMenuItem('utility_setdate','Change Date');
 		$utilities->js('click',$utilities_sub_menus_popover->showJS());
 
 	}

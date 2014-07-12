@@ -18,7 +18,7 @@ class Grid_AccountsBase extends Grid{
 	}
 
 	function format_sno($field){
-		$this->current_row[$field] = (($this->sno++) + ($_GET[$this->short_name.'_paginator_skip']?:0));
+		$this->current_row[$field] = (($this->sno++) + ($_GET[$this->name.'_paginator_skip']?:0));
 	}
 
 	function init_voucherNo($field){

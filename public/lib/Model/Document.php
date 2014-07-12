@@ -11,7 +11,11 @@ class Model_Document extends Model_Table {
 		$this->addField('RDandDDSAccount')->type('boolean');
 		$this->addField('CCAccount')->type('boolean');
 		$this->addField('OtherAccounts')->type('boolean');
+		$this->addField('is_addable_by_staff')->type('boolean');
+		$this->addField('is_editable_by_staff')->type('boolean');
+
 		$this->hasMany('DocumentSubmitted','document_id');
-		//$this->add('dynamic_model/Controller_AutoCreator');
+
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

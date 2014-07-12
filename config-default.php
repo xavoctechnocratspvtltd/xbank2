@@ -73,15 +73,15 @@ define('BRANCH_AND_DIVISIONS_HEAD',                  'Branch/Divisions' );
 define('BRANCH_AND_DIVISIONS',                  'Branch & Divisions' );
 
 
-define('INTEREST_RECEIVED_ON',				'Interest Received On ');
-define('PROCESSING_FEE_RECEIVED',				'Processing Fee Received On ');
-define('PENALTY_DUE_TO_LATE_PAYMENT_ON',		'Penalty Due To Late Payment On ');
-define('FOR_CLOSE_ACCOUNT_ON',		'For Close Account On ');
+define('INTEREST_RECEIVED_ON',				'Interest Received On');
+define('PROCESSING_FEE_RECEIVED',				'Processing Fee Received On');
+define('PENALTY_DUE_TO_LATE_PAYMENT_ON',		'Penalty Due To Late Payment On');
+define('FOR_CLOSE_ACCOUNT_ON',		'For Close Account On');
 define('INTEREST_PAID_ON',				'Interest Paid On');
 define('COMMISSION_PAID_ON',				'Commission Paid On');
 define('ADMISSION_FEE_ACCOUNT',			'Admission Fee');
 define('CASH_ACCOUNT',					'Cash Account');
-define('INTEREST_PROVISION_ON',                         'Interest Provision On ');
+define('INTEREST_PROVISION_ON',                         'Interest Provision On');
 define('DEPRECIATION_ON_FIXED_ASSETS',                  'Depreciation On Fixed Assets');
 define('MINIMUM_BALANCE_CHARGE_RECEIVED_ON',                  'Minimum Balance Charge Received On');
 define('CHEQUEBOOK_CHARGE_RECEIVED_ON',                  'ChequeBook Charge Received On');
@@ -163,8 +163,29 @@ define('SIGNATURE_FILE_PATH',                   '/administrator/components/com_x
 
 define('LOAN_TYPES','Two Wheeler Loan,Auto Loan,Personal Loan,Loan Againest Deposit,Home Loan,Mortgage Loan,Agriculture Loan,Education Loan,Gold Loan,Other');
 
-/* Defining Access Level Constants  */
+/* Define Codes for various accounts*/
+$config['account_code']['Two Wheeler Loan']='VL';
+$config['account_code']['Auto Loan']='VL';
+$config['account_code']['Personal Loan']='PL';
+$config['account_code']['Loan Againest Deposit']='SL';
+$config['account_code']['Home Loan']='HL';
+$config['account_code']['Mortgage Loan']='ML';
+$config['account_code']['Agriculture Loan']='AL';
+$config['account_code']['Education Loan']='EL';
+$config['account_code']['Gold Loan']='GL';
+$config['account_code']['Other']='OL';
+$config['account_code']['CC']='CC';
+$config['account_code']['DDS']='DDS';
+$config['account_code']['Default']='';
+$config['account_code']['FD']='FD';
+$config['account_code']['MIS']='MIS';
+$config['account_code']['Recurring']='RD';
+$config['account_code']['Saving']='SB';
+$config['account_code']['Current']='CA';
 
+
+
+/* Defining Access Level Constants  */
 define('xADMIN',  100);
 define('BRANCH_ADMIN',  80);
 define('POWER_USER',  50);

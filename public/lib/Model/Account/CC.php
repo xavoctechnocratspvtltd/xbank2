@@ -14,6 +14,7 @@ class Model_Account_CC extends Model_Account{
 		$this->getElement('agent_id')->destroy();
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','CC');
 		$this->getElement('Amount')->caption('CC Limit');
+		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_CC);
 
 		$this->addHook('editing',$this);
 
@@ -25,9 +26,7 @@ class Model_Account_CC extends Model_Account{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null,$on_date=null){
-
-		$otherValues += array('account_type'=>ACCOUNT_TYPE_CC);
-
+		
 		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form,$on_date);
 		if($this['Amount'])
 			$this->doProsessingFeesTransactions($on_date);
@@ -72,10 +71,12 @@ class Model_Account_CC extends Model_Account{
 	function getCCInterest($on_date=null,$after_date_not_included=null,$on_amount=null, $at_interest_rate=null,$add_last_day=false){
 		if(!$on_date) $on_date = $this->api->today;
 		if(!$after_date_not_included) $after_date_not_included = $this['LastCurrentInterestUpdatedAt'];
+		
 		if(!$on_amount){
 			$openning_balance = $this->getOpeningBalance($this->api->nextDate($after_date_not_included));
 			$on_amount = ($openning_balance['DR'] - $openning_balance['CR']) > 0 ? ($openning_balance['DR'] - $openning_balance['CR']) :0;
 		}
+		
 		if(!$at_interest_rate) $at_interest_rate = $this->ref('scheme_id')->get('Interest');
 
 		$days = $this->api->my_date_diff($on_date,$after_date_not_included);

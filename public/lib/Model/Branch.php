@@ -202,6 +202,7 @@ class Model_Branch extends Model_Table {
 				$schemes->daily($this, $on_date,$test_account);
 
 				if($this->isQuarterEnd($on_date)){
+					$this->api->markProgress('quarterly',$s++,$st,null);
 					if(method_exists($schemes, 'quarterly'))
 						$schemes->quarterly($this, $on_date, $test_account);
 				}

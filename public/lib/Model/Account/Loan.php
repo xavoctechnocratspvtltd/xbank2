@@ -33,45 +33,53 @@ class Model_Account_Loan extends Model_Account{
 			throw $this->exception('Please Specify Account Type', 'ValidityCheck')->setField('account_type');
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $created_at = null ){
+	function createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+		$pending_account = parent::createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+		return $pending_account;
+	}
+
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $on_date = null ){
 
 		// throw $this->exception($form['LoanAgainstAccount_id'], 'ValidityCheck')->setField('AccountNumber');
 		// throw $this->exception('Check Loan Against Security', 'ValidityCheck')->setField('AccountNumber');
 
-		if(!$created_at) $created_at = $this->api->now;
+		if(!$on_date) $on_date = $this->api->now;
 
-		if($form['LoanAgSecurity']){
-			$security_account = $this->add('Model_Account')->load($form['LoanAgainstAccount_id']);
+		if($otherValues['LoanAgainstAccount_id']){
+			$security_account = $this->add('Model_Account')->load($otherValues['LoanAgainstAccount_id']);
 			$security_account->lock();
 		}
 
-		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$on_date);
 		
-		$this->createProcessingFeeTransaction();
+		$this->createProcessingFeeTransaction($from_account = $otherValues['loan_from_account'], $on_date);
 		
-		$this->addDocumentDetails($form);
+		if($form)
+			$this->addDocumentDetails($form);
+		else
+			$this->addDocumentDetailsFromPending(json_decode($otherValues['extra_info'],true));
 		
 		$this->createPremiums();
 	}
 
-	function createProcessingFeeTransaction(){
+	function createProcessingFeeTransaction($from_account, $on_date){
 		$scheme = $this->ref('scheme_id');
 		$ProcessingFees = $scheme['ProcessingFees'];
-		$AccountCredt = $this['Amount'] - $ProcessingFees;
+		$AccountCredit = $this['Amount'] - $ProcessingFees;
 		
 		if($scheme['ProcessingFeesinPercent']){
 			$ProcessingFees = $ProcessingFees * $this['Amount'] / 100;
-			$AccountCredt = $this['Amount'] - ((100-$ProcessingFees) * $this['Amount'] / 100);
+			$AccountCredit = $this['Amount'] - $ProcessingFees;
 		}
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$created_at, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$on_date, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
 		
-		$loan_from_other_account = $this->add('Model_Account')->load($otherValues['loan_from_account']);
+		$loan_from_other_account = $this->add('Model_Account')->load($from_account);
 
 		$transaction->addDebitAccount($this, $this['Amount']);
-		$transaction->addCreditAccount($branch['Code'] . SP . PROCESSING_FEE_RECEIVED . $this['scheme_name'], $ProcessingFees);
-		$transaction->addCreditAccount($loan_from_other_account, $AccountCredt);
+		$transaction->addCreditAccount($this['branch_code'] . SP . PROCESSING_FEE_RECEIVED . SP. $this['scheme_name'], $ProcessingFees);
+		$transaction->addCreditAccount($loan_from_other_account, $AccountCredit);
 		
 		$transaction->execute();
 	}
@@ -84,9 +92,45 @@ class Model_Account_Loan extends Model_Account{
 		}
 	}
 
-	function getFirstEMIDate(){
+
+	function addDocumentDetailsFromPending($extra_info){
+
+		if(!isset($extra_info['documents_feeded'])) return;
+		
+		$doc_info = $extra_info['documents_feeded'];
+		foreach ($doc_info as $doc_name => $value) {
+			$document = $this->add('Model_Document')->loadBy('name',$doc_name);
+			$this->updateDocument($document, $value);
+		}
+	}
+
+	function getFirstEMIDate($return_date_string=false){
 		// ??? .... $this['created_at'] with dealer_monthly_date ... relation
 
+		$date = new MyDateTime($this['created_at']);
+
+		$toAdd = 'P1M';
+
+		if($this['dealer_id']){
+			$dd=explode(",",$this['dealer_monthly_date']);
+			$applicable_date = (int)date('d',strtotime($this['created_at']));
+			if(count($dd)>0){
+				foreach ($dd as $dealer_date) {
+					if((int)$dealer_date >= (int)date('d',strtotime($this['created_at']))){
+						$applicable_date = $dealer_date; 
+						break;
+					}
+				}
+				$date = new MyDateTime(date('Y-m-'.$applicable_date,strtotime($this['created_at'])));
+				$date->add(new DateInterval($toAdd));
+				return $date;
+			}
+		}
+		$date->add(new DateInterval($toAdd));
+		if($return_date_string)
+			return $date->format('Y-m-d');
+		else
+			return $date;
 	}
 
 	function createPremiums(){
@@ -96,23 +140,26 @@ class Model_Account_Loan extends Model_Account{
 
 		switch ($scheme['PremiumMode']) {
             case RECURRING_MODE_YEARLY:
-                $toAdd = " +1 year";
+                $toAdd = "P1Y";
                 break;
             case RECURRING_MODE_HALFYEARLY:
-                $toAdd = " +6 month";
+                $toAdd = "P6M";
                 break;
             case RECURRING_MODE_QUATERLY:
-                $toAdd = " +3 month";
+                $toAdd = "P3D";
                 break;
             case RECURRING_MODE_MONTHLY:
-                $toAdd = " +1 month";
+                $toAdd = "P1M";
                 break;
             case RECURRING_MODE_DAILY:
-                $toAdd = " +1 day";
+                $toAdd = "P1D";
                 break;
         }
 
-        $lastPremiumPaidDate = $this->getFirstEMIDate();
+        $date_obj = $this->getFirstEMIDate();
+        $lastPremiumPaidDate = $date_obj->format('Y-m-d');
+        
+
         $rate = $scheme['Interest'];
         $premiums = $scheme['NumberOfPremiums'];
         if ($scheme['ReducingOrFlatRate'] == REDUCING_RATE) {
@@ -128,23 +175,25 @@ class Model_Account_Loan extends Model_Account{
         for ($i = 1; $i <= $premiums ; $i++) {
             $prem['account_id'] = $this->id;
             $prem['Amount'] = $emi;
-            $lastPremiumPaidDate = $prem['DueDate'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($lastPremiumPaidDate)) . $toAdd));
+            if($i!=1) // First Emi is already a month ahead
+	            $date_obj->add(new DateInterval($toAdd));
+            $lastPremiumPaidDate = $prem['DueDate'] = $date_obj->format('Y-m-d');
             $prem->saveAndUnload();
         }
 	}
 
-	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$on_date=null){
+	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$on_date=null,$in_branch=null){
 		if(!$on_date) $on_date = $this->api->now;
 
-		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date);
+		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date,$in_branch);
 
 		$this->payPremiums($amount,$on_date);
 		$this->closeIfPaidCompletely();
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null){
 		throw $this->exception('Withdrawl not supported in loan accounts', 'ValidityCheck')->setField('AccountNumber');
-		// parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
+		// parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date,$in_branch);
 	}
 
 	function payPremiums($amount,$on_date){
@@ -157,7 +206,7 @@ class Model_Account_Loan extends Model_Account{
 		$interest = round((($emi * $premiums) - $this['Amount']) / $premiums);
 
 		$PremiumAmountAdjusted = $PaidEMI * $emi;
-		$AmountForPremiums = ($ac->CurrentBalanceCr + $amount) - $PremiumAmountAdjusted;
+		$AmountForPremiums = ($this['CurrentBalanceCr']) - $PremiumAmountAdjusted; // This amount is already credit to account in deposit function parent::deposit 
 
 		$premiumsSubmited = (int) ($AmountForPremiums / $emi);
 
@@ -166,7 +215,7 @@ class Model_Account_Loan extends Model_Account{
 		    foreach ($prem as $prem_array) {
 		        $prem['PaidOn'] = $on_date;
 		        $prem['Paid'] = true;
-		        $prem->save();
+		        $prem->saveAndUnload();
 		    }
 		}
 	}
@@ -205,14 +254,14 @@ class Model_Account_Loan extends Model_Account{
 	    $transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_LOAN,$this->ref('branch_id'),$on_date, "Interest posting in Loan Account ".$this['AccountNumber'],null, array('reference_account_id'=>$this->id));
 	    
 	    $transaction->addDebitAccount($this, $interest);
-	    $transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . $this['scheme_name'], $interest);
+	    $transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . SP. $this['scheme_name'], $interest);
 	    
 	    $transaction->execute();
 	}
 
 	function postPanelty($on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
-		if(!$this->hasElement('due_panelty')) throw $this->exception('The Account must be called via getAllForPaneltyPosting function');
+		if(!$this->hasElement('due_panelty')) throw $this->exception('The Account must be called via scheme daily function');
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penalty deposited on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_account_id'=>$this->id));
@@ -220,9 +269,17 @@ class Model_Account_Loan extends Model_Account{
 		$amount = $this['due_panelty'];
 		
 		$transaction->addDebitAccount($this, $amount);
-		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . $this['scheme_name'], $amount);
+		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . SP.  $this['scheme_name'], $amount);
 		
 		$transaction->execute();
+
+		// Make all penaltyPosted = penaltyCharged
+
+		$premiums = $this->add('Model_Premium');
+		$premiums->addCondition('account_id',$this->id);
+		$premiums->_dsql()->set('PaneltyPosted',$this->dsql()->expr('PaneltyCharged'));
+		$premiums->_dsql()->update();
+
 	}
 
 }

@@ -7,15 +7,15 @@ class Model_Premium extends Model_Table {
 
 		$this->hasOne('Account','account_id');
 		$this->addField('Amount');
-		$this->addField('Paid');//->type('boolean')->defaultValue(false);
+		$this->addField('Paid')->defaultValue('0');//->type('boolean')->defaultValue(false);
 		$this->addField('Skipped')->type('boolean')->defaultValue(false);
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('PaidOn')->type('datetime')->defaultValue(null);
 		$this->addField('AgentCommissionSend')->type('boolean')->defaultValue(false);
 		$this->addField('AgentCommissionPercentage')->type('money');
-		$this->addField('PaneltyCharged')->type('money');
-		$this->addField('PaneltyPosted')->type('money');
+		$this->addField('PaneltyCharged')->type('money')->defaultValue(0);
+		$this->addField('PaneltyPosted')->type('money')->defaultValue(0);
 		$this->addField('DueDate')->type('date');
 
 		$this->addExpression('panelty_to_post')->set('PaneltyCharged - PaneltyPosted');
@@ -27,7 +27,7 @@ class Model_Premium extends Model_Table {
 		if(!$on_date) $on_date = $this->api->now;
 		
 		$this['PaidOn'] = $on_date;
-		$this->save();
+		$this->saveAs('Model_Premium');
 
 		$this->reAdjustPaidValues($on_date);
 
@@ -37,7 +37,7 @@ class Model_Premium extends Model_Table {
 	function giveAgentCommission($on_date = null){
 		if(!$on_date) $on_date = $this->api->now;
 
-		$all_paid_noncommissioned_preimums = $this->ref('account_id')->ref('Premiums');
+		$all_paid_noncommissioned_preimums = $this->ref('account_id')->ref('Premium');
 		$all_paid_noncommissioned_preimums->addCondition('Paid',true);
 		$all_paid_noncommissioned_preimums->addCondition('AgentCommissionSend',false);
 
@@ -49,7 +49,7 @@ class Model_Premium extends Model_Table {
 			$all_paid_noncommissioned_preimums->saveAndUnload();			
 		}
 
-		$tds_percentage = $account->ref('agent_id')->ref('member_id')->get('PanNo')?10:20;
+		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?10:20;
 		$tds = $commission * $tds_percentage / 100;
 
 
@@ -58,7 +58,7 @@ class Model_Premium extends Model_Table {
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Commission ".$account['AccountNumber'], null, array('reference_account_id'=>$account->id));
 		
-		$transaction->addDebitAccount($account->ref('branch_id')->get('Code') . SP . COMMISSION_PAID_ON . $account['scheme_name'] , $commission);
+		$transaction->addDebitAccount($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'] , $commission);
 		
 		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commission -$tds);
 		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
@@ -95,6 +95,7 @@ class Model_Premium extends Model_Table {
     function reAdjustPaidValues($on_date=null){
 
     	if(!$on_date) $on_date=$this->api->now;
+    	$tilldate = $on_date;
 
         // $CI->db->query("UPDATE jos_xpremiums SET Paid=0 WHERE accounts_id = $this->accounts_id");
     	// reset all paid  = 0 first

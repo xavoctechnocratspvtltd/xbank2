@@ -10,6 +10,7 @@ class Model_Account_Recurring extends Model_Account{
 		$this->addCondition('SchemeType','Recurring');
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','Recurring');
 		$this->getElement('Amount')->caption('RECURRING amount (premium)');
+		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_RECURRING);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
@@ -24,7 +25,9 @@ class Model_Account_Recurring extends Model_Account{
 		parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form, $on_date);
 		
 		$this->createPremiums();
-		$this->deposit($form['initial_opening_amount'],null,null,null, $on_date);
+		
+		if(isset($otherValues['initial_opening_amount']) and $otherValues['initial_opening_amount'])
+			$this->deposit($otherValues['initial_opening_amount'],null,null,null, $on_date);
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null){
@@ -35,7 +38,7 @@ class Model_Account_Recurring extends Model_Account{
 		
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date);
 		
-		$this->payPremiumsIfAdjustedIn($amount,$on_date);
+		$this->payPremiumsIfAdjustedIn(0,$on_date); // Amount already added Cr Balance of Account in last line
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
@@ -94,7 +97,7 @@ class Model_Account_Recurring extends Model_Account{
 
 		$premiumsSubmitedInThisAmount = (int) ($AmountForPremiums / $this['Amount']);
 
-		$unpaid_premiums = $this->ref('Premiums');
+		$unpaid_premiums = $this->ref('Premium');
 		$unpaid_premiums->addCondition('Paid',false);
 		$unpaid_premiums->setOrder('id');
 		$unpaid_premiums->setLimit($premiumsSubmitedInThisAmount);
@@ -120,7 +123,7 @@ class Model_Account_Recurring extends Model_Account{
 	function paidPremiums($as_on_date=null){
 		if(!$this->loaded()) throw $this->exception('Account Must be loaded to get paid Premiums');
 		
-		$prem = $this->ref('Premiums');
+		$prem = $this->ref('Premium');
 		$prem->addCondition('Paid','<>',0);
 
 		if($as_on_date) $prem->addCondition('DueDate','<=',$as_on_date);
@@ -139,26 +142,54 @@ class Model_Account_Recurring extends Model_Account{
 	function interestPaid($as_on_date=null){
 		if(!$as_on_date) $as_on_date = $this->api->now;
 
-		$transactions = $this->add('Model_Transactions');
+		$transactions = $this->add('Model_Transaction');
 		$rows_join = $transactions->join('transaction_row.transaction_id');
 		$rows_join->hasOne('Account','account_id');
+		$rows_join->addField('amountCr');
 
-		$transactions->addCodnition('trsnaction',TRA_INTEREST_POSTING_IN_RECURRING);
-		$transactions->addCodnition('account_id',$this->id);
-		$transactions->addCodnition('created_at','<',$as_on_date);
+		$transaction_type_join = $transactions->join('transaction_types','transaction_type_id');
+		$transaction_type_join->addField('transaction_type_name','name');
+
+		$transactions->addCondition('transaction_type_name',TRA_INTEREST_POSTING_IN_RECURRING);
+		$transactions->addCondition('account_id',$this->id);
+		$transactions->addCondition('created_at','<',$as_on_date);
 
 		return $transactions->sum('amountCr')->getOne();
 
 	}
 
-	function markMatured($on_date=null){
+	function payInterest($on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
 
+		$fy = $this->api->getFinancialYear($on_date);
+
 		$non_interest_paid_premiums_till_now = $this->ref('Premiums');
-		$non_interest_paid_premiums_till_now->addCodnition('Paid','<>',false);
+		$non_interest_paid_premiums_till_now->addCondition('Paid',true);
+		$non_interest_paid_premiums_till_now->addCondition('PaidOn','>=',$fy['start_date']);
+		$non_interest_paid_premiums_till_now->addCondition('PaidOn','<',$this->api->nextDate($fy['end_date']));
 
-		throw $this->exception('Maturity Interest to give');
+		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum(Paid*Amount)');
 
+		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
+
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_RECURRING, $this->ref('branch_id'), $on_date, 'Interest posting in Recurring Account', null, array('reference_account_id'=>$this->id));
+		
+		$transaction->addDebitAccount($this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $interest);
+		$transaction->addCreditAccount($this, $interest);
+		
+		$transaction->execute();
+
+		
+	}
+
+	function markMatured($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+		
+		$this->payInterest();
+
+		$this['MaturedStatus'] = true;
+		$this->save();
 	}
 
 }

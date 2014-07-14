@@ -412,6 +412,7 @@ class page_corrections extends Page {
    		$i=1;
    		$scheme = $this->add('Model_Scheme');
 		$account = $this->add('Model_Account');
+		$existing_account = $this->add('Model_Account');
 		foreach (explode(",", ACCOUNT_TYPES) as $st) {
 	   		$all_schemes = $this->add('Model_Scheme_'.$st);
 			$branch = $this->add('Model_Branch')->addCondition('published',true);
@@ -420,12 +421,19 @@ class page_corrections extends Page {
 					foreach ($all_schemes->getDefaultAccounts() as $details) {
 			    		$this->api->markProgress('Default_Accounts_Create',$i++,$st . ' in ' . $branch['name']. ' - ' .$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'] );
 						$scheme->loadBy('name',$details['under_scheme']);
-						if(!$this->add('Model_Account')->tryLoadBy('AccountNumber',$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'])->loaded())
+						$existing_account->tryLoadBy('AccountNumber',$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name']);
+						if(!$existing_account->loaded())
 							$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'],array('DefaultAC'=>true,'Group'=>$details['Group'],'PAndLGroup'=>$details['PAndLGroup']));
-						else
+						else{
+							if($existing_account['PAndLGroup'] != $details['PAndLGroup'] ){
+								$existing_account['PAndLGroup'] = $details['PAndLGroup'];
+								$existing_account->save();
+							}
 							$this->add('View_Error')->setHtml("<b>".$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name']. '</b> Already exists');
+						}
 						$account->unload();
 						$scheme->unload();
+						$existing_account->unload();
 					}
 				}
 			}

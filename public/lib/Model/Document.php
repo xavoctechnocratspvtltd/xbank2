@@ -16,6 +16,6 @@ class Model_Document extends Model_Table {
 
 		$this->hasMany('DocumentSubmitted','document_id');
 
-		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

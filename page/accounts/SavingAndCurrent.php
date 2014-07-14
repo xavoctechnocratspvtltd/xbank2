@@ -32,14 +32,16 @@ class page_accounts_SavingAndCurrent extends Page {
 			$account_savingandcurrent_model->hook('editing');
 		}
 
-		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt'));
+		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt'));
 		
 		if($crud->isEditing()){
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
 		}
 
-		if($crud->grid)
-			$crud->grid->addPaginator(10);
+		if($crud->grid){
+			$crud->grid->addPaginator(50);
+			$crud->grid->addQuickSearch(array('AccountNumber','member','scheme','agent','amount'));
+		}
 
 		if($crud->isEditing('add')){
 			$o->now();

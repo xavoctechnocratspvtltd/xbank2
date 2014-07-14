@@ -435,11 +435,14 @@ class page_corrections extends Page {
    	}
 
     function ccInterestTillNow($on_date=false){
+
+    	// IMPORTANT: This Interest is posted MONTHLY (END OF MONTH)
+
     	if(!$on_date) $on_date = $this->api->today;
 
     	$cc_update=$this->add('Model_Account_CC');
     	$cc_update->dsql()->set('CurrentInterest',0)->set('LastCurrentInterestUpdatedAt','2014-05-31')->update();
-    	// TODOS: Take every date transaction for each CC account aftre 31 march and update Interest in CurrentInterest Field
+    	// TODOS: Take every date transaction for each CC account aftre LAST MONTHLY CLOSING and update Interest in CurrentInterest Field
 
     	// $this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($on_date);
 		// $this['LastCurrentInterestUpdatedAt'] = $on_date;
@@ -451,7 +454,7 @@ class page_corrections extends Page {
     	foreach ($cc as $cc_array) {
     		$this->api->markProgress('CC_Interest',$i++,$cc['AccountNumber'],$total);
 	    	$transaction_row = $cc->ref('TransactionRow');
-	    	$transaction_row->addCondition('created_at','>','2014-03-31');
+	    	$transaction_row->addCondition('created_at','>',$cc['LastCurrentInterestUpdatedAt']);
 	    	
 	    	$last_tr=null;
 	    	foreach ($transaction_row->getRows() as $tr) {

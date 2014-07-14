@@ -42,6 +42,16 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		);
 	}
 
+	function monthly( $branch=null, $on_date=null, $test_account=null ) {
+	}
+
+	function quarterly( $branch=null, $on_date=null, $test_account=null ) {
+
+	}
+
+	function halfYearly( $branch=null, $on_date=null, $test_account=null ) {
+	}
+
 	function daily($branch=null,$on_date=null, $test_account=null){
 		if(!$branch) $branch = $this->api->current_branch;
 		if(!$on_date) $on_date = $this->api->now;
@@ -57,6 +67,24 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		foreach ($all_todays_matured_Accounts as $acc_array) {
 			$all_todays_matured_Accounts->markMatured($on_date);
 		}
+
+		$allaccounts_with_todays_duedate = $this->add('Model_Active_Account_Recurring');
+		$premium_join = $allaccounts_with_todays_duedate->join('premiums.account_id');
+		$premium_join->addField('Paid');
+		$premium_join->addField('DueDate');
+		$allaccounts_with_todays_duedate->addCondition('Paid',false);
+		$allaccounts_with_todays_duedate->addCondition('DueDate','<=',$on_date);
+		$allaccounts_with_todays_duedate->_dsql()->group('AccountNumber');
+
+		if($test_account) $allaccounts_with_todays_duedate->addCondition('id',$test_account->id);
+
+		foreach ($allaccounts_with_todays_duedate as $junk) {
+			$allaccounts_with_todays_duedate->reAdjustPaidValue($on_date);
+		}
+
+
+
+		// throw $this->exception('Put Paid if duedate is on $_on_date', 'ValidityCheck')->setField('FieldName');
 	}
 
 	function yearly($branch, $on_date=null,$test_account=null){
@@ -66,7 +94,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$fy = $this->api->getFinancialYear($on_date);
 
 		$all_accounts_paid_in_this_year = $this->add('Model_Active_Account_Recurring');
-		$premium_join = $all_accounts_paid_in_this_year->join('premiums','account_id');
+		$premium_join = $all_accounts_paid_in_this_year->join('premiums.account_id');
 		$premium_join->addField('PaidOn');
 
 

@@ -25,7 +25,7 @@ class Model_Account extends Model_Table {
 		//New Fields added//
 		$this->addField('account_type');
 		$this->addField('AccountNumber')->mandatory(true);
-		$this->addField('AccountDisplayName')->caption('Account Name');
+		$this->addField('AccountDisplayName')->caption('Account Displ. Name');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true);
 
 		$this->addField('ModeOfOperation')->setValueList(array('Self'=>'Self','Joint'=>'Joint'))->defaultValue('Self')->caption('Operation Mode');

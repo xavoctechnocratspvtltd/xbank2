@@ -62,7 +62,7 @@ class page_accounts_statement extends Page {
 		$transactions->add('Controller_Acl');
 		$transactions->setOrder('created_at');
 		$grid->setModel($transactions,array('voucher_no','created_at','Narration','amountDr','amountCr'));
-		// $grid->addPaginator(100);
+		// $grid->addPaginator(10);
 
 		$grid->addSno();
 

@@ -210,15 +210,18 @@ class Model_Branch extends Model_Table {
 				if($this->is_MonthEndDate($on_date)){
 					$this->api->markProgress('monthly',$s++,$st,null);
 					$schemes->monthly($this, $on_date,$test_account);
+					$this->ref('Closing')->tryLoadAny()->set('monthly',$on_date)->save();
 				}
 				
 				if($this->is_HalfYearEnding($on_date,$test_account)){
 					$this->api->markProgress('halfyearly',$s++,$st,null);
 					$schemes->halfYearly($this, $on_date,$test_account);
+					$this->ref('Closing')->tryLoadAny()->set('halfyearly',$on_date)->save();
 				}
 				
 				if($this->is_YearEnd($on_date))
 					$schemes->yearly($this, $on_date,$test_account);
+					$this->ref('Closing')->tryLoadAny()->set('yearly',$on_date)->save();
 			}
 		}
 

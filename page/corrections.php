@@ -377,6 +377,7 @@ class page_corrections extends Page {
     }
 
     function savingInterestTillNow($on_date=null){
+        if(!$on_date) $on_date = $this->api->today;
     	$sa_update=$this->add('Model_Account_SavingAndCurrent');
     	$sa_update->dsql()->set('CurrentInterest',0)->set('LastCurrentInterestUpdatedAt','2014-03-31')->update();
 
@@ -392,7 +393,7 @@ class page_corrections extends Page {
 	    	$last_tr=null;
 	    	foreach ($transaction_row->getRows() as $tr) {
 	    		$sa['CurrentInterest'] = $sa['CurrentInterest'] + $sa->getSavingInterest($tr['created_at']);
-				$sa['LastCurrentInterestUpdatedAt'] = $on_date;	
+				$sa['LastCurrentInterestUpdatedAt'] = $tr['created_at'];	
 				$last_tr = $tr;
 	    	}
 
@@ -455,7 +456,7 @@ class page_corrections extends Page {
 	    	$last_tr=null;
 	    	foreach ($transaction_row->getRows() as $tr) {
 	    		$cc['CurrentInterest'] = $cc['CurrentInterest'] + $cc->getCCInterest($tr['created_at']);
-				$cc['LastCurrentInterestUpdatedAt'] = $on_date;	
+				$cc['LastCurrentInterestUpdatedAt'] = $tr['created_at'];	
 				$last_tr = $tr;
 	    	}
 

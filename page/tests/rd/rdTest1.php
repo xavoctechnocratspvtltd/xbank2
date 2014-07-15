@@ -40,10 +40,10 @@ class page_tests_rd_rdTest1 extends Page_Tester {
     // Account Flow
     // 'date'  => array(amount,'cheque_no'=>cheque_no,'from_branch_code'=>CODE)
     public $account_flow=array(
-            'open'=>'2013-12-31',
+            'open'=>'2013-12-05',
             'flow'=>array(
                     // NO two transactions on same date .. array key will get replaced
-                    '2013-12-31'=> array(500),
+                    '2013-12-08'=> array(500),
                     '2014-01-12'=> array(500,'cheque_no'=>132514),
                     '2014-03-08'=> array(1000,'from_branch_code'=>'JHD'),
                     '2014-05-28'=> array(500),
@@ -56,7 +56,7 @@ class page_tests_rd_rdTest1 extends Page_Tester {
                     '2015-12-30'=> array(500),
                 ),
             'test_till'=>'2016-01-02',
-            // 'test_till'=>'2014-05-29'
+            // 'test_till'=>'2014-02-29'
         );
     
     // Paid On values => 1,2,2,4,4,5,

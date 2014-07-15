@@ -155,7 +155,7 @@ class Model_Account_Recurring extends Model_Account{
 		foreach ($premiums_to_affect as $junk) {
 			$paid_premiums_before_date = $this->add('Model_Premium');
 			$paid_premiums_before_date->addCondition('account_id',$premiums_to_affect['account_id']);
-			$paid_premiums_before_date->addCondition('PaidOn','<=',$on_date);
+			$paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
 			$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);
 
 			$premiums_to_affect['Paid'] = $paid_premiums_before_date->count()->getOne();

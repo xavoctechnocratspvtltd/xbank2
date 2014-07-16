@@ -8,18 +8,19 @@ class Model_Member extends Model_Table {
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.');
 		$this->addField('name')->mandatory(true);
-		$this->addField('CurrentAddress');
+		$this->addField('CurrentAddress')->type('text')->mandatory(true);
 		$this->addField('landmark');
 		$this->addField('tehsil');
 		$this->addField('district');
-		$this->addField('city');
+		$this->addField('city')->mandatory(true);
 		$this->addField('pin_code');
-		$this->addField('state');
-		$this->addField('FatherName')->caption('Father / Husband Name');
-		$this->addField('Cast');
-		$this->addField('PermanentAddress')->type('text');
+		$this->addField('state')->mandatory(true);
+		$this->addField('FatherName')->caption('Father / Husband Name')->mandatory(true);
+		$this->addField('Cast')->mandatory(true);
+		$this->addField('PermanentAddress')->type('text')->hint('Leave Blank if same as Current Address');
 		$this->addField('Occupation')->enum(array('Business','Service','Self-Employed','Student','House Wife'));
-		$this->addField('DOB')->type('date');
+		$this->addField('DOB')->type('date')->mandatory(true);
+		$this->addField('PhoneNos')->mandatory(true);
 		// $this->addField('Age');
 		$this->addField('Witness1Name');
 		$this->addField('Witness1FatherName');
@@ -29,7 +30,6 @@ class Model_Member extends Model_Table {
 		$this->addField('Witness2Address');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->group('system');
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->group('system');
-		$this->addField('PhoneNos');
 		$this->addField('IsMinor')->type('boolean');
 		$this->addField('MinorDOB');
 		$this->addField('ParentName');
@@ -48,6 +48,8 @@ class Model_Member extends Model_Table {
 		$this->addExpression('age')->set(function($m,$q){
 			return "25";
 		});
+
+		$this->addExpression('search_string')->set("CONCAT(name,' ',FatherName,' ',PanNo)");
 
 
 		$this->hasMany('JointMember','member_id');
@@ -97,6 +99,15 @@ class Model_Member extends Model_Table {
 
 			$share_account = $this->add('Model_Account');
 			$share_account->createNewAccount($this->id, $share_capital_scheme->id ,$branch, $new_sm_number ,null,null,$on_date);
+
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_SHARE_ACCOUNT_OPEN,$branch, $on_date, "Share Account Opened for member ". $name, null, array('reference_account_id'=>$this->id));
+			
+			$transaction->addDebitAccount($this->ref('branch_id')->get('Code').SP.CASH_ACCOUNT, $shareValue);
+			$transaction->addCreditAccount($share_account, $shareValue);
+			
+			$transaction->execute();
+
 		}
 
 	}

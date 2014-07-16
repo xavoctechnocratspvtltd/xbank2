@@ -18,7 +18,37 @@ class page_members extends Page {
 			
 			$new_member_model = $crud->add('Model_Member');
 			
-			$new_member_model->createNewMember($form['name'], $admissionFee=10, $shareValue=100, $branch=null, $other_values=$form->getAllFields(),$form,$on_date=null);
+			$shareValue=0;
+			if($form['open_share_account']) {
+				if(!$form['share_account_amount'])
+					$form->displayError('share_account_amount','Must Be filled');
+
+				if($form['share_account_amount'] % 100 != 0)
+					$form->displayError('share_account_amount','Must be in Multiple of 100 only');
+
+				$shareValue = $form['share_account_amount'];
+			}
+
+			if($form['IsMinor']){
+				
+				$field=false;
+				
+				if(!$form['MinorDOB']) $field='MinorDOB';
+				if(!$form['ParentName']) $field= 'ParentName';
+				if(!$form['RelationWithParent']) $field = 'RelationWithParent'; 
+				if(!$form['ParentAddress']) $field= 'ParentAddress';
+				
+				if($field) $form->displayError($field,$field.' is Mandatory');
+			
+			}
+
+
+			if(!$form['FilledForm60'] and !$form['PanNo'])
+				$form->displayError('PanNo','PanNo is must');
+
+			
+
+			$new_member_model->createNewMember($form['name'], $admissionFee=10, $shareValue, $branch=null, $other_values=$form->getAllFields(),$form,$on_date=null);
 			return true;
 		});
 
@@ -38,13 +68,15 @@ class page_members extends Page {
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
 		    $crud->form->addField('CheckBox','open_share_account');
+		    $crud->form->addField('Number','share_account_amount');
 		}
 
 
 		$crud->setModel($member_model);
 		if(!$crud->isEditing()) {
 			$g=$crud->grid;
-			$g->addQuickSearch(array('name'));
+			$g->addQuickSearch(array('name','CurrentAddress','PermanentAddress','FatherName','PhoneNos','PanNo'));
+			// $g->addQuickSearch(array('search_string'));
 			$g->addMethod('format_removeEdit',function($grid,$field){
 				if($grid->model['name'] == $grid->model->ref('branch_id')->get('Code').SP.'Default')
 					$grid->current_row_html[$field]='';
@@ -76,10 +108,11 @@ class page_members extends Page {
 
 		if($crud->isEditing('add')){
 		    $o->move('open_share_account','before','Nominee');
+		    $o->move('share_account_amount','before','Nominee');
 			$open_share_account_field = $crud->form->getElement('open_share_account');
 			$open_share_account_field->js(true)->univ()->bindConditionalShow(array(
 				''=>array(''),
-				'*'=>array('Nominee','RelationWithNominee','NomineeAge')
+				'*'=>array('share_account_amount','Nominee','RelationWithNominee','NomineeAge')
 				),'div .atk-form-row');
 			$o->now();
 		}

@@ -146,7 +146,7 @@ class page_corrections extends Page {
 				array('premiums','accounts_id','account_id'),
 			);
 
-		$this->api->markProgress('Rename_Fields',0,'...',count($renameFields));		
+		$this->api->markProgress('Rename_Fields',0,'...',count($renameFields));
 		$i=1;
 		foreach ($renameFields as $dtl) {
 			$this->renameField($dtl[0],$dtl[1],$dtl[2]);
@@ -162,6 +162,7 @@ class page_corrections extends Page {
 				array('members','district','string'),
 				array('members','city','string'),
 				array('members','pin_code','string'),
+				array('members','doc_image_id','int'),
 				array('members','state','string'),
 				array('staffs','name','string'),
 				array('dealers','loan_panelty_per_day','int'),
@@ -175,6 +176,7 @@ class page_corrections extends Page {
 				array('premiums','`PaneltyPosted`','money'),
 				array('accounts','`MaturityToAccount_id`','int'),
 				array('accounts','`related_account_id`','int'),
+				array('accounts','`doc_image_id`','int'),
 			);
 		$this->api->markProgress('New_Field',0,'...',count($new_fields));
 		$i=1;

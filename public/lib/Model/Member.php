@@ -41,6 +41,8 @@ class Model_Member extends Model_Table {
 		$this->addField('RelationWithNominee');
 		$this->addField('NomineeAge');
 
+		$this->addField('filestore/Field_Image','doc_image_id')->type('image');
+
 		// $this->addField('is_customer')->type('boolean')->mandatory(true);
 		// $this->addField('is_member')->type('boolean')->mandatory(true)->defaultValue(true);
 		$this->addField('is_agent')->type('boolean')->mandatory(true)->defaultValue(false)->group('system');

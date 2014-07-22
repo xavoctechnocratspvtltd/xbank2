@@ -6,7 +6,7 @@ class Model_Member extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
-		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.');
+		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.')->mandatory(true);
 		$this->addField('name')->mandatory(true);
 		$this->addField('CurrentAddress')->type('text')->mandatory(true);
 		$this->addField('landmark');
@@ -31,7 +31,9 @@ class Model_Member extends Model_Table {
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->group('system');
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->group('system');
 		$this->addField('IsMinor')->type('boolean');
-		$this->addField('MinorDOB');
+		$this->addField('is_active')->type('boolean')->defaultValue(true);
+		$this->addField('is_defaulter')->type('boolean')->defaultValue(false);
+		$this->addField('MinorDOB')->type('date');
 		$this->addField('ParentName');
 		$this->addField('RelationWithParent');
 		$this->addField('ParentAddress');
@@ -41,7 +43,7 @@ class Model_Member extends Model_Table {
 		$this->addField('RelationWithNominee');
 		$this->addField('NomineeAge');
 
-		$this->addField('filestore/Field_Image','doc_image_id')->type('image');
+		$this->add('filestore/Field_Image','doc_image_id')->type('image')->mandatory(true);
 
 		// $this->addField('is_customer')->type('boolean')->mandatory(true);
 		// $this->addField('is_member')->type('boolean')->mandatory(true)->defaultValue(true);
@@ -56,23 +58,50 @@ class Model_Member extends Model_Table {
 
 		$this->hasMany('JointMember','member_id');
 		$this->hasMany('Account','member_id');
+		$this->hasMany('Agent','member_id');
+		$this->hasMany('AccountGuarantor','member_id');
 
 		$this->addHook('beforeSave',$this);
+		$this->addHook('beforeDelete',$this);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
+	function beforeDelete(){
+
+		if($this->ref('JointMember')->count()->getOne()>0)
+			throw $this->exception('Can not delete this Member, It is joined in another account');
+		if($this->ref('Account')->count()->getOne()>0)
+			throw $this->exception('Can not delete this Member, It contains Accounts');
+		if($this->ref('Agent')->count()->getOne()>0)
+			throw $this->exception('Can not delete this Member, This Member is an Agent');
+		if($this->ref('AccountGuarantor')->count()->getOne()>0)
+			throw $this->exception('Can not delete this Member, This Member is Guarantor');
+
+	}
+
 	function beforeSave(){
-		if(!$this['title'])
-			throw $this->exception('Please Select Title', 'ValidityCheck')->setField('title');
-		if(!$this['Occupation'])
-			throw $this->exception('Please Select Occupation', 'ValidityCheck')->setField('Occupation');
+		// if(!$this['title'])
+		// 	throw $this->exception('Please Select Title', 'ValidityCheck')->setField('title');
+		// if(!$this['Occupation'])
+		// 	throw $this->exception('Please Select Occupation', 'ValidityCheck')->setField('Occupation');
 
 	}
 
 	function createNewMember($name, $admissionFee, $shareValue, $branch=null, $other_values=array(),$form=null,$on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
+
+		// Check for adult member
+		$date = new MyDateTime($this->api->today);
+		$date->sub(new DateInterval('P216M'));
+
+		if(strtotime($other_values['DOB']) > strtotime($date->format('Y-m-d')))
+			throw $this->exception('Member Must Be Adult', 'ValidityCheck')->setField('DOB');
+
+		// Check For Proper Mobile Number
+		if(strlen($other_values['PhoneNos'])<10)
+			throw $this->exception(' Please Enter correct No'.strlen($other_values['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
 
 
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Member');
@@ -124,22 +153,18 @@ class Model_Member extends Model_Table {
 		// throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
 	}
 
-	function delete($forced=false){
-		$stop_for_many=array('JointMember','Account');
-
-		if(!$forced){
-			if($this->ref('Account')->count()->getOne() > 0)
-				throw $this->exception('Member Contains Accounts');
-			if($this->ref('JointMember')->count()->getOne() > 0)
-				throw $this->exception('Member is Joint with other accounts');
-		}
+	function deleteForced(){
 
 		foreach ($a=$this->ref('Account') as $a_array) {
-			$a->delete($forced);
+			$a->delete();
 		}
 
 		foreach($jm=$this->ref('JointMember') as $jm_array){
-			$jm->delete($forced);
+			$jm->delete();
+		}
+
+		foreach($am=$this->ref('Agent') as $am_array){
+			$am->delete();
 		}
 
 		parent::delete();
@@ -147,6 +172,23 @@ class Model_Member extends Model_Table {
 
 	function hasPanNo(){
 		return (strlen($this['PanNo'])==10);
+	}
+
+
+	function toggleActiveStatus(){
+		if(!$this->loaded())
+			throw $this->exception('Please call on loaded object');
+		$this['is_active']=!$this['is_active'];
+		$this->save();
+
+	}
+
+	function toggleDefaulterStatus(){
+		if(!$this->loaded())
+			throw $this->exception('Please call on loaded object');
+		$this['is_defaulter']=!$this['is_defaulter'];
+		$this->save();
+
 	}
 
 }

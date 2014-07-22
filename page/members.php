@@ -55,7 +55,12 @@ class page_members extends Page {
 		if($crud->isEditing()){
 			$member_model->getElement('created_at')->system(true);
 			$member_model->getElement('updated_at')->system(true);
+			$member_model->getElement('Nominee')->system(true);
+			$member_model->getElement('NomineeAge')->system(true);
+			$member_model->getElement('RelationWithNominee')->system(true);
 			$member_model->getElement('is_agent')->system(true);
+			$member_model->getElement('is_active')->system(true);
+			$member_model->getElement('is_defaulter')->system(true);
 		}
 
 		if($crud->isEditing('edit')){
@@ -67,14 +72,31 @@ class page_members extends Page {
 		
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
-		    $crud->form->addField('CheckBox','open_share_account');
-		    $crud->form->addField('Number','share_account_amount');
+		    // $crud->form->addField('CheckBox','open_share_account');
+		    // $crud->form->addField('Number','share_account_amount');
 		}
 
 
-		$crud->setModel($member_model);
+		$crud->setModel($member_model,array());
+
+
 		if(!$crud->isEditing()) {
 			$g=$crud->grid;
+
+			if($_GET['active']){
+				$member_model=$this->add('Model_Member');
+				$member_model->load($_GET['active']);
+				$member_model->toggleActiveStatus();
+				$g->js()->reload()->execute();
+			}
+
+			if($_GET['defaulter']){
+				$member_model=$this->add('Model_Member');
+				$member_model->load($_GET['defaulter']);
+				$member_model->toggleDefaulterStatus();
+				$g->js()->reload()->execute();
+			}
+
 			$g->addQuickSearch(array('name','CurrentAddress','PermanentAddress','FatherName','PhoneNos','PanNo'));
 			// $g->addQuickSearch(array('search_string'));
 			$g->addMethod('format_removeEdit',function($grid,$field){
@@ -85,7 +107,13 @@ class page_members extends Page {
 				if($grid->model['name'] == $grid->model->ref('branch_id')->get('Code').SP.'Default')
 					$grid->current_row_html[$field]='';
 			});
+
+			
+
+			$g->addColumn('button','active','Active/DeActive');
+			$g->addColumn('button','defaulter','Defaulter/Normal');
 			$g->addFormatter('edit','removeEdit');
+			// $g->addFormatter('active','activeStatus');
 			$g->addFormatter('delete','removeDelete');
 			$g->addPaginator(10);
 
@@ -107,13 +135,13 @@ class page_members extends Page {
 		}
 
 		if($crud->isEditing('add')){
-		    $o->move('open_share_account','before','Nominee');
-		    $o->move('share_account_amount','before','Nominee');
-			$open_share_account_field = $crud->form->getElement('open_share_account');
-			$open_share_account_field->js(true)->univ()->bindConditionalShow(array(
-				''=>array(''),
-				'*'=>array('share_account_amount','Nominee','RelationWithNominee','NomineeAge')
-				),'div .atk-form-row');
+		    // $o->move('open_share_account','before','Nominee');
+		    // $o->move('share_account_amount','before','Nominee');
+			// $open_share_account_field = $crud->form->getElement('open_share_account');
+			// $open_share_account_field->js(true)->univ()->bindConditionalShow(array(
+			// 	''=>array(''),
+			// 	'*'=>array('share_account_amount','Nominee','RelationWithNominee','NomineeAge')
+			// 	),'div .atk-form-row');
 			$o->now();
 		}
 	}

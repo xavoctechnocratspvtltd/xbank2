@@ -5,6 +5,7 @@ class Model_AccountGuarantor extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Account','account_id');
+		$this->hasOne('Member','member_id');
 
 		$this->addField('name');
 		$this->addField('father_husband_name');

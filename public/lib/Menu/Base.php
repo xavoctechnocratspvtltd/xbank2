@@ -14,6 +14,7 @@ class Menu_Base extends Menu {
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$books = 	$this->addMenuItem('books','Books');
 		$deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
+		$general_reports = 	$this->addMenuItem('reports_general','General Reports');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
 
 		$this->addMenuItem('logout','Logout');
@@ -24,6 +25,7 @@ class Menu_Base extends Menu {
 		$books_sub_menus_popover = $this->add('View_Popover');
 		$transactions_sub_menus_popover = $this->add('View_Popover');
 		$deposit_reports_sub_menus_popover = $this->add('View_Popover');
+		$general_reports_sub_menus_popover = $this->add('View_Popover');
 		$utilities_sub_menus_popover = $this->add('View_Popover');
 		
 		// Sub Menus
@@ -58,6 +60,11 @@ class Menu_Base extends Menu {
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_rdCommissionAndTds','RD Comm & TDS');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');
 		$deposit_reports->js('click',$deposit_reports_sub_menus_popover->showJS());
+
+		$general_reports_sub_menus = $general_reports_sub_menus_popover->add('Menu_Vertical');
+		$general_reports_sub_menus->addMenuItem('reports_general_member','Member');
+		$general_reports->js('click',$general_reports_sub_menus_popover->showJS());
+
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');
 		$utilities_sub_menus->addMenuItem('documents','Documents Management');

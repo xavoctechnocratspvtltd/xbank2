@@ -133,7 +133,7 @@ class page_corrections extends Page {
 				array('documents','Name','name'),
 				array('members','Name','name'),
 				array('schemes','Name','name'),
-				array('schemes','LoanType','type'),
+				// array('schemes','LoanType','type'),
 				array('staffs','Name','name'),
 				array('transaction_types','Transaction','name'), //CHECK
 				array('accounts','schemes_id','scheme_id'),
@@ -161,6 +161,7 @@ class page_corrections extends Page {
 				array('members','IsCustomer'),
 				array('members','IsMember'),
 				array('schemes','branch_id'),
+				array('schemes','LoanType'),
 				array('members','collector_id'),
 				array('members','Age'),
 				array('members','ParentAddress'),
@@ -199,6 +200,7 @@ class page_corrections extends Page {
 				array('accounts','`MaturityToAccount_id`','int'),
 				array('accounts','`related_account_id`','int'),
 				array('accounts','`doc_image_id`','int'),
+				array('schemes','`type`','string'),
 			);
 		$this->api->markProgress('New_Field',0,'...',count($new_fields));
 		$i=1;

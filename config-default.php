@@ -161,6 +161,8 @@ define('FIELD_TEMP_PENALTY',                    'CurrentInterest');
 
 define('SIGNATURE_FILE_PATH',                   '/administrator/components/com_xbank/signatures/' );
 
+define('LOAN_AGAINST_DEPOSIT','Loan Againest Deposit');
+
 define('LOAN_TYPES','Two Wheeler Loan,Auto Loan,Personal Loan,Loan Againest Deposit,Home Loan,Mortgage Loan,Agriculture Loan,Education Loan,Gold Loan,Other');
 
 /* Define Codes for various accounts*/
@@ -232,4 +234,3 @@ define("FLAT_RATE", "Flat");
 
 define("BALANCE_SHEET", true);
 define("MIN_BALANCE_CHARGE", 20);
-

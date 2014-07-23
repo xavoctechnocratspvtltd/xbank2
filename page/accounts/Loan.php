@@ -23,10 +23,7 @@ class page_accounts_Loan extends Page {
 				$extra_info['loan_from_account'] = $form['loan_from_account'];
 				$crud->form->model['extra_info'] = json_encode($extra_info);
 				return;
-			}
-			
-			if($form['LoanAgSecurity'] AND !$form['LoanAgainstAccount_id'])
-				$form->displayError('LoanAgainstAccount','Please Specify Loan Against Account Number');
+			}			
 
 			$loan_account_model = $crud->add('Model_Account_Loan');
 			$loan_account_model->createNewPendingAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
@@ -69,6 +66,8 @@ class page_accounts_Loan extends Page {
 		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id','doc_image_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer','doc_image'));
 
 		if($crud->isEditing()){
+			//TODO 
+			// $crud->form->getElement('LoanAgainstAccount_id')->model->addCondition('ActiveStatus',true)->addCondition('MaturedStatus',false);
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
             $loan_from_account = json_decode($crud->form->model['extra_info'],true);
 			$loan_from_account = $loan_from_account['loan_from_account'];
@@ -104,7 +103,7 @@ class page_accounts_Loan extends Page {
 	function page_accounts(){
 
 		
-		$crud=$this->add('xCRUD',array('allow_add'=>false));
+		$crud=$this->add('xCRUD',array('allow_add'=>false,'allow_edit'=>false));
 		$account_loan_model = $this->add('Model_Account_Loan');
 
 		$account_loan_model->add('Controller_Acl');
@@ -152,7 +151,8 @@ class page_accounts_Loan extends Page {
 		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer'));
 
 		if($crud->isEditing()){
-			$crud->form->getElement('account_type')->setEmptyText('Please Select');
+			if($crud->form->hasElement('account_type')) // Removed in editing hook so may not have here
+				$crud->form->getElement('account_type')->setEmptyText('Please Select');
 		}
 
 		if($crud->isEditing('add')){
@@ -174,6 +174,7 @@ class page_accounts_Loan extends Page {
 		if($crud->grid){
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','edit_document');
+			$crud->grid->addColumn('expander','edit');
 		}
 
 	}

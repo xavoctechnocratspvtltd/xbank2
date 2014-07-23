@@ -14,6 +14,7 @@ class Model_Account_Loan extends Model_Account{
 		$this->getElement('Amount')->caption('Loan Amount');
 		$this->getElement('CurrentInterest')->caption('Panelty');
 		$this->getElement('account_type')->enum(explode(",",LOAN_TYPES))->mandatory(true);
+		$this->getElement('doc_image_id')->mandatory(false);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
@@ -24,8 +25,14 @@ class Model_Account_Loan extends Model_Account{
 		});		
 
 		$this->addHook('beforeSave',$this);
+		$this->addHook('editing',$this);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function editing(){
+		$this->getELement('LoanInsurranceDate')->system(true);
+		$this->getELement('LoanAgainstAccount_id')->system(true);
 	}
 
 	function beforeSave(){

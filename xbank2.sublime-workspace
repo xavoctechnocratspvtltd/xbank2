@@ -3,6 +3,46 @@
 	{
 		"selected_items":
 		[
+			[
+				"Mode",
+				"Model_Account"
+			],
+			[
+				"mem",
+				"member_model"
+			],
+			[
+				"ex",
+				"extra_fields"
+			],
+			[
+				"for",
+				"foreach	foreach …"
+			],
+			[
+				"member",
+				"members_id"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"Age",
+				"Agent"
+			],
+			[
+				"th",
+				"this"
+			],
+			[
+				"bool",
+				"boolean"
+			],
+			[
+				"other",
+				"other_values"
+			]
 		]
 	},
 	"buffers":
@@ -40,39 +80,61 @@
 	},
 	"file_history":
 	[
+		"/var/www/xbank2/public/lib/Model/Member.php",
+		"/var/www/xbank2/public/lib/Model/AccountGuarantor.php",
+		"/var/www/xbank2/public/lib/Model/Account.php",
+		"/var/www/xbank2/public/lib/Model/Account/Loan.php",
+		"/var/www/xbank2/public/lib/Frontend.php",
+		"/var/www/xbank2/page/members.php",
+		"/var/www/xbank2/page/reports/general/member.php",
+		"/var/www/xbank2/page/corrections.php",
+		"/var/www/xbank2/lib/Page.php",
+		"/var/www/xbank2/public/lib/Model/PendingAccount.php",
+		"/var/www/xbank2/lib/P.php",
+		"/var/www/xbank/atk/page/employee/report.php",
+		"/var/www/xbank2/README.md",
+		"/var/www/xbank2/lib/MVCForm.php",
+		"/var/www/xbank2/atk4-addons/mvc/ModelException.php",
+		"/var/www/xbank2/public/lib/Menu/Base.php",
+		"/var/www/xbank2/lib/Model.php",
+		"/var/www/xbank2/public/atk4/js/jquery-2.0.3.min.js",
+		"/var/www/xbank2/testfolder/fd 2.txt",
+		"/var/www/xbank2/lib/Grid/Advanced.php",
+		"/var/www/xbank2/lib/Grid.php",
+		"/var/www/xbank/administrator/templates/khepri/css/general_rtl.css",
+		"/var/www/xbank2/atk4-addons/grid/lib/Controller/Grid/Format/inline.php",
+		"/var/www/xbank2/public/lib/Grid/AccountStatement.php",
+		"/var/www/xbank2/templates/grid.jade",
+		"/var/www/xbank2/tools/atk4-page.sublime-snippet",
+		"/var/www/xbank2/public/atk4/js/atk4_univ_basic.js",
+		"/var/www/xbank2/public/atk4/js/ui.atk4_checkboxes.js",
+		"/var/www/xbank/administrator/components/com_xbank/controllers/report_2_cont.php",
+		"/var/www/xbank2/public/lib/MyDateTime.php",
+		"/var/www/xbank/libraries/geshi/geshi/mysql.php",
+		"/var/www/xbank2/lib/Controller/PageManager.php",
+		"/var/www/xbank2/public/lib/Model/Account/CC.php",
+		"/var/www/xbank2/config-default.php",
+		"/var/www/xbank/configuration.php",
 		"/var/www/xbank2/page/accounts/Loan.php",
 		"/var/www/xbank2/page/tests/loan/050AccountLoan1.php",
 		"/var/www/xbank2/page/accounts.php",
 		"/var/www/xbank2/page/tests/acc_template_case.php",
 		"/var/www/xbank2/templates/page.jade",
-		"/var/www/xbank2/lib/Page.php",
-		"/var/www/xbank2/public/lib/Model/PendingAccount.php",
-		"/var/www/xbank/administrator/components/com_xbank/controllers/report_2_cont.php",
-		"/var/www/xbank2/testfolder/fd 2.txt",
 		"/var/www/xbank2/page/tests/025AccountFunctions.php",
-		"/var/www/xbank2/public/atk4/js/jquery-2.0.3.min.js",
-		"/var/www/xbank2/public/lib/Model/Account.php",
-		"/var/www/xbank2/public/lib/Model/Member.php",
-		"/var/www/xbank2/lib/Model.php",
 		"/var/www/xbank2/lib/View/ModelDetails.php",
 		"/var/www/xbank/administrator/modules/mod_online/mod_online.php",
-		"/var/www/xbank2/lib/MVCForm.php",
 		"/var/www/xbank2/.gitignore",
-		"/var/www/xbank2/config-default.php",
-		"/var/www/xbank2/page/corrections.php",
-		"/var/www/xbank/configuration.php",
 		"/var/www/xbank2/CONTRIBUTING",
 		"/var/www/xbank2/tools/atk4-model.sublime-snippet",
 		"/var/www/xbank2/atk4-addons/misc/templates/view/model.html",
 		"/var/www/xbank2/atk4-addons/misc/templates/view/model_core.html",
 		"/var/www/xbank2/atk4-addons/dynamic_model/lib/Controller/ModelDumper.php",
-		"/var/www/xbank2/lib/P.php",
 		"/var/www/xbank/plugins/editors/tinymce/jscripts/tiny_mce/plugins/fullscreen/css/page.css",
 		"/home/gowrav/Downloads/suhosin-master/suhosin.c"
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 31.0
 	},
 	"find_in_files":
 	{
@@ -86,6 +148,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"account_model",
+			"		\n",
+			"ACCOUNT_TY"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -110,11 +175,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 26.0
+		"height": 31.0
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 39.0
 	},
 	"layout":
 	{
@@ -146,7 +211,7 @@
 	"project": "xbank2.sublime-project",
 	"replace":
 	{
-		"height": 48.0
+		"height": 58.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -155,16 +220,68 @@
 		"selected_items":
 		[
 			[
-				"2pageaccounloan",
-				"xbank2/page/accounts/Loan.php"
+				"pagecorrec",
+				"xbank2/page/corrections.php"
+			],
+			[
+				"pagemem",
+				"xbank2/page/members.php"
+			],
+			[
+				"reportm",
+				"xbank2/page/reports/general/member.php"
+			],
+			[
+				"2modelmember",
+				"xbank2/public/lib/Model/Member.php"
+			],
+			[
+				"gridadvance",
+				"xbank2/lib/Grid/Advanced.php"
+			],
+			[
+				"gridadva",
+				"xbank2/lib/Grid/Advanced.php"
+			],
+			[
+				"gridadvace",
+				"xbank2/lib/Grid/Advanced.php"
+			],
+			[
+				"2publifront",
+				"xbank2/public/lib/Frontend.php"
+			],
+			[
+				"mydatetime",
+				"xbank2/public/lib/MyDateTime.php"
+			],
+			[
+				"2modelaccountloan",
+				"xbank2/public/lib/Model/Account/Loan.php"
+			],
+			[
+				"2membe",
+				"xbank2/public/lib/Model/Member.php"
 			],
 			[
 				"2modelaccount",
 				"xbank2/public/lib/Model/Account.php"
 			],
 			[
-				"2modelmember",
-				"xbank2/public/lib/Model/Member.php"
+				"pagemembers",
+				"xbank2/page/members.php"
+			],
+			[
+				"configdefa",
+				"xbank2/config-default.php"
+			],
+			[
+				"configde",
+				"xbank2/config-default.php"
+			],
+			[
+				"2pageaccounloan",
+				"xbank2/page/accounts/Loan.php"
 			],
 			[
 				"confide",
@@ -173,21 +290,21 @@
 			[
 				"2modelmem",
 				"xbank2/public/lib/Model/Member.php"
-			],
-			[
-				"pagecorrec",
-				"xbank2/page/corrections.php"
 			]
 		],
 		"width": 0.0
 	},
 	"select_project":
 	{
-		"height": 0.0,
+		"height": 500.0,
 		"selected_items":
 		[
+			[
+				"xsch",
+				"/var/www/xschool/xschool.sublime-project"
+			]
 		],
-		"width": 0.0
+		"width": 380.0
 	},
 	"select_symbol":
 	{

@@ -16,7 +16,7 @@ class Model_Account extends Model_Table {
 		$this->hasOne('Account','MaturityToAccount_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Dealer','dealer_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
 
 		$this->hasOne('Branch','branch_id')->mandatory(true)->defaultValue(@$this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Staff','staff_id')->mandatory(true)->defaultValue(@$this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
@@ -116,6 +116,9 @@ class Model_Account extends Model_Table {
 	function editing_default(){
 		$this->getElement('scheme_id')->system(true);
 		$this->getElement('AccountNumber')->system(true);
+		$this->getElement('account_type')->system(true);
+		$this->getElement('Amount')->system(true);
+		$this->getElement('ModeOfOperation')->system(true);
 	}
 
 	function defaultBeforeSave(){
@@ -179,6 +182,15 @@ class Model_Account extends Model_Table {
 		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Must be Loaded Object of Model_Branch');
 		if(!$created_at) $created_at = $this->api->now;
 		if(!$otherValues) $otherValues=array();
+
+		if($otherValues['account_type']==LOAN_AGAINST_DEPOSIT){
+			if(!$otherValues['LoanAgainstAccount_id'])
+				throw $this->exception('Please Specify Loan Against Account Number', 'ValidityCheck')->setField('LoanAgainstAccount');
+
+		}else{
+			if(!$otherValues['dealer_id'])
+				throw $this->exception('Dealer is Must', 'ValidityCheck')->setField('dealer');
+		}
 
 		$pending_account = $this->add('Model_PendingAccount');
 		$pending_account->allow_any_name = true;
@@ -470,12 +482,7 @@ class Model_Account extends Model_Table {
 		}
 	}
 
-	function delete($forced =false){
-		if($forced===true){
-			$this->prepareDelete(true);
-		}
-		parent::delete($forced);
-	}
+	
 
 	function addAgent($agent, $replace_existing=false){
 		if($this->ref('agent_id')->loaded() and !$replace_existing)
@@ -502,4 +509,13 @@ class Model_Account extends Model_Table {
 		throw $this->exception('Yearly closing function must be in scheme');
 	}
 	
+	function changeMember($member){
+		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+
+	}
+
+	function changeDealer($member){
+		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+
+	}	
 }

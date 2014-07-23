@@ -13,8 +13,10 @@ class Menu_Base extends Menu {
 		
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$books = 	$this->addMenuItem('books','Books');
+		$loan_reports = 	$this->addMenuItem('reports_loan','Loan Reports');
 		$deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
 		$general_reports = 	$this->addMenuItem('reports_general','General Reports');
+		$operations = 	$this->addMenuItem('operations','Operations');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
 
 		$this->addMenuItem('logout','Logout');
@@ -24,8 +26,10 @@ class Menu_Base extends Menu {
 		$account_sub_menu_popover = $this->add('View_Popover');
 		$books_sub_menus_popover = $this->add('View_Popover');
 		$transactions_sub_menus_popover = $this->add('View_Popover');
+		$loan_reports_sub_menus_popover = $this->add('View_Popover');
 		$deposit_reports_sub_menus_popover = $this->add('View_Popover');
 		$general_reports_sub_menus_popover = $this->add('View_Popover');
+		$operations_sub_menus_popover = $this->add('View_Popover');
 		$utilities_sub_menus_popover = $this->add('View_Popover');
 		
 		// Sub Menus
@@ -56,6 +60,10 @@ class Menu_Base extends Menu {
 		$books_sub_menus->addMenuItem('reports_pandl','P & L');
 		$books->js('click',$books_sub_menus_popover->showJS());
 
+		$loan_reports_sub_menus = $loan_reports_sub_menus_popover->add('Menu_Vertical');
+		$loan_reports_sub_menus->addMenuItem('reports_loan_vlemiduelist','VL EMI Due List');
+		$loan_reports->js('click',$loan_reports_sub_menus_popover->showJS());
+
 		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_rdCommissionAndTds','RD Comm & TDS');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');
@@ -65,6 +73,9 @@ class Menu_Base extends Menu {
 		$general_reports_sub_menus->addMenuItem('reports_general_member','Member');
 		$general_reports->js('click',$general_reports_sub_menus_popover->showJS());
 
+		$operations_sub_menus = $operations_sub_menus_popover->add('Menu_Vertical');
+		$operations_sub_menus->addMenuItem('operations_edit','Edit Accounts');
+		$operations->js('click',$operations_sub_menus_popover->showJS());
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');
 		$utilities_sub_menus->addMenuItem('documents','Documents Management');

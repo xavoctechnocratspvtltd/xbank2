@@ -170,17 +170,21 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function defaultBeforeDelete(){
-		foreach ($this->getDefaultAccounts() as $details) {
-			$account = $this->add('Model_Account');
-			$account->addCondition('AccountNumber','like','%'.$details['intermediate_text'].SP.$this['name']);
-			$account->tryLoadAny();
-			if($account->loaded()) throw $this->exception('Scheme Contains Default Accounts, Cannot Delete');
-		}
-
 		$scheme_accounts = $this->add('Model_Account');
 		$scheme_accounts->addCondition('scheme_id',$this->id);
 		$scheme_accounts->tryLoadAny();
 		if($scheme_accounts->loaded()) throw $this->exception('Scheme Contains Accounts created under this, cannot delete');
+		
+		$scheme=$this->add('Model_Scheme_'.$this['SchemeType'])->load($this->id);
+		foreach ($scheme->getDefaultAccounts() as $details) {
+			$account = $this->add('Model_Account');
+			$account->addCondition('AccountNumber','like','%'.$details['intermediate_text'].SP.$this['name']);
+
+			foreach ($account as $junk) {
+					$account->delete();
+			}
+		}
+
 	}
 
 	function getOpeningBalance($on_date=null,$side='both',$forPandL=false,$branch=null) {

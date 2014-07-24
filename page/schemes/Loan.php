@@ -18,7 +18,7 @@ class page_schemes_Loan extends Page{
 
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
-		    // $t=array('Two Wheeler Loan','Auto Loan','Personal Loan','Loan Againest Deposit','Home Loan','Mortgage Loan','Agriculture Loan','Education Loan','Gold Loan','Other');
+		    // $t=array('Two Wheeler Loan','Auto Loan','Personal Loan','Loan Against Deposit','Home Loan','Mortgage Loan','Agriculture Loan','Education Loan','Gold Loan','Other');
 		    // $crud->form->addField('DropDown','loan_type')->setEmptyText('Please select')->setValueList(array_combine($t,$t))->validateNotNull();
 		}
 

@@ -515,7 +515,7 @@ class page_corrections extends Page {
                         IF (
                                 schemes.SchemeType = 'Loan',
                         IF(accounts.LoanAgainstAccount_id is not null,
-                        'Loan Againest Deposit',
+                        'Loan Against Deposit',
                         IF (
                                 LOCATE('pl ', schemes. NAME),
                                 'Personal Loan',

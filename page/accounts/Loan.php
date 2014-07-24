@@ -67,7 +67,12 @@ class page_accounts_Loan extends Page {
 
 		if($crud->isEditing()){
 			//TODO 
-			// $crud->form->getElement('LoanAgainstAccount_id')->model->addCondition('ActiveStatus',true)->addCondition('MaturedStatus',false);
+			$loan_against_account_field = $crud->form->getElement('LoanAgainstAccount_id');
+			$loan_against_account_field->send_other_fields = array($crud->form->getElement('member_id'));
+			if($member_selected = $_GET['o_'.$crud->form->getElement('member_id')->name]){
+				$loan_against_account_field->model->addCondition('member_id',$member_selected);
+			}
+
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
             $loan_from_account = json_decode($crud->form->model['extra_info'],true);
 			$loan_from_account = $loan_from_account['loan_from_account'];
@@ -76,7 +81,7 @@ class page_accounts_Loan extends Page {
 			$f1=$crud->form->getElement('account_type');
 			$f1->js(true)->univ()->bindConditionalShow(array(
 					''=>array(''),
-					'Loan Againest Deposit'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
+					'Loan Against Deposit'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
 					),'div .atk-form-row');
 		}
 
@@ -96,6 +101,7 @@ class page_accounts_Loan extends Page {
 			$crud->grid->js('reload')->reload();
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','edit_pendingDocument');
+			$crud->grid->addColumn('expander','edit_guarantor');
 			$crud->grid->addColumn('expander','action');
 		}
 	}
@@ -160,7 +166,7 @@ class page_accounts_Loan extends Page {
 			$f1=$crud->form->getElement('account_type');
 			$f1->js(true)->univ()->bindConditionalShow(array(
 					''=>array(''),
-					'Loan Againest Deposit'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
+					'Loan Against Deposit'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
 					),'div .atk-form-row');
 
 			$crud->form->add('Order')
@@ -176,6 +182,58 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addColumn('expander','edit_document');
 			$crud->grid->addColumn('expander','edit');
 		}
+
+	}
+
+	function page_pendingAccounts_edit_guarantor(){
+		$this->api->stickyGET('accounts_pending_id');
+		$pending_account = $this->add('Model_PendingAccount');
+		$pending_account->load($_GET['accounts_pending_id']);
+
+		$extra_info = json_decode($pending_account['extra_info'],true);
+		$guarantor_info = isset($extra_info['guarantors'])?$extra_info['guarantors']:array();
+		
+		$form= $this->add('Form');
+		$form->addField('autocomplete/Basic','member')->setModel('Member');
+
+		$form->addSubmit('Add');
+
+		$grid = $this->add('Grid');
+
+		$grid->addColumn('Button','remove');
+
+		if($_GET['remove']){
+
+			for ($i=0; $i < count($guarantor_info); $i++) { 
+				if($guarantor_info[$i]['id'] == $_GET['remove'])
+					unset($guarantor_info[$i]);
+			}
+			$extra_info['guarantors'] = $guarantor_info;
+			$pending_account['extra_info'] = json_encode($extra_info);
+			$pending_account->save();
+			$grid->js()->reload()->execute();
+
+		}
+
+		if($form->isSubmitted()){
+			$found = false;
+			foreach ($guarantor_info as $g) {
+				if($form['member'] == $g['id']) $found=true;
+			}
+			if(!$found)	{
+				$guarantor_info[] = array('id'=>$form['member'],'guarantor'=>$this->add('Model_Member')->load($form['member'])->get('name'));
+			}
+			$extra_info['guarantors'] = $guarantor_info;
+			$pending_account['extra_info'] = json_encode($extra_info);
+			$pending_account->save();
+			$grid->js(null,$form->js()->reload())->reload()->execute();
+
+		}
+
+		$grid->setSource($guarantor_info);
+		$grid->addColumn('id');
+		$grid->addColumn('guarantor');
+
 
 	}
 
@@ -245,11 +303,12 @@ class page_accounts_Loan extends Page {
 				$this->api->db->rollBack();
 				throw $e;
 			}
-			$this->js()->_selector('pending_grid')->trigger('reload')->execute();
+			$this->js()->_selector('.pending_grid')->trigger('reload')->execute();
 		}
 
 		if($reject_btn->isClicked('Are you sure')){
 			$pending_account->reject();
+			$this->js()->_selector('.pending_grid')->trigger('reload')->execute();
 		}
 
 	}

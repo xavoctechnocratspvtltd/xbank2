@@ -16,6 +16,10 @@ class Frontend extends ApiFrontend {
         $this->add('jUI');
 
         $this->pathfinder->addLocation(array(
+            'addons'=>'xbank-addons'
+            ))->setBasePath($this->pathfinder->base_location->base_path);
+
+        $this->pathfinder->addLocation(array(
             'addons'=>'atk4-addons'
             ))->setBasePath($this->pathfinder->base_location->base_path);
 

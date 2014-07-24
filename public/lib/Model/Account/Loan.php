@@ -61,10 +61,19 @@ class Model_Account_Loan extends Model_Account{
 		
 		$this->createProcessingFeeTransaction($from_account = $otherValues['loan_from_account'], $on_date);
 		
+		$extra_info = json_decode($otherValues['extra_info'],true);
+
 		if($form)
 			$this->addDocumentDetails($form);
 		else
-			$this->addDocumentDetailsFromPending(json_decode($otherValues['extra_info'],true));
+			$this->addDocumentDetailsFromPending($extra_info);
+
+		if(isset($extra_info['guarantors'])){
+			$guarantors = $extra_info['guarantors'];
+			foreach ($guarantors as $id => $name) {
+				$this->addGuarantor($id);
+			}
+		}
 		
 		$this->createPremiums();
 	}
@@ -97,6 +106,14 @@ class Model_Account_Loan extends Model_Account{
 		 	if($form[$this->api->normalizeName($documents['name'])])
 		 		$this->updateDocument($documents, $form[$this->api->normalizeName($documents['name'].' value')]);
 		}
+	}
+
+	function addGuarantor($member_id){
+		$g=$this->add('Model_AccountGuarantor');
+		$g['account_id'] = $this->id;
+		$g['member_id'] = $member_id;
+		$g->save();
+		return $g;
 	}
 
 

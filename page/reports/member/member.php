@@ -1,6 +1,6 @@
 <?php
 
-class page_reports_general_member extends Page {
+class page_reports_member_member extends Page {
 	public $title='Member Report';
 
 	function page_index(){

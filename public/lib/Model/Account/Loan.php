@@ -70,8 +70,8 @@ class Model_Account_Loan extends Model_Account{
 
 		if(isset($extra_info['guarantors'])){
 			$guarantors = $extra_info['guarantors'];
-			foreach ($guarantors as $id => $name) {
-				$this->addGuarantor($id);
+			foreach ($guarantors as $g) {
+				$this->addGuarantor($g['id']);
 			}
 		}
 		

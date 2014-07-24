@@ -180,6 +180,7 @@ class page_accounts_Loan extends Page {
 		if($crud->grid){
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','edit_document');
+			$crud->grid->addColumn('expander','edit_guarantor');
 			$crud->grid->addColumn('expander','edit');
 		}
 
@@ -319,10 +320,25 @@ class page_accounts_Loan extends Page {
 		$documents=$this->add('Model_DocumentSubmitted');
 		$documents->addCondition('accounts_id',$_GET['accounts_id']);
 
+
 		$crud=$this->add('CRUD',array('allow_add'=>true));
 		$crud->setModel($documents);
 		if($crud->form){
 			$crud->form->getElement('documents_id')->getModel()->addCondition('LoanAccount',true);
 		}
+	}
+
+
+	function page_accounts_edit_guarantor(){
+		$this->api->stickyGET('accounts_id');
+
+
+		$account_guarantors=$this->add('Model_AccountGuarantor');
+		$account_guarantors->addCondition('account_id',$_GET['accounts_id']);
+		$account_guarantors->getElement('member_id')->caption('Guarantor');
+
+		$crud=$this->add('CRUD');
+		$crud->setModel($account_guarantors, array('member_id','member'));
+
 	}
 }

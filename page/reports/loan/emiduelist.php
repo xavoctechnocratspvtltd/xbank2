@@ -20,7 +20,7 @@ class page_reports_loan_emiduelist extends Page {
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
 		foreach ($document as $junk) {
-		$form->addField('CheckBox',$document['name']);
+			$form->addField('CheckBox','doc_'.$document->id, $document['name']);
 		}
 		$form->addSubmit('GET List');
 
@@ -114,10 +114,11 @@ class page_reports_loan_emiduelist extends Page {
 
 			foreach ($document as $junk) {
 				if($_GET['doc_'.$document->id]){
-					$account_model->addExpression($this->api->normalize($document['name']))->set(function($m,$q)use($document){
+					$this->api->stickyGET('doc_'.$document->id);
+					$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($document){
 						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$document->id)->fieldQuery('Description');
 					});
-					$grid_column_array[] = $this->api->normalize($document['name']);
+					$grid_column_array[] = $this->api->normalizeName($document['name']);
 				}
 			}
 

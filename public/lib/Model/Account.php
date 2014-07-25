@@ -101,7 +101,7 @@ class Model_Account extends Model_Table {
 
 		$this->hasMany('JointMember','account_id');
 		$this->hasMany('Premium','account_id');
-		$this->hasMany('DocumentSubmitted','account_id');
+		$this->hasMany('DocumentSubmitted','accounts_id');
 		$this->hasMany('AccountGaurantor','account_id');
 		$this->hasMany('TransactionRow','account_id');
 		$this->hasMany('Account','related_account_id',null,'RelatedAccounts');

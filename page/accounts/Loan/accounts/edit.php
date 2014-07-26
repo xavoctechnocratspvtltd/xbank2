@@ -16,7 +16,7 @@ class page_accounts_Loan_accounts_edit extends Page {
 		$member_form->addSubmit('Change');
 
 		if($member_form->isSubmitted()){
-			$loan_account=$this->add('Model_Loan_Account');
+			$loan_account=$this->add('Model_Account_Loan');
 			$loan_account->load($_GET['accounts_id']);
 
 			$new_member_model=$this->add('Model_ActiveMember');

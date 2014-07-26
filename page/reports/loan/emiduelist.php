@@ -15,7 +15,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collaps'));
+		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','other'=>'Other'));
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
@@ -33,7 +33,7 @@ class page_reports_loan_emiduelist extends Page {
 		$member_join->addField('PermanentAddress');
 
 		$account_model->addCondition('DefaultAC',false);
-		// $account_model->addCondition('MaturedStatus',false); ???
+		// $account_model->addCondition('MaturedStatus',false); //???
 
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q){
 			return $m->refSQL('Premium')
@@ -82,7 +82,6 @@ class page_reports_loan_emiduelist extends Page {
 		});
 		
 
-		$account_model->addCondition('last_premium','>=',$this->api->today);
 		
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -100,13 +99,20 @@ class page_reports_loan_emiduelist extends Page {
 				case 'duelist':
 					$account_model->addCondition('due_premium_count','>',0);
 					$account_model->addCondition('due_premium_count','<=',2);
+					$account_model->addCondition('last_premium','<',$this->api->today);
 					break;
 				case 'hardlist':
 					$account_model->addCondition('due_premium_count','>',2);
 					$account_model->addCondition('due_premium_count','<=',5);
+					$account_model->addCondition('last_premium','<',$this->api->today);
 					break;
 				case 'npa':
 					$account_model->addCondition('due_premium_count','>',5);
+					$account_model->addCondition('last_premium','<',$this->api->today);
+					break;
+
+				case 'time_collapse':
+					$account_model->addCondition('last_premium','>',$this->api->today);
 					break;
 				
 				default:

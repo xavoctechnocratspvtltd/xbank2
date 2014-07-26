@@ -90,6 +90,8 @@ class page_reports_loan_emiduelist extends Page {
 			$this->api->stickyGET('report_type');
 			$this->api->stickyGET('from_date');
 			$this->api->stickyGET('to_date');
+			$this->api->stickyGET('loan_type');
+			$this->api->stickyGET('report_type');
 
 			if($_GET['dealer'])
 				$account_model->addCondition('dealer_id',$_GET['dealer']);
@@ -109,6 +111,20 @@ class page_reports_loan_emiduelist extends Page {
 				
 				default:
 					# code...
+					break;
+			}
+
+			switch ($_GET['loan_type']) {
+				case 'vl':
+					$account_model->addCondition('AccountNumber','like','%vl%');
+					break;
+				case 'pl':
+					$account_model->addCondition('AccountNumber','like','%pl%');
+					break;
+				case 'other':
+					$account_model->addCondition('AccountNumber','not like','%pl%');
+					$account_model->addCondition('AccountNumber','not like','%vl%');
+					// $account_model->_dsql()->where('(accounts.AccountNumber not like "%pl%" and accounts.AccountNumber not like "%pl%")');
 					break;
 			}
 
@@ -132,7 +148,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		if($form->isSubmitted()){
 
-			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan'],'filter'=>1);
+			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

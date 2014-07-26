@@ -7,14 +7,19 @@ class page_reports_loan_emiduelist extends Page {
 
 		$form=$this->add('Form');
 		$grid=$this->add('Grid'); 
+		$till_date = $this->api->today;
 
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
+		$grid->add('H3',null,'grid_buttons')->set('EMI Due List As On '. date('d-M-Y',strtotime($till_date)));
 		$grid_column_array = array('dealer','AccountNumber','created_at','scheme','member_name','FatherName','PhoneNos','PermanentAddress','paid_premium_count','due_premium_count','emi_amount','due_panelty','other_charges','guarantor_name','last_premium');
 
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
 
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
+		// $form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date','As On');
 		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','other'=>'Other'));
 		$document=$this->add('Model_Document');
@@ -38,7 +43,7 @@ class page_reports_loan_emiduelist extends Page {
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q){
 			return $m->refSQL('Premium')
 						->addCondition('PaidOn','<>',null)
-						->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+						// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
 						->addCondition('DueDate','<=',$_GET['to_date']?$m->api->nextDate($_GET['to_date']):$m->api->nextDate($m->api->today))
 						->count();
 		})->sortable(true);
@@ -46,7 +51,7 @@ class page_reports_loan_emiduelist extends Page {
 		$account_model->addExpression('due_premium_count')->set(function($m,$q){
 			return $m->refSQL('Premium')
 						->addCondition('PaidOn',null)
-						->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+						// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
 						->addCondition('DueDate','<=',$_GET['to_date']?$m->api->nextDate($_GET['to_date']):$m->api->nextDate($m->api->today))
 						->count();
 		});
@@ -87,7 +92,7 @@ class page_reports_loan_emiduelist extends Page {
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('dealer');
 			$this->api->stickyGET('report_type');
-			$this->api->stickyGET('from_date');
+			// $this->api->stickyGET('from_date');
 			$this->api->stickyGET('to_date');
 			$this->api->stickyGET('loan_type');
 			$this->api->stickyGET('report_type');
@@ -154,7 +159,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		if($form->isSubmitted()){
 
-			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
+			$send = array('dealer'=>$form['dealer'],/*'from_date'=>$form['from_date']?:0,*/'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

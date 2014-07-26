@@ -17,13 +17,28 @@ class page_reports_loan_dispatch extends Page {
 
 		$account_model=$this->add('Model_Account_Loan');
 
+		$member_join = $account_model->join('members','member_id');
+		$member_join->addField('FatherName');
+		$member_join->addField('CurrentAddress');
+		$member_join->addField('PhoneNos');
+		
+		$account_model->addExpression('no_of_emi')->set(function($m,$q){
+			return $m->refSQL('Premium')->count();
+		});
+
+		$account_model->addExpression('emi')->set(function($m,$q){
+			return $m->refSQL('Premium')->setLimit(1)->fieldQuery('Amount');
+		});
+
 		if($_GET['filter']){
 
 			//TODO
 
 		}
 
-		$grid->setModel($account_model);
+		$account_model->addCondition('DefaultAC',false);
+
+		$grid->setModel($account_model,array('AccountNumber','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','no_of_emi','emi'));
 
 		$grid->addPaginator(50);
 

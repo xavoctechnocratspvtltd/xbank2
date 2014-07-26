@@ -76,9 +76,12 @@ class Menu_Base extends Menu {
 		$loan_reports->js('click',$loan_reports_sub_menus_popover->showJS());
 
 		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
-		$deposit_reports_sub_menus->addMenuItem('reports_deposit_rdCommissionAndTds','RD Comm & TDS');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_emiduelist','EMI Due List');
+		$deposit_reports_sub_menus->addMenuItem('reports_deposit_commission','Commission Report');
+		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdinterestprovision','FD Interest Provision');
+		$deposit_reports_sub_menus->addMenuItem('reports_deposit_duestogive','Dues To Give');
+		$deposit_reports_sub_menus->addMenuItem('reports_deposit_emireceivedlist','Premium Received List');
 		$deposit_reports->js('click',$deposit_reports_sub_menus_popover->showJS());
 
 

@@ -44,6 +44,7 @@ class Menu_Base extends Menu {
 		
 		$general_sub_menus = $general_sub_menus_popover->add('Menu_Vertical');
 		$general_sub_menus->addMenuItem('reports_general_document','Document Report');
+		$general_sub_menus->addMenuItem('reports_general_periodical','Periodical Report');
 		$general->js('click',$general_sub_menus_popover->showJS());
 
 		$account_sub_menu = $account_sub_menu_popover->add('Menu_Vertical');
@@ -77,6 +78,7 @@ class Menu_Base extends Menu {
 		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_rdCommissionAndTds','RD Comm & TDS');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');
+		$deposit_reports_sub_menus->addMenuItem('reports_deposit_emiduelist','EMI Due List');
 		$deposit_reports->js('click',$deposit_reports_sub_menus_popover->showJS());
 
 

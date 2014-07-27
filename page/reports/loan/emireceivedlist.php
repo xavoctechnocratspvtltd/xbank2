@@ -29,6 +29,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 		$dealer_join->addField('dealer_name','name');
 		$member_join->addField('member_name','name');
+		$member_join->addField('FatherName');
 		$account_join->addField('AccountNumber');
 		$account_join->addField('dealer_id');
 		$scheme_join->addField('SchemeType');
@@ -76,7 +77,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model);
+		$grid->setModel($transaction_row_model,array('AccountNumber','created_at','member_name','FatherName','amountCr','dealer'));
 
 		$grid->addPaginator(50);
 

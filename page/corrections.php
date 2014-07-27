@@ -12,6 +12,7 @@
 // TODOS: refence_account_id to reference_id name change
 // TODOS: PandLGroup correction as per default accounts
 // TODOS: Default Accounts Query should be faster
+// TODOS: Transaction_id to be indexed in transaction_row Table
 // FD Schemes from Month to days
 
 

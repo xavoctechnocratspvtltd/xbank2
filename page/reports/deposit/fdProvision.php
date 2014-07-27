@@ -14,8 +14,8 @@ class page_reports_deposit_fdProvision extends Page {
 			$to_date = $this->api->nextDate($_GET['to_date']);
 
 		$form = $this->add('Form');
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
+		$form->addField('DatePicker','from_date','From Month');
+		$form->addField('DatePicker','to_date','To Month');
 		$form->addSubmit('Go');
 
 		$static_accounts = $this->add('Model_Account_FixedAndMis');

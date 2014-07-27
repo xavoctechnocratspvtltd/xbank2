@@ -3,12 +3,17 @@
 class page_accounts_Loan_accounts_edit extends Page {
 	function init(){
 		parent::init();
-		$this->api->stickyGET('accounts_id');
+
 		$tabs=$this->add('Tabs');
 		$tab1=$tabs->addTab('Change Member');
 		$tab2=$tabs->addTab('Change Dealer');
 
-		$member_form=$tab1->add('Form',null,null,array('form_horizontal'));
+
+		$member_form=$tab1->add('Form');
+		$member_account_field=$member_form->addField('autocomplete/Basic','account')->validateNotNull();
+		$account_model = $this->add('Model_Account_Loan');
+		$member_account_field->setModel($account_model);
+		
 		$member_field=$member_form->addField('autocomplete/Basic','new_member')->validateNotNull();
 		$member_model=$this->add('Model_ActiveMember');
 		$member_field->setModel($member_model);
@@ -28,7 +33,12 @@ class page_accounts_Loan_accounts_edit extends Page {
 
 		}
 
-		$dealer_form=$tab2->add('Form',null,null,array('form_horizontal'));
+		$dealer_form=$tab2->add('Form');
+		
+		$dealer_account_field=$dealer_form->addField('autocomplete/Basic','account')->validateNotNull();
+		$account_model = $this->add('Model_Account_Loan');
+		$dealer_account_field->setModel($account_model);
+
 		$dealer_field=$dealer_form->addField('autocomplete/Basic','new_dealer')->validateNotNull();
 		$dealer_model=$this->add('Model_ActiveDealer');
 		$dealer_field->setModel($dealer_model);

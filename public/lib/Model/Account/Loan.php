@@ -14,6 +14,7 @@ class Model_Account_Loan extends Model_Account{
 		$this->getElement('Amount')->caption('Loan Amount');
 		$this->getElement('CurrentInterest')->caption('Panelty');
 		$this->getElement('account_type')->enum(explode(",",LOAN_TYPES))->mandatory(true);
+		$this->getElement('doc_image_id')->mandatory(false);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
@@ -24,8 +25,14 @@ class Model_Account_Loan extends Model_Account{
 		});		
 
 		$this->addHook('beforeSave',$this);
+		$this->addHook('editing',$this);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function editing(){
+		$this->getELement('LoanInsurranceDate')->system(true);
+		$this->getELement('LoanAgainstAccount_id')->system(true);
 	}
 
 	function beforeSave(){
@@ -54,10 +61,19 @@ class Model_Account_Loan extends Model_Account{
 		
 		$this->createProcessingFeeTransaction($from_account = $otherValues['loan_from_account'], $on_date);
 		
+		$extra_info = json_decode($otherValues['extra_info'],true);
+
 		if($form)
 			$this->addDocumentDetails($form);
 		else
-			$this->addDocumentDetailsFromPending(json_decode($otherValues['extra_info'],true));
+			$this->addDocumentDetailsFromPending($extra_info);
+
+		if(isset($extra_info['guarantors'])){
+			$guarantors = $extra_info['guarantors'];
+			foreach ($guarantors as $g) {
+				$this->addGuarantor($g['id']);
+			}
+		}
 		
 		$this->createPremiums();
 	}
@@ -90,6 +106,14 @@ class Model_Account_Loan extends Model_Account{
 		 	if($form[$this->api->normalizeName($documents['name'])])
 		 		$this->updateDocument($documents, $form[$this->api->normalizeName($documents['name'].' value')]);
 		}
+	}
+
+	function addGuarantor($member_id){
+		$g=$this->add('Model_AccountGuarantor');
+		$g['account_id'] = $this->id;
+		$g['member_id'] = $member_id;
+		$g->save();
+		return $g;
 	}
 
 

@@ -51,30 +51,63 @@ class Model_Account_Recurring extends Model_Account{
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
 	}
 
+	function getFirstEMIDate($return_date_string=false){
+		// ??? .... $this['created_at'] with dealer_monthly_date ... relation
+
+		$date = new MyDateTime($this['created_at']);
+
+		return $date;
+
+		$toAdd = 'P1M';
+
+		if($this['dealer_id']){
+			$dd=explode(",",$this['dealer_monthly_date']);
+			$applicable_date = (int)date('d',strtotime($this['created_at']));
+			if(count($dd)>0){
+				foreach ($dd as $dealer_date) {
+					if((int)$dealer_date >= (int)date('d',strtotime($this['created_at']))){
+						$applicable_date = $dealer_date; 
+						break;
+					}
+				}
+				$date = new MyDateTime(date('Y-m-'.$applicable_date,strtotime($this['created_at'])));
+				$date->add(new DateInterval($toAdd));
+				return $date;
+			}
+		}
+		$date->add(new DateInterval($toAdd));
+		if($return_date_string)
+			return $date->format('Y-m-d');
+		else
+			return $date;
+	}
+
 	function createPremiums(){
 		if(!$this->loaded()) throw $this->exception('Account Must Be loaded to create premiums');
 		
-		$scheme = $this->ref('scheme_id');
+        $scheme = $this->ref('scheme_id');
 
 		switch ($scheme['PremiumMode']) {
             case RECURRING_MODE_YEARLY:
-                $toAdd = " +1 year";
+                $toAdd = "P1Y";
                 break;
             case RECURRING_MODE_HALFYEARLY:
-                $toAdd = " +6 month";
+                $toAdd = "P6M";
                 break;
             case RECURRING_MODE_QUATERLY:
-                $toAdd = " +3 month";
+                $toAdd = "P3D";
                 break;
             case RECURRING_MODE_MONTHLY:
-                $toAdd = " +1 month";
+                $toAdd = "P1M";
                 break;
             case RECURRING_MODE_DAILY:
-                $toAdd = " +1 day";
+                $toAdd = "P1D";
                 break;
         }
 
-        $lastPremiumPaidDate = $this['created_at'];
+        $date_obj = $this->getFirstEMIDate();
+        $lastPremiumPaidDate = $date_obj->format('Y-m-d');
+
         $rate = $scheme['Interest'];
         $premiums = $scheme['NumberOfPremiums'];
         
@@ -83,7 +116,8 @@ class Model_Account_Recurring extends Model_Account{
             $prem['account_id'] = $this->id;
             $prem['Amount'] = $this['Amount'];
             $prem['DueDate'] = $lastPremiumPaidDate; // First Preiume on the day of account open
-            $lastPremiumPaidDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($lastPremiumPaidDate)) . $toAdd));
+            $date_obj->add(new DateInterval($toAdd));
+            $lastPremiumPaidDate = $date_obj->format('Y-m-d');
             $prem->saveAndUnload();
         }
 
@@ -98,12 +132,34 @@ class Model_Account_Recurring extends Model_Account{
 		$premiumsSubmitedInThisAmount = (int) ($AmountForPremiums / $this['Amount']);
 
 		$unpaid_premiums = $this->ref('Premium');
-		$unpaid_premiums->addCondition('Paid',false);
+		// $unpaid_premiums->addCondition('Paid',false);
+		$unpaid_premiums->addCondition('PaidOn',null);
 		$unpaid_premiums->setOrder('id');
 		$unpaid_premiums->setLimit($premiumsSubmitedInThisAmount);
 
 		foreach ($unpaid_premiums as $unpaid_premiums_array) {
 			$unpaid_premiums->payNowForRecurring($on_date); // Doing Aganet commission and Paid value also
+		}
+
+		$this->reAdjustPaidValue($on_date);
+	}
+
+	function reAdjustPaidValue($on_date=null){
+		// TODOS: Performance can be increased if this all done by joining query
+		
+		if(!$on_date) $on_date = $this->api->today;
+		$premiums_to_affect = $this->ref('Premium');
+		$premiums_to_affect->_dsql()->where("(DueDate <='$on_date' or PaidOn is not null) and Paid = 0");
+		$premiums_to_affect->setOrder('id');
+
+		foreach ($premiums_to_affect as $junk) {
+			$paid_premiums_before_date = $this->add('Model_Premium');
+			$paid_premiums_before_date->addCondition('account_id',$premiums_to_affect['account_id']);
+			$paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
+			$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);
+
+			$premiums_to_affect['Paid'] = $paid_premiums_before_date->count()->getOne();
+			$premiums_to_affect->saveAs('Model_Premium');
 		}
 
 	}
@@ -112,7 +168,7 @@ class Model_Account_Recurring extends Model_Account{
 		if(!$this->loaded()) throw $this->exception('Account Must be loaded to get due Premiums');
 		
 		$prem = $this->ref('Premiums');
-		$prem->addCondition('Paid',0);
+		$prem->addCondition('PaidOn',null);
 
 		if($as_on_date) $prem->addCondition('DueDate','<=',$as_on_date);
 		
@@ -124,7 +180,7 @@ class Model_Account_Recurring extends Model_Account{
 		if(!$this->loaded()) throw $this->exception('Account Must be loaded to get paid Premiums');
 		
 		$prem = $this->ref('Premium');
-		$prem->addCondition('Paid','<>',0);
+		$prem->addCondition('PaidOn','<>',null);
 
 		if($as_on_date) $prem->addCondition('DueDate','<=',$as_on_date);
 		
@@ -163,12 +219,12 @@ class Model_Account_Recurring extends Model_Account{
 
 		$fy = $this->api->getFinancialYear($on_date);
 
-		$non_interest_paid_premiums_till_now = $this->ref('Premiums');
+		$non_interest_paid_premiums_till_now = $this->ref('Premium');
 		$non_interest_paid_premiums_till_now->addCondition('Paid',true);
 		$non_interest_paid_premiums_till_now->addCondition('PaidOn','>=',$fy['start_date']);
 		$non_interest_paid_premiums_till_now->addCondition('PaidOn','<',$this->api->nextDate($fy['end_date']));
 
-		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum(Paid*Amount)');
+		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum(Paid*Amount)')->getOne();
 
 		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
 

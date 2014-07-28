@@ -42,6 +42,7 @@ class Model_Account_DDS extends Model_Account{
 			throw $this->exception('Exceeding Amount, only required '. $required_amount, 'ValidityCheck')->setField('amount');
 
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$in_branch);
+		// AGENT COMMISSION SET TO MONTHLY
 		// if($this->ref('agent_id')->loaded()){
 		// 	$this->giveAgentCommission($on_amount = $amount, $transaction_date);
 		// }

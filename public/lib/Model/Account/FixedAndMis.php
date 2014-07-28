@@ -58,6 +58,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 	function giveAgentCommission(){
 		// TODO :: To give commission .... 
+		throw $this->exception('FD Agent commission ???', 'ValidityCheck')->setField('FieldName');
 	}
 
 	// function getFDMISInterest($on_date){

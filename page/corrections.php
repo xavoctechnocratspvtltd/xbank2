@@ -12,6 +12,7 @@
 // TODOS: refence_account_id to reference_id name change
 // TODOS: PandLGroup correction as per default accounts
 // TODOS: Default Accounts Query should be faster
+// TODOS: Transaction_id to be indexed in transaction_row Table
 // FD Schemes from Month to days
 
 
@@ -80,6 +81,7 @@ class page_corrections extends Page {
 
 			$this->api->markProgress('Corrections',9,'Creating Default Accounts',$this->total_taks);
 			$this->checkAndCreateDefaultAccounts();
+			$this->api->markProgress('Corrections',10,'Done',$this->total_taks);
 
 			$this->query('SET FOREIGN_KEY_CHECKS = 1');
 			$this->api->db->commit();
@@ -132,7 +134,7 @@ class page_corrections extends Page {
 				array('documents','Name','name'),
 				array('members','Name','name'),
 				array('schemes','Name','name'),
-				array('schemes','LoanType','type'),
+				// array('schemes','LoanType','type'),
 				array('staffs','Name','name'),
 				array('transaction_types','Transaction','name'), //CHECK
 				array('accounts','schemes_id','scheme_id'),
@@ -146,13 +148,32 @@ class page_corrections extends Page {
 				array('premiums','accounts_id','account_id'),
 			);
 
-		$this->api->markProgress('Rename_Fields',0,'...',count($renameFields));		
+		$this->api->markProgress('Rename_Fields',0,'...',count($renameFields));
 		$i=1;
 		foreach ($renameFields as $dtl) {
 			$this->renameField($dtl[0],$dtl[1],$dtl[2]);
 			$this->api->markProgress('Rename_Fields',$i++,print_r($dtl,true));		
 		}
 		$this->add('View_Info')->set('fields renamed adding new ');
+
+		
+
+		$remove_fields=array(
+				array('members','IsCustomer'),
+				array('members','IsMember'),
+				array('schemes','branch_id'),
+				array('schemes','LoanType'),
+				array('members','collector_id'),
+				array('members','Age'),
+				array('members','ParentAddress'),
+			);
+		$this->api->markProgress('Remove_Fields',0,'...',count($remove_fields));
+		$i=1;
+		foreach ($remove_fields as $dtl) {
+			$this->removeField($dtl[0],$dtl[1]);
+			$this->api->markProgress('Remove_Fields',$i++,print_r($dtl,true));
+		}
+		$this->api->markProgress('Remove_Fields',null,'...');
 
 		$new_fields=array(
 				array('members','title','string'),
@@ -162,7 +183,11 @@ class page_corrections extends Page {
 				array('members','district','string'),
 				array('members','city','string'),
 				array('members','pin_code','string'),
+				array('members','doc_image_id','int'),
 				array('members','state','string'),
+				array('members','ParentAddress','text'),
+				array('members','is_active','boolean'), /*Query to be 1*/
+				array('members','is_defaulter','boolean'), /*Query to be 0*/
 				array('staffs','name','string'),
 				array('dealers','loan_panelty_per_day','int'),
 				array('dealers','time_over_charge','int'),
@@ -175,6 +200,8 @@ class page_corrections extends Page {
 				array('premiums','`PaneltyPosted`','money'),
 				array('accounts','`MaturityToAccount_id`','int'),
 				array('accounts','`related_account_id`','int'),
+				array('accounts','`doc_image_id`','int'),
+				array('schemes','`type`','string'),
 			);
 		$this->api->markProgress('New_Field',0,'...',count($new_fields));
 		$i=1;
@@ -183,24 +210,12 @@ class page_corrections extends Page {
 			$this->api->markProgress('New_Field',$i++,print_r($dtl,true));
 		}
 
+		$this->query('UPDATE members SET is_active=1');
+		$this->query('UPDATE members SET is_defaulter=0');
+
 		$this->api->markProgress('New_Field',null,'...');
 		$this->query('UPDATE staffs SET name=username');
 
-
-		$remove_fields=array(
-				array('members','IsCustomer'),
-				array('members','IsMember'),
-				array('schemes','branch_id'),
-				array('members','collector_id'),
-				array('members','Age'),
-			);
-		$this->api->markProgress('Remove_Fields',0,'...',count($remove_fields));
-		$i=1;
-		foreach ($remove_fields as $dtl) {
-			$this->removeField($dtl[0],$dtl[1]);
-			$this->api->markProgress('Remove_Fields',$i++,print_r($dtl,true));
-		}
-		$this->api->markProgress('Remove_Fields',null,'...');
 
 		$drop_table=array('jos_banner','jos_bannerclient','jos_bannertrack',
 						'jos_categories','jos_components','jos_contact_details'
@@ -291,7 +306,7 @@ class page_corrections extends Page {
     }
 
     function page_movetomany(){
-
+    	throw $this->exception('Guarenter for loan accounts should move ... not working ... and ONLY FOR LOAN', 'ValidityCheck')->setField('FieldName');
     	$to_move = array(
     			array(
     					'from'=>array('agents',array(0,'id','Guarantor1Name','Guarantor1FatherHusbandName','Guarantor1Address',0,'Guarantor1Occupation')),
@@ -412,6 +427,7 @@ class page_corrections extends Page {
    		$i=1;
    		$scheme = $this->add('Model_Scheme');
 		$account = $this->add('Model_Account');
+		$existing_account = $this->add('Model_Account');
 		foreach (explode(",", ACCOUNT_TYPES) as $st) {
 	   		$all_schemes = $this->add('Model_Scheme_'.$st);
 			$branch = $this->add('Model_Branch')->addCondition('published',true);
@@ -420,12 +436,19 @@ class page_corrections extends Page {
 					foreach ($all_schemes->getDefaultAccounts() as $details) {
 			    		$this->api->markProgress('Default_Accounts_Create',$i++,$st . ' in ' . $branch['name']. ' - ' .$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'] );
 						$scheme->loadBy('name',$details['under_scheme']);
-						if(!$this->add('Model_Account')->tryLoadBy('AccountNumber',$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'])->loaded())
+						$existing_account->tryLoadBy('AccountNumber',$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name']);
+						if(!$existing_account->loaded())
 							$account->createNewAccount($branch->getDefaultMember()->get('id'),$scheme->id,$branch,$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name'],array('DefaultAC'=>true,'Group'=>$details['Group'],'PAndLGroup'=>$details['PAndLGroup']));
-						else
+						else{
+							if($existing_account['PAndLGroup'] != $details['PAndLGroup'] ){
+								$existing_account['PAndLGroup'] = $details['PAndLGroup'];
+								$existing_account->save();
+							}
 							$this->add('View_Error')->setHtml("<b>".$branch['Code'].SP.$details['intermediate_text'].SP.$sc['name']. '</b> Already exists');
+						}
 						$account->unload();
 						$scheme->unload();
+						$existing_account->unload();
 					}
 				}
 			}
@@ -493,7 +516,7 @@ class page_corrections extends Page {
                         IF (
                                 schemes.SchemeType = 'Loan',
                         IF(accounts.LoanAgainstAccount_id is not null,
-                        'Loan Againest Deposit',
+                        'Loan Against Deposit',
                         IF (
                                 LOCATE('pl ', schemes. NAME),
                                 'Personal Loan',

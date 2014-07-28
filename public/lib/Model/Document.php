@@ -14,7 +14,7 @@ class Model_Document extends Model_Table {
 		$this->addField('is_addable_by_staff')->type('boolean');
 		$this->addField('is_editable_by_staff')->type('boolean');
 
-		$this->hasMany('DocumentSubmitted','document_id');
+		$this->hasMany('DocumentSubmitted','documents_id');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

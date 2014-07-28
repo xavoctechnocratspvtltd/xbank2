@@ -129,6 +129,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$premiums = $this->add('Model_Premium');
 		$account_join = $premiums->leftJoin('accounts','account_id');
 		$account_join->addField('branch_id');
+		$account_join->addField('LoanAgainstAccount_id');
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 		$dealer_join->addField('loan_panelty_per_day');
 
@@ -136,6 +137,9 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$premiums->addCondition('PaneltyCharged','<',$this->api->db->dsql()->expr('loan_panelty_per_day * 30'));
 		$premiums->addCondition('Paid',false);
 		$premiums->addCondition('branch_id',$branch->id);
+
+		// No Panelties for Loan Against Deposit Accounts
+		$premiums->addCondition('LoanAgainstAccount_id',0);
 
 		if($test_account) $premiums->addCondition('account_id',$test_account->id);
 

@@ -15,7 +15,7 @@ class Model_Account extends Model_Table {
 		$this->hasOne('Account','intrest_to_account_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','MaturityToAccount_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue('0');
 		$this->hasOne('Dealer','dealer_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
 
 		$this->hasOne('Branch','branch_id')->mandatory(true)->defaultValue(@$this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
@@ -44,7 +44,7 @@ class Model_Account extends Model_Table {
 		$this->addField('MinorNomineeDOB');
 		$this->addField('MinorNomineeParentName');
 		$this->addField('DefaultAC')->type('boolean')->defaultValue(false);
-		$this->addField('created_at')->type('datetime');//->defaultValue($this->api->now);
+		$this->addField('created_at')->type('datetime')->sortable(true);//->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime');//->defaultValue($this->api->now);
 		$this->addField('CurrentBalanceCr')->type('money');
 		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime');//->defaultValue($this->api->now);
@@ -61,6 +61,8 @@ class Model_Account extends Model_Table {
 		$this->scheme_join = $this->leftJoin('schemes','scheme_id');
 		$this->scheme_join->addField('SchemeType');
 		$this->scheme_join->addField('scheme_name','name');
+
+		$this->add('filestore/Field_Image','doc_image_id')->type('image')->mandatory(true);
 
 		$this->addExpression('branch_code')->set(function($m,$q){
 			return $m->refSQL('branch_id')->fieldQuery('Code');
@@ -99,7 +101,7 @@ class Model_Account extends Model_Table {
 
 		$this->hasMany('JointMember','account_id');
 		$this->hasMany('Premium','account_id');
-		$this->hasMany('DocumentSubmitted','account_id');
+		$this->hasMany('DocumentSubmitted','accounts_id');
 		$this->hasMany('AccountGaurantor','account_id');
 		$this->hasMany('TransactionRow','account_id');
 		$this->hasMany('Account','related_account_id',null,'RelatedAccounts');
@@ -114,6 +116,9 @@ class Model_Account extends Model_Table {
 	function editing_default(){
 		$this->getElement('scheme_id')->system(true);
 		$this->getElement('AccountNumber')->system(true);
+		$this->getElement('account_type')->system(true);
+		$this->getElement('Amount')->system(true);
+		$this->getElement('ModeOfOperation')->system(true);
 	}
 
 	function defaultBeforeSave(){
@@ -177,6 +182,15 @@ class Model_Account extends Model_Table {
 		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Must be Loaded Object of Model_Branch');
 		if(!$created_at) $created_at = $this->api->now;
 		if(!$otherValues) $otherValues=array();
+
+		if($otherValues['account_type']==LOAN_AGAINST_DEPOSIT){
+			if(!$otherValues['LoanAgainstAccount_id'])
+				throw $this->exception('Please Specify Loan Against Account Number', 'ValidityCheck')->setField('LoanAgainstAccount');
+
+		}else{
+			if(!$otherValues['dealer_id'])
+				throw $this->exception('Dealer is Must', 'ValidityCheck')->setField('dealer');
+		}
 
 		$pending_account = $this->add('Model_PendingAccount');
 		$pending_account->allow_any_name = true;
@@ -434,7 +448,7 @@ class Model_Account extends Model_Table {
 		if(!$forPandL) $dr = $dr + $this['OpeningBalanceDr'];
 		if(strtolower($side) =='dr') return $dr;
 
-		return array('CR'=>$cr,'DR'=>$dr);
+		return array('CR'=>$cr,'DR'=>$dr,'cr'=>$cr,'dr'=>$dr,'Cr'=>$cr,'Dr'=>$dr);
 	}
 
 	function isMatured(){
@@ -468,12 +482,7 @@ class Model_Account extends Model_Table {
 		}
 	}
 
-	function delete($forced =false){
-		if($forced===true){
-			$this->prepareDelete(true);
-		}
-		parent::delete($forced);
-	}
+	
 
 	function addAgent($agent, $replace_existing=false){
 		if($this->ref('agent_id')->loaded() and !$replace_existing)
@@ -500,4 +509,13 @@ class Model_Account extends Model_Table {
 		throw $this->exception('Yearly closing function must be in scheme');
 	}
 	
+	function changeMember($member){
+		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+
+	}
+
+	function changeDealer($member){
+		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+
+	}	
 }

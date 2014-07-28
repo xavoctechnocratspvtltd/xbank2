@@ -57,7 +57,33 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		foreach ($all_todays_matured_Accounts as $acc_array) {
 			$all_todays_matured_Accounts->markMatured($on_date);
 		}
+
 	}
+	
+	function monthly( $branch=null, $on_date=null, $test_account=null ) {
+	
+		$allaccounts_with_thismonth_duedate = $this->add('Model_Active_Account_Recurring');
+		$premium_join = $allaccounts_with_thismonth_duedate->join('premiums.account_id');
+		$premium_join->addField('Paid');
+		$premium_join->addField('DueDate');
+		$allaccounts_with_thismonth_duedate->addCondition('Paid',false);
+		$allaccounts_with_thismonth_duedate->addCondition('DueDate','<=',$on_date);
+		$allaccounts_with_thismonth_duedate->_dsql()->group('AccountNumber');
+
+		if($test_account) $allaccounts_with_thismonth_duedate->addCondition('id',$test_account->id);
+
+		foreach ($allaccounts_with_thismonth_duedate as $junk) {
+			$allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
+		}
+	}
+
+	function quarterly( $branch=null, $on_date=null, $test_account=null ) {
+
+	}
+
+	function halfYearly( $branch=null, $on_date=null, $test_account=null ) {
+	}
+
 
 	function yearly($branch, $on_date=null,$test_account=null){
 		if(!$branch) $branch = $this->api->current_branch;
@@ -66,7 +92,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$fy = $this->api->getFinancialYear($on_date);
 
 		$all_accounts_paid_in_this_year = $this->add('Model_Active_Account_Recurring');
-		$premium_join = $all_accounts_paid_in_this_year->join('premiums','account_id');
+		$premium_join = $all_accounts_paid_in_this_year->join('premiums.account_id');
 		$premium_join->addField('PaidOn');
 
 

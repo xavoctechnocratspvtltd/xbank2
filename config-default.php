@@ -161,13 +161,15 @@ define('FIELD_TEMP_PENALTY',                    'CurrentInterest');
 
 define('SIGNATURE_FILE_PATH',                   '/administrator/components/com_xbank/signatures/' );
 
-define('LOAN_TYPES','Two Wheeler Loan,Auto Loan,Personal Loan,Loan Againest Deposit,Home Loan,Mortgage Loan,Agriculture Loan,Education Loan,Gold Loan,Other');
+define('LOAN_AGAINST_DEPOSIT','Loan Against Deposit');
+
+define('LOAN_TYPES','Two Wheeler Loan,Auto Loan,Personal Loan,Loan Against Deposit,Home Loan,Mortgage Loan,Agriculture Loan,Education Loan,Gold Loan,Other');
 
 /* Define Codes for various accounts*/
 $config['account_code']['Two Wheeler Loan']='VL';
 $config['account_code']['Auto Loan']='VL';
 $config['account_code']['Personal Loan']='PL';
-$config['account_code']['Loan Againest Deposit']='SL';
+$config['account_code']['Loan Against Deposit']='SL';
 $config['account_code']['Home Loan']='HL';
 $config['account_code']['Mortgage Loan']='ML';
 $config['account_code']['Agriculture Loan']='AL';
@@ -232,4 +234,3 @@ define("FLAT_RATE", "Flat");
 
 define("BALANCE_SHEET", true);
 define("MIN_BALANCE_CHARGE", 20);
-

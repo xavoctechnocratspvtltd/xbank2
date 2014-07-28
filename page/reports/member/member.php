@@ -1,0 +1,69 @@
+<?php
+
+class page_reports_member_member extends Page {
+	public $title='Member Report';
+
+	function page_index(){
+		// parent::init();
+		$member_model=$this->add('Model_Member');
+
+		$grid=$this->add('Grid');
+		$grid->setModel($member_model,array('branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
+		$grid->addPaginator(50);
+
+		$grid->addColumn('expander','details');
+		$grid->addColumn('expander','accounts');
+		$grid->addColumn('expander','guarantor_in');
+
+	}
+
+	function page_details(){
+		$this->api->stickyGET('members_id');
+		$member_model=$this->add('Model_Member');
+		$member_model->addCondition('id',$_GET['members_id']);
+
+		$grid=$this->add('Grid');
+
+		$extra_fields=array('branch_id','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','is_defaulter');
+		foreach ($extra_fields as $key => $value) {
+			$member_model->getElement($value)->system(true);
+		}
+		$grid->setModel($member_model);
+		
+
+	}
+
+
+	function page_accounts(){
+		$this->api->stickyGET('members_id');
+
+		$this->api->stickyGET('members_id');
+		$member_model=$this->add('Model_Member');
+		$member_model->addCondition('id',$_GET['members_id']);
+		$member_model->loadAny();
+
+		$this->add('H4')->setHTML('Accounts Details for <span style="text-transform:capitalize"><u>'.$member_model['name'].'</u></span>');
+		$grid=$this->add('Grid');
+		$accounts=$member_model->ref('Account');
+		$accounts->addCondition('ActiveStatus',true);
+		$accounts->addCondition('MaturedStatus',false);
+		$grid->setModel($accounts,array('branch','AccountNumber','scheme','agent','Amount'));
+	}
+
+
+	function page_guarantor_in(){
+		$this->api->stickyGET('members_id');
+
+
+		$this->api->stickyGET('members_id');
+		$account_model=$this->add('Model_Account');
+		$account_model->join('account_guarantors.account_id')->addField('guarantor_member_id','member_id');
+		$account_model->addCondition('guarantor_member_id',$_GET['members_id']);
+		$account_model->addCondition('ActiveStatus',true);
+		$account_model->addCondition('MaturedStatus',false);
+
+		$this->add('H4')->setHTML('Accounts Details for <span style="text-transform:capitalize"><u>'.$this->add('Model_Member')->load($_GET['members_id'])->get('name').'</u></span>');
+		$grid=$this->add('Grid');
+		$grid->setModel($account_model,array('branch','AccountNumber','scheme','agent','Amount'));
+	}
+}

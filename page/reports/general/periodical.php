@@ -57,6 +57,10 @@ class page_reports_general_periodical extends Page {
 		}
 
 		$account_model->add('Controller_Acl');
+
+		$account_model->addCondition('DefaultAC',false);
+		$account_model->addCondition('SchemeType',explode(',',ACCOUNT_TYPES));
+		
 		$account_model->_dsql()->group('account_type');
 		$account_model->_dsql()->del('fields');
 		$account_model->_dsql()->field('account_type');
@@ -66,8 +70,6 @@ class page_reports_general_periodical extends Page {
 									'SUM(IF(account_type ="Saving" OR account_type="Current",'.$scheme_join->table_alias.'.MinLimit,Amount)) amount'
 									));
 
-		$account_model->addCondition('DefaultAC',false);
-		$account_model->addCondition('SchemeType',explode(',',ACCOUNT_TYPES));
 
 
 		$grid->setSource($account_model->_dsql());

@@ -46,7 +46,7 @@ class page_accounts_CC extends Page {
 			$account_cc_model->hook('editing');
 		}
 
-		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member','scheme','Amount','agent','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
+		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
 
 		
 		if($crud->grid){

@@ -5,9 +5,9 @@ class Model_Agent extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Member','member_id');
+		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','sponsor_id');
-		$this->hasOne('Account','account_id');
+		$this->hasOne('Account','account_id')->display(array('form'=>'autocomplete/Basic'));;
 		// $this->hasOne('Tree','tree_id');
 		$this->addField('ActiveStatus')->type('int');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
@@ -22,13 +22,20 @@ class Model_Agent extends Model_Table {
 		// $this->addField('Rank_2_Count')->type('int');
 		// $this->addField('Rank_3_Count')->type('int');
 		$this->hasMany('AgentGuarantor','agent_id');
-
+		$this->hasMany('DocumentSubmitted','agent_id');
 		
 
 		$this->addExpression('name')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('name');
 		});
 
+		$this->addHook('beforeDelete',$this);
+
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeDelete(){
+		throw new Exception("Agent Delete Hook ????", 1);
+		
 	}
 }

@@ -33,7 +33,7 @@ class page_Accounts_FixedAndMis extends Page {
 			$account_fixedandmis_model->hook('editing');
 		}
 
-		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','NomineeAge','RelationWithNominee'));
+		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id'));
 
 		if($crud->isEditing()){
 			$type_field = $crud->form->getElement('account_type');

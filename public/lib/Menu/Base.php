@@ -8,9 +8,8 @@ class Menu_Base extends Menu {
 		$admin = $this->addMenuItem('index','Super Admin');
 
 
-		$this->addMenuItem('members','Members');
+		$mad = $this->addMenuItem('#','M.A.D.');
 		$account = $this->addMenuItem('accounts','Accounts');
-		
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$books = 	$this->addMenuItem('books','Books');
 		$member_reports = 	$this->addMenuItem('reports_member','Member Reports');
@@ -24,6 +23,7 @@ class Menu_Base extends Menu {
 
 		// Popovers
 		$admin_sub_menus_popover=$this->add('View_Popover');
+		$mad_sub_menus_popover = $this->add('View_Popover');
 		$account_sub_menu_popover = $this->add('View_Popover');
 		$books_sub_menus_popover = $this->add('View_Popover');
 		$transactions_sub_menus_popover = $this->add('View_Popover');
@@ -40,7 +40,16 @@ class Menu_Base extends Menu {
 		$admin_sub_menus->addMenuItem('staffs','Staff');
 		$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
 		$admin_sub_menus->addMenuItem('branches','Branches');
+		$admin_sub_menus->addMenuItem('mos','Mos');
+		$admin_sub_menus->addMenuItem('team','Teams');
 		$admin->js('click',$admin_sub_menus_popover->showJS());
+
+		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');
+		$mad_sub_menus->addMenuItem('members','Members');
+		$mad_sub_menus->addMenuItem('agents','Agents');
+		$mad_sub_menus->addMenuItem('dealers','Dealers');
+		$mad_sub_menus->addMenuItem('dsa','DSA');
+		$mad->js('click',$mad_sub_menus_popover->showJS());
 		
 		$general_sub_menus = $general_sub_menus_popover->add('Menu_Vertical');
 		$general_sub_menus->addMenuItem('reports_general_document','Document Report');

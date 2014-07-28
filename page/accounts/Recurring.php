@@ -34,7 +34,7 @@ class page_accounts_Recurring extends Page {
 			$account_recurring_model->hook('editing');
 		}
 
-		$crud->setModel($account_recurring_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','collector_id','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee'));
+		$crud->setModel($account_recurring_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','collector_id','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id'));
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(50);

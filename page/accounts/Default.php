@@ -32,7 +32,7 @@ class page_accounts_Default extends Page {
 			$account_Default_model->hook('editing');
 		}
 
-		$crud->setModel($account_Default_model,array('AccountNumber','member','scheme','agent_id','ActiveStatus'));
+		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','agent_id','ActiveStatus'));
 		
 		if($crud->grid)
 			$crud->grid->addPaginator(10);

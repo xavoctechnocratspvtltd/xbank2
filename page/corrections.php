@@ -196,6 +196,7 @@ class page_corrections extends Page {
 				array('accounts','`Group`','string'),
 				array('accounts','`account_type`','string'),
 				array('accounts','`extra_info`','text'),
+				array('accounts','`mo_id`','int'),
 				array('premiums','`PaneltyCharged`','money'),
 				array('premiums','`PaneltyPosted`','money'),
 				array('accounts','`MaturityToAccount_id`','int'),

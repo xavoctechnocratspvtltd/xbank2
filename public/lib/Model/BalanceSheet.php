@@ -4,15 +4,22 @@ class Model_BalanceSheet extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->addField('name');
-		$this->addField('positive_side')->enum(array('LT','RT'));
-		$this->addField('is_pandl')->type('boolean');
-		$this->addField('show_sub');
-		$this->addField('subtract_from');
+		$this->addField('name')->mandatory(true);
+		$this->addField('positive_side')->enum(array('LT','RT'))->mandatory(true);
+		$this->addField('is_pandl')->type('boolean')->mandatory(true);
+		$this->addField('show_sub')->enum(array('SchemeGroup','SchemeName','Accounts'))->mandatory(true);
+		$this->addField('subtract_from')->enum(array('Cr','Dr'))->mandatory(true);
 		$this->addField('order');
+
+		$this->addHook('beforeDelete',$this);
 
 		$this->hasMany('Scheme','balance_sheet_id');
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeDelete(){
+		if($this->ref('Scheme')->count()->getOne() > 0)
+			throw $this->exception('Balance Sheet Head Contains Scheme, Cannot Delete');
 	}
 
 	function getClosingBalance($on_date=null,$side='both',$forPandL=false,$branch=null,$from_date=null){

@@ -12,7 +12,7 @@ class Model_Scheme_CC extends Model_Scheme {
 		$this->getElement('balance_sheet_id')->caption('Head');
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
-		$this->getElement('type')->destroy();
+		$this->getElement('type')->enum(array('CC'));
 		// $this->getElement('AccountOpenningCommission')->destroy();
 		$this->getElement('Commission')->destroy();
 		$this->getElement('PostingMode')->destroy();

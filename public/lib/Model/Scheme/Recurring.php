@@ -11,7 +11,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
-		$this->getElement('type')->destroy();
+		$this->getElement('type')->defaultValue('Recurring');
 		$this->getElement('Commission')->destroy();
 		$this->getElement('PostingMode')->destroy();
 		$this->getElement('ProcessingFees')->destroy();

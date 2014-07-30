@@ -8,9 +8,9 @@ class page_agents extends Page{
 
 		$crud = $this->add('CRUD');
 		$crud->setModel('Agent');
-		$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));
 
-		if($crud and $crud->grid){
+		if($crud and !$crud->isEditing()){
+			$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));
 			$agent_guarantor_crud = $crud->addRef('AgentGuarantor');
 			if($agent_guarantor_crud and $agent_guarantor_crud->grid){
 				$agent_guarantor_crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentGuarantor'));

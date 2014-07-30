@@ -34,7 +34,8 @@ class page_schemes_Default extends Page{
 
 		
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(50);
+			$crud->grid->addQuickSearch(array('name','SchemeGroup'));
 		}
 
 		if($crud->isEditing('add')){

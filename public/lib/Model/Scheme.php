@@ -41,7 +41,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('published')->type('boolean')->defaultValue(true);
 		
 		$this->addField('SchemePoints')->caption('Scheme Points')->system(true);
-		$this->addField('SchemeGroup')->defaultValue($this->schemeType)->system(true);
+		$this->addField('SchemeGroup')->defaultValue($this->schemeType);//->system(true);
 		
 		$this->addField('AgentSponsorCommission');
 		$this->addField('CollectorCommissionRate');
@@ -49,12 +49,37 @@ class Model_Scheme extends Model_Table {
 
 		$this->hasMany('Account','scheme_id');
 
+		$this->addHook('editing',array($this,'defaultEditing'));
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
 		$this->addHook('afterInsert',array($this,'defaultAfterInsert'));
 		$this->addHook('beforeDelete',array($this,'defaultBeforeDelete'));
 
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function defaultEditing(){
+		$this->getElement('type')->system(true);
+		$this->getElement('name')->system(true);
+		if($this->hasElement('MinLimit')) $this->getElement('MinLimit')->system(true);
+		if($this->hasElement('MaxLimit')) $this->getElement('MaxLimit')->system(true);
+		if($this->hasElement('Interest')) $this->getElement('Interest')->system(true);
+		if($this->hasElement('InterestMode')) $this->getElement('InterestMode')->system(true);
+		if($this->hasElement('InterestRateMode')) $this->getElement('InterestRateMode')->system(true);
+		if($this->hasElement('AccountOpenningCommission')) $this->getElement('AccountOpenningCommission')->system(true);
+		if($this->hasElement('Commission')) $this->getElement('Commission')->system(true);
+		if($this->hasElement('ProcessingFees')) $this->getElement('ProcessingFees')->system(true);
+		if($this->hasElement('PremiumMode')) $this->getElement('PremiumMode')->system(true);
+		if($this->hasElement('SchemeType')) $this->getElement('SchemeType')->system(true);
+		if($this->hasElement('InterestToAnotherAccount')) $this->getElement('InterestToAnotherAccount')->system(true);
+		if($this->hasElement('NumberOfPremiums')) $this->getElement('NumberOfPremiums')->system(true);
+		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(true);
+		if($this->hasElement('InterestToAnotherAccountPercent')) $this->getElement('InterestToAnotherAccountPercent')->system(true);
+		if($this->hasElement('isDepriciable')) $this->getElement('isDepriciable')->system(true);
+		if($this->hasElement('DepriciationPercentBeforeSep')) $this->getElement('DepriciationPercentBeforeSep')->system(true);
+		if($this->hasElement('DepriciationPercentAfterSep')) $this->getElement('DepriciationPercentAfterSep')->system(true);
+		if($this->hasElement('ProcessingFeesinPercent')) $this->getElement('ProcessingFeesinPercent')->system(true);
+		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
 	}
 
 	function defaultBeforeSave(){

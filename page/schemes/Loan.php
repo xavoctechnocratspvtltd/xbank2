@@ -1,10 +1,10 @@
 <?php
 
 class page_schemes_Loan extends Page{
-	function init(){
-		parent::init();
+	function page_index(){
+		// parent::init();
 
-		$crud=$this->add('xCRUD',array('allow_edit'=>false));
+		$crud=$this->add('xCRUD');
 		$scheme_Loan_model =$this->add('Model_Scheme_Loan');
 		$scheme_Loan_model->setOrder('id','desc');
 		
@@ -34,7 +34,7 @@ class page_schemes_Loan extends Page{
 			$scheme_Loan_model->getElement('type')->system(true);
 		}
 
-		$crud->setModel($scheme_Loan_model,array('type','name','MinLimit','MaxLimit','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet_id','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
+		$crud->setModel($scheme_Loan_model,array('type','name','MinLimit','MaxLimit','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet_id','balance_sheet','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
 
 		
 		if($crud->grid){

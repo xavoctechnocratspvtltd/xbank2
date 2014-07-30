@@ -1,6 +1,7 @@
 <?php
 class Model_TransactionRow extends Model_Table {
 	var $table= "transaction_row";
+	public $transaction_join;
 	function init(){
 		parent::init();
 
@@ -11,7 +12,7 @@ class Model_TransactionRow extends Model_Table {
 		$this->addField('side');
 		$this->addField('accounts_in_side')->type('int');
 
-		$join_transaction = $this->leftJoin('transactions','transaction_id');
+		$this->transaction_join = $join_transaction = $this->leftJoin('transactions','transaction_id');
 		$join_transaction->addField('voucher_no');
 		$join_transaction->addField('Narration');
 		$join_transaction->addField('created_at');

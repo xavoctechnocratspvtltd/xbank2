@@ -7,17 +7,17 @@ class Model_Agent extends Model_Table {
 
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','sponsor_id');
-		$this->hasOne('Account','account_id')->display(array('form'=>'autocomplete/Basic'));;
+		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'));;
 		// $this->hasOne('Tree','tree_id');
-		$this->addField('ActiveStatus')->type('int');
-		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
-		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
-		$this->addField('AgentCode');
-		$this->addField('Path');
-		$this->addField('LegCount')->type('int');
-		$this->addField('Rank')->type('int');
-		$this->addField('BusinessCreditPoints')->type('int');
-		$this->addField('CumulativeBusinessCreditPoints')->type('int');
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
+		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);
+		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
+		$this->addField('AgentCode')->system(true);
+		$this->addField('Path')->system(true);
+		$this->addField('LegCount')->type('int')->system(true);
+		$this->addField('Rank')->type('int')->system(true);
+		$this->addField('BusinessCreditPoints')->type('int')->system(true);
+		$this->addField('CumulativeBusinessCreditPoints')->type('int')->system(true);
 		// $this->addField('Rank_1_Count')->type('int');
 		// $this->addField('Rank_2_Count')->type('int');
 		// $this->addField('Rank_3_Count')->type('int');

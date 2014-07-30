@@ -15,6 +15,7 @@ class Menu_Base extends Menu {
 		$member_reports = 	$this->addMenuItem('reports_member','Member Reports');
 		$loan_reports = 	$this->addMenuItem('reports_loan','Loan Reports');
 		$deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
+		$agent_reports = 	$this->addMenuItem('reports_agent','Agent Reports');
 		$operations = 	$this->addMenuItem('operations','Operations');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
 		$general = 	$this->addMenuItem('reports_general','General');
@@ -29,6 +30,7 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus_popover = $this->add('View_Popover');
 		$loan_reports_sub_menus_popover = $this->add('View_Popover');
 		$deposit_reports_sub_menus_popover = $this->add('View_Popover');
+		$agent_reports_sub_menus_popover = $this->add('View_Popover');
 		$operations_sub_menus_popover = $this->add('View_Popover');
 		$utilities_sub_menus_popover = $this->add('View_Popover');
 		$member_sub_menus_popover = $this->add('View_Popover');
@@ -42,6 +44,7 @@ class Menu_Base extends Menu {
 		$admin_sub_menus->addMenuItem('branches','Branches');
 		$admin_sub_menus->addMenuItem('mos','Mos');
 		$admin_sub_menus->addMenuItem('team','Teams');
+		$admin_sub_menus->addMenuItem('balancesheet','Top Heads');
 		$admin->js('click',$admin_sub_menus_popover->showJS());
 
 		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');
@@ -83,6 +86,10 @@ class Menu_Base extends Menu {
 		$loan_reports_sub_menus->addMenuItem('reports_loan_dispatch','Loan Dispatch');
 		$loan_reports_sub_menus->addMenuItem('reports_loan_accountdetailed','Accont Detailed');
 		$loan_reports->js('click',$loan_reports_sub_menus_popover->showJS());
+
+		$agent_reports_sub_menus = $agent_reports_sub_menus_popover->add('Menu_Vertical');
+		$agent_reports_sub_menus->addMenuItem('reports_agent_tds','TDS Report');
+		$agent_reports->js('click',$agent_reports_sub_menus_popover->showJS());
 
 		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');

@@ -12,6 +12,7 @@ class page_members extends Page {
 		$member_model = $this->add('Model_Member');
 		$member_model->add('Controller_Acl');
 		$member_model->setOrder('id','desc');
+		
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
@@ -78,6 +79,7 @@ class page_members extends Page {
 
 
 		$crud->setModel($member_model,array());
+		$crud->add('Controller_DocumentsManager',array('doc_type'=>'MemberDocuments'));
 
 
 		if(!$crud->isEditing()) {

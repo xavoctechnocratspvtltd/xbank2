@@ -155,6 +155,7 @@ class page_reports_loan_emiduelist extends Page {
 		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(50);
 
+		
 		$grid->removeColumn('last_premium');
 
 		if($form->isSubmitted()){

@@ -11,7 +11,14 @@ class page_schemes_DDS extends Page{
 			if($crud->isEditing('edit')) return false;
 						
 			$dds_scheme_model = $crud->add('Model_Scheme_DDS');
-			$dds_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_DDS, ACCOUNT_TYPE_DDS, $is_loanType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
+			try {
+				$this->api->db->beginTransaction();
+			    $dds_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_DDS, ACCOUNT_TYPE_DDS, $is_loanType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			return true;
 		});
 

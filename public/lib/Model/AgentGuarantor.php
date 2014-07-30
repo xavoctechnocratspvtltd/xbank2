@@ -4,14 +4,10 @@ class Model_AgentGuarantor extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Agent','agent_id');
+		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 
-		$this->addField('name');
-		$this->addField('father_husband_name');
-		$this->addField('address');
-		$this->addField('ph_no');
-		$this->addField('occupation');
-
+		$this->hasMany('DocumentSubmitted','agentguarantor_id');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

@@ -12,6 +12,7 @@
 // TODOS: refence_account_id to reference_id name change
 // TODOS: PandLGroup correction as per default accounts
 // TODOS: Default Accounts Query should be faster
+// TODOS: Transaction_id to be indexed in transaction_row Table
 // FD Schemes from Month to days
 
 
@@ -195,6 +196,7 @@ class page_corrections extends Page {
 				array('accounts','`Group`','string'),
 				array('accounts','`account_type`','string'),
 				array('accounts','`extra_info`','text'),
+				array('accounts','`mo_id`','int'),
 				array('premiums','`PaneltyCharged`','money'),
 				array('premiums','`PaneltyPosted`','money'),
 				array('accounts','`MaturityToAccount_id`','int'),

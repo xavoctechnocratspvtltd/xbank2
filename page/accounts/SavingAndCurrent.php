@@ -13,7 +13,14 @@ class page_accounts_SavingAndCurrent extends Page {
 			if($crud->isEditing('edit')) return false;
 			$sbca_account_model = $crud->add('Model_Account_SavingAndCurrent');
 			
-			$sbca_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			try {
+				$this->api->db->beginTransaction();
+			    $sbca_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			return true;
 		});
 
@@ -32,7 +39,7 @@ class page_accounts_SavingAndCurrent extends Page {
 			$account_savingandcurrent_model->hook('editing');
 		}
 
-		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt'));
+		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt','mo_id','team_id'));
 		
 		if($crud->isEditing()){
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
@@ -40,7 +47,7 @@ class page_accounts_SavingAndCurrent extends Page {
 
 		if($crud->grid){
 			$crud->grid->addPaginator(50);
-			$crud->grid->addQuickSearch(array('AccountNumber','member','scheme','agent','amount'));
+			$crud->grid->addQuickSearch(array('AccountNumber','member_id','scheme_id','agent_id','amount','mo_id','team_id'));
 		}
 
 		if($crud->isEditing('add')){

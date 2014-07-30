@@ -69,20 +69,27 @@ class page_transactions_jv extends Page {
 		if($form->isSubmitted()){
 			$this->validateJV($form);
 
-			$transaction = $this->add('Model_Transaction');
-			$transaction->createNewTransaction($form['jv_type'], null,null, $form['narration'],null, array());
-			
-			for ($i=1; $i < $this->rows; $i++) {
-				if($form['account_dr_'.$i])
-					$transaction->addDebitAccount($form['account_dr_'.$i], $form['amount_dr_'.$i]);
+			try {
+				$this->api->db->beginTransaction();
+				    $transaction = $this->add('Model_Transaction');
+					$transaction->createNewTransaction($form['jv_type'], null,null, $form['narration'],null, array());
+					
+					for ($i=1; $i < $this->rows; $i++) {
+						if($form['account_dr_'.$i])
+							$transaction->addDebitAccount($form['account_dr_'.$i], $form['amount_dr_'.$i]);
+					}
+		
+					for ($i=1; $i < $this->rows; $i++) {
+						if($form['account_cr_'.$i])
+							$transaction->addCreditAccount($form['account_cr_'.$i], $form['amount_cr_'.$i]);
+					}
+					
+					$transaction->execute();
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
 			}
-
-			for ($i=1; $i < $this->rows; $i++) {
-				if($form['account_cr_'.$i])
-					$transaction->addCreditAccount($form['account_cr_'.$i], $form['amount_cr_'.$i]);
-			}
-			
-			$transaction->execute();
 			
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Entry Done')->execute();
 		}else{

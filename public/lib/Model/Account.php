@@ -20,11 +20,14 @@ class Model_Account extends Model_Table {
 
 		$this->hasOne('Branch','branch_id')->mandatory(true)->defaultValue(@$this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Staff','staff_id')->mandatory(true)->defaultValue(@$this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
+		
+		$this->hasOne('Mo','mo_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Team','team_id')->display(array('form'=>'autocomplete/Basic'));
 		// $this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));		
 		
 		//New Fields added//
 		$this->addField('account_type');
-		$this->addField('AccountNumber')->mandatory(true);
+		$this->addField('AccountNumber');//->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Displ. Name');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true);
 
@@ -126,6 +129,7 @@ class Model_Account extends Model_Table {
 		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber']) AND !@$this->allow_any_name ){
 			throw $this->exception('AccountNumber Format not accpeted')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
+
 
 		// PandLGroup set default
 		if(!$this['Group'])
@@ -448,7 +452,7 @@ class Model_Account extends Model_Table {
 		if(!$forPandL) $dr = $dr + $this['OpeningBalanceDr'];
 		if(strtolower($side) =='dr') return $dr;
 
-		return array('CR'=>$cr,'DR'=>$dr);
+		return array('CR'=>$cr,'DR'=>$dr,'cr'=>$cr,'dr'=>$dr,'Cr'=>$cr,'Dr'=>$dr);
 	}
 
 	function isMatured(){
@@ -510,8 +514,16 @@ class Model_Account extends Model_Table {
 	}
 	
 	function changeMember($member){
-		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+		if(!$this->loaded())
+			throw $this->exception('Account Must be loaded to change member');
 
+		if(!($member instanceof Model_Member) and !$member->loaded())
+			throw $this->exception('Member must be passed as loaded Member Model');
+
+		$this->add('Model_Log')->logFieldEdit('Account',$this->id,'Member',$this['member_id'],$member->id);
+
+		$this['member_id'] = $member->id;
+		$this->save();
 	}
 
 	function changeDealer($member){

@@ -228,6 +228,8 @@ class Model_Account_Recurring extends Model_Account{
 
 		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
 
+		// Interest ... TDS Deduct ?????
+
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_RECURRING, $this->ref('branch_id'), $on_date, 'Interest posting in Recurring Account', null, array('reference_account_id'=>$this->id));
 		

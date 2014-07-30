@@ -23,7 +23,14 @@ class page_transactions_deposit extends Page {
 			$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
 			$account_model->loadBy('AccountNumber',$form['account']);
 
-			$account_model->deposit($form['amount'],$form['narration'],$form['account_to_debit']?array(array($form['account_to_debit']=>$form['amount'])):array(),$form);
+			try {
+				$this->api->db->beginTransaction();
+			    $account_model->deposit($form['amount'],$form['narration'],$form['account_to_debit']?array(array($form['account_to_debit']=>$form['amount'])):array(),$form);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- deposited in " . $form['account'])->execute();
 		}
 	}

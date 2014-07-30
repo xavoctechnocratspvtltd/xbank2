@@ -6,10 +6,12 @@ class page_reports_member_member extends Page {
 	function page_index(){
 		// parent::init();
 		$member_model=$this->add('Model_Member');
+		$member_model->setOrder('created_at','desc');
 
 		$grid=$this->add('Grid');
-		$grid->setModel($member_model,array('branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
+		$grid->setModel($member_model,array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
 		$grid->addPaginator(50);
+		$grid->addQuickSearch(array('id','name','PhoneNos'));
 
 		$grid->addColumn('expander','details');
 		$grid->addColumn('expander','accounts');
@@ -48,6 +50,20 @@ class page_reports_member_member extends Page {
 		$accounts->addCondition('ActiveStatus',true);
 		$accounts->addCondition('MaturedStatus',false);
 		$grid->setModel($accounts,array('branch','AccountNumber','scheme','agent','Amount'));
+
+		$grid->addMethod('format_cuBal',function($g,$f){
+			$bal = $g->model->getOpeningBalance($on_date=$g->api->nextDate($g->api->today),$side='both',$forPandL=false);
+			if($bal['cr'] > $bal['dr']){
+				$bal = ($bal['cr'] - $bal['dr']) . ' Cr';
+			}else{
+				$bal = ($bal['dr'] - $bal['cr']) . ' Dr';
+			}
+
+			$g->current_row[$f]=$bal ;
+		});
+
+		$grid->addColumn('cuBal','cur_balance');
+
 	}
 
 

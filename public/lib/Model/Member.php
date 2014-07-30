@@ -2,6 +2,7 @@
 
 class Model_Member extends Model_Table {
 	var $table= "members";
+	
 	function init(){
 		parent::init();
 
@@ -43,7 +44,7 @@ class Model_Member extends Model_Table {
 		$this->addField('RelationWithNominee');
 		$this->addField('NomineeAge');
 
-		$this->add('filestore/Field_Image','doc_image_id')->type('image')->mandatory(true);
+		$this->add('filestore/Field_Image','doc_image_id')->type('image');//->mandatory(true);
 
 		// $this->addField('is_customer')->type('boolean')->mandatory(true);
 		// $this->addField('is_member')->type('boolean')->mandatory(true)->defaultValue(true);
@@ -60,6 +61,7 @@ class Model_Member extends Model_Table {
 		$this->hasMany('Account','member_id');
 		$this->hasMany('Agent','member_id');
 		$this->hasMany('AccountGuarantor','member_id');
+		$this->hasMany('DocumentSubmitted','member_id');
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);
@@ -189,6 +191,11 @@ class Model_Member extends Model_Table {
 		$this['is_defaulter']=!$this['is_defaulter'];
 		$this->save();
 
+	}
+
+	function addOkConditions(){
+		$this->addCondition('is_active',true);
+		$this->addCondition('is_defaulter',false);
 	}
 
 }

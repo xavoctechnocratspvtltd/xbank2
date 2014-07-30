@@ -40,6 +40,13 @@ class page_reports_loan_dispatch extends Page {
 
 		$grid->setModel($account_model,array('AccountNumber','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','no_of_emi','emi'));
 
+		$grid->addMethod('format_myTotal',function($grid, $field){
+			$grid->current_row[$field] = $grid->current_row['no_of_emi'] * $grid->current_row['emi'];
+		});
+
+		$grid->addColumn('myTotal','total');
+
+
 		$grid->addPaginator(50);
 
 

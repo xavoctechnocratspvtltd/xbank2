@@ -4,8 +4,8 @@ class Model_AgentGuarantor extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Member','member_id');
-		$this->hasOne('Agent','agent_id');
+		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 
 		$this->hasMany('DocumentSubmitted','agentguarantor_id');
 

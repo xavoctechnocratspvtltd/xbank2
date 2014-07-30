@@ -51,7 +51,14 @@ class page_transactions_withdrawl extends Page {
 				$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
 				$account_model->loadBy('AccountNumber',$form['account']);
 
-				$account_model->withdrawl($form['amount'],$form['narration'],$form['account_to_debit']?array(array($form['account_to_credit']=>$form['amount'])):array(),$form);
+				try {
+					$this->api->db->beginTransaction();
+				    $account_model->withdrawl($form['amount'],$form['narration'],$form['account_to_debit']?array(array($form['account_to_credit']=>$form['amount'])):array(),$form);
+				    $this->api->db->commit();
+				} catch (Exception $e) {
+				   	$this->api->db->rollBack();
+				   	throw $e;
+				}
 				$js=array($form->js()->reload(),$right_col->js()->reload());
 				$form->js(null,$js)->univ()->successMessage($form['amount']."/- withdrawn from " . $form['account'])->execute();
 			}catch(Exception_ValidityCheck $e){

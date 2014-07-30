@@ -193,4 +193,9 @@ class Model_Member extends Model_Table {
 
 	}
 
+	function addOkConditions(){
+		$this->addCondition('is_active',true);
+		$this->addCondition('is_defaulter',false);
+	}
+
 }

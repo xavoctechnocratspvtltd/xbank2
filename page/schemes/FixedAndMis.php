@@ -11,7 +11,14 @@ class page_schemes_FixedAndMis extends Page{
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
 			$FixedAndMis_scheme_model = $crud->add('Model_Scheme_FixedAndMis');
-			$FixedAndMis_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_FIXED, ACCOUNT_TYPE_FIXED, $is_loanType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
+			try {
+				$this->api->db->beginTransaction();
+			    $FixedAndMis_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_FIXED, ACCOUNT_TYPE_FIXED, $is_loanType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			return true;
 		});
 

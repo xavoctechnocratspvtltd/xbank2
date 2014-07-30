@@ -25,8 +25,8 @@ class Model_Account_CC extends Model_Account{
 		
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null,$on_date=null){
-		
+	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber=null,$otherValues=array(),$form=null,$on_date=null){
+		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber();
 		$new_account_id = parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form,$on_date);
 		if($this['Amount'])
 			$this->doProsessingFeesTransactions($on_date);
@@ -41,7 +41,7 @@ class Model_Account_CC extends Model_Account{
 		$transaction->createNewTransaction(TRA_CC_ACCOUNT_OPEN, null, $on_date, "CC Account Opened",null,array('reference_account_id'=>$this->id));
 		$transaction->addDebitAccount($this,$processing_fee);
 	
-		$credit_account = $this->ref('branch_id')->get('Code') . SP . PROCESSING_FEE_RECEIVED . $this->ref('scheme_id')->get('name');		
+		$credit_account = $this->ref('branch_id')->get('Code') . SP . PROCESSING_FEE_RECEIVED . SP. $this->ref('scheme_id')->get('name');		
 		$transaction->addCreditAccount($credit_account,$processing_fee);
 
 		$transaction->execute();

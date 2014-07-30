@@ -9,6 +9,9 @@ class Model_Document extends Model_Table {
 		$this->addField('MemberDocuments')->type('boolean');
 		$this->addField('AgentDocuments')->type('boolean');
 		$this->addField('DSADocuments')->type('boolean');
+		
+		$this->addField('AgentGuarantor')->type('boolean');
+		$this->addField('DSAGuarantor')->type('boolean');
 
 		$this->addField('SavingAccount')->type('boolean');
 		$this->addField('FixedMISAccount')->type('boolean');

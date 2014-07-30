@@ -27,7 +27,7 @@ class Model_Account extends Model_Table {
 		
 		//New Fields added//
 		$this->addField('account_type');
-		$this->addField('AccountNumber')->mandatory(true);
+		$this->addField('AccountNumber');//->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Displ. Name');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true);
 
@@ -129,6 +129,7 @@ class Model_Account extends Model_Table {
 		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber']) AND !@$this->allow_any_name ){
 			throw $this->exception('AccountNumber Format not accpeted')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
+
 
 		// PandLGroup set default
 		if(!$this['Group'])
@@ -513,8 +514,16 @@ class Model_Account extends Model_Table {
 	}
 	
 	function changeMember($member){
-		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+		if(!$this->loaded())
+			throw $this->exception('Account Must be loaded to change member');
 
+		if(!($member instanceof Model_Member) and !$member->loaded())
+			throw $this->exception('Member must be passed as loaded Member Model');
+
+		$this->add('Model_Log')->logFieldEdit('Account',$this->id,'Member',$this['member_id'],$member->id);
+
+		$this['member_id'] = $member->id;
+		$this->save();
 	}
 
 	function changeDealer($member){

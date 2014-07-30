@@ -7,14 +7,21 @@ class page_reports_general_document extends Page {
 		parent::init();
 
 		$form=$this->add('Form');
-		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
-		$dealer_field->setModel('ActiveDealer');
+		// $form->setModel('DocumentSubmitted');
+
+		$form->addField('autocomplete/Basic','dealer')->setModel('ActiveDealer');
+		$form->addField('autocomplete/Basic','account')->setModel('Account');
+		$form->addField('autocomplete/Basic','member')->setModel('Member');
+		$form->addField('autocomplete/Basic','agent')->setModel('Agent');
+		$form->addField('autocomplete/Basic','agent_guarantor')->setModel('AgentGuarantor');
+		$form->addField('autocomplete/Basic','dsa')->setModel('DSA');
+		$form->addField('autocomplete/Basic','dsa_guarantor')->setModel('DSAGuarantor');
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		
 		$document=$this->add('Model_Document');
-		$document->addCondition('LoanAccount',true);
+		// $document->addCondition('LoanAccount',true);
 		$document_field=$form->addField('dropdown','document')->setEmptyText('All Documents');
 		$document_field->setModel($document);
 		$form->addField('line','value');
@@ -24,11 +31,12 @@ class page_reports_general_document extends Page {
 
 		$document_submitted_model=$this->add('Model_DocumentSubmitted');
 		$document_join = $document_submitted_model->join('documents','documents_id');
-		$account_join = $document_submitted_model->join('accounts','accounts_id');
-		$dealer_join = $account_join->hasOne('Dealer','dealer_id');
+		$account_join = $document_submitted_model->leftJoin('accounts','accounts_id');
+		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 
 		$account_join->addField('branch_id');
-		// $account_join->addField('dealer_id');
+		// $account_join->addField('AccountNumber');
+		// $dealer_join->addField('dealer_name','name');
 
 
 		if($_GET['filter']){
@@ -39,9 +47,43 @@ class page_reports_general_document extends Page {
 				$document_submitted_model->addCondition('dealer_id',$_GET['dealer']);
 			}
 
+			if($_GET['member']){
+				$this->api->stickyGET("dealer");
+				$document_submitted_model->addCondition('member_id',$_GET['member']);
+			}
+
+			if($_GET['agent']){
+				$this->api->stickyGET("agent");
+				$document_submitted_model->addCondition('agent_id',$_GET['agent']);
+			}
+
+			if($_GET['account']){
+				$this->api->stickyGET("account");
+				$document_submitted_model->addCondition('accounts_id',$_GET['account']);
+			}
+
+			if($_GET['agent_guarantor']){
+				$this->api->stickyGET("agent_guarantor");
+				$document_submitted_model->addCondition('agentguarantor_id',$_GET['agent_guarantor']);
+			}
+
+			if($_GET['dsa']){
+				$this->api->stickyGET("dsa");
+				$document_submitted_model->addCondition('dsa_id',$_GET['dsa']);
+			}
+
+			if($_GET['dsa_guarantor']){
+				$this->api->stickyGET("dsa_guarantor");
+				$document_submitted_model->addCondition('dsaguarantor_id',$_GET['dsa_guarantor']);
+			}
+
+
+
+
+
 			if($_GET['from_date']){
 				$this->api->stickyGET("from_date");
-				$document_submitted_model->addCondition('submitted_on','>',$_GET['from_date']);
+				$document_submitted_model->addCondition('submitted_on','>=',$_GET['from_date']);
 			}
 
 			if($_GET['to_date']){
@@ -63,14 +105,27 @@ class page_reports_general_document extends Page {
 
 		}
 
-		$document_submitted_model->setOrder('accounts');
-		$document_submitted_model->add('Controller_Acl');
+		$document_submitted_model->setOrder('submitted_on desc,id desc,accounts desc');
+		// $document_submitted_model->add('Controller_Acl');
 
 		$grid->setModel($document_submitted_model);
 		$grid->addPaginator(50);
 
 		if($form->isSubmitted()){
-			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'document'=>$form['document'],'value'=>$form['value'],'filter'=>1);
+			$send = array(
+				'from_date'=>$form['from_date']?:0,
+				'to_date'=>$form['to_date']?:0,
+				'document'=>$form['document'],
+				'value'=>$form['value'],
+				'dealer'=>$form['dealer'],
+				'member'=>$form['member'],
+				'agent'=>$form['agent'],
+				'account'=>$form['account'],
+				'agent_guarantor'=>$form['agent_guarantor'],
+				'dsa'=>$form['dsa'],
+				'dsa_guarantor'=>$form['dsa_guarantor'],
+
+				'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	

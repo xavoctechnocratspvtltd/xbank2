@@ -13,7 +13,14 @@ class page_Accounts_FixedAndMis extends Page {
 			if($crud->isEditing('edit')) return false;
 			
 			$fixedAndMis_account_model = $crud->add('Model_Account_FixedAndMis');
-			$fixedAndMis_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			try {
+				$this->api->db->beginTransaction();
+			    $fixedAndMis_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			return true;
 		});
 

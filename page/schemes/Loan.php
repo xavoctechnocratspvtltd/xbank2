@@ -12,7 +12,14 @@ class page_schemes_Loan extends Page{
 			if($crud->isEditing('edit')) return false;
 						
 			$Loan_scheme_model = $crud->add('Model_Scheme_Loan');
-			$Loan_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_LOAN, ACCOUNT_TYPE_LOAN, $is_loanType=$form['type'], $other_values=$form->getAllFields(),$form,$form->api->now);
+			try {
+				$this->api->db->beginTransaction();
+			    $Loan_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_LOAN, ACCOUNT_TYPE_LOAN, $is_loanType=$form['type'], $other_values=$form->getAllFields(),$form,$form->api->now);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			return true;
 		});
 

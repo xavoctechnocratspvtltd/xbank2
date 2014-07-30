@@ -31,7 +31,14 @@ class page_operations_edit extends Page {
 			$new_member_model=$this->add('Model_ActiveMember');
 			$new_member_model->load($member_form['new_member']);
 
-			$loan_account->changeMember($new_member_model);
+			try {
+				$this->api->db->beginTransaction();
+			    $loan_account->changeMember($new_member_model);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 
 			$member_form->js(null,$member_form->js()->univ()->_closeDialog())->reload()->execute();
 
@@ -57,7 +64,14 @@ class page_operations_edit extends Page {
 			$new_dealer_model=$this->add('Model_ActiveDealer');
 			$new_dealer_model->load($dealer_form['new_dealer']);
 
-			$loan_account->changeDealer($new_dealer_model);
+			try {
+				$this->api->db->beginTransaction();
+			    $loan_account->changeDealer($new_dealer_model);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 
 			$dealer_form->js(null,$dealer_form->js()->univ()->_closeDialog())->reload()->execute();
 
@@ -66,7 +80,7 @@ class page_operations_edit extends Page {
 		// ============ Agent Change
 
 		$tab3->add('View_Error')->set('TODO');
-
+		
 	
 	}
 }

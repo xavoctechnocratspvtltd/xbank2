@@ -6,7 +6,8 @@ class page_accounts_CC extends Page {
 		$crud=$this->add('xCRUD');
 		$account_cc_model =$this->add('Model_Account_CC');
 		$account_cc_model->add('Controller_Acl');		
-		
+		$account_cc_model->setOrder('created_at','desc');
+
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
 			
@@ -17,9 +18,18 @@ class page_accounts_CC extends Page {
 			    if($form[$form->api->normalizeName($documents['name'])] and $form[$form->api->normalizeName($documents['name'].' value')]=='')
 			    	$form->displayError($form->api->normalizeName($documents['name'].' value'),'Please Specify');
 			}
+
 			$cc_account_model = $crud->add('Model_Account_CC');
 			
-			$cc_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			try {
+				$this->api->db->beginTransaction();
+			    $cc_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
+			
 			return true;
 		});
 

@@ -26,7 +26,14 @@ class page_accounts_Loan extends Page {
 			}			
 
 			$loan_account_model = $crud->add('Model_Account_Loan');
-			$loan_account_model->createNewPendingAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			try {
+				$this->api->db->beginTransaction();
+			    $loan_account_model->createNewPendingAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			return true;
 		});
 
@@ -49,11 +56,14 @@ class page_accounts_Loan extends Page {
 					'*'=>array($this->api->normalizeName($documents['name'].' value'))
 					),'div .atk-form-row');
 			}
+
+
 		}
 
 		if($crud->isEditing()){
 			$loan_from_account_field = $crud->form->addField('autocomplete/Basic','loan_from_account')->validateNotNull();
 			$loan_from_account_field->setModel('Account');
+
 		}
 		
 
@@ -83,9 +93,21 @@ class page_accounts_Loan extends Page {
 					''=>array(''),
 					'Loan Against Deposit'=>array('LoanAgainstAccount','LoanAgainstAccount_id')
 					),'div .atk-form-row');
+
+			$member_field = $crud->form->getElement('member_id');
+			$member_existing_loan_view = $member_field->other_field->belowField()->add('View');
+			if($_GET['check_existing_loan_member_id']){
+				$member_for_existing_loans = $this->add('Model_Member');
+				$member_for_existing_loans->load($_GET['check_existing_loan_member_id']);
+				$members_loan_accounts = $member_for_existing_loans->ref('Account')->addCondition('SchemeType','Loan')->count()->getOne();
+				$member_existing_loan_view->set('Member Has ' . $members_loan_accounts. ' existing Loan Accounts');
+			}
+			$member_field->other_field->js('change',$member_existing_loan_view->js()->reload(array('check_existing_loan_member_id'=>$member_field->js()->val())));;
+
 		}
 
 		if($crud->isEditing('add')){
+			$crud->form->getElement('member_id')->getModel()->addOkConditions();
 
 
 			$crud->form->add('Order')
@@ -122,7 +144,14 @@ class page_accounts_Loan extends Page {
 				$form->displayError('LoanAgainstAccount','Please Specify Loan Against Account Number');
 
 			$loan_account_model = $crud->add('Model_Account_Loan');
-			$loan_account_model->createNewPendingAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			try {
+				$this->api->db->beginTransaction();
+			    $loan_account_model->createNewPendingAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			return true;
 		});
 
@@ -155,7 +184,8 @@ class page_accounts_Loan extends Page {
 		}
 		
 		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer'));
-
+		$crud->add('Controller_DocumentsManager',array('doc_type'=>'LoanAccount'));
+		
 		if($crud->isEditing()){
 			if($crud->form->hasElement('account_type')) // Removed in editing hook so may not have here
 				$crud->form->getElement('account_type')->setEmptyText('Please Select');
@@ -178,6 +208,8 @@ class page_accounts_Loan extends Page {
 
 
 		if($crud->grid){
+			$crud->grid->addClass('account_grid');
+			$crud->grid->js('reload')->reload();
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','edit_document');
 			$crud->grid->addColumn('expander','edit_guarantor');
@@ -308,7 +340,14 @@ class page_accounts_Loan extends Page {
 		}
 
 		if($reject_btn->isClicked('Are you sure')){
-			$pending_account->reject();
+			try {
+				$this->api->db->beginTransaction();
+			    $pending_account->reject();
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
 			$this->js()->_selector('.pending_grid')->trigger('reload')->execute();
 		}
 

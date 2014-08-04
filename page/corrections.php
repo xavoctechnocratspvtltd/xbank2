@@ -465,7 +465,7 @@ class page_corrections extends Page {
     	if(!$on_date) $on_date = $this->api->today;
 
     	$cc_update=$this->add('Model_Account_CC');
-    	$cc_update->dsql()->set('CurrentInterest',0)->set('LastCurrentInterestUpdatedAt','2014-05-31')->update();
+    	$cc_update->dsql()->set('CurrentInterest',0)->set('LastCurrentInterestUpdatedAt',$this->api->monthLastDate($this->api->previousMonth($this->api->today)))->update();
     	// TODOS: Take every date transaction for each CC account aftre LAST MONTHLY CLOSING and update Interest in CurrentInterest Field
 
     	// $this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($on_date);

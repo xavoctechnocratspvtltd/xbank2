@@ -9,6 +9,7 @@ class Menu_Base extends Menu {
 
 
 		$mad = $this->addMenuItem('#','M.A.D.');
+		$stock = 	$this->addMenuItem('stock_main','Stock');
 		$account = $this->addMenuItem('accounts','Accounts');
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$books = 	$this->addMenuItem('books','Books');

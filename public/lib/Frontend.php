@@ -233,4 +233,41 @@ class Frontend extends ApiFrontend {
         $this->api->memorize('progress_data',array());
     }
 
+    function getComission($CommissionString, $whatToGet,$PremiumNumber=-1){
+            $CommissionString=trim($CommissionString," ");
+            $CommissionString=trim($CommissionString,",");
+            $commArray=explode(",",$CommissionString);
+            $result=array();
+            $result["isPercentage"]=false;
+            if(strpos("%", $commArray[0]) !== false ){
+                $result["isPercentage"]=true;
+//                $commArray[0]=str_replace("%", "");
+            }
+            switch($whatToGet){
+                case OPENNING_COMMISSION:
+                    $result["Commission"]=trim($commArray[0]);
+
+                    break;
+                case PREMIUM_COMMISSION:
+                    if(count($commArray)  <= 1){
+                        throw new Exception("Premium must start from second Commission");
+                    }
+
+                    if($PremiumNumber >= count($commArray)){
+                        $commArray[$PremiumNumber]=$commArray[count($commArray)-1];
+                    }
+
+                    if(strpos("%", $commArray[$PremiumNumber]) !== false ){
+                        $result["isPercentage"]=true;
+//                        $commArray[$PremiumNumber]=str_replace("%", "");
+                    }
+
+                    $result["Commission"]=trim($commArray[$PremiumNumber]);
+                    $result["isPercentage"]=true;
+                    break;
+            }
+
+            return $result["Commission"];
+        }
+
 }

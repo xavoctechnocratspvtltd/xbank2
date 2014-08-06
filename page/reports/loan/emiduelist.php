@@ -104,20 +104,20 @@ class page_reports_loan_emiduelist extends Page {
 				case 'duelist':
 					$account_model->addCondition('due_premium_count','>',0);
 					$account_model->addCondition('due_premium_count','<=',2);
-					$account_model->addCondition('last_premium','<',$this->api->today);
+					$account_model->addCondition('last_premium','>=',$_GET['to_date']);
 					break;
 				case 'hardlist':
 					$account_model->addCondition('due_premium_count','>',2);
 					$account_model->addCondition('due_premium_count','<=',5);
-					$account_model->addCondition('last_premium','<',$this->api->today);
+					$account_model->addCondition('last_premium','>=',$_GET['to_date']);
 					break;
 				case 'npa':
 					$account_model->addCondition('due_premium_count','>',5);
-					$account_model->addCondition('last_premium','<',$this->api->today);
+					$account_model->addCondition('last_premium','>=',$_GET['to_date']);
 					break;
 
 				case 'time_collapse':
-					$account_model->addCondition('last_premium','>',$this->api->today);
+					$account_model->addCondition('last_premium','<',$_GET['to_date']);
 					break;
 				
 				default:
@@ -140,10 +140,11 @@ class page_reports_loan_emiduelist extends Page {
 			}
 
 			foreach ($document as $junk) {
+				$doc_id = $document->id;
 				if($_GET['doc_'.$document->id]){
 					$this->api->stickyGET('doc_'.$document->id);
-					$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($document){
-						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$document->id)->fieldQuery('Description');
+					$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
+						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
 					});
 					$grid_column_array[] = $this->api->normalizeName($document['name']);
 				}
@@ -153,7 +154,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		$account_model->add('Controller_Acl');
 		$grid->setModel($account_model,$grid_column_array);
-		$grid->addPaginator(50);
+		// $grid->addPaginator(50);
 
 		
 		$grid->removeColumn('last_premium');

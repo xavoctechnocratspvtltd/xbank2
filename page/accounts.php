@@ -11,7 +11,10 @@ class page_accounts extends Page {
 
 		$tabs = $this->add('Tabs');
 		foreach (explode(',',ACCOUNT_TYPES) as $accounts) {
-			$acc_tab = $tabs->addTabURL('accounts_'.$accounts,$accounts);
+			$accounts_display =$accounts;
+			if($accounts == 'Default') $accounts_display = 'Others';
+
+			$acc_tab = $tabs->addTabURL('accounts_'.$accounts,$accounts_display);
 	
 		}
 	}

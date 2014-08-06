@@ -16,7 +16,7 @@ class page_voucher_print extends Page {
 		$left->add('View')->set(array('Transaction Date : ' . $transaction['created_at'],'icon'=>'calendar'));
 		$right->add('View')->set(array($transaction['transaction_type'],'icon'=>'check'));
 		$grid=$this->add('Grid');
-		$grid->setModel($transaction->ref('TransactionRow'),array('account','amountDr','amountCr'));
+		$grid->setModel($transaction->ref('TransactionRow')->setOrder('amountDr desc, amountCr desc'),array('account','amountDr','amountCr'));
 
 		$this->add('View')->set(array($transaction['Narration'],'icon'=>'pencil'));
 

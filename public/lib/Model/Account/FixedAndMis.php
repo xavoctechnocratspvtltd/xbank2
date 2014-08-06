@@ -58,7 +58,26 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 	function giveAgentCommission(){
 		// TODO :: To give commission .... 
-		throw $this->exception('FD Agent commission ???', 'ValidityCheck')->setField('FieldName');
+		$commissionAmount = $this->api->getComission($this->ref('scheme_id')->get('AccountOpenningCommission'), OPENNING_COMMISSION);
+        $commissionAmount = $commissionAmount * $this["Amount"] / 100.00;
+
+        $transaction = $this->add('Model_Transaction');
+        $transaction->createNewTransaction(TRA_ACCOUNT_OPEN_AGENT_COMMISSION, $this->ref('branch_id'), $this['created_at'], "Agent Account openning commision for ".$this['AccountNumber'], $only_transaction=null, array('reference_account_id'=>$this->id));
+        
+        $transaction->addDebitAccount($this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionAmount);
+
+        $agent_saving_account = $this->ref('agent_id')->ref('account_id');
+        $tds_account = $this->add('Model_Account')->loadBy('AccountNumber',$this['branch_code'].SP.BRANCH_TDS_ACCOUNT);
+
+        $tds_amount = (strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionAmount * 10 /100 : $commissionAmount * 20 /100;
+		
+		$saving_amount = $commissionAmount - $tds_amount;        
+
+        $transaction->addCreditAccount($agent_saving_account, $saving_amount);
+        $transaction->addCreditAccount($tds_account, $tds_amount);
+        
+        $transaction->execute();
+
 	}
 
 	// function getFDMISInterest($on_date){

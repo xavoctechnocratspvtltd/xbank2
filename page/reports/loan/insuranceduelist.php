@@ -26,13 +26,13 @@ class page_reports_loan_insuranceduelist extends Page {
 			if($_GET['from_date']){
 				$accounts_model->addCondition('insurance_month','>=',(int) date('m',strtotime($_GET['from_date'])));
 				$accounts_model->addCondition('insurance_date','>=',(int)date('d',strtotime($_GET['from_date'])));
+				$accounts_model->addCondition('maturity_date','>=',$this->api->nextDate($_GET['from_date']));
 				
 			}
 
 			if($_GET['to_date']){
 				$accounts_model->addCondition('insurance_month','<=',(int)date('m',strtotime($_GET['to_date'])));
 				$accounts_model->addCondition('insurance_date','<=',(int)date('d',strtotime($_GET['to_date'])));
-				$accounts_model->addCondition('maturity_date','<=',$this->api->nextDate($_GET['to_date']));
 			}
 			
 			if($_GET['dealer'])
@@ -46,7 +46,16 @@ class page_reports_loan_insuranceduelist extends Page {
 		
 		$accounts_model->add('Controller_Acl');
 
-		$grid->setModel($accounts_model,array('AccountNumber','LoanInsurranceDate','dealer','insurance_month','insurance_date','maturity_date'));
+		$accounts_model->getElement('LoanInsurranceDate')->caption('Insurance Due Date');
+
+
+		$grid->setModel($accounts_model,array('AccountNumber','LoanInsurranceDate','dealer','insurance_month','insurance_date','created_at','maturity_date'));
+
+		$grid->addMethod('format_onlyDateMonth',function($g,$f){
+			$g->current_row[$f] = date('d-M',strtotime($g->current_row[$f]));
+		});
+
+		$grid->addFormatter('LoanInsurranceDate','onlyDateMonth');
 
 		$grid->addPaginator(50);
 		$grid->removeColumn('insurance_month');

@@ -47,8 +47,7 @@ class Model_Account_Loan extends Model_Account{
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $on_date = null ){
 
-		// throw $this->exception($form['LoanAgainstAccount_id'], 'ValidityCheck')->setField('AccountNumber');
-		// throw $this->exception('Check Loan Against Security', 'ValidityCheck')->setField('AccountNumber');
+		// AccountNumber is already comming as getNewAccountNumber from pending Account Actions.
 
 		if(!$on_date) $on_date = $this->api->now;
 

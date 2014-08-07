@@ -228,8 +228,15 @@ class Model_Account extends Model_Table {
 		if(!$account_type) $account_type = $this['account_type'];
 		if(!$account_type) throw $this->exception('Could not Identify Account Type to generate Account Number', 'ValidityCheck')->setField('AccountNumber');
 
-		
+		$ac_code = $this->api->getConfig('account_code/'.$this['account_type'],false);
+		if(!$ac_code) throw $this->exception('Account type Code is not proper ')->addMoreInfo('Account account_type',$this['account_type']);
 
+		$max_account_number = $this->add('Model_Account');
+		$new_number = $max_account_number->_dsql()->del('fields')
+			->field($this->dsql()->expr('MAX(CAST(SUBSTRING(AccountNumber,6,LENGTH(AccountNumber)-5)) AS UNSIGNED)'))
+			->where('LEFT(AccountNumber,3) = '.$this['branch_code'])
+			->getOne();
+		return $this['branch_code'].$ac_code.$new_number;
 	}
 
 	/**

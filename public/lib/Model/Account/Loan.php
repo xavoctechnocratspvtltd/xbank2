@@ -103,7 +103,7 @@ class Model_Account_Loan extends Model_Account{
 
 	function getFirstEMIDate(){
 		// ??? .... $this['created_at'] with dealer_monthly_date ... relation
-
+		throw $this->exception('Through Dealer Date ... ???', 'ValidityCheck')->setField('FieldName');
 	}
 
 	function createPremiums(){

@@ -18,6 +18,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null,$created_at=null){
+		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber($otherValues['account_type']);
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 		if($this['Amount'])
 			$this->deposit($this['Amount'],null,null,null,$on_date=$created_at);

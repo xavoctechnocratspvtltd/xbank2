@@ -21,6 +21,7 @@ class Model_Account_Recurring extends Model_Account{
 
 	function createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues=array(),$form=null, $on_date = null ){
 		if(!$on_date) $on_date = $this->api->now;
+		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber();
 		
 		parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form, $on_date);
 		

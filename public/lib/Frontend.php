@@ -35,7 +35,8 @@ class Frontend extends ApiFrontend {
         $this->pathfinder->addLocation(array(
             'php'=>'lib',
             'js'=>'atk4/js',
-            'css'=>'atk4/css'
+            'css'=>'atk4/css',
+            'template'=>'templates',
             ))->setBasePath($this->pathfinder->base_location->base_path .'/public');
 
 

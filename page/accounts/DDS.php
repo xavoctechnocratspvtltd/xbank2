@@ -6,6 +6,7 @@ class page_accounts_DDS extends Page {
 
 		$crud=$this->add('xCRUD');
 		$account_dds_model = $this->add('Model_Account_DDS');
+		$account_dds_model->setOrder('created_at','Desc');
 		$account_dds_model->add('Controller_Acl');
 
 		$crud->addHook('myupdate',function($crud,$form){
@@ -38,7 +39,7 @@ class page_accounts_DDS extends Page {
 			$account_dds_model->hook('editing');
 		}
 
-		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id'));
+		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
 		
 		if($crud->grid)
 			$crud->grid->addPaginator(10);

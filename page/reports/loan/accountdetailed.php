@@ -4,33 +4,37 @@ class page_reports_loan_accountdetailed extends Page {
 	function init(){
 		parent::init();
 
-		$this->add('View_Error')->set('Create a View and fill up with all like (dealer info id dealer_id, guaranters details etc)');
 
 		$form=$this->add('Form');
 		$accounts_no_field=$form->addField('autocomplete/Basic','accounts_no');
-		$accounts=$this->add('Model_Account_Loan');
+		$accounts=$this->add('Model_Account');
 		$accounts_no_field->setModel($accounts);
 
 		$form->addSubmit('GET List');
 
 
-		$grid=$this->add('Grid'); 
+		// $grid=$this->add('Grid'); 
 
-		$accounts_model=$this->add('Model_Account_Loan');
+		// $accounts_model=$this->add('Model_Account_DDS');
+		$accounts_model=$this->add('Model_Account');
+		// $accounts_model->setOrder('id','desc');
+
 
 		if($_GET['accounts_no']){
-
-			//TODO
+			$accounts_model->load($_GET['accounts_no']);
+		}else{
 
 		}
 
-		$grid->setModel($accounts_model);
+		$account_view = $this->add('View_AccountDetail',array('account'=>$accounts_model));
 
-		$grid->addPaginator(50);
+		// $grid->setModel($accounts_model);
+
+		// $grid->addPaginator(50);
 
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('accounts_no'=>$form['accounts_no']))->execute();
+			$account_view->js()->reload(array('accounts_no'=>$form['accounts_no']))->execute();
 
 		}	
 	

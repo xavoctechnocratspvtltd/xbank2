@@ -19,7 +19,7 @@ class Model_Account_DDS extends Model_Account{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
-		
+		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber();
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 
 		if($agent_id = $otherValues['agent_id'])

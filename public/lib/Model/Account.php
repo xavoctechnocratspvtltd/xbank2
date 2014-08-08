@@ -105,7 +105,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('JointMember','account_id');
 		$this->hasMany('Premium','account_id');
 		$this->hasMany('DocumentSubmitted','accounts_id');
-		$this->hasMany('AccountGaurantor','account_id');
+		$this->hasMany('AccountGuarantor','account_id');
 		$this->hasMany('TransactionRow','account_id');
 		$this->hasMany('Account','related_account_id',null,'RelatedAccounts');
 
@@ -251,21 +251,25 @@ class Model_Account extends Model_Table {
 		$ac_code = $this->api->getConfig('account_code/'.$account_type,false);
 		if(!$ac_code) throw $this->exception('Account type Code is not proper ')->addMoreInfo('Account account_type',$this['account_type']);
 
+		$prefix_length = 3+strlen($ac_code); // BRANCH CODE + SB/DDS/MIS ...
+
 		$max_account_number = $this->add('Model_Account');
 		$new_number = $max_account_number->_dsql()->del('fields')
 			->field($this->dsql()->expr('	MAX(
                                                                 CAST(
                                                                         SUBSTRING(
                                                                                 AccountNumber,
-                                                                                6,
-                                                                                LENGTH(AccountNumber) - 5
+                                                                                '.($prefix_length+1).',
+                                                                                LENGTH(AccountNumber) - '.($prefix_length-1).'
                                                                         ) AS UNSIGNED
                                                                 )
                                                         )'))
 			->where('LEFT(AccountNumber,3) = "'.$branch['Code'].'"')
                         ->where('account_type',$account_type)
 			->getOne();
-                
+               
+        // throw new Exception($new_number, 1);
+        
 		return $branch['Code'].$ac_code.($new_number+1);
 	}
 

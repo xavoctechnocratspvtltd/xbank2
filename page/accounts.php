@@ -6,7 +6,7 @@ class page_accounts extends Page {
 
 	function init(){
 		parent::init();
-
+		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
 		
 
 		$tabs = $this->add('Tabs');

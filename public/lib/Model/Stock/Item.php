@@ -57,6 +57,31 @@ class Model_Stock_Item extends Model_Table {
 
 	}
 
+
+	function canSubmit($qty,$on_date=null){
+		if(!$on_date) $on_date= $this->api->today;
+
+		$transaction_stock_issue=$this->add('Model_Stock_Transaction');
+		$transaction_stock_issue->addCondition('item_id',$this->id);
+		$transaction_stock_issue->addCondition('created_at','<',$this->api->nextDate($on_date));
+		$transaction_stock_issue->addCondition('transaction_type','Issue');
+		$transaction_stock_issue_qty=$transaction_stock_issue->sum('qty')->getOne();
+		$transaction_stock_issue_qty?:0;
+		// throw new Exception($transaction_stock_issue_qty);
+		$transaction_stock_submit=$this->add('Model_Stock_Transaction');
+		$transaction_stock_submit->addCondition('item_id',$this->id);
+		$transaction_stock_submit->addCondition('created_at','<',$this->api->nextDate($on_date));
+		$transaction_stock_submit->addCondition('transaction_type','Submit');
+		$transaction_stock_submit_qty=$transaction_stock_submit->sum('qty')->getOne();
+		$transaction_stock_submit_qty?:0;
+		// throw $this->exception(($transaction_stock_issue_qty-$transaction_stock_submit_qty) >= $qty, 'ValidityCheck')->setField('FieldName');
+		// throw $this->exception(($transaction_stock_issue_qty-$transaction_stock_submit_qty) >= $qty);
+
+		return ((($transaction_stock_issue_qty-$transaction_stock_submit_qty) >= $qty)?:0);
+	}
+
+
+	
 	function markConsumeable(){
 
 	}
@@ -168,6 +193,16 @@ class Model_Stock_Item extends Model_Table {
 		// throw $this->exception($purchase_tra_qty);
 		return (($openning_tra_qty+$purchase_tra_qty+$submit_tra_qty+$transfer_to_this_branch_tra_qty)-($issue_tra_qty+$dead_tra_qty+$sold_tra_qty+$transfer_from_this_branch_tra_qty+$purchase_return_tra_qty));
 
+	}
 
+	function getDeadQty($qty,$as_on=null){
+		if(!$as_on)
+			$as_on=$this->api->now;
+		$dead_tra = $this->add('Model_Stock_Transaction');
+		$dead_tra->addCondition('item_id',$this->id);
+		$dead_tra->addCondition('created_at','<',$this->api->nextDate($as_on));
+		$dead_tra->addCondition('transaction_type','Dead');
+		$dead_tra_qty = ($dead_tra->sum('qty')->getOne())?:0;
+		return (($dead_tra_qty>=$qty)?:0);
 	}
 }

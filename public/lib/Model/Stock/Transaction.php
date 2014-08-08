@@ -13,6 +13,8 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->hasOne('Branch','to_branch_id');
 		$this->addField('qty');
 		$this->addField('rate');
+		$this->addField('amount');
+		$this->addField('narration');
 		$this->addField('created_at')->type('date')->defaultValue(date('Y-m-d'));
 		$this->addField('issue_date');
 		$this->addField('submit_date');
@@ -20,7 +22,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function purchase($party,$item,$qty,$rate,$branch=null){
+	function purchase($party,$item,$qty,$rate,$narration,$branch=null){
 
 		if($this->loaded())
 			throw $this->exception('Please Call On Empty Object');
@@ -38,46 +40,52 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['qty']=$qty;
 		$this['rate']=$rate;
 		$this['transaction_type']='Purchase';
+		$this['narration']=$narration;
 		$this->save();
 	}
 
-	function purchaseReturn($party,$item,$qty,$rate,$branch=null){
+	function purchaseReturn($party,$item,$qty,$rate,$narration,$branch=null){
 		if($this->loaded())
 			throw $this->exception('Please Call On Empty Object');
 		if(!$branch)
 				$branch=$this->api->currentBranch;
-		if(!$party->loaded() and (!$party instanceof Model_Stock_Party))
+		if(!($party instanceof Model_Stock_Party) and !$party->loaded())
 			throw $this->exception('Please pass loaded object of Party');
 		
-		if(!$item->loaded() and (!$item instanceof Model_Stock_Item))
+		if(!($item instanceof Model_Stock_Item) and !$item->loaded())
 			throw $this->exception('Please pass loaded object of Item');
 		if(!$item_purchased=$this->isPurchased($party,$item,$branch))
 			throw $this->exception("This Item is Not Purchase in Given Branch, Check Again");
-		$this['party_id']=$party->id;
-		$this['branch_id']=$branch->id;
-		$this['item_id']=$item->id;
-		$this['qty']=$qty;
-		$this['rate']=$rate;//$item_purchased['rate'];
-		$this['transaction_type']='PurchaseReturn';
-		$this->saveAndUnload();
+		$tra=$this->add('Model_Stock_Transaction');
+		$tra['party_id']=$party->id;
+		$tra['branch_id']=$branch->id;
+		$tra['item_id']=$item->id;
+		$tra['qty']=$qty;
+		$tra['rate']=$rate;//$item_purchased['rate'];
+		$tra['transaction_type']='PurchaseReturn';
+		$tra['narration']=$narration;
+		$tra->save();
 		// throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
 
 	}
 
-	function isPurchased($party,$item,$branch){
-		$this->addCondition('party_id',$party->id);
-		$this->addCondition('branch_id',$branch->id);
-		$this->addCondition('item_id',$item->id);
-		$this->addCondition('transaction_type','Purchase');
-		$this->tryLoadAny();
-		if($this->loaded())
-			return $this;
+	function isPurchased($party,$item,$branch=null){
+		if(!$branch)
+			$branch=$this->api->currentBranch;
+		$tra=$this->add('Model_Stock_Transaction');
+		$tra->addCondition('party_id',$party->id);
+		$tra->addCondition('branch_id',$branch->id);
+		$tra->addCondition('item_id',$item->id);
+		$tra->addCondition('transaction_type','Purchase');
+		$tra->tryLoadAny();
+		if($tra->loaded())
+			return $tra;
 		else
 			return false;
 
 	}
 
-	function issue($item,$qty,$staff=null,$agent=null,$dealer=null,$branch=null,$on_date=null){
+	function issue($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$branch=null,$on_date=null){
 
 		if($staff->loaded() + $dealer->loaded() + $agent->loaded() > 1)
 			throw $this->exception('Only One of Satff/Dealer/Agent is required', 'ValidityCheck')->setField('qty');
@@ -102,16 +110,14 @@ class Model_Stock_Transaction extends Model_Table {
 			$this['agent_id']=$agent->id;
 		if($dealer->loaded())
 			$this['dealer_id']=$dealer->id;
+		$this['narration']=$narration;
 		$this->save();
 
-		$item=$this->add('Model_Stock_Item');
-		$item->load($this['item_id']);
-		$item->markIssued();
 	}
 
 	
 
-	function submit($item,$qty,$branch=null,$on_date=null){
+	function submit($item,$qty,$narration,$branch=null,$on_date=null){
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
@@ -120,19 +126,20 @@ class Model_Stock_Transaction extends Model_Table {
 	
 		if(!$on_date)
 			$as_on=$this->api->today;
-		if($item->getQty($as_on)<$qty)
-			throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
+		// if($item->getQty($as_on)<$qty)
+		// 	throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
 		$this['item_id']=$item->id;
 		$this['branch_id']=$this->api->currentBranch->id;
 		$this['qty']=$qty;
 		$this['transaction_type']='Submit';
+		$this['narration']=$narration;
 		$this['submit_date']=$this->api->now;
 		$this->save();
 		
 
 
 	}
-	function dead($item,$qty,$as_on=null,$branch=null){
+	function dead($item,$qty,$narration,$as_on=null,$branch=null){
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
 		if(!$item->loaded() and (!$item instanceof Model_Stock_Item))
@@ -144,11 +151,12 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['item_id']=$item->id;
 		$this['branch_id']=$branch->id;
 		$this['qty']=$qty;
+		$this['narration']=$narration;
 		$this['transaction_type']='Dead';
 		$this->save();
 	}
 
-	function transfer($item,$to_branch,$qty,$as_on=null){
+	function transfer($item,$to_branch,$qty,$narration,$as_on=null){
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
@@ -164,15 +172,16 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['branch_id']=$this->api->currentBranch->id;
 		$this['to_branch_id']=$to_branch->id;
 		$this['qty']=$qty;
+		$this['narration']=$narration;
 		$this['transaction_type']='Transfer';
 		$this->save();
 	}
 
-	function openning($item,$qty,$rate,$branch=null){
+	function openning($item,$qty,$rate,$narration,$branch=null){
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
-		if($item->loaded() and (!$item instanceof Model_Stock_Item))
+		if(!($item instanceof Model_Stock_Item) and $item->loaded())
 			throw $this->exception('Please loaded object of Item Model');
 		
 		if(!$branch)
@@ -182,14 +191,31 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['branch_id']=$branch->id;
 		$this['qty']=$qty;
 		$this['rate']=$rate;
+		$this['narration']=$narration;
 		$this['transaction_type']='Openning';
 		$this->save();
 
 	}
 
-	function sold($item,$qty,$rate,$branch=null){
+	function sold($item,$qty,$rate,$narration,$amount,$branch=null){
 
-		// TODO ASK
+		if($this->loaded())
+			throw $this->exception('Please call on empty Object');
+		if(!($item instanceof Model_Stock_Item) and $item->loaded())
+			throw $this->exception('Please loaded object of Item Model');
+		
+		if(!$branch)
+			$branch=$this->api->currentBranch;
+		$this['item_id']=$item->id;
+		$this['branch_id']=$this->api->currentBranch->id;
+		$this['branch_id']=$branch->id;
+		$this['qty']=$qty;
+		$this['rate']=$rate;
+		$this['narration']=$narration;
+		$this['transaction_type']='Sold';
+		$this['amount']=$amount;
+		$this->save();
+		
 
 	}
 

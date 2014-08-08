@@ -12,12 +12,13 @@ class page_stock_actions_transfer extends Page {
 		$item_field=$form->addField('dropdown','item')->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');	
 		$form->addField('line','qty');
+		$form->addField('text','narration');
 		$form->addSubmit('Transfer');
 
 		$grid=$this->add('Grid');
 		$transfer_transaction=$this->add('Model_Stock_Transaction');
 		$transfer_transaction->addCondition('transaction_type','Transfer');
-		$grid->setModel($transfer_transaction,array('item','to_branch','qty','rate','created_at'));
+		$grid->setModel($transfer_transaction,array('item','to_branch','qty','rate','created_at','narration'));
 
 		if($form->isSubmitted()){
 			$branch=$this->add('Model_Branch');
@@ -25,7 +26,7 @@ class page_stock_actions_transfer extends Page {
 			$item=$this->add('Model_Stock_Item');
 			$item->load($form['item']);
 			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->transfer($item,$branch,$form['qty']);
+			$transaction->transfer($item,$branch,$form['qty'],$form['narration']);
 			$form->js()->reload(null,$grid->js()->reload())->execute();
 		}
 	}

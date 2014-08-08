@@ -41,4 +41,6 @@ class Model_Staff extends Model_Table {
 		}
 		parent::delete();
 	}
+
+	
 }

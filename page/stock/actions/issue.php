@@ -17,12 +17,13 @@ class page_stock_actions_issue extends Page {
 		$dealer_field->setModel('Dealer');
 
 		$form->addField('line','qty');
+		$form->addField('text','narration');
 		$form->addSubmit('Issue');
 
 		$grid=$this->add('Grid');
 		$issue_transaction=$this->add('Model_Stock_Transaction');
 		$issue_transaction->addCondition('transaction_type','Issue');
-		$grid->setModel($issue_transaction,array('branch','item','staff','qty','issue_date'));
+		$grid->setModel($issue_transaction,array('branch','item','staff','qty','issue_date','narration'));
 
 		if($form->isSubmitted()){
 			$item=$this->add('Model_Stock_Item')->load($form['item']);
@@ -30,7 +31,7 @@ class page_stock_actions_issue extends Page {
 			$agent=$this->add('Model_Agent')->tryLoad($form['agent']);
 			$dealer=$this->add('Model_Dealer')->tryLoad($form['dealer']);
 			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->issue($item,$form['qty'],$staff,$agent,$dealer);
+			$transaction->issue($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
 			$form->js(null,$grid->js()->reload())->reload()->execute();
 
 		}

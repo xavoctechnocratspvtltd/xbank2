@@ -14,6 +14,15 @@ class Model_Stock_Item extends Model_Table {
 		$this->addField('is_fixedassets')->type('boolean')->defaultValue(false);
 		$this->hasMany('Stock_Transaction','transaction_id');
 		$this->addHook('beforeDelete',$this);
+
+		$this->addExpression('container')->set(function($m,$q){
+			$cont_m= $m->add('Model_Stock_Container',array('table_alias'=>'xsc'));
+			$item_j = $cont_m->join('stock_rows.container_id')->join('stock_items.row_id');
+			$item_j->addField('xitem_id','id');
+			$cont_m->addCondition('xitem_id',$q->getField('id'));
+
+			return $cont_m->fieldQuery('name');
+		});
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 

@@ -14,11 +14,11 @@ class page_accounts_SavingAndCurrent extends Page {
 			$sbca_account_model = $crud->add('Model_Account_SavingAndCurrent');
 			
 			try {
-				$this->api->db->beginTransaction();
+				$crud->api->db->beginTransaction();
 			    $sbca_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
-			    $this->api->db->commit();
+			    $crud->api->db->commit();
 			} catch (Exception $e) {
-			   	$this->api->db->rollBack();
+			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
 			return true;

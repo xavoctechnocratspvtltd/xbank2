@@ -13,11 +13,11 @@ class page_accounts_Recurring extends Page {
 			if($crud->isEditing('edit')) return false;
 			$new_account = $crud->add('Model_Account_Recurring');
 			try {
-				$this->api->db->beginTransaction();
+				$crud->api->db->beginTransaction();
 			    $new_account->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
-			    $this->api->db->commit();
+			    $crud->api->db->commit();
 			} catch (Exception $e) {
-			   	$this->api->db->rollBack();
+			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
 			return true;

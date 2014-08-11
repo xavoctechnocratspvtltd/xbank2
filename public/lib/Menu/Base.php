@@ -90,6 +90,8 @@ class Menu_Base extends Menu {
 
 		$agent_reports_sub_menus = $agent_reports_sub_menus_popover->add('Menu_Vertical');
 		$agent_reports_sub_menus->addMenuItem('reports_agent_tds','TDS Report');
+		$agent_reports_sub_menus->addMenuItem('reports_agent_status','Active/Inactive Report');
+		$agent_reports_sub_menus->addMenuItem('reports_agent_detail','Agent Detail');
 		$agent_reports->js('click',$agent_reports_sub_menus_popover->showJS());
 
 		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');

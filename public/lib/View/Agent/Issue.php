@@ -1,27 +1,28 @@
 <?php
 
-class View_Staff_Consume extends View {
+class View_Agent_Issue extends View {
 	function init(){
 		parent::init();
 		// if(!$_GET['filter'])
 		// 	throw $this->exception('Something is wrong');
 		// 	
-		$this->add('H3')->set('Staff Consume Ledger');
-		$this->api->stickyGET('staff');
+		$this->add('H3')->set('Agent Issue Ledger');
+		$this->api->stickyGET('agent');
 		$this->api->stickyGET('from_date');
 		$this->api->stickyGET('to_date');
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');
-		$transaction_j_item->addField('is_consumable');
-		$transaction->addCondition('is_consumable',true);
-		$transaction->addCondition('transaction_type','Consume');
+		$transaction_j_item->addField('is_issueable');
+		$transaction->addCondition('is_issueable',true);
+		$transaction->addCondition('transaction_type','Issue');
+
 		$grid=$this->add('Grid_AccountsBase');
-		$staff_model=$this->add('Model_Staff');
+		$agent_model=$this->add('Model_Agent');
 		if($_GET['filter']){
 						
-			if($_GET['staff']){
-				$staff_model->load($_GET['staff']);
-				$transaction->addCondition('staff_id',$_GET['staff']);
+			if($_GET['agent']){
+				$agent_model->load($_GET['agent']);
+				$transaction->addCondition('agent_id',$_GET['agent']);
 			}
 
 			if($_GET['from_date'])
@@ -32,7 +33,7 @@ class View_Staff_Consume extends View {
 		}else
 			$transaction->addCondition('id',-1);
 
-		// $openning_bal=$staff_model->getQty($_GET['from_date']);
+		// $openning_bal=$agent_model->getQty($_GET['from_date']);
 		$grid->setModel($transaction,array('item','qty','created_at'));	
 
 		$grid->addColumn('text','DR');

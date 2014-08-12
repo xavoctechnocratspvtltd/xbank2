@@ -12,6 +12,7 @@ class page_stock_actions_transfer extends Page {
 		$item_field=$form->addField('dropdown','item')->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');	
 		$form->addField('line','qty');
+		$form->addField('line','rate');
 		$form->addField('text','narration');
 		$form->addSubmit('Transfer');
 
@@ -26,7 +27,7 @@ class page_stock_actions_transfer extends Page {
 			$item=$this->add('Model_Stock_Item');
 			$item->load($form['item']);
 			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->transfer($item,$branch,$form['qty'],$form['narration']);
+			$transaction->transfer($item,$branch,$form['qty'],$form['rate'],$form['narration']);
 			$form->js()->reload(null,$grid->js()->reload())->execute();
 		}
 	}

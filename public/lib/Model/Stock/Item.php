@@ -14,6 +14,7 @@ class Model_Stock_Item extends Model_Table {
 		$this->addField('is_fixedassets')->type('boolean')->defaultValue(false);
 		$this->hasMany('Stock_Transaction','transaction_id');
 		$this->addHook('beforeDelete',$this);
+		$this->addHook('beforeSave',$this);
 
 		$this->addExpression('container')->set(function($m,$q){
 			$cont_m= $m->add('Model_Stock_Container',array('table_alias'=>'xsc'));
@@ -23,7 +24,18 @@ class Model_Stock_Item extends Model_Table {
 
 			return $cont_m->fieldQuery('name');
 		});
+
+
+		
+
+
 		$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave(){
+		if($this['is_consumable'] and $this['is_issueable'])
+							throw $this->exception("Can't Mark A single Item Issueable and Consumbale");
+
 	}
 
 	function isExistInRow($row){
@@ -198,12 +210,56 @@ class Model_Stock_Item extends Model_Table {
 		$purchase_return_tra->addCondition('created_at','<',$this->api->nextDate($as_on));
 		$purchase_return_tra->addCondition('transaction_type','PurchaseReturn');
 		$purchase_return_tra_qty = ($purchase_return_tra->sum('qty')->getOne())?:0;
+
+		$consume_tra = $this->add('Model_Stock_Transaction');
+		$consume_tra->addCondition('item_id',$this->id);
+		$consume_tra->addCondition('created_at','<',$this->api->nextDate($as_on));
+		$consume_tra->addCondition('transaction_type','Consume');
+		$consume_tra_qty = ($consume_tra->sum('qty')->getOne())?:0;
 		// throw $this->exception("(($openning_tra_qty+$purchase_tra_qty+$submit_tra_qty+$transfer_to_this_branch_tra_qty)-($issue_tra_qty+$dead_tra_qty+$sold_tra_qty+$transfer_from_this_branch_tra_qty+$purchase_return_tra_qty));");
 		// throw $this->exception($purchase_tra_qty);
-		return (($openning_tra_qty+$purchase_tra_qty+$submit_tra_qty+$transfer_to_this_branch_tra_qty)-($issue_tra_qty+$dead_tra_qty+$sold_tra_qty+$transfer_from_this_branch_tra_qty+$purchase_return_tra_qty));
+		return (($openning_tra_qty+$purchase_tra_qty+$submit_tra_qty+$transfer_to_this_branch_tra_qty)-($issue_tra_qty+$dead_tra_qty+$sold_tra_qty+$transfer_from_this_branch_tra_qty+$purchase_return_tra_qty+$consume_tra_qty));
 
 	}
 
+	function getIssueConsume($as_on=null){
+		if(!$as_on)
+			$as_on=$this->api->now;
+		$issue_tra = $this->add('Model_Stock_Transaction');
+		$issue_tra->addCondition('item_id',$this->id);
+		$issue_tra->addCondition('created_at','<',$this->api->nextDate($as_on));
+		$issue_tra->addCondition('transaction_type','Issue');
+		$issue_tra_qty = ($issue_tra->sum('qty')->getOne())?:0;
+
+
+		$consume_tra = $this->add('Model_Stock_Transaction');
+		$consume_tra->addCondition('item_id',$this->id);
+		$consume_tra->addCondition('created_at','<',$this->api->nextDate($as_on));
+		$consume_tra->addCondition('transaction_type','Consume');
+		$consume_tra_qty = ($consume_tra->sum('qty')->getOne())?:0;
+
+		return (($issue_tra_qty-$consume_tra_qty)?:0);
+
+	}
+
+	function getAvgRate($as_on=null){
+		if($as_on)
+			$as_on=$this->api->now;
+		$purchase_tra = $this->add('Model_Stock_Transaction');
+		$purchase_tra->addCondition('item_id',$this->id);
+		$purchase_tra->addCondition('created_at','<',$this->api->nextDate($this->api->now));
+		$purchase_tra->addCondition('transaction_type','Purchase');
+		$purchase_tra_qty = ($purchase_tra->sum('rate')->getOne())?:0;
+		$no_of_puchase=$purchase_tra->count()->getOne();
+		return $purchase_tra_qty/$no_of_puchase;
+	}
+
+
+	function amount($as_on=null){
+		if(!$as_on)
+			$as_on=$this->api->now;
+		return $this->getQty($as_on)*$this->getAvgRate($as_on);
+	}
 	function getDeadQty($qty,$as_on=null){
 		if(!$as_on)
 			$as_on=$this->api->now;

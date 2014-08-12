@@ -14,6 +14,7 @@ class View_Staff_FixedAssets extends View {
 		$transaction_j_item=$transaction->join('stock_items','item_id');
 		$transaction_j_item->addField('is_fixedassets');
 		$transaction->addCondition('is_fixedassets',true);
+		$transaction->addCondition('transaction_type','Issue');
 
 		$grid=$this->add('Grid_AccountsBase');
 		$staff_model=$this->add('Model_Staff');

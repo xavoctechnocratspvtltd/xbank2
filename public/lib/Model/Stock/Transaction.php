@@ -18,7 +18,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->addField('created_at')->type('date')->defaultValue(date('Y-m-d'));
 		$this->addField('issue_date');
 		$this->addField('submit_date');
-		$this->addField('transaction_type')->enum(array('Purchase','Issue','Submit','PurchaseReturn','Dead','Transfer','Openning','Sold'));
+		$this->addField('transaction_type')->enum(array('Purchase','Issue','Consume','Submit','PurchaseReturn','Dead','Transfer','Openning','Sold'));
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
@@ -115,9 +115,41 @@ class Model_Stock_Transaction extends Model_Table {
 
 	}
 
+	function consume($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$branch=null,$on_date=null){
+
+		if($staff->loaded() + $dealer->loaded() + $agent->loaded() > 1)
+			throw $this->exception('Only One of Satff/Dealer/Agent is required', 'ValidityCheck')->setField('qty');
+
+		if($this->loaded())
+			throw $this->exception('Please call on empty Object');
+		if(!($item instanceof Model_Stock_Item) and !$item->loaded() )
+			throw $this->exception('Please loaded object of Item Model');
+		
+		if(!$on_date)
+			$on_date=$this->api->today;
+		if($item->getQty($on_date)<$qty)
+			throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
+		$this['item_id']=$item->id;
+		$this['branch_id']=$this->api->currentBranch->id;
+		$this['qty']=$qty;
+		$this['transaction_type']='Consume';
+		$this['issue_date']=$this->api->now;
+		if($staff->loaded())
+			$this['staff_id']=$staff->id;
+		if($agent->loaded())
+			$this['agent_id']=$agent->id;
+		if($dealer->loaded())
+			$this['dealer_id']=$dealer->id;
+		$this['narration']=$narration;
+		$this->save();
+
+	}
+
 	
 
-	function submit($item,$qty,$narration,$branch=null,$on_date=null){
+	function submit($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$branch=null,$on_date=null){
+		if($staff->loaded() + $dealer->loaded() + $agent->loaded() > 1)
+			throw $this->exception('Only One of Satff/Dealer/Agent is required', 'ValidityCheck')->setField('qty');
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
@@ -134,12 +166,21 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['transaction_type']='Submit';
 		$this['narration']=$narration;
 		$this['submit_date']=$this->api->now;
+		if($staff->loaded())
+			$this['staff_id']=$staff->id;
+		if($agent->loaded())
+			$this['agent_id']=$agent->id;
+		if($dealer->loaded())
+			$this['dealer_id']=$dealer->id;
 		$this->save();
-		
+
 
 
 	}
-	function dead($item,$qty,$narration,$as_on=null,$branch=null){
+	function dead($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$as_on=null,$branch=null){
+
+		if($staff->loaded() + $dealer->loaded() + $agent->loaded() > 1)
+			throw $this->exception('Only One of Satff/Dealer/Agent is required', 'ValidityCheck')->setField('qty');
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
 		if(!$item->loaded() and (!$item instanceof Model_Stock_Item))
@@ -148,15 +189,25 @@ class Model_Stock_Transaction extends Model_Table {
 			$branch=$this->api->currentBranch;
 		if($item->getQty($as_on)<$qty)
 			throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
+		
+		$this->submit($item,$qty,$narration,$staff,$agent,$dealer);
+		
 		$this['item_id']=$item->id;
 		$this['branch_id']=$branch->id;
 		$this['qty']=$qty;
 		$this['narration']=$narration;
 		$this['transaction_type']='Dead';
+
+		if($staff->loaded())
+			$this['staff_id']=$staff->id;
+		if($agent->loaded())
+			$this['agent_id']=$agent->id;
+		if($dealer->loaded())
+			$this['dealer_id']=$dealer->id;
 		$this->save();
 	}
 
-	function transfer($item,$to_branch,$qty,$narration,$as_on=null){
+	function transfer($item,$to_branch,$qty,$rate,$narration,$as_on=null){
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
@@ -174,6 +225,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['qty']=$qty;
 		$this['narration']=$narration;
 		$this['transaction_type']='Transfer';
+		$this['rate']=$rate;
 		$this->save();
 	}
 

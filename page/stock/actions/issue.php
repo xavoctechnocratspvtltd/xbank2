@@ -22,8 +22,8 @@ class page_stock_actions_issue extends Page {
 
 		$grid=$this->add('Grid');
 		$issue_transaction=$this->add('Model_Stock_Transaction');
-		$issue_transaction->addCondition('transaction_type','Issue');
-		$grid->setModel($issue_transaction,array('branch','item','staff','qty','issue_date','narration'));
+		$issue_transaction->addCondition('transaction_type',array('Issue','Consume'));
+		$grid->setModel($issue_transaction,array('branch','item','staff','qty','issue_date','narration','transaction_type'));
 
 		if($form->isSubmitted()){
 			$item=$this->add('Model_Stock_Item')->load($form['item']);
@@ -31,7 +31,11 @@ class page_stock_actions_issue extends Page {
 			$agent=$this->add('Model_Agent')->tryLoad($form['agent']);
 			$dealer=$this->add('Model_Dealer')->tryLoad($form['dealer']);
 			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->issue($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
+
+			if($item['is_consumable'])
+					$transaction->consume($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
+			if($item['is_issueable'])
+					$transaction->issue($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
 			$form->js(null,$grid->js()->reload())->reload()->execute();
 
 		}

@@ -1,6 +1,6 @@
 <?php
 
-class page_stock_reports_dead extends Page {
+class page_stock_reports_sold extends Page {
 	function init(){
 		parent::init();
 
@@ -11,13 +11,13 @@ class page_stock_reports_dead extends Page {
 
 		$grid=$this->add('Grid_AccountsBase');
 		$dead_stock=$this->add('Model_Stock_Transaction');
-		$dead_stock->addCondition('transaction_type',array('Dead','Sold'));
-		$grid->addMethod('format_status',function($grid,$field){
-			if($grid->model['transaction_type']=='Dead')
-					 $grid->current_row[$field]='Hold';
-				else
-					 $grid->current_row[$field]='Sold';
-		});
+		$dead_stock->addCondition('transaction_type',array('Sold'));
+		// $grid->addMethod('format_status',function($grid,$field){
+		// 	if($grid->model['transaction_type']=='Dead')
+		// 			 $grid->current_row[$field]='Hold';
+		// 		else
+		// 			 $grid->current_row[$field]='Sold';
+		// });
 
 
 		if($_GET['filter']){
@@ -28,8 +28,8 @@ class page_stock_reports_dead extends Page {
 		}
 		else
 			$dead_stock->addCondition('id',-1);
-		$grid->setModel($dead_stock,array('item','qty','status','rate','amount'));
-		$grid->addColumn('status','status');
+		$grid->setModel($dead_stock,array('item','qty','narration','rate','amount'));
+		// $grid->addColumn('status','status');
 		$grid->addSno();
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();

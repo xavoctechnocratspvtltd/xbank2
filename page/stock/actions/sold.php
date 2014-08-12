@@ -17,7 +17,7 @@ class page_stock_actions_sold extends Page {
 		$grid=$this->add('Grid');
 		$submit_transaction=$this->add('Model_Stock_Transaction');
 		$submit_transaction->addCondition('transaction_type','Sold');
-		$grid->setModel($submit_transaction,array('branch','item','qty','rate','created_at'));
+		$grid->setModel($submit_transaction,array('branch','item','qty','rate','amount','created_at'));
 
 		if($form->isSubmitted()){
 			$item=$this->add('Model_Stock_Item')->load($form['item']);

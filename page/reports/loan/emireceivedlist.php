@@ -16,7 +16,7 @@ class page_reports_loan_emireceivedlist extends Page {
 		$document=$this->add('Model_Document');
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid'); 
+		$grid=$this->add('Grid_AccountsBase'); 
 
 		$transaction_row_model=$this->add('Model_TransactionRow');
 		
@@ -73,13 +73,15 @@ class page_reports_loan_emireceivedlist extends Page {
 					break;
 			}
 
-		}
+		}else
+			$transaction_row_model->addCondition('id',-1);
 
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model,array('AccountNumber','created_at','member_name','FatherName','amountCr','dealer'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','created_at','member_name','FatherName','amountCr','dealer_name'));
 
 		$grid->addPaginator(50);
+		$grid->addSno();
 
 
 		if($form->isSubmitted()){

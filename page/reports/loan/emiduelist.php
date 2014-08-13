@@ -6,14 +6,14 @@ class page_reports_loan_emiduelist extends Page {
 		parent::init();
 
 		$form=$this->add('Form');
-		$grid=$this->add('Grid'); 
+		$grid=$this->add('Grid_AccountsBase'); 
 		$till_date = $this->api->today;
 
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
 		}
 		$grid->add('H3',null,'grid_buttons')->set('EMI Due List As On '. date('d-M-Y',strtotime($till_date)));
-		$grid_column_array = array('dealer','AccountNumber','created_at','scheme','member_name','FatherName','PhoneNos','PermanentAddress','paid_premium_count','due_premium_count','emi_amount','due_panelty','other_charges','guarantor_name','last_premium');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','scheme','member_name','FatherName','PermanentAddress','PhoneNos','dealer','guarantor_name','guarantor_phno','last_premium','paid_premium_count','due_premium_count','emi_amount','due_panelty','other_charges','total');
 
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
@@ -85,6 +85,17 @@ class page_reports_loan_emiduelist extends Page {
 			$guarantor_m->setOrder('id');
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.name');
 		});
+
+
+		$account_model->addExpression('guarantor_phno')->set(function($m,$q){
+			$guarantor_m = $m->add('Model_Member',array('table_alias'=>'guarantor_name_q'));
+			$ac_join = $guarantor_m->join('account_guarantors.member_id');
+			$ac_join->addField('account_id');
+			$guarantor_m->addCondition('account_id',$q->getField('id'));
+			$guarantor_m->setLimit(1);
+			$guarantor_m->setOrder('id');
+			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PhoneNos');
+		});
 		
 
 		
@@ -150,12 +161,33 @@ class page_reports_loan_emiduelist extends Page {
 				}
 			}
 
-		}
+		}else
+			$account_model->addCondition('id',-1);
 
 		$account_model->add('Controller_Acl');
 		$grid->setModel($account_model,$grid_column_array);
-		// $grid->addPaginator(50);
+		// $grid->addColumn('text','openning_date');
 
+		$grid->addMethod('format_total',function($g,$f){
+
+			$g->current_row_html[$f]=$g->model['emi_amount']+$g->model['due_panelty']+$g->model['other_charges'];
+
+		});
+
+		$grid->addMethod('format_emidue',function($g,$f){
+
+			$g->current_row_html[$f]=$g->model['due_premium_count']*$g->model['emi_amount'];
+
+		});
+
+		$grid->addColumn('total','total');
+		$grid->addColumn('emidue','emi_dueamount');
+
+		// $grid->add('Order')
+		// 		->move('total','after','other_charges')
+		// 		->now();
+		$grid->addPaginator(5);
+		$grid->addSno();
 		
 		$grid->removeColumn('last_premium');
 

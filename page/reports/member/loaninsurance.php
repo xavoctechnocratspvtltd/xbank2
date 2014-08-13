@@ -11,7 +11,7 @@ class page_reports_member_loaninsurance extends Page {
 		$form->addSubmit('GET List');
 
 
-		$grid=$this->add('Grid'); 
+		$grid=$this->add('Grid_AccountsBase'); 
 
 		$accounts_model=$this->add('Model_Account_Loan');
 
@@ -24,6 +24,7 @@ class page_reports_member_loaninsurance extends Page {
 		$grid->setModel($accounts_model);
 
 		$grid->addPaginator(50);
+		$grid->addSno();
 
 
 		if($form->isSubmitted()){

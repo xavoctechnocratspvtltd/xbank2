@@ -14,9 +14,14 @@ class page_reports_loan_insuranceduelist extends Page {
 		
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid'); 
+		$grid=$this->add('Grid_AccountsBase'); 
 
 		$accounts_model=$this->add('Model_Active_Account_Loan');
+		$member_join=$accounts_model->join('members','member_id');
+		$member_join->addField('member_name','name');
+		$member_join->addField('FatherName');
+		$member_join->addField('PhoneNos');
+		$member_join->addField('PermanentAddress');
 
 		$accounts_model->addExpression('insurance_month')->set('(MONTH(LoanInsurranceDate))');
 		$accounts_model->addExpression('insurance_date')->set('(DAY(LoanInsurranceDate))');
@@ -38,7 +43,8 @@ class page_reports_loan_insuranceduelist extends Page {
 			if($_GET['dealer'])
 				$accounts_model->addCondition('dealer_id',$_GET['dealer']);
 
-		}
+		}else
+			$accounts_model->addCondition('id',-1);
 
 		$accounts_model->setOrder('id','desc');
 		$accounts_model->addCondition('DefaultAC',false);
@@ -49,7 +55,7 @@ class page_reports_loan_insuranceduelist extends Page {
 		$accounts_model->getElement('LoanInsurranceDate')->caption('Insurance Due Date');
 
 
-		$grid->setModel($accounts_model,array('AccountNumber','LoanInsurranceDate','dealer','insurance_month','insurance_date','created_at','maturity_date'));
+		$grid->setModel($accounts_model,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','LoanInsurranceDate','dealer','insurance_month','insurance_date','maturity_date'));
 
 		$grid->addMethod('format_onlyDateMonth',function($g,$f){
 			$g->current_row[$f] = date('d-M',strtotime($g->current_row[$f]));
@@ -58,6 +64,7 @@ class page_reports_loan_insuranceduelist extends Page {
 		$grid->addFormatter('LoanInsurranceDate','onlyDateMonth');
 
 		$grid->addPaginator(50);
+		$grid->addSno();
 		$grid->removeColumn('insurance_month');
 		$grid->removeColumn('insurance_date');
 

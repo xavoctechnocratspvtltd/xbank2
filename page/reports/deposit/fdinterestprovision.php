@@ -31,7 +31,11 @@ class page_reports_deposit_fdinterestprovision extends Page {
 
 		if($_GET['filter']){
 			$this->api->stickyGET("filter");
-
+			if($_GET['account_no']){
+				$acc=$this->add('Model_Account')->load($_GET['account_no']);
+				$transaction_row_model->addCondition('AccountNumber',$acc['AccountNumber']);
+			}
+			
 			if($_GET['from_date']){
 				$this->api->stickyGET("from_date");
 				$transaction_row_model->addCondition('created_at','>=',$_GET['from_date']);
@@ -42,15 +46,16 @@ class page_reports_deposit_fdinterestprovision extends Page {
 				$transaction_row_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			}
 
-		}
+		}else
+			$transaction_row_model->addCondition('id',-1);
 
 		$transaction_row_model->setOrder('created_at','desc');
 
-		$grid->setModel($transaction_row_model,array('AccountNumber','scheme_name','Amount','amountCr','voucher_no','created_at'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','scheme_name','Amount','amountCr','created_at'));
 		$grid->addPaginator(50);
-		$grid->addFormatter('voucher_no','voucherNo');
-
-
+		// $grid->addFormatter('voucher_no','voucherNo');
+		// $grid->removeColumn('voucherNo');
+		$grid->addSno();
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('account_no'=>$form['account_no'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
 		}

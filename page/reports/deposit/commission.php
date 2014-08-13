@@ -28,6 +28,9 @@ class page_reports_deposit_commission extends Page {
 		$account_join = $transaction_row->join('accounts','account_id');
 		$agent_join = $account_join->join('agents.account_id');
 		$agent_join->addField('agent_id_for_account','id');
+		$agent_join->addField('agent_name','name');
+		$member_join=$agent_join->join('members','member_id');
+		$member_join->addField('agent_name','name');
 
 		$referance_account_join = $transaction_join->join('accounts','reference_account_id');
 		$referance_account_join->addField('AccountNumber');
@@ -61,6 +64,8 @@ class page_reports_deposit_commission extends Page {
 
 		}
 
+		$grid->addSno();
+
 		$transaction_row->_dsql()->having(
             $transaction_row->dsql()->orExpr()
                 ->where('transaction_type', TRA_ACCOUNT_OPEN_AGENT_COMMISSION)
@@ -70,7 +75,7 @@ class page_reports_deposit_commission extends Page {
 		$transaction_row->setOrder('created_at','desc');
 		$transaction_row->add('Controller_Acl');
 
-		$grid->setModel($transaction_row,array('transaction_id','AccountNumber','Amount','scheme_name','voucher_no','transaction_type','created_at','amountCr'));
+		$grid->setModel($transaction_row,array('AccountNumber','Amount','scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name'));
 		$grid->addFormatter('voucher_no','voucherNo');
 
 		$grid->addMethod('format_totalCommission',function($g,$f){
@@ -97,6 +102,8 @@ class page_reports_deposit_commission extends Page {
 		$grid->addColumn('totalCommission','total_commission');
 		$grid->addColumn('tds','tds','TDS');
 		$grid->addPaginator(50);
+
+		$grid->removeColumn('transaction_type');
 
 		$grid->addOrder()->move('amountCr','after','total_commission')->now();
 

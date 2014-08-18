@@ -125,6 +125,8 @@ class page_reports_loan_dispatch extends Page {
 				}
 			}
 		}
+		else
+			$account_model->addCondition('id',-1);
 
 		$account_model->addCondition('DefaultAC',false);
 

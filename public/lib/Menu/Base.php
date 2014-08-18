@@ -12,14 +12,15 @@ class Menu_Base extends Menu {
 		$stock = 	$this->addMenuItem('stock_main','Stock');
 		$account = $this->addMenuItem('accounts','Accounts');
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
-		$books = 	$this->addMenuItem('books','Books');
+		$reports = 	$this->addMenuItem('reports','Reports');
+		// $books = 	$this->addMenuItem('books','Books');
+		// $loan_reports = 	$this->addMenuItem('reports_loan','Loan Reports');
+		// $agent_reports = 	$this->addMenuItem('reports_agent','Agent Reports');
+		// $general = 	$this->addMenuItem('reports_general','General');
 		$member_reports = 	$this->addMenuItem('reports_member','Member Reports');
-		$loan_reports = 	$this->addMenuItem('reports_loan','Loan Reports');
 		$deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
-		$agent_reports = 	$this->addMenuItem('reports_agent','Agent Reports');
 		$operations = 	$this->addMenuItem('operations','Operations');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
-		$general = 	$this->addMenuItem('reports_general','General');
 
 		$this->addMenuItem('logout','Logout');
 
@@ -27,7 +28,10 @@ class Menu_Base extends Menu {
 		$admin_sub_menus_popover=$this->add('View_Popover');
 		$mad_sub_menus_popover = $this->add('View_Popover');
 		$account_sub_menu_popover = $this->add('View_Popover');
-		$books_sub_menus_popover = $this->add('View_Popover');
+
+		$reports_sub_menu_popover = $this->add('View_Popover');
+		
+		// $books_sub_menus_popover = $this->add('View_Popover');
 		$transactions_sub_menus_popover = $this->add('View_Popover');
 		$loan_reports_sub_menus_popover = $this->add('View_Popover');
 		$deposit_reports_sub_menus_popover = $this->add('View_Popover');
@@ -38,6 +42,15 @@ class Menu_Base extends Menu {
 		$general_sub_menus_popover = $this->add('View_Popover');
 		
 		// Sub Menus
+		// 
+		// 
+		$reports_sub_menu = $reports_sub_menu_popover->add('Menu_Vertical');
+		$reports_sub_menu->addMenuItem('reports_books','Books');
+		$reports_sub_menu->addMenuItem('reports_loan','Loan Reports');
+		$reports_sub_menu->addMenuItem('reports_agent','Agent Reports');
+		$reports_sub_menu->addMenuItem('reports_genral','Genral Reports');
+		$reports->js('click',$reports_sub_menu_popover->showJS());
+		
 
 		$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
 		$admin_sub_menus->addMenuItem('staffs','Staff');
@@ -56,10 +69,10 @@ class Menu_Base extends Menu {
 		$mad_sub_menus->addMenuItem('dsa','DSA');
 		$mad->js('click',$mad_sub_menus_popover->showJS());
 		
-		$general_sub_menus = $general_sub_menus_popover->add('Menu_Vertical');
-		$general_sub_menus->addMenuItem('reports_general_document','Document Report');
-		$general_sub_menus->addMenuItem('reports_general_periodical','Periodical Report');
-		$general->js('click',$general_sub_menus_popover->showJS());
+		// $general_sub_menus = $general_sub_menus_popover->add('Menu_Vertical');
+		// $general_sub_menus->addMenuItem('reports_general_document','Document Report');
+		// $general_sub_menus->addMenuItem('reports_general_periodical','Periodical Report');
+		// $general->js('click',$general_sub_menus_popover->showJS());
 
 		$account_sub_menu = $account_sub_menu_popover->add('Menu_Vertical');
 		$account_sub_menu->addMenuItem('accounts','Accounts Management');
@@ -78,26 +91,26 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_visitcharge','Visit Charge');
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
-		$books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');
-		$books_sub_menus->addMenuItem('reports_daybook','Day Book');
-		$books_sub_menus->addMenuItem('reports_cashbook','Cash Book');
-		$books_sub_menus->addMenuItem('reports_BSAndPANL','Balance Sheet');
-		$books_sub_menus->addMenuItem('reports_pandl','P & L');
-		$books->js('click',$books_sub_menus_popover->showJS());
+		// $books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');
+		// $books_sub_menus->addMenuItem('reports_daybook','Day Book');
+		// $books_sub_menus->addMenuItem('reports_cashbook','Cash Book');
+		// $books_sub_menus->addMenuItem('reports_BSAndPANL','Balance Sheet');
+		// $books_sub_menus->addMenuItem('reports_pandl','P & L');
+		// $books->js('click',$books_sub_menus_popover->showJS());
 
-		$loan_reports_sub_menus = $loan_reports_sub_menus_popover->add('Menu_Vertical');
-		$loan_reports_sub_menus->addMenuItem('reports_loan_emiduelist','EMI Due List');
-		$loan_reports_sub_menus->addMenuItem('reports_loan_emireceivedlist','EMI Received List');
-		$loan_reports_sub_menus->addMenuItem('reports_loan_insuranceduelist','Insurance Due List');
-		$loan_reports_sub_menus->addMenuItem('reports_loan_dispatch','Loan Dispatch');
-		$loan_reports_sub_menus->addMenuItem('reports_loan_accountdetailed','Accont Detailed');
-		$loan_reports->js('click',$loan_reports_sub_menus_popover->showJS());
+		// $loan_reports_sub_menus = $loan_reports_sub_menus_popover->add('Menu_Vertical');
+		// $loan_reports_sub_menus->addMenuItem('reports_loan_emiduelist','EMI Due List');
+		// $loan_reports_sub_menus->addMenuItem('reports_loan_emireceivedlist','EMI Received List');
+		// $loan_reports_sub_menus->addMenuItem('reports_loan_insuranceduelist','Insurance Due List');
+		// $loan_reports_sub_menus->addMenuItem('reports_loan_dispatch','Loan Dispatch');
+		// $loan_reports_sub_menus->addMenuItem('reports_loan_accountdetailed','Accont Detailed');
+		// $loan_reports->js('click',$loan_reports_sub_menus_popover->showJS());
 
-		$agent_reports_sub_menus = $agent_reports_sub_menus_popover->add('Menu_Vertical');
-		$agent_reports_sub_menus->addMenuItem('reports_agent_tds','TDS Report');
-		$agent_reports_sub_menus->addMenuItem('reports_agent_status','Active/Inactive Report');
-		$agent_reports_sub_menus->addMenuItem('reports_agent_detail','Agent Detail');
-		$agent_reports->js('click',$agent_reports_sub_menus_popover->showJS());
+		// $agent_reports_sub_menus = $agent_reports_sub_menus_popover->add('Menu_Vertical');
+		// $agent_reports_sub_menus->addMenuItem('reports_agent_tds','TDS Report');
+		// $agent_reports_sub_menus->addMenuItem('reports_agent_status','Active/Inactive Report');
+		// $agent_reports_sub_menus->addMenuItem('reports_agent_detail','Agent Detail');
+		// $agent_reports->js('click',$agent_reports_sub_menus_popover->showJS());
 
 		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
 		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');

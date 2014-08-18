@@ -18,6 +18,20 @@ class page_reports_agent_tds extends Page {
 		$grid = $this->add('Grid');
 
 		$model = $this->add('Model_Agent');
+		$account_join_2 = $model->join('accounts.agent_id');
+		$transactions_join_2 = $account_join_2->join('transactions.reference_account_id');
+		
+		$account_join_2->addField('account_type');
+		$transactions_join_2->addField('transaction_date','created_at');
+
+
+		$tr_m = $model->add('Model_TransactionRow',array('table_alias'=>'xtc'));
+		$tr = $tr_m->join('transactions','transaction_id');
+		$releted_account = $tr->join('accounts','reference_account_id');
+		$releted_account->addField('account_type');
+
+
+
 		$model->addExpression('total_commission')->set(function($m,$q){
 			
 			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'tc'));
@@ -101,8 +115,18 @@ class page_reports_agent_tds extends Page {
 			$this->api->stickyGET("to_date");
 			$this->api->stickyGET("account_type");
 
+			if($_GET['account_type']){
+				
+				$model->addCondition('account_type','like',$_GET['account_type']);
+			}
 
-		}
+			if($_GET['from_date'])
+				$model->addCondition('transaction_date','>=',date('Y-m-01',strtotime($_GET['from_date'])));
+
+			if($_GET['to_date'])
+				$model->addCondition('transaction_date','<=',date('Y-m-t',strtotime($_GET['to_date'])));
+		}else
+			$model->addCondition('id',-1);
 
 		$model->_dsql()->having('total_commission','>',0);
 		$grid->setModel($model);

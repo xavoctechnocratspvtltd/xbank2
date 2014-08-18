@@ -6,6 +6,7 @@ class Model_Stock_Container extends Model_Table {
 		parent::init();
 
 		$this->addField('name');
+		$this->hasMany('Stock_Item','item_id');
 		$this->hasMany('Stock_Row','container_id');
 		
 		$this->addHook('beforeDelete',$this);

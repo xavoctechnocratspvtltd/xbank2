@@ -19,13 +19,21 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$transaction_join = $transaction_row_model->join('transactions','transaction_id');
 		$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
 		$account_join = $transaction_row_model->join('accounts','account_id');
-		$member_join = $account_join->join('members','member_id');
+		$account_member_join = $account_join->join('members','member_id');
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 		$scheme_join = $account_join->join('schemes','scheme_id');
 
 		$dealer_join->addField('dealer_name','name');
-		$member_join->addField('member_name','name');
-		$member_join->addField('FatherName');
+		$account_member_join->addField('member_name','name');
+		$account_member_join->addField('FatherName');
+		$account_member_join->addField('phone_no','PhoneNos');
+
+		$agent_join=$account_join->join('agents','agent_id');
+		$agent_member_join = $agent_join->join('members','member_id');
+		$agent_member_join->addField('agent_name','name');
+
+		$agent_sb_join = $agent_join->join('accounts','account_id');
+		$agent_sb_join->addField('agent_account_number','AccountNumber');
 		$account_join->addField('AccountNumber');
 		$account_join->addField('account_type');
 		$account_join->addField('dealer_id');
@@ -39,6 +47,8 @@ class page_reports_deposit_emireceivedlist extends Page {
 				->where('SchemeType','Recurring')
 				->where('SchemeType','DDS')
 			);
+
+		$transaction_row_model->getElement('amountCr')->caption('Amount Deposited');
 
 		$transaction_row_model->setOrder('account_id desc,created_at desc');
 		
@@ -59,12 +69,13 @@ class page_reports_deposit_emireceivedlist extends Page {
 			if($_GET['account_type'])
 				$transaction_row_model->addCondition('account_type','like',$_GET['account_type']);
 
-		}
+		}else
+			$transaction_row_model->addCondition('id',-1);
 
 		$transaction_row_model->add('Controller_Acl');
 		$transaction_row_model->setOrder('created_at','desc');
 
-		$grid->setModel($transaction_row_model,array('AccountNumber','created_at','member_name','FatherName','amountCr','name'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','amountCr','agent_name','agent_account_number'));
 		$grid->addPaginator(50);
 		$grid->addSno();
 

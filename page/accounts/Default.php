@@ -41,8 +41,10 @@ class page_accounts_Default extends Page {
 
 		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','agent_id','ActiveStatus'),array('AccountNumber','member','scheme','agent','ActiveStatus'));
 		
-		if($crud->grid)
+		if($crud->grid){
 			$crud->grid->addPaginator(10);
+			$crud->grid->addOrder()->move('member','first')->now();
+		}
 
 		if($crud->isEditing('add')){
 			// $o->move('initial_opening_amount','before','Amount')

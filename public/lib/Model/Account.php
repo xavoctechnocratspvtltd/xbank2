@@ -43,7 +43,7 @@ class Model_Account extends Model_Table {
 		$this->addField('CurrentInterest')->type('money')->defaultValue(0);
 		$this->addField('Nominee');
 		$this->addField('NomineeAge');
-		$this->addField('RelationWithNominee');
+		$this->addField('RelationWithNominee')->enum(array('Father','Mother','Husband','Wife','Brother','Sister','Son','Daughter'));
 		$this->addField('MinorNomineeDOB');
 		$this->addField('MinorNomineeParentName');
 		$this->addField('DefaultAC')->type('boolean')->defaultValue(false);
@@ -66,6 +66,7 @@ class Model_Account extends Model_Table {
 		$this->scheme_join->addField('scheme_name','name');
 
 		$this->add('filestore/Field_Image','doc_image_id')->type('image')->mandatory(true);
+		$this->add('filestore/Field_Image','sig_image_id')->type('image')->mandatory(true);
 
 		$this->addExpression('branch_code')->set(function($m,$q){
 			return $m->refSQL('branch_id')->fieldQuery('Code');
@@ -401,6 +402,29 @@ class Model_Account extends Model_Table {
 
 	}
 
+
+
+	function conveyance($staff,$amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
+		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
+
+		if(!$transaction_date) $transaction_date = $this->api->now;
+		if(!$accounts_to_debit) $accounts_to_debit = array();
+		if(!$in_branch) $in_branch = $this->api->current_branch;
+
+
+		$transaction = $this->add('Model_Transaction');
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA,$in_branch,$transaction_date,$narration);
+		
+		$transaction->addDebitAccount($this->api->currentBranch['code'].SP.'CONVEYANCE EXPENSES',$amount);
+		$transaction->addCreditAccount($ammount_from_account,$amount);			
+
+		$transaction->execute();
+
+		return $transaction->id;
+
+	}
+
 	function postInterestEntry(){
 
 	}
@@ -533,5 +557,15 @@ class Model_Account extends Model_Table {
 	function changeDealer($member){
 		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
 
-	}	
+	}
+
+	function swapLockingStatus(){
+		$this['LockingStatus']=!$this['LockingStatus'];
+		$this->save();
+	}
+
+	function verify(){
+		$this['is_verify']=true;
+		$this->save();
+	}
 }

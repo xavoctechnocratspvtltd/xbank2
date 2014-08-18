@@ -39,7 +39,7 @@ class page_Accounts_FixedAndMis extends Page {
 			   	$o->move($f->other_field,'last');
 			}
 			$debit_account = $crud->form->addField('autocomplete/Basic','debit_account');
-			$debit_account->setModel('Account','AccountNumber');
+			$debit_account->setModel('Account','AccountNumber')->addCondition('branch_id',$this->api->currentBranch->id);
 
 		}
 

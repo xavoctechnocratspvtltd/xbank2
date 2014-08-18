@@ -16,13 +16,31 @@ class page_stock_item extends Page {
 			// CreatNew Function call
 			$item_model->createNew($form['name'],$form->getAllFields(),$form);
 			return true; // Always required
+
+			$container_field=$form->getElement('container_id');
+			$row_field=$form->getElement('row_id');
+			throw $this->exception($container_field, 'ValidityCheck')->setField('FieldName'); 
+
+			
 		});
 		
-		$crud->setModel($item);		
-	
+		$item->getElement('category_id')->system(true);		
+		$crud->setModel($item);	
+		
+		if($form=$crud->form){
+			$c_f = $form->getElement('container_id');
+			$r_f = $form->getElement('row_id');
+
+			if($_GET['container_id']){
+				$r_f->getModel()->addCondition('container_id',$_GET['container_id']);
+			}
+
+			$c_f->js('change',$form->js()->atk4_form('reloadField',$r_f,array($this->api->url(),'container_id'=>$c_f->js()->val())));
+		}
+
 		if($g=$crud->grid){
 			$g->addPaginator(10);
-
+			$g->removeColumn('category');
 		}
 	}
 }

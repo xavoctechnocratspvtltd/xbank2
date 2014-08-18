@@ -10,7 +10,7 @@ class page_stock_actions_sold extends Page {
 
 		$form->addField('line','qty');
 		$form->addField('line','rate');
-		$form->addField('line','amount');
+		// $form->addField('line','amount');
 		$form->addField('text','narration');
 		$form->addSubmit('Sold');
 
@@ -26,7 +26,7 @@ class page_stock_actions_sold extends Page {
 			if(!$item->getDeadQty($form['qty']))
 				$form->displayError('qty',"dead Item is not  in Such qty");
 			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->sold($item,$form['qty'],$form['rate'],$form['narration'],$form['amount']);
+			$transaction->sold($item,$form['qty'],$form['rate'],$form['narration']);
 			$form->js(null,$grid->js()->reload())->reload()->execute();
 
 		}

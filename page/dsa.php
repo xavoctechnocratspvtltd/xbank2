@@ -9,13 +9,14 @@ class page_dsa extends Page {
 		$dsa_model = $this->add('Model_DSA');
 		$crud = $this->add('CRUD');
 		$crud->setModel($dsa_model);
-		$crud->add('Controller_DocumentsManager',array('doc_type'=>'DSADocuments'));
 
-		if($crud and $crud->grid){
+		if($crud and !$crud->isEditing()){
+			$crud->add('Controller_DocumentsManager',array('doc_type'=>'DSADocuments'));
 			$dsa_guarantor_crud = $crud->addRef('DSAGuarantor');
 			if($dsa_guarantor_crud and $dsa_guarantor_crud->grid){
 				$dsa_guarantor_crud->add('Controller_DocumentsManager',array('doc_type'=>'DSAGuarantor'));
 			}
+			
 		}
 
 	}

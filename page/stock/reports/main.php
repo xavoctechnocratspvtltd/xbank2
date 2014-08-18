@@ -10,6 +10,7 @@ class page_stock_reports_main extends Page {
 		$tab1=$tabs->addTabURL('stock_reports_store','Store Report');
 		$tab1=$tabs->addTabURL('stock_reports_purchase','Purchase Report');
 		$tab1=$tabs->addTabURL('stock_reports_stock','Stock Report');
+		$tab1=$tabs->addTabURL('stock_reports_item','Item Report');
 
 	}
 }

@@ -249,7 +249,7 @@ class Model_Stock_Transaction extends Model_Table {
 
 	}
 
-	function sold($item,$qty,$rate,$narration,$amount,$branch=null){
+	function sold($item,$qty,$rate,$narration,$branch=null){
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
@@ -265,7 +265,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['rate']=$rate;
 		$this['narration']=$narration;
 		$this['transaction_type']='Sold';
-		$this['amount']=$amount;
+		$this['amount']=$qty*$rate;
 		$this->save();
 		
 

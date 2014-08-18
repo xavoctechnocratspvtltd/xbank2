@@ -11,11 +11,21 @@ class Model_Staff extends Model_Table {
 		$this->addField('name')->mandatory(true);
 		$this->addField('username')->mandatory(true);
 		$this->addField('password');
+		$this->addField('father_name')->mandatory(true);
+		$this->addField('pf_amount');
+		$this->addField('basic_pay');
+		$this->addField('variable_pay');
+		$this->addField('created_at')->caption('Joining Date');
+		$this->addField('present_address');
+		$this->addField('parmanent_address');
+		$this->addField('mobile_no');
+		$this->addField('landline_no');
+		$this->addField('DOB');
 
 		$this->hasMany('Transaction','staff_id');
 
 		$this->addField('AccessLevel')->setValueList(array('100'=>'Super Admin','80'=>'CEO','60'=>'Branch Admin','40'=>'Power Staff', '20'=>'Staff','10'=>'Guest'));
-		//$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function createNewStaff($name,$password,$AccessLevel,$branch_id=null){

@@ -118,7 +118,8 @@ class page_members extends Page {
 			// $g->addFormatter('active','activeStatus');
 			$g->addFormatter('delete','removeDelete');
 			$g->addPaginator(10);
-
+			$g->controller->importField('id');
+			$g->addOrder()->move('id','first')->now();
 		}
 
 		if($crud->isEditing()){

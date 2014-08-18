@@ -28,9 +28,11 @@ class page_reports_deposit_commission extends Page {
 		$account_join = $transaction_row->join('accounts','account_id');
 		$agent_join = $account_join->join('agents.account_id');
 		$agent_join->addField('agent_id_for_account','id');
-		$agent_join->addField('agent_name','name');
+		$agent_sb_join = $agent_join->join('accounts','account_id');
+		$agent_sb_join->addField('agent_account_number','AccountNumber');
 		$member_join=$agent_join->join('members','member_id');
 		$member_join->addField('agent_name','name');
+
 
 		$referance_account_join = $transaction_join->join('accounts','reference_account_id');
 		$referance_account_join->addField('AccountNumber');
@@ -38,6 +40,8 @@ class page_reports_deposit_commission extends Page {
 		$referance_account_scheme_join = $referance_account_join->join('schemes','scheme_id');
 		$referance_account_scheme_join->addField('ref_account_scheme_type','SchemeType');
 		$referance_account_scheme_join->addField('scheme_name','name');
+
+
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -62,7 +66,8 @@ class page_reports_deposit_commission extends Page {
 				$transaction_row->addCondition('ref_account_scheme_type',$_GET['account_type']);
 			}
 
-		}
+		}else
+			$transaction_row->addCondition('id',-1);
 
 		$grid->addSno();
 
@@ -75,7 +80,7 @@ class page_reports_deposit_commission extends Page {
 		$transaction_row->setOrder('created_at','desc');
 		$transaction_row->add('Controller_Acl');
 
-		$grid->setModel($transaction_row,array('AccountNumber','Amount','scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name'));
+		$grid->setModel($transaction_row,array('AccountNumber','Amount','scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name','agent_account_number'));
 		$grid->addFormatter('voucher_no','voucherNo');
 
 		$grid->addMethod('format_totalCommission',function($g,$f){

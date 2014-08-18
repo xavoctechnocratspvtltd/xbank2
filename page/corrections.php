@@ -189,6 +189,20 @@ class page_corrections extends Page {
 				array('members','is_active','boolean'), /*Query to be 1*/
 				array('members','is_defaulter','boolean'), /*Query to be 0*/
 				array('staffs','name','string'),
+				//New Added
+				array('staffs','father_name','string'),
+				array('staffs','pf_amount','money'),
+				array('staffs','basic_pay','money'),
+				array('staffs','variable_pay','money'),
+				array('staffs','created_at','datetime'),
+				array('staffs','present_address','text'),
+				array('staffs','parmanent_address','text'),
+				array('staffs','mobile_no','string'),
+				array('staffs','landline_no','string'),
+				array('staffs','DOB','date'),
+				array('accounts_pending','sig_image_id','int'),
+				//New Added//
+
 				array('dealers','loan_panelty_per_day','int'),
 				array('dealers','time_over_charge','int'),
 				array('dealers','dealer_monthly_date','int'),

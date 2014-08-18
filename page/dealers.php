@@ -8,6 +8,8 @@ class page_dealers extends Page {
 		parent::init();
 
 		$crud = $this->add('CRUD');
-		$crud->setModel('Dealer');
+		$dealer=$this->add('Model_Dealer');
+		$dealer->setOrder('id','desc');
+		$crud->setModel($dealer);
 	}
 }

@@ -6,24 +6,25 @@ class Model_Stock_Item extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Stock_Category','category_id');
+		$this->hasOne('Stock_Container','container_id');
 		$this->hasOne('Stock_Row','row_id');
 		$this->addField('name');
 		$this->addField('description')->type('text');
 		$this->addField('is_consumable')->type('boolean')->defaultValue(false);
 		$this->addField('is_issueable')->type('boolean')->defaultValue(false);
 		$this->addField('is_fixedassets')->type('boolean')->defaultValue(false);
-		$this->hasMany('Stock_Transaction','transaction_id');
+		$this->hasMany('Stock_Transaction','item_id');
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('beforeSave',$this);
 
-		$this->addExpression('container')->set(function($m,$q){
-			$cont_m= $m->add('Model_Stock_Container',array('table_alias'=>'xsc'));
-			$item_j = $cont_m->join('stock_rows.container_id')->join('stock_items.row_id');
-			$item_j->addField('xitem_id','id');
-			$cont_m->addCondition('xitem_id',$q->getField('id'));
+		// $this->addExpression('container')->set(function($m,$q){
+		// 	$cont_m= $m->add('Model_Stock_Container',array('table_alias'=>'xsc'));
+		// 	$item_j = $cont_m->join('stock_rows.container_id')->join('stock_items.row_id');
+		// 	$item_j->addField('xitem_id','id');
+		// 	$cont_m->addCondition('xitem_id',$q->getField('id'));
 
-			return $cont_m->fieldQuery('name');
-		});
+		// 	return $cont_m->fieldQuery('name');
+		// });
 
 
 		

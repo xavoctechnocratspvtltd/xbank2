@@ -7,7 +7,9 @@ class page_agents extends Page{
 		parent::init();
 
 		$crud = $this->add('CRUD');
-		$crud->setModel('Agent');
+		$agent=$this->add('Model_Agent');
+		$agent->setOrder('id','desc');
+		$crud->setModel($agent);
 
 		if($crud and !$crud->isEditing()){
 			$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));

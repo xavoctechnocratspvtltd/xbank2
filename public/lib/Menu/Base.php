@@ -46,6 +46,7 @@ class Menu_Base extends Menu {
 		$admin_sub_menus->addMenuItem('mos','Mos');
 		$admin_sub_menus->addMenuItem('team','Teams');
 		$admin_sub_menus->addMenuItem('balancesheet','Top Heads');
+		$admin_sub_menus->addMenuItem('accounts_locking','Lock & Unlock Accounts');
 		$admin->js('click',$admin_sub_menus_popover->showJS());
 
 		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');
@@ -70,7 +71,7 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_withdrawl','WithDrawl');
 		$transactions_sub_menus->addMenuItem('transactions_jv','Journal');
 		$transactions_sub_menus->addMenuItem('transactions_forclose','ForClose');
-		$transactions_sub_menus->addMenuItem('transactions_contra','Contra');
+		$transactions_sub_menus->addMenuItem('transactions_conveyance','Conveyance');
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
 		$books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');

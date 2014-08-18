@@ -15,6 +15,8 @@ class page_stock_container extends Page {
 			// CreatNew Function call
 			$container_model->createNew($form['name'],$form->getAllFields(),$form);
 			return true; // Always required
+
+			
 		});
 		
 		$crud->setModel($container);		

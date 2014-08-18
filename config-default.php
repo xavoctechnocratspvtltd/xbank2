@@ -113,6 +113,11 @@ define('TRA_DEPRICIATION_AMOUNT_CALCULATED',	'DepriciationAmountCalculated');
 define('TRA_SHARE_ACCOUNT_OPEN',                 'ShareAccountOpen');
 define('TRA_RECURRING_ACCOUNT_COLLECTION_CHARGES_DEPOSIT',  'RecurringAccountCollectionChargesDeposit');
 define('TRA_MINIMUM_BALANCE_CHARGES',  'MinimumBalanceChargesApplied');
+define('TRA_CONVEYANCE_CAHRGES',  'ConveynaceCharge');
+define('TRA_FUEL_CAHRGES',  'FuelCharge');
+define('TRA_LEGAL_CHARGE_PAID',  'LegalChargePaid');
+define('TRA_LEGAL_CHARGE_RECEIVED',  'LegalChargeReceived');
+define('TRA_VISIT_CHARGE',  'VisitCharge');
 
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')

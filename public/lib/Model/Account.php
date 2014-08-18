@@ -404,20 +404,119 @@ class Model_Account extends Model_Table {
 
 
 
-	function conveyance($staff,$amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
+	function conveyance($staff,$amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
 
 		if(!$transaction_date) $transaction_date = $this->api->now;
-		if(!$accounts_to_debit) $accounts_to_debit = array();
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
-
+		$account_cr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$amount_from_account);
+		$account_dr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'CONVEYANCE EXPENSES');
+		$staff_model=$this->add('Model_Staff')->load($staff);
+		$narration.="-".$staff_model['name'];
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
-		$transaction->createNewTransaction(TRA,$in_branch,$transaction_date,$narration);
+		$transaction->createNewTransaction(TRA_CONVEYANCE_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_account_id'=>$staff));
 		
-		$transaction->addDebitAccount($this->api->currentBranch['code'].SP.'CONVEYANCE EXPENSES',$amount);
-		$transaction->addCreditAccount($ammount_from_account,$amount);			
+		$transaction->addDebitAccount($account_dr,$amount);
+		$transaction->addCreditAccount($account_cr,$amount);			
+
+		$transaction->execute();
+
+		return $transaction->id;
+
+	}
+
+
+	function fuel($amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
+		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
+
+		if(!$transaction_date) $transaction_date = $this->api->now;
+		if(!$in_branch) $in_branch = $this->api->current_branch;
+
+		$account_cr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$amount_from_account);
+		$account_dr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'FUEL EXPENSES');
+		$transaction = $this->add('Model_Transaction');
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_FUEL_CAHRGES,$in_branch,$transaction_date,$narration);
+		
+		$transaction->addDebitAccount($account_dr,$amount);
+		$transaction->addCreditAccount($account_cr,$amount);			
+
+		$transaction->execute();
+
+		return $transaction->id;
+
+	}
+
+	function legalChargePaid($amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
+		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
+
+		if(!$transaction_date) $transaction_date = $this->api->now;
+		if(!$in_branch) $in_branch = $this->api->current_branch;
+
+		$account_cr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$amount_from_account);
+		$account_dr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'LEGAL EXPENSES PAID');
+		$transaction = $this->add('Model_Transaction');
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_LEGAL_CHARGE_PAID,$in_branch,$transaction_date,$narration);
+		
+		$transaction->addDebitAccount($account_dr,$amount);
+		$transaction->addCreditAccount($account_cr,$amount);			
+
+		$transaction->execute();
+
+		return $transaction->id;
+
+	}
+
+
+
+	function legalChargeReceived($amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
+		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
+
+		if(!$transaction_date) $transaction_date = $this->api->now;
+		if(!$in_branch) $in_branch = $this->api->current_branch;
+
+		$account_cr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$amount_from_account);
+		$account_dr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'LEGAL EXPENSES RECEIVED');
+		$transaction = $this->add('Model_Transaction');
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_LEGAL_CHARGE_RECEIVED,$in_branch,$transaction_date,$narration);
+		
+		$transaction->addDebitAccount($account_dr,$amount);
+		$transaction->addCreditAccount($account_cr,$amount);			
+
+		$transaction->execute();
+
+		return $transaction->id;
+
+	}
+
+	function visitCharge($amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
+		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
+
+		if(!$transaction_date) $transaction_date = $this->api->now;
+		if(!$in_branch) $in_branch = $this->api->current_branch;
+
+		$account_cr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$amount_from_account);
+		$account_dr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'Visit Charge');
+		$transaction = $this->add('Model_Transaction');
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_VISIT_CHARGE,$in_branch,$transaction_date,$narration);
+		
+		$transaction->addDebitAccount($account_dr,$amount);
+		$transaction->addCreditAccount($account_cr,$amount);			
 
 		$transaction->execute();
 

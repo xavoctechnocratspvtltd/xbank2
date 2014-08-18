@@ -1,16 +1,16 @@
 <?php
 
-class page_transactions_conveyance extends Page {
-	public $title ='Conveynace Transaction';
+class page_transactions_legalchargereceived extends Page {
+	public $title ='Legal Charge Received';
 	function init(){
 		parent::init();
 
 		$form = $this->add('Form');
-		$form->addField('autocomplete/Basic',array('name'=>'staff'))->validateNotNull()->setModel('Staff');
+		
 		$form->addField('Number','amount')->validateNotNull();
 		$form->addField('autocomplete/Basic','amount_from_account')->setFieldHint('sdfsd')->setModel('Account','AccountNumber');
 		$form->addField('Text','narration');
-		$form->addSubmit('Conveynace');
+		$form->addSubmit('Legal Charge Received');
 
 		if($form->isSubmitted()){
 			
@@ -25,13 +25,13 @@ class page_transactions_conveyance extends Page {
 
 			try {
 				$this->api->db->beginTransaction();
-			    $account_model->conveyance($form['staff'],$form['amount'],$form['narration'],$form['amount_from_account'],$form);
+			    $account_model->legalChargeReceived($form['amount'],$form['narration'],$form['amount_from_account'],$form);
 			    $this->api->db->commit();
 			} catch (Exception $e) {
 			   	$this->api->db->rollBack();
 			   	throw $e;
 			}
-			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- conveynace added in " . $form['amount_from_account'])->execute();
+			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- Legal Charge Received in " . $form['amount_from_account'])->execute();
 		}
 	}
 }

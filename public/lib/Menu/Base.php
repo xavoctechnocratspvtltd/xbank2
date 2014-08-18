@@ -72,6 +72,10 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_jv','Journal');
 		$transactions_sub_menus->addMenuItem('transactions_forclose','ForClose');
 		$transactions_sub_menus->addMenuItem('transactions_conveyance','Conveyance');
+		$transactions_sub_menus->addMenuItem('transactions_fuel','Fuel');
+		$transactions_sub_menus->addMenuItem('transactions_legalchargepaid','Legal Charge Paid');
+		$transactions_sub_menus->addMenuItem('transactions_legalchargereceived','Legal Charge Received');
+		$transactions_sub_menus->addMenuItem('transactions_visitcharge','Visit Charge');
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
 		$books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');

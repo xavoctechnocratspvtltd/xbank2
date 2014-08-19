@@ -7,7 +7,7 @@ class page_reports_member_loaninsurance extends Page {
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','type')->setValueList(array('vl'=>'VL','pl'=>'PL','cc'=>'CC','all'=>'All'));
+		$form->addField('dropdown','type')->setValueList(array('vl'=>'VL','pl'=>'PL','cc'=>'CC','0'=>'All'));
 		$form->addSubmit('GET List');
 
 
@@ -17,18 +17,24 @@ class page_reports_member_loaninsurance extends Page {
 
 		if($_GET['filter']){
 
-			//TODO
+			if($_GET['from_date'])
+				$accounts_model->addCondition('LoanInsurranceDate','>=',$_GET['from_date']);
+			if($_GET['to_date'])
+				$accounts_model->addCondition('LoanInsurranceDate','<=',$_GET['to_date']);
+			if($_GET['type'])
+				$accounts_model->addCondition('account_type',$_GET['type']);
 
 		}
+			// $accounts_model->addCondition('id',-1);
 
-		$grid->setModel($accounts_model);
+		$grid->setModel($accounts_model->debug());
 
 		$grid->addPaginator(50);
 		$grid->addSno();
 
 
 		if($form->isSubmitted()){
-			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'type'=>$form['type'],'filter'=>1);
+			$send = array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'type'=>$form['type'],'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	

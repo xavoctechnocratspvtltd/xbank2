@@ -29,10 +29,17 @@ class page_transactions_jv extends Page {
 		$dr_account_col->add('H3')->set('Debit');
 		$dr_amount_col->add('H3')->set('-');
 
+		$account_cr_model=$this->add('Model_Account');
+		$account_cr_model->addCondition('branch_id',$this->api->currentBranch->id);
+		$account_cr_model->filter(array($account_cr_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Branch & Divisions%')));
+
+		$account_dr_model=$this->add('Model_Account');
+		$account_dr_model->addCondition('branch_id',$this->api->currentBranch->id);
+		$account_dr_model->filter(array($account_dr_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Branch & Divisions%')));
 
 		for($i=1;$i<=$this->rows;$i++){
 			$account = $form->addField('autocomplete/Basic','account_cr_'.$i);
-			$account->setModel('Active_Account','AccountNumber');
+			$account->setModel($account_cr_model,'AccountNumber');
 			$account->setCaption(' ');
 			$amount = $form->addField('line','amount_cr_'.$i,'');
 
@@ -42,7 +49,7 @@ class page_transactions_jv extends Page {
 
 		for($i=1;$i<=$this->rows;$i++){
 			$account = $form->addField('autocomplete/Basic','account_dr_'.$i);
-			$account->setModel('Active_Account','AccountNumber');
+			$account->setModel($account_dr_model,'AccountNumber');
 			$amount = $form->addField('line','amount_dr_'.$i,'');
 
 			$account->setCaption(' ');

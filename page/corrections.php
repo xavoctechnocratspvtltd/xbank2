@@ -201,6 +201,7 @@ class page_corrections extends Page {
 				array('staffs','landline_no','string'),
 				array('staffs','DOB','date'),
 				array('accounts_pending','sig_image_id','int'),
+				array('accounts','sig_image_id','int'),
 				//New Added//
 
 				array('dealers','loan_panelty_per_day','int'),

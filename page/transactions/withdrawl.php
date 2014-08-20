@@ -6,12 +6,16 @@ class page_transactions_withdrawl extends Page {
 	function init(){
 		parent::init();
 
+		$account_model=$this->add('Model_Account');
+		$account_model->addCondition('branch_id',$this->api->currentBranch->id);
+
 		$cols= $this->add('Columns');
 		$left_col = $cols->addColumn(6);
 		$right_col = $cols->addColumn(6);
 		$form = $left_col->add('Form');
 		$account_field = $form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull();
-		$account_field->setModel('Account','AccountNumber');
+		$account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
+		$account_field->setModel($account_model,'AccountNumber');
 
 		$form->addField('Number','amount')->validateNotNull();
 		$form->addField('autocomplete/Basic','account_to_credit')->setFieldHint('sdfsd')->setModel('Account','AccountNumber');

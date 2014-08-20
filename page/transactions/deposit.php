@@ -6,7 +6,22 @@ class page_transactions_deposit extends Page {
 		parent::init();
 
 		$form = $this->add('Form');
-		$form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull()->setModel('Account','AccountNumber');
+		$account_model=$this->add('Model_Account');
+		$account_model->addCondition('branch_id',$this->api->currentBranch->id);
+		 // $model->addCondition(
+ //            $model->dsql()->orExpr()
+ //                ->where('transaction_type', TRA_ACCOUNT_OPEN_AGENT_COMMISSION)
+ //                ->where('transaction_type', TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT)
+ //        );
+
+
+
+		$account_field = $form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull();
+		$account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
+		$account_field->setModel($account_model,'AccountNumber');
+
+		// $account_field->model->debug();
+
 		$form->addField('Number','amount')->validateNotNull();
 		$form->addField('autocomplete/Basic','account_to_debit')->setFieldHint('sdfsd')->setModel('Account','AccountNumber');
 		$form->addField('Text','narration');

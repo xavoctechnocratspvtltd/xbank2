@@ -667,4 +667,20 @@ class Model_Account extends Model_Table {
 		$this['is_verify']=true;
 		$this->save();
 	}
+
+	function filter($array){
+        $wq=$this->api->db->dsql()->orExpr();
+        $hq=$this->api->db->dsql()->orExpr();
+    
+        foreach ($array as $field => $value) {
+            if(is_array($value)){
+            	foreach ($value as $v) {
+		            $wq->where($field,'like',$v);
+            	}
+            }else{
+	            $wq->where($field,'like',$value);
+            }
+        }   
+        $this->addCondition($wq); 
+    }
 }

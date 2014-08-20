@@ -137,7 +137,7 @@ class Form_Field_Basic extends \Form_Field_Hidden
         $this->id_field = $id_field ?: $this->model->id_field;
         $this->title_field = $title_field ?: $this->model->title_field;
 
-        
+        return $this->model;        
     }
 
     function recursiveRender(){
@@ -176,5 +176,21 @@ class Form_Field_Basic extends \Form_Field_Hidden
             ->myautocomplete($url, $this, $this->options, $this->id_field, $this->title_field, $this->send_other_fields);
 
         return parent::render();
+    }
+
+    function filter($array){
+
+        $scheme_join = $this->model->leftJoin('schemes','scheme_id');
+        $scheme_join->addField('schemeType','SchemeType');
+        $scheme_join->addField('schemeName','name');
+
+        $wq=$this->api->db->dsql()->orExpr();
+        $hq=$this->api->db->dsql()->orExpr();
+    
+        foreach ($array as $field => $value) {
+            
+            $wq->where($field,'like',$value);
+        }   
+        $this->model->addCondition($wq); 
     }
 }

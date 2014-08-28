@@ -28,7 +28,7 @@ class Model_Stock_Item extends Model_Table {
 
 
 		
-
+		$this->_dsql()->order('name','asc');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -60,6 +60,7 @@ class Model_Stock_Item extends Model_Table {
 
 		$this['name']=$name;
 		$this['category_id']=$other_fields['category_id'];
+		$this['container_id']=$other_fields['container_id'];
 		$this['row_id']=$other_fields['row_id'];
 		$this['is_consumable']=$other_fields['is_consumable'];
 		$this['is_issueable']=$other_fields['is_issueable'];

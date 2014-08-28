@@ -24,7 +24,7 @@ class page_stock_item extends Page {
 			
 		});
 		
-		$item->getElement('category_id')->system(true);		
+		// $item->getElement('category_id')->system(true);		
 		$crud->setModel($item);	
 		
 		if($form=$crud->form){
@@ -40,7 +40,7 @@ class page_stock_item extends Page {
 
 		if($g=$crud->grid){
 			$g->addPaginator(10);
-			$g->removeColumn('category');
+			// $g->removeColumn('category');
 		}
 	}
 }

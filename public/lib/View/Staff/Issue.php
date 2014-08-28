@@ -14,7 +14,7 @@ class View_Staff_Issue extends View {
 		$transaction_j_item=$transaction->join('stock_items','item_id');
 		$transaction_j_item->addField('is_issueable');
 		$transaction->addCondition('is_issueable',true);
-		$transaction->addCondition('transaction_type','Issue');
+		$transaction->addCondition('transaction_type',array('Issue','Submit'));
 		$grid=$this->add('Grid_AccountsBase');
 		$staff_model=$this->add('Model_Staff');
 		if($_GET['filter']){

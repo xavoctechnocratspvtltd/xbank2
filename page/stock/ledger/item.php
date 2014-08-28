@@ -9,20 +9,22 @@ class page_stock_ledger_item extends Page {
 		$item_field->setModel('Stock_Item');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
+		// $form->addField('CheckBox','include_dead');
 		$form->addSubmit('GET');
 		$transaction=$this->add('Model_Stock_Transaction');
 		
 		$grid=$this->add('Grid_AccountsBase');
 
 		$item_model=$this->add('Model_Stock_Item');
-
+		$transaction->addCondition('transaction_type','<>','Dead');
 		if($_GET['filter']){
 						
 			if($_GET['item']){
 				$item_model->load($_GET['item']);
 				$transaction->addCondition('item_id',$_GET['item']);
 			}
-
+			// if(!$_GET['include_dead'])
+				// $transaction->addCondition('transaction_type',)
 			if($_GET['from_date'])
 				$transaction->addCondition('created_at','>=',$_GET['from_date']);
 			if($_GET['to_date'])
@@ -31,7 +33,7 @@ class page_stock_ledger_item extends Page {
 		}else
 			$transaction->addCondition('id',-1);
 
-		$openning_bal=$item_model->getQty($_GET['from_date']);
+		$openning_bal=$item_model->getQty($_GET['from_date']?:'1970-01-01');
 		$grid->setModel($transaction,array('item','narration','transaction_type','qty','created_at'));	
 
 		$grid->addColumn('text','DR');

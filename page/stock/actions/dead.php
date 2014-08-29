@@ -7,7 +7,7 @@ class page_stock_actions_dead extends Page {
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 		$form=$this->add('Form');
-		$item_field=$form->addField('dropdown','item')->setEmptyText('Please Select')->validateNotNull();
+		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
 		$item_field->setModel('Stock_Item');
 
 		$staff_field=$form->addField('dropdown','staff')->setEmptyText('Please Select');

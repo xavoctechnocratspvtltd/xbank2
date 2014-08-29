@@ -11,12 +11,14 @@ class page_stock_actions_transfer extends Page {
 		$branch_model=$this->add('Model_Branch');
 		$branch_model->addCondition('id','<>',$this->api->currentBranch->id);
 		$branch_field->setModel($branch_model);	
-		$item_field=$form->addField('dropdown','item')->setEmptyText('Please Select');
+		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');	
 		$form->addField('line','qty');
-		$form->addField('line','rate');
+		$rate_field=$form->addField('line','rate');
 		$form->addField('text','narration');
 		$form->addSubmit('Transfer');
+		$this->js(true)->load('avgrate');
+		$item_field->other_field->js('change',$this->js()->univ()->avgrate($item_field->js()->val(),$rate_field));
 
 		$form_search=$this->add('Form');
 		$item_field=$form_search->addField('dropdown','item')->setEmptyText('Please Select');

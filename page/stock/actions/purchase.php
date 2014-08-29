@@ -9,7 +9,7 @@ class page_stock_actions_purchase extends Page {
 		$form=$this->add('Form');
 		$party_field=$form->addField('dropdown','party')->setEmptyText('Please Select');
 		$party_field->setModel('Stock_Party');	
-		$item_field=$form->addField('dropdown','item')->setEmptyText('Please Select');
+		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');	
 		$form->addField('line','qty');
 		$form->addField('line','rate');

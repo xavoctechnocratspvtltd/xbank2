@@ -33,5 +33,8 @@ class page_stock_reports_store extends Page {
 		$grid->setModel($items);
 		$grid->removeColumn('container');
 		$grid->removeColumn('row');
+		$grid->removeColumn('is_consumable');
+		$grid->removeColumn('is_issueable');
+		$grid->removeColumn('is_fixedassets');
 	}
 }

@@ -252,7 +252,7 @@ class Model_Stock_Item extends Model_Table {
 		$purchase_tra->addCondition('created_at','<',$this->api->nextDate($this->api->now));
 		$purchase_tra->addCondition('transaction_type','Purchase');
 		$purchase_tra_qty = ($purchase_tra->sum('rate')->getOne())?:0;
-		$no_of_puchase=$purchase_tra->count()->getOne();
+		$no_of_puchase=$purchase_tra->count()->getOne()?:1;
 		return $purchase_tra_qty/$no_of_puchase;
 	}
 

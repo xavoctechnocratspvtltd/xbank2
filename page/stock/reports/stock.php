@@ -111,7 +111,7 @@ class page_stock_reports_stock extends Page {
 		$grid->addColumn('consumeissue','consume_issue');
 		$grid->addColumn('return','return');
 		$grid->addColumn('stock','stock_in_hand');
-		$grid->addColumn('avgrate','avg_rate');
+		$grid->addColumn('avgrate,money','avg_rate');
 		$grid->addColumn('amount','amount');
 		$grid->removeColumn('row');
 		$grid->removeColumn('category');

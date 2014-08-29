@@ -88,7 +88,7 @@ class page_stock_reports_stock extends Page {
 		});
 
 		$grid->addMethod('format_avgrate',function($g,$f){
-			$g->current_row_html[$f]=$g->model->getAvgRate($_GET['to_date']?:$g->api->now);
+			$g->current_row_html[$f]=round($g->model->getAvgRate($_GET['to_date']?:$g->api->now),2);
 		});
 
 

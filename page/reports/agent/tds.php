@@ -9,6 +9,8 @@ class page_reports_agent_tds extends Page {
 		parent::init();
 
 		$form = $this->add('Form');
+		$agent_field=$form->addField('autocomplete/Basic','agent');
+		$agent_field->setModel('Agent');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addField('DropDown','account_type')->setValueList(array('%'=>'All','DDS'=>'DDS','Recurring'=>'Recurring','FD'=>'FD','MIS'=>'MIS'));
@@ -125,6 +127,8 @@ class page_reports_agent_tds extends Page {
 
 			if($_GET['to_date'])
 				$model->addCondition('transaction_date','<=',date('Y-m-t',strtotime($_GET['to_date'])));
+			if($_GET['agent'])
+				$model->addCondition('agent_id',$_GET['agent']);
 		}else
 			$model->addCondition('id',-1);
 

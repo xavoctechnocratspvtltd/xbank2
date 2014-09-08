@@ -11,7 +11,7 @@ class page_reports_loan_dispatch extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('DropDown','document')->setEmptyText('No Document')->setModel('Document')->addCondition('LoanAccount',true);
+		// $form->addField('DropDown','document')->setEmptyText('No Document')->setModel('Document')->addCondition('LoanAccount',true);
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
 		foreach ($document as $junk) {
@@ -139,9 +139,11 @@ class page_reports_loan_dispatch extends Page {
 		$grid->addColumn('myTotal','total');
 
 
+
+
 		$grid->addPaginator(50);
 
-
+		$grid->addTotals(array('total','Amount','emi'));
 		if($form->isSubmitted()){
 
 			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'document'=>$form['document']?:0,'filter'=>1);

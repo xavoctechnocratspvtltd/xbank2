@@ -41,7 +41,7 @@ class View_AccountDetail extends View {
 		$scheme_grid_fields=array();
 
 		$grid= $this->add('Grid',null,'schemes');
-		$grid->setModel($schemes,$scheme_grid_fields);
+		$grid->setModel($schemes,array('name','Interest','AccountOpenningCommission','ProcessingFees','PremiumMode','MaturityPeriod','NumberOfPremiums','SchemeType','SchemeGroup','ReducingOrFlatRate'));
 
 		$documents = $ac_m->ref('DocumentSubmitted');
 		$grid= $this->add('Grid',null,'documents');

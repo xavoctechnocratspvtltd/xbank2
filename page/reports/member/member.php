@@ -8,7 +8,7 @@ class page_reports_member_member extends Page {
 		$member_model=$this->add('Model_Member');
 		$member_model->setOrder('created_at','desc');
 
-		$grid=$this->add('Grid');
+		$grid=$this->add('Grid',null,null,array('view/mygrid'));
 		$grid->setModel($member_model,array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
 		$grid->addPaginator(50);
 		$grid->addQuickSearch(array('id','name','PhoneNos'));

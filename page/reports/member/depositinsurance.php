@@ -7,7 +7,7 @@ class page_reports_member_depositinsurance extends Page {
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','type')->setValueList(array('rd'=>'RD','fd'=>'FD','mis'=>'MIS','all'=>'All'));
+		$form->addField('dropdown','type')->setValueList(array('RD'=>'RD','FD'=>'FD','MIS'=>'MIS',0=>'All'));
 		$form->addSubmit('GET List');
 
 
@@ -17,9 +17,15 @@ class page_reports_member_depositinsurance extends Page {
 
 		if($_GET['filter']){
 
-			//TODO
+			if($_GET['from_date'])
+				$accounts_model->addCondition('LoanInsurranceDate','>=',$_GET['from_date']);
+			if($_GET['to_date'])
+				$accounts_model->addCondition('LoanInsurranceDate','<=',$_GET['to_date']);
+			if($_GET['type'])
+				$accounts_model->addCondition('account_type',$_GET['type']);
 
-		}
+		}else
+			$accounts_model->addCondition('id',-1);
 
 		$grid->setModel($accounts_model);
 

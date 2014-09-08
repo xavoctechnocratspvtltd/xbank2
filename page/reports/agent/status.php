@@ -36,7 +36,8 @@ class page_reports_agent_status extends Page {
 				$agent_model->addCondition('status',false);
 			if($_GET['status']=='Active')
 				$agent_model->addCondition('status',true);
-		}
+		}else
+			$agent_model->addCondition('id',-1);
 
 		$grid->setModel($agent_model);
 		$grid->addPaginator(50);

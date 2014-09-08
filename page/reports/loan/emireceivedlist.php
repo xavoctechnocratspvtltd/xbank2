@@ -82,6 +82,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 		$grid->addPaginator(50);
 		$grid->addSno();
+		$grid->addTotals(array('amountCr'));
 
 
 		if($form->isSubmitted()){

@@ -58,8 +58,8 @@ class page_reports_deposit_commission extends Page {
 
 			if($_GET['to_date']){
 				$this->api->stickyGET("to_date");
-				$transaction_row->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
-			}
+				$transaction_row->addCondition('created_at','<',$_GET['to_date']);
+			}  
 
 			if($_GET['account_type']){
 				$this->api->stickyGET("account_type");

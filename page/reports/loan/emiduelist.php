@@ -188,7 +188,8 @@ class page_reports_loan_emiduelist extends Page {
 		// 		->now();
 		$grid->addPaginator(5);
 		$grid->addSno();
-		
+		$grid->addOrder()->move('total','last')->now();
+		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount'));
 		$grid->removeColumn('last_premium');
 
 		if($form->isSubmitted()){

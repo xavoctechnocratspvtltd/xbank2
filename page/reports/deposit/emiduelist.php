@@ -8,9 +8,10 @@ class page_reports_deposit_emiduelist extends Page {
 		$form=$this->add('Form');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
-		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','time_collapse'=>'Time Collapse'))->setEmptyText('Please Select');
 
 		$form->addField('DatePicker','to_date');
+		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','time_collapse'=>'Time Collapse'))->setEmptyText('Please Select');
+		$form->addField('dropdown','type')->setValueList(array('RD'=>'RD','DDS'=>'DDS'))->setEmptyText('Please Select');
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid');
@@ -85,7 +86,12 @@ class page_reports_deposit_emiduelist extends Page {
 					break;
 			}
 
-		}
+			if($_GET['account_type']){
+				$account_model->addCondition('account_type',$_GET['account_type']);
+			}
+
+		}else
+			$account_model->addCondition('id',-1);
 
 		$account_model->add('Controller_Acl');
 		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','paid_premium_count','due_premium_count','premium_amount','guarantor_name','last_premium'));

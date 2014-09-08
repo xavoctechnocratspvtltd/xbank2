@@ -7,7 +7,7 @@ class page_reports_member_loaninsurance extends Page {
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','type')->setValueList(array('vl'=>'VL','pl'=>'PL','cc'=>'CC','0'=>'All'));
+		$form->addField('dropdown','type')->setValueList(array('VL'=>'VL','PL'=>'PL','CC'=>'CC','0'=>'All'));
 		$form->addSubmit('GET List');
 
 
@@ -25,12 +25,13 @@ class page_reports_member_loaninsurance extends Page {
 				$accounts_model->addCondition('account_type',$_GET['type']);
 
 		}
-			// $accounts_model->addCondition('id',-1);
+			$accounts_model->addCondition('id',-1);
 
-		$grid->setModel($accounts_model->debug());
+		$grid->setModel($accounts_model);
 
 		$grid->addPaginator(50);
 		$grid->addSno();
+		$grid->removeColumn('scheme');
 
 
 		if($form->isSubmitted()){

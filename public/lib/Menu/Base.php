@@ -17,8 +17,8 @@ class Menu_Base extends Menu {
 		// $loan_reports = 	$this->addMenuItem('reports_loan','Loan Reports');
 		// $agent_reports = 	$this->addMenuItem('reports_agent','Agent Reports');
 		// $general = 	$this->addMenuItem('reports_general','General');
-		$member_reports = 	$this->addMenuItem('reports_member','Member Reports');
-		$deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
+		// $member_reports = 	$this->addMenuItem('reports_member','Member Reports');
+		// $deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
 		$operations = 	$this->addMenuItem('operations','Operations');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
 
@@ -49,6 +49,8 @@ class Menu_Base extends Menu {
 		$reports_sub_menu->addMenuItem('reports_loan','Loan Reports');
 		$reports_sub_menu->addMenuItem('reports_agent','Agent Reports');
 		$reports_sub_menu->addMenuItem('reports_genral','Genral Reports');
+		$reports_sub_menu->addMenuItem('reports_member','Member Reports');
+		$reports_sub_menu->addMenuItem('reports_deposit','Deposit Reporst');
 		$reports->js('click',$reports_sub_menu_popover->showJS());
 		
 
@@ -112,14 +114,8 @@ class Menu_Base extends Menu {
 		// $agent_reports_sub_menus->addMenuItem('reports_agent_detail','Agent Detail');
 		// $agent_reports->js('click',$agent_reports_sub_menus_popover->showJS());
 
-		$deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
-		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdProvision','FD Provision Report');
-		$deposit_reports_sub_menus->addMenuItem('reports_deposit_emiduelist','EMI Due List');
-		$deposit_reports_sub_menus->addMenuItem('reports_deposit_commission','Commission Report');
-		$deposit_reports_sub_menus->addMenuItem('reports_deposit_fdinterestprovision','FD Interest Provision');
-		$deposit_reports_sub_menus->addMenuItem('reports_deposit_duestogive','Dues To Give');
-		$deposit_reports_sub_menus->addMenuItem('reports_deposit_emireceivedlist','Premium Received List');
-		$deposit_reports->js('click',$deposit_reports_sub_menus_popover->showJS());
+		// $deposit_reports_sub_menus = $deposit_reports_sub_menus_popover->add('Menu_Vertical');
+		// $deposit_reports->js('click',$deposit_reports_sub_menus_popover->showJS());
 
 
 
@@ -132,10 +128,7 @@ class Menu_Base extends Menu {
 		$utilities_sub_menus->addMenuItem('utility_setdate','Change Date');
 		$utilities->js('click',$utilities_sub_menus_popover->showJS());
 
-		$member_sub_menus = $member_sub_menus_popover->add('Menu_Vertical');
-		$member_sub_menus->addMenuItem('reports_member_member','Member');
-		$member_sub_menus->addMenuItem('reports_member_loaninsurance','Loan Insurance');
-		$member_sub_menus->addMenuItem('reports_member_depositinsurance','Deposit Insurance');
-		$member_reports->js('click',$member_sub_menus_popover->showJS());
+		// $member_sub_menus = $member_sub_menus_popover->add('Menu_Vertical');
+		// $member_reports->js('click',$member_sub_menus_popover->showJS());
 	}
 }

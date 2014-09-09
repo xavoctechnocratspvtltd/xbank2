@@ -62,6 +62,7 @@ class Model_Member extends Model_Table {
 		$this->hasMany('Agent','member_id');
 		$this->hasMany('AccountGuarantor','member_id');
 		$this->hasMany('DocumentSubmitted','member_id');
+		$this->hasMany('Comment','member_id');
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);

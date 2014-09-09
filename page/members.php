@@ -4,8 +4,8 @@ class page_members extends Page {
 	
 	public $title='Member Management';
 
-	function init(){
-		parent::init();
+	function page_index(){
+		// parent::init();
 
 		$crud = $this->add('xCRUD');
 
@@ -114,12 +114,15 @@ class page_members extends Page {
 
 			$g->addColumn('button','active','Active/DeActive');
 			$g->addColumn('button','defaulter','Defaulter/Normal');
+			$g->addColumn('expander','comment');
 			$g->addFormatter('edit','removeEdit');
 			// $g->addFormatter('active','activeStatus');
 			$g->addFormatter('delete','removeDelete');
 			$g->addPaginator(10);
 			$g->controller->importField('id');
 			$g->addOrder()->move('id','first')->now();
+			// $g->addClass('.mygrid');
+			// $g->js('reload')->reload();
 		}
 
 		if($crud->isEditing()){
@@ -147,5 +150,27 @@ class page_members extends Page {
 			// 	),'div .atk-form-row');
 			$o->now();
 		}
+	}
+
+
+	function page_comment(){
+		$this->api->stickyGET('members_id');
+
+		$member=$this->add('Model_Member');
+		$member->load($_GET['members_id']);
+
+		$form=$this->add('Form');
+		$form->addField('text','narration');
+		$form->addSubmit('Save');
+		$grid=$this->add('Grid');
+		$comment=$this->add('Model_Comment');
+		$comment->addCondition('member_id',$_GET['members_id']);
+		$grid->setModel($comment,array('member','narration','created_at'));
+		if($form->isSubmitted()){
+			$comment=$this->add('Model_Comment');
+			$comment->createNew($form['narration'],$member);
+			$form->js(null,$grid->js()->reload())->univ()->closeExpander()->execute();
+		}
+
 	}
 }

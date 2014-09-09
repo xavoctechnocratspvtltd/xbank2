@@ -253,6 +253,8 @@ class Model_Stock_Item extends Model_Table {
 		$purchase_tra->addCondition('transaction_type','Purchase');
 		$purchase_tra_qty = ($purchase_tra->sum('rate')->getOne())?:0;
 		$no_of_puchase=$purchase_tra->count()->getOne()?:1;
+		// throw new Exception($purchase_tra_qty/$no_of_puchase, 1);
+		
 		return $purchase_tra_qty/$no_of_puchase;
 	}
 

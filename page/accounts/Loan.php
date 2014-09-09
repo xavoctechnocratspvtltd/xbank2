@@ -210,6 +210,7 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addClass('account_grid');
 			$crud->grid->js('reload')->reload();
 			$crud->grid->addPaginator(10);
+			$crud->grid->addColumn('expander','comment');
 			$crud->grid->addColumn('expander','edit_document');
 			$crud->grid->addColumn('expander','edit_guarantor');
 			$crud->grid->addColumn('expander','edit');
@@ -378,5 +379,10 @@ class page_accounts_Loan extends Page {
 		$crud=$this->add('CRUD');
 		$crud->setModel($account_guarantors, array('member_id','member'));
 
+	}
+
+
+	function page_accounts_Loan_accounts_comment(){
+		
 	}
 }

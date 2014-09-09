@@ -109,6 +109,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('AccountGuarantor','account_id');
 		$this->hasMany('TransactionRow','account_id');
 		$this->hasMany('Account','related_account_id',null,'RelatedAccounts');
+		$this->hasMany('Comment','account_id');
 
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
 		$this->addHook('editing',array($this,'editing_default'));

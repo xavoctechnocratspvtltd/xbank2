@@ -4,6 +4,7 @@ class page_stock_actions_transfer extends Page {
 	function init(){
 		parent::init();
 
+		
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 		$form=$this->add('Form');
@@ -17,8 +18,10 @@ class page_stock_actions_transfer extends Page {
 		$rate_field=$form->addField('line','rate');
 		$form->addField('text','narration');
 		$form->addSubmit('Transfer');
-		// $this->js(true)->_load('avgrate2');
-		// $item_field->js('change',$this->js()->univ()->avgrate($item_field,$rate_field));
+
+		$this->js(true)->_load('avgrate13');
+		// $item_field->other_field->js('change',$this->js()->univ()->test());
+		$item_field->other_field->js('change',$this->js()->univ()->avgrate($item_field,$rate_field));
 
 		$form_search=$this->add('Form');
 		$item_field=$form_search->addField('dropdown','item')->setEmptyText('Please Select');

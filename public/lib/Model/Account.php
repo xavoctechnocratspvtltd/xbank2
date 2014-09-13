@@ -246,6 +246,7 @@ class Model_Account extends Model_Table {
 	}
 
 	function getNewAccountNumber($account_type=null,$branch=null){
+		
 		if(!$account_type) $account_type = $this['account_type'];
 		if(!$account_type) throw $this->exception('Could not Identify Account Type to generate Account Number', 'ValidityCheck')->setField('AccountNumber');
                 if(!$branch) $branch= $this->api->currentBranch;
@@ -654,9 +655,30 @@ class Model_Account extends Model_Table {
 		$this->save();
 	}
 
-	function changeDealer($member){
-		throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+	function changeDealer($dealer){
+		if(!$this->loaded())
+			throw $this->exception('Account Must be loaded to change member');
 
+		if(!($dealer instanceof Model_Dealer) and !$dealer->loaded())
+			throw $this->exception('Dealer must be passed as loaded Dealer Model');
+
+		$this->add('Model_Log')->logFieldEdit('Account',$this->id,'Dealer',$this['dealer_id'],$dealer->id);
+
+		$this['dealer_id'] = $dealer->id;
+		$this->save();
+	}
+
+	function changeAgent($agent){
+		if(!$this->loaded())
+			throw $this->exception('Account Must be loaded to change member');
+
+		if(!($agent instanceof Model_Agent) and !$agent->loaded())
+			throw $this->exception('Member must be passed as loaded Member Model');
+
+		$this->add('Model_Log')->logFieldEdit('Account',$this->id,'Agent',$this['agent_id'],$agent->id);
+
+		$this['agent_id'] = $agent->id;
+		$this->save();
 	}
 
 	function swapLockingStatus(){

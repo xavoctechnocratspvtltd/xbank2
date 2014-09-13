@@ -14,6 +14,7 @@
 // TODOS: Default Accounts Query should be faster
 // TODOS: Transaction_id to be indexed in transaction_row Table
 // FD Schemes from Month to days
+// TODO : Recurring in function setAccountType ???
 
 
 class page_corrections extends Page {

@@ -4,6 +4,10 @@ class page_reports_loan_emireceivedlist extends Page {
 	public $title="EMI Received List";
 	function init(){
 		parent::init();
+		$till_date="";
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
 
 		$form=$this->add('Form');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
@@ -16,7 +20,8 @@ class page_reports_loan_emireceivedlist extends Page {
 		$document=$this->add('Model_Document');
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid_AccountsBase'); 
+		$grid=$this->add('Grid_AccountsBase');
+		$grid->add('H3',null,'grid_buttons')->set('Loan EMI Received List As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$transaction_row_model=$this->add('Model_TransactionRow');
 		
@@ -83,6 +88,16 @@ class page_reports_loan_emireceivedlist extends Page {
 		$grid->addPaginator(50);
 		$grid->addSno();
 		$grid->addTotals(array('amountCr'));
+
+		$js=array(
+			$this->js()->_selector('.atk-cell atk-jackscrew')->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
 
 
 		if($form->isSubmitted()){

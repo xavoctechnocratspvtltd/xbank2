@@ -9,13 +9,14 @@ class page_reports_deposit_emiduelist extends Page {
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 
+		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','time_collapse'=>'Time Collapse'))->setEmptyText('Please Select');
 		$form->addField('dropdown','type')->setValueList(array('RD'=>'RD','DDS'=>'DDS'))->setEmptyText('Please Select');
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid');
-
+		$grid->add('H3',null,'grid_buttons')->set('Deposit Emi Due List From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 		$account_model=$this->add('Model_Active_Account_Recurring');
 		$member_join=$account_model->join('members','member_id');
 		$member_join->addField('member_name','name');
@@ -86,6 +87,11 @@ class page_reports_deposit_emiduelist extends Page {
 					break;
 			}
 
+			if($_GET['from_date'])
+				$account_model->addCondition('created_at','>=',$_GET['from_date']);
+			if($_GET['to_date'])
+				$account_model->addCondition('created_at','<=',$_GET['to_date']);
+
 			if($_GET['account_type']){
 				$account_model->addCondition('account_type',$_GET['account_type']);
 			}
@@ -107,7 +113,7 @@ class page_reports_deposit_emiduelist extends Page {
 		$grid->addPaginator(50);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
+			$grid->js()->reload(array('agent'=>$form['agent'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
 		}	
 	}
 }

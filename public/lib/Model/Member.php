@@ -2,6 +2,7 @@
 
 class Model_Member extends Model_Table {
 	var $table= "members";
+	var $title_field= "member_name";
 	
 	function init(){
 		parent::init();
@@ -53,6 +54,8 @@ class Model_Member extends Model_Table {
 		$this->addExpression('age')->set(function($m,$q){
 			return "25";
 		});
+
+		$this->addExpression('member_name')->set('CONCAT(name,"- Member ID",id)');
 
 		$this->addExpression('search_string')->set("CONCAT(name,' ',FatherName,' ',PanNo)");
 

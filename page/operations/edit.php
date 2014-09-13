@@ -26,7 +26,7 @@ class page_operations_edit extends Page {
 
 		if($member_form->isSubmitted()){
 			$loan_account=$this->add('Model_Account_Loan');
-			$loan_account->load($_GET['accounts_id']);
+			$loan_account->load($member_form['account']);
 
 			$new_member_model=$this->add('Model_ActiveMember');
 			$new_member_model->load($member_form['new_member']);
@@ -40,7 +40,7 @@ class page_operations_edit extends Page {
 			   	throw $e;
 			}
 
-			$member_form->js(null,$member_form->js()->univ()->_closeDialog())->reload()->execute();
+			$member_form->js()->reload()->execute();
 
 		}
 
@@ -58,8 +58,8 @@ class page_operations_edit extends Page {
 		$dealer_form->addSubmit('Change');
 
 		if($dealer_form->isSubmitted()){
-			$loan_account=$this->add('Model_Loan_Account');
-			$loan_account->load($_GET['accounts_id']);
+			$loan_account=$this->add('Model_Account_Loan');
+			$loan_account->load($dealer_form['account']);
 
 			$new_dealer_model=$this->add('Model_ActiveDealer');
 			$new_dealer_model->load($dealer_form['new_dealer']);
@@ -73,13 +73,47 @@ class page_operations_edit extends Page {
 			   	throw $e;
 			}
 
-			$dealer_form->js(null,$dealer_form->js()->univ()->_closeDialog())->reload()->execute();
+			$dealer_form->js()->reload()->execute();
 
 		}
 
 		// ============ Agent Change
 
-		$tab3->add('View_Error')->set('TODO');
+
+		$agent_form=$tab3->add('Form');
+		
+		$agent_account_field=$agent_form->addField('autocomplete/Basic','account')->validateNotNull();
+		$account_model = $this->add('Model_Account_Loan');
+		$agent_account_field->setModel($account_model);
+
+		$agent_field=$agent_form->addField('autocomplete/Basic','new_agent')->validateNotNull();
+		$agent_model=$this->add('Model_Agent');
+		$agent_model->addCondition('ActiveStatus',true);
+		$agent_field->setModel($agent_model);
+
+		$agent_form->addSubmit('Change');
+
+		if($agent_form->isSubmitted()){
+			$loan_account=$this->add('Model_Account_Loan');
+			$loan_account->load($agent_form['account']);
+
+			$new_agent_model=$this->add('Model_Agent');
+			$new_agent_model->addCondition('ActiveStatus',true);
+			$new_agent_model->load($agent_form['new_agent']);
+
+			try {
+				$this->api->db->beginTransaction();
+			    $loan_account->changeAgent($new_agent_model);
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+			}
+
+			$agent_form->js()->reload()->execute();
+
+		}
+
 		
 	
 	}

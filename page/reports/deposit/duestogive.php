@@ -35,14 +35,14 @@ class page_reports_deposit_duestogive extends Page {
 			$this->api->stickyGET('from_date');
 			$this->api->stickyGET('to_date');
 			if($_GET['account_type'])
-				$account->addCondition('account_type',$_GET['account_type']);
+				$account->addCondition('account_type','like',$_GET['account_type']);
 			if($_GET['from_date'])
 				$account->addCondition('due_date','>=',$_GET['from_date']);
 			if($_GET['to_date'])
 				$account->addCondition('due_date','<=',$_GET['to_date']);
-		}else
-			$account->addCondition('id',-1);
-		$grid->setModel($account,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','due_date','Amount','agent_name','agent_phoneno','ActiveStatus'));
+		}//else
+			//$account->addCondition('id',-1);
+		$grid->setModel($account->debug(),array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','due_date','Amount','agent_name','agent_phoneno','ActiveStatus','account_type'));
 		$grid->addPaginator(50);
 		$grid->addSno();
 		$grid->addColumn('expander','accounts');

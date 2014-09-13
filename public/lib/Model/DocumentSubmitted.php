@@ -8,6 +8,9 @@ class Model_DocumentSubmitted extends Model_Table {
 		$this->hasOne('Account','accounts_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
+		//NEW ADDED
+		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));
+		//NEW ADDED
 		$this->hasOne('AgentGuarantor','agentguarantor_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('DSA','dsa_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('DSAGuarantor','dsaguarantor_id')->display(array('form'=>'autocomplete/Basic'));

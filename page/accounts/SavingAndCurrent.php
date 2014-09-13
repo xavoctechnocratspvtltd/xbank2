@@ -47,7 +47,7 @@ class page_accounts_SavingAndCurrent extends Page {
 
 		if($crud->grid){
 			$crud->grid->addPaginator(50);
-			$crud->grid->addQuickSearch(array('AccountNumber','member_id','scheme_id','agent_id','amount','mo_id','team_id'));
+			$crud->grid->addQuickSearch(array('AccountNumber','member_id','agent','scheme_id','agent_id','amount','mo_id','team_id'));
 		}
 
 		if($crud->isEditing('add')){

@@ -7,12 +7,13 @@ $.each({
 	avgrate: function(item_field,rate_field){
 		// alert($(item_field).val());
 		$.ajax({
-			url:'?page=ajaxhandler1&item='+$(item_field).val(),
+			url:'?page=ajaxhandler&item='+$(item_field).val(),
 			type:'GET',
 			success: function(data){
-				// $(rate_field).val(data);
+				$(rate_field).val(data);
 			}
-		});
+		});	
+	
 	}
 
 },$.univ._import);

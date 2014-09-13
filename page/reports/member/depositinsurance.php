@@ -14,6 +14,7 @@ class page_reports_member_depositinsurance extends Page {
 		$grid=$this->add('Grid'); 
 
 		$accounts_model=$this->add('Model_Account');
+		$accounts_model->addCondition('Amount','<=',500);
 
 		if($_GET['filter']){
 
@@ -23,11 +24,11 @@ class page_reports_member_depositinsurance extends Page {
 				$accounts_model->addCondition('LoanInsurranceDate','<=',$_GET['to_date']);
 			if($_GET['type'])
 				$accounts_model->addCondition('account_type',$_GET['type']);
+		}
+		// }else
+			// $accounts_model->addCondition('id',-1);
 
-		}else
-			$accounts_model->addCondition('id',-1);
-
-		$grid->setModel($accounts_model);
+		$grid->setModel($accounts_model->debug());
 
 		$grid->addPaginator(50);
 

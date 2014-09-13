@@ -10,6 +10,6 @@ class page_reports_loan extends Page {
 		$tab1=$tabs->addTabURL('reports_loan_emireceivedlist','EMI Rceceived List');
 		$tab1=$tabs->addTabURL('reports_loan_insuranceduelist','Insurance Due List');
 		$tab1=$tabs->addTabURL('reports_loan_dispatch','Loan Dispatch');
-		$tab1=$tabs->addTabURL('reports_loan_accountdetailed','Account Detailed');
+		
 	}
 }

@@ -57,7 +57,7 @@ class Frontend extends ApiFrontend {
         }
 
         
-        $header_menu1=$header->add('Menu_Base');
+        $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
 
         // $header_menu1->addMenuItem('index',array('Home','icon'=>'home','swatch'=>'yellow'));
 

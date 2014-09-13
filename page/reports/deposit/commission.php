@@ -20,7 +20,9 @@ class page_reports_deposit_commission extends Page {
 
 		$form->addField('dropdown','account_type')->setValueList($account_type_array)->setEmptyText('Please Select');
 		$form->addSubmit('GET List');
+
 		$grid=$this->add('Grid_AccountsBase');
+		$grid->add('H3',null,'grid_buttons')->set('Commission Report From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 
 		$transaction_row=$this->add('Model_TransactionRow');
 		$transaction_row->getElement('amountCr')->caption('Net Commission')->type('int');
@@ -107,6 +109,7 @@ class page_reports_deposit_commission extends Page {
 		$grid->addColumn('totalCommission','total_commission');
 		$grid->addColumn('tds','tds','TDS');
 		$grid->addPaginator(50);
+		// $grid->addTotals(array('tds'));
 
 		$grid->removeColumn('transaction_type');
 

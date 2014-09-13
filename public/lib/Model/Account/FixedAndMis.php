@@ -26,8 +26,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
-
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber=null,$otherValues=null,$form=null,$created_at=null){
+		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber($otherValues['account_type']);
 		$scheme = $this->add('Model_Scheme')->load($scheme_id);
 		if($scheme['MinLimit']){
 			if($otherValues['Amount']< $scheme['MinLimit'])

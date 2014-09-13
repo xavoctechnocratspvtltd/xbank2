@@ -7,6 +7,7 @@ class page_reports_genral extends Page {
 
 		$tabs=$this->add('Tabs');
 		$tab1=$tabs->addTabURL('reports_general_document','Genral Documents');
-		$tab1=$tabs->addTabURL('reports_general_periodical','Periodical Documents');
+		$tab1=$tabs->addTabURL('reports_general_periodical','Periodical Accounts');
+		$tab1=$tabs->addTabURL('reports_loan_accountdetailed','Account Detailed');
 	}
 }

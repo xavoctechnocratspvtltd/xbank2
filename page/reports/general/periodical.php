@@ -122,7 +122,7 @@ class page_reports_general_periodical extends Page {
 		$account_model->addCondition('account_type',$_GET['account_type']);
 
 		$grid=$this->add('Grid');
-		$grid->setModel($account_model,array('AccountNumber','created_at','Amount','scheme','dealer','agent'));
+		$grid->setModel($account_model,array('AccountNumber','created_at','Amount','scheme','member','dealer','agent'));
 		$grid->addPaginator(50);
 		
 	}

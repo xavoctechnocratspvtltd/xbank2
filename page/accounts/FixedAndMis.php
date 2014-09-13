@@ -16,7 +16,7 @@ class page_Accounts_FixedAndMis extends Page {
 			try {
 				$crud->api->db->beginTransaction();
 
-			    	$fixedAndMis_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			    	$fixedAndMis_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch,null,$form->getAllFields(),$form);
 			    $crud->api->db->commit();
 			}catch(Exception_ValidityCheck $e){
 				$crud->api->db->rollBack();
@@ -65,7 +65,7 @@ class page_Accounts_FixedAndMis extends Page {
 
 		if($crud->grid){
 			$crud->grid->addPaginator(10);
-			$crud->grid->addQuickSearch(array('AccountNumber'));
+			$crud->grid->addQuickSearch(array('AccountNumber','agent'));
 		}
 	}
 }

@@ -9,6 +9,7 @@ class page_reports_member_member extends Page {
 		$member_model->setOrder('created_at','desc');
 
 		$grid=$this->add('Grid',null,null,array('view/mygrid'));
+		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
 		$grid->setModel($member_model,array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
 		$grid->addPaginator(50);
 		$grid->addQuickSearch(array('id','name','PhoneNos'));
@@ -17,6 +18,15 @@ class page_reports_member_member extends Page {
 		$grid->addColumn('expander','accounts');
 		$grid->addColumn('expander','guarantor_in');
 
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
 	}
 
 	function page_details(){

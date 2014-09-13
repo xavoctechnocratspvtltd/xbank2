@@ -5,6 +5,12 @@ class page_reports_loan_dispatch extends Page {
 	function init(){
 		parent::init();
 
+
+		$till_date="";
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
+
 		$form=$this->add('Form');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
@@ -21,6 +27,7 @@ class page_reports_loan_dispatch extends Page {
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid'); 
+		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance Due List As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$account_model=$this->add('Model_Account_Loan');
 
@@ -144,6 +151,16 @@ class page_reports_loan_dispatch extends Page {
 		$grid->addPaginator(50);
 
 		$grid->addTotals(array('total','Amount','emi'));
+
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
 		if($form->isSubmitted()){
 
 			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'document'=>$form['document']?:0,'filter'=>1);

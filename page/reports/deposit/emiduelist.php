@@ -112,6 +112,16 @@ class page_reports_deposit_emiduelist extends Page {
 
 		$grid->addPaginator(50);
 
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
+
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('agent'=>$form['agent'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
 		}	

@@ -27,10 +27,20 @@ class page_reports_loan_accountdetailed extends Page {
 		}
 
 		$account_view = $this->add('View_AccountDetail',array('account'=>$accounts_model));
-
+		
 		// $grid->setModel($accounts_model);
 
 		// $grid->addPaginator(50);
+
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$account_view->js('click',$js);
 
 
 		if($form->isSubmitted()){

@@ -3,8 +3,10 @@
 
 class View_AccountDetail extends View {
 	public $account=null;
+	public $title="Account Detail";
 	function init(){
 		parent::init();
+		// $this->add('H2')->set("Account Detail");
 		if($this->account==null)
 			throw new Exception("AccountDetail View Must Have Loaded Account Model defined", 1);
 		if(!($this->account instanceof  Model_Account))

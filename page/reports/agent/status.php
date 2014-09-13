@@ -4,13 +4,19 @@ class page_reports_agent_status extends Page {
 	public $title="Active/ Inactive Report";
 	function init(){
 		parent::init();
+		
+		$till_date="";
+		
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
 
 		$form=$this->add('Form');
 		$form->addField('dropdown','status')->setValueList(array('Inactive'=>'Inactive','Active'=>'Active'))->setEmptyText('Please Select')->validateNotNull();
 		$form->addSubmit('GET LIST');
 
 		$grid=$this->add("Grid");
-
+		$grid->add('H3',null,'grid_buttons')->set('Agent status As On '. date('d-M-Y',strtotime($till_date))); 
 		$agent_model=$this->add('Model_Agent');
 
 		$member_join=$agent_model->join('members','member_id');
@@ -45,6 +51,16 @@ class page_reports_agent_status extends Page {
 		$grid->removeColumn('name');
 		$grid->removeColumn('ActiveStatus');
 		$grid->controller->importField('status');
+
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('status'=>$form['status'],'filter'=>1))->execute();

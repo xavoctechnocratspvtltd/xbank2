@@ -3,7 +3,11 @@ class page_reports_member_loaninsurance extends Page {
 	public $title="Loan Member Insurance Report";
 	function init(){
 		parent::init();
-
+		$till_date="";
+		
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
@@ -12,6 +16,7 @@ class page_reports_member_loaninsurance extends Page {
 
 
 		$grid=$this->add('Grid_AccountsBase'); 
+		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance List As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$accounts_model=$this->add('Model_Account_Loan');
 
@@ -32,6 +37,17 @@ class page_reports_member_loaninsurance extends Page {
 		$grid->addPaginator(50);
 		$grid->addSno();
 		$grid->removeColumn('scheme');
+
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
+	
 
 
 		if($form->isSubmitted()){

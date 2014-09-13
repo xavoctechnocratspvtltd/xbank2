@@ -8,6 +8,10 @@ class page_reports_agent_tds extends Page {
 	function init(){
 		parent::init();
 
+		$till_date="";
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
 		$form = $this->add('Form');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
@@ -18,6 +22,7 @@ class page_reports_agent_tds extends Page {
 		$form->addSubmit('Go');
 
 		$grid = $this->add('Grid');
+		$grid->add('H3',null,'grid_buttons')->set('Agent TDS Report As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$model = $this->add('Model_Agent');
 		$account_join_2 = $model->join('accounts.agent_id');
@@ -137,6 +142,16 @@ class page_reports_agent_tds extends Page {
 
 		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 		$grid->addPaginator(10);
+
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array(

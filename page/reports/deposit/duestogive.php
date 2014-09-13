@@ -5,6 +5,12 @@ class page_reports_deposit_duestogive extends Page {
 	function init(){
 		parent::init();
 
+		$till_date = $this->api->today;
+
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
+
 		$form=$this->add('Form');
 		$form->addField('dropdown','account_type')->setValueList(array('all'=>'All','rd'=>'RD','fd'=>'FD','dds'=>'DDS','mis'=>'MIS'));
 		$form->addField('DatePicker','from_date');
@@ -13,7 +19,7 @@ class page_reports_deposit_duestogive extends Page {
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_AccountsBase');
-
+		$grid->add('H3',null,'grid_buttons')->set('Dues To Give Report From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 
 		$account=$this->add('Model_Account');
 		$member_join=$account->join('members','member_id');
@@ -42,11 +48,19 @@ class page_reports_deposit_duestogive extends Page {
 				$account->addCondition('due_date','<=',$_GET['to_date']);
 		}//else
 			//$account->addCondition('id',-1);
-		$grid->setModel($account->debug(),array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','due_date','Amount','agent_name','agent_phoneno','ActiveStatus','account_type'));
+		$grid->setModel($account,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','due_date','Amount','agent_name','agent_phoneno','ActiveStatus','account_type'));
 		$grid->addPaginator(50);
 		$grid->addSno();
 		$grid->addColumn('expander','accounts');
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
 
+		$grid->js('click',$js);
 
 
 		if($form->isSubmitted()){

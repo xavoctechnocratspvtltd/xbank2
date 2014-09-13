@@ -90,7 +90,7 @@ class page_reports_loan_emireceivedlist extends Page {
 		$grid->addTotals(array('amountCr'));
 
 		$js=array(
-			$this->js()->_selector('.atk-cell atk-jackscrew')->toggle(),
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
 			$this->js()->_selector('#header')->toggle(),
 			$this->js()->_selector('#footer')->toggle(),
 			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),

@@ -5,6 +5,13 @@ class page_reports_deposit_duestoreceived extends Page {
 	function init(){
 		parent::init();
 
+		
+		$till_date = $this->api->today;
+
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
+
 		$loan_type_key=explode(",",LOAN_TYPES);
 		$loan_type_value=explode(",",LOAN_TYPES);
 		$loan_type=array_combine($loan_type_key,$loan_type_value);
@@ -23,6 +30,7 @@ class page_reports_deposit_duestoreceived extends Page {
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_AccountsBase');
+		$grid->add('H3',null,'grid_buttons')->set('Dues To Received Report From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 
 
 		$premiums = $this->add('Model_Premium');
@@ -70,7 +78,15 @@ class page_reports_deposit_duestoreceived extends Page {
 		$grid->addSno();
 		// $grid->addColumn('expander','accounts');
 
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
 
+		$grid->js('click',$js);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();

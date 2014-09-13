@@ -5,6 +5,12 @@ class page_reports_agent_detail extends Page {
 	function init(){
 		parent::init();
 
+		$till_date="";
+		
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
+
 		$form=$this->add('Form');
 		$agent_field=$form->addField('dropdown','agent')->setEmptyText('Please Select');
 		$agent_field->setModel('Agent');
@@ -24,6 +30,8 @@ class page_reports_agent_detail extends Page {
 
 		$view=$this->add('View');
 		$grid_agent=$view->add('Grid');
+
+		$grid_agent->add('H3',null,'grid_buttons')->set('Agent Detail As On '. date('d-M-Y',strtotime($till_date))); 
 		
 		$view->add('H3')->set('Agent Guarantor');
 
@@ -31,6 +39,17 @@ class page_reports_agent_detail extends Page {
 
 		$grid_agent->setModel($agent);
 		$grid_agent_guarantor->setModel($agent_guarantor);
+
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid_agent->js('click',$js);
+
 
 		if($form->isSubmitted()){
 

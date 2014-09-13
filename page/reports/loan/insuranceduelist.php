@@ -4,7 +4,10 @@ class page_reports_loan_insuranceduelist extends Page {
 	function init(){
 		parent::init();
 
-
+		$till_date="";
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
 		$form=$this->add('Form');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
@@ -15,6 +18,7 @@ class page_reports_loan_insuranceduelist extends Page {
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_AccountsBase'); 
+		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance Due List As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$accounts_model=$this->add('Model_Active_Account_Loan');
 		$member_join=$accounts_model->join('members','member_id');
@@ -67,6 +71,16 @@ class page_reports_loan_insuranceduelist extends Page {
 		$grid->addSno();
 		$grid->removeColumn('insurance_month');
 		$grid->removeColumn('insurance_date');
+
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
 
 		if($form->isSubmitted()){
 			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1);

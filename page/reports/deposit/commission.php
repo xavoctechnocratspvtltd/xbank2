@@ -114,7 +114,15 @@ class page_reports_deposit_commission extends Page {
 		$grid->removeColumn('transaction_type');
 
 		$grid->addOrder()->move('amountCr','after','total_commission')->now();
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
 
+		$grid->js('click',$js);
 		// $grid->addColumn('expander','accounts');
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();

@@ -4,6 +4,12 @@ class page_reports_general_periodical extends Page {
 	public $title="Periodical Repots";
 	function page_index(){
 		// parent::init();
+
+		$till_date="";
+		
+		if($_GET['to_date']){
+			$till_date=$_GET['to_date'];
+		}
 		
 		if($_GET['accounts']){
 			$this->api->stickyGET("filter");
@@ -25,6 +31,7 @@ class page_reports_general_periodical extends Page {
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid');
+		$grid->add('H3',null,'grid_buttons')->set('Periodical Accounts As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$account_model=$this->add('Model_Account');
 		$dealer_join = $account_model->leftJoin('dealers','dealer_id');
@@ -80,6 +87,16 @@ class page_reports_general_periodical extends Page {
 		$grid->addColumn('Button','accounts');
 
 		$grid->addPaginator(50);
+
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			);
+
+		$grid->js('click',$js);
 
 
 		if($form->isSubmitted()){

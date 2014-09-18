@@ -331,6 +331,7 @@ class page_accounts_Loan extends Page {
 			try{
 				$this->api->db->beginTransaction();
 					$pending_account->approve();
+
 				$this->api->db->commit();
 			}catch(Exception $e){
 				$this->api->db->rollBack();
@@ -340,13 +341,13 @@ class page_accounts_Loan extends Page {
 		}
 
 		if($reject_btn->isClicked('Are you sure')){
-			try {
-				$this->api->db->beginTransaction();
+			// try {
+			// 	$this->api->db->beginTransaction();
 			    $pending_account->reject();
-			    $this->api->db->commit();
-			} catch (Exception $e) {
-			   	$this->api->db->rollBack();
-			   	throw $e;
+			    // $this->api->db->commit();
+			// } catch (Exception $e) {
+			   	// $this->api->db->rollBack();
+			   	// throw $e;
 			}
 			$this->js()->_selector('.pending_grid')->trigger('reload')->execute();
 		}
@@ -385,4 +386,3 @@ class page_accounts_Loan extends Page {
 	function page_accounts_Loan_accounts_comment(){
 		
 	}
-}

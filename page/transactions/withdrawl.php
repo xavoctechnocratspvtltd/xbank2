@@ -7,7 +7,7 @@ class page_transactions_withdrawl extends Page {
 		parent::init();
 
 		$account_model=$this->add('Model_Account');
-		$account_model->addCondition('branch_id',$this->api->currentBranch->id);
+		// $account_model->addCondition('branch_id',$this->api->currentBranch->id);
 
 		$cols= $this->add('Columns');
 		$left_col = $cols->addColumn(6);

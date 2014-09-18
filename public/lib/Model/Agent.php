@@ -30,6 +30,7 @@ class Model_Agent extends Model_Table {
 		});
 
 		$this->addHook('beforeDelete',$this);
+		// $this->addHook('beforeSave',$this);
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -38,4 +39,12 @@ class Model_Agent extends Model_Table {
 		throw new Exception("Agent Delete Hook ????", 1);
 		
 	}
+
+	// function beforeDelete(){
+	// 	$agent=$this->add('Model_Agent');
+
+	// 	$agent_member_j=$agent->join('members','member_id');
+	// 	$agent_member_j->hasMany('Account')
+		
+	// }
 }

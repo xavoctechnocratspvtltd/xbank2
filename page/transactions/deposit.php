@@ -7,12 +7,12 @@ class page_transactions_deposit extends Page {
 
 		$form = $this->add('Form');
 		$account_model=$this->add('Model_Account');
-		$account_model->addCondition('branch_id',$this->api->currentBranch->id);
+		// $account_model->addCondition('branch_id',$this->api->currentBranch->id);
 		 // $model->addCondition(
- //            $model->dsql()->orExpr()
- //                ->where('transaction_type', TRA_ACCOUNT_OPEN_AGENT_COMMISSION)
- //                ->where('transaction_type', TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT)
- //        );
+   //          $model->dsql()->orExpr()
+   //              ->where('transaction_type', TRA_ACCOUNT_OPEN_AGENT_COMMISSION)
+   //              ->where('transaction_type', TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT)
+   //      );
 
 
 

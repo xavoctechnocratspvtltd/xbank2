@@ -15,6 +15,7 @@
 // TODOS: Transaction_id to be indexed in transaction_row Table
 // FD Schemes from Month to days
 // TODO : Recurring in function setAccountType ???
+// TODO : movetomany .. to be checked ...
 
 
 class page_corrections extends Page {
@@ -46,6 +47,8 @@ class page_corrections extends Page {
 
 			$this->api->markProgress('Corrections',"",'Renaming tables',$this->total_taks);
 			$this->renameTables();
+
+			$this->createFielStoreTables();
 			
 			$this->add('Model_AgentGuarantor');
 			$this->add('Model_AccountGuarantor');
@@ -90,6 +93,12 @@ class page_corrections extends Page {
 			$this->api->db->rollBack();
 			throw $e;
 		}
+	}
+
+	function createFielStoreTables(){
+		$sql = file_get_contents(getcwd().'/atk4-addons/misc/docs/filestore.001.sql');
+		$this->query($sql);
+
 	}
 
 	// task 1
@@ -213,6 +222,7 @@ class page_corrections extends Page {
 				array('accounts','`account_type`','string'),
 				array('accounts','`extra_info`','text'),
 				array('accounts','`mo_id`','int'),
+				array('accounts','`team_id`','int'),
 				array('premiums','`PaneltyCharged`','money'),
 				array('premiums','`PaneltyPosted`','money'),
 				array('accounts','`MaturityToAccount_id`','int'),
@@ -323,7 +333,7 @@ class page_corrections extends Page {
     }
 
     function page_movetomany(){
-    	throw $this->exception('Guarenter for loan accounts should move ... not working ... and ONLY FOR LOAN', 'ValidityCheck')->setField('FieldName');
+    	// throw $this->exception('Guarenter for loan accounts should move ... not working ... and ONLY FOR LOAN', 'ValidityCheck')->setField('FieldName');
     	$to_move = array(
     			array(
     					'from'=>array('agents',array(0,'id','Guarantor1Name','Guarantor1FatherHusbandName','Guarantor1Address',0,'Guarantor1Occupation')),

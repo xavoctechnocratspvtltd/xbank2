@@ -18,6 +18,23 @@ class page_accounts_Loan extends Page {
 		$account_loan_model->setOrder('id','desc');
 		
 		$crud->addHook('myupdate',function($crud,$form){
+			$loan_against_account_field = $crud->form->getElement('LoanAgainstAccount_id');
+			$amount=($loan_against_account_field->model['Amount']*80)/100;
+			
+			if($crud->form->get('Amount')!=$amount){
+				$account=$crud->add('Model_Account');
+				$account->load($form['LoanAgainstAccount_id']);
+				$amount=$account['Amount']*80/100;
+				$loan_amount=$form['Amount'];
+				if($amount<$loan_amount)
+					$form->displayError('Amount',"Amount is grater than 80% of  FD Amount");
+			}
+
+
+
+
+
+
 			if($crud->isEditing('edit')) {
 				$extra_info = json_decode($crud->form->model['extra_info'],true);
 				$extra_info['loan_from_account'] = $form['loan_from_account'];
@@ -79,7 +96,11 @@ class page_accounts_Loan extends Page {
 			$loan_against_account_field->send_other_fields = array($crud->form->getElement('member_id'));
 			if($member_selected = $_GET['o_'.$crud->form->getElement('member_id')->name]){
 				$loan_against_account_field->model->addCondition('member_id',$member_selected);
+				$loan_against_account_field->model->addCondition('ActiveStatus',true);
 			}
+
+				// throw new Exception("Error Processing Request", 1);
+				
 
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
             $loan_from_account = json_decode($crud->form->model['extra_info'],true);

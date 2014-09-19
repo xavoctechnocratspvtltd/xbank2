@@ -56,9 +56,8 @@ class page_accounts_Loan extends Page {
 					'*'=>array($this->api->normalizeName($documents['name'].' value'))
 					),'div .atk-form-row');
 			}
-
-
 		}
+
 
 		if($crud->isEditing()){
 			$loan_from_account_field = $crud->form->addField('autocomplete/Basic','loan_from_account')->validateNotNull();
@@ -94,6 +93,13 @@ class page_accounts_Loan extends Page {
 					),'div .atk-form-row');
 
 			$member_field = $crud->form->getElement('member_id');
+
+			// $member_field->model->addExpression('count_sm')->set(function($m,$q){
+			// 	return ;
+			// });
+
+			$member_field->model->_dsql()->having('('.$member_field->model->dsql()->expr($member_field->model->refSQL('Account')->addCondition('AccountNumber','like','%sm%')->count()->render().')'),'>',0); 
+
 			$member_existing_loan_view = $member_field->other_field->belowField()->add('View');
 			if($_GET['check_existing_loan_member_id']){
 				$member_for_existing_loans = $this->add('Model_Member');

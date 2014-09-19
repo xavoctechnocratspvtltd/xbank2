@@ -14,7 +14,7 @@ class page_transactions_withdrawl extends Page {
 		$right_col = $cols->addColumn(6);
 		$form = $left_col->add('Form');
 		$account_field = $form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull();
-		$account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
+		// $account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
 		$account_field->setModel($account_model,'AccountNumber');
 
 		$form->addField('Number','amount')->validateNotNull();

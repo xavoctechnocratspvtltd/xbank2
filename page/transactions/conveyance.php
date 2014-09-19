@@ -7,7 +7,7 @@ class page_transactions_conveyance extends Page {
 
 		$form = $this->add('Form');
 		$form->addField('autocomplete/Basic',array('name'=>'staff'))->validateNotNull()->setModel('Staff');
-		$form->addField('Number','amount')->validateNotNull();
+			$form->addField('Number','amount')->validateNotNull();
 		$form->addField('autocomplete/Basic','amount_from_account')->setFieldHint('sdfsd')->setModel('Account','AccountNumber');
 		$form->addField('Text','narration');
 		$form->addSubmit('Conveynace');

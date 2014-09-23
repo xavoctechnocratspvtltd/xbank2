@@ -29,6 +29,7 @@ class page_agents extends Page{
 			$account_of_member_field->send_other_fields = array($crud->form->getElement('member_id'));
 			if($member_selected = $_GET['o_'.$crud->form->getElement('member_id')->name]){
 				$account_of_member_field->model->addCondition('member_id',$member_selected);
+				$account_of_member_field->model->addCondition('ActiveStatus',true);
 			}
 
 	}

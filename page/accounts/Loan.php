@@ -241,6 +241,7 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addColumn('expander','edit_document');
 			$crud->grid->addColumn('expander','edit_guarantor');
 			$crud->grid->addColumn('expander','edit');
+			$crud->grid->addColumn('button','edit');
 		}
 
 	}
@@ -368,17 +369,18 @@ class page_accounts_Loan extends Page {
 		}
 
 		if($reject_btn->isClicked('Are you sure')){
-			// try {
-			// 	$this->api->db->beginTransaction();
+			try {
+				$this->api->db->beginTransaction();
 			    $pending_account->reject();
-			    // $this->api->db->commit();
-			// } catch (Exception $e) {
-			   	// $this->api->db->rollBack();
-			   	// throw $e;
-			}
+			    $this->api->db->commit();
+			} catch (Exception $e) {
+			   	$this->api->db->rollBack();
+			   	throw $e;
+				}
 			$this->js()->_selector('.pending_grid')->trigger('reload')->execute();
-		}
+			}
 
+		}
 	}
 
 	function page_accounts_edit_document(){

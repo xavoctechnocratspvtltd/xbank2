@@ -118,6 +118,8 @@ define('TRA_FUEL_CAHRGES',  'FuelCharge');
 define('TRA_LEGAL_CHARGE_PAID',  'LegalChargePaid');
 define('TRA_LEGAL_CHARGE_RECEIVED',  'LegalChargeReceived');
 define('TRA_VISIT_CHARGE',  'VisitCharge');
+define('TRA_BANK_DEPOSIT',  'BANK DEPOSIT');
+define('TRA_BANK_WITHDRAWL',  'BANK WITHDRAWL');
 
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')

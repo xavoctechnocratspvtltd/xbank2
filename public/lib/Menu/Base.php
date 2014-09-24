@@ -51,7 +51,7 @@ class Menu_Base extends Menu {
 		$reports_sub_menu->addMenuItem('reports_books','Books');
 		$reports_sub_menu->addMenuItem('reports_loan','Loan Reports');
 		$reports_sub_menu->addMenuItem('reports_agent','Agent Reports');
-		$reports_sub_menu->addMenuItem('reports_genral','Genral Reports');
+		$reports_sub_menu->addMenuItem('reports_genral','General Reports');
 		$reports_sub_menu->addMenuItem('reports_member','Member Reports');
 		$reports_sub_menu->addMenuItem('reports_deposit','Deposit Reporst');
 		$reports->js('click',$reports_sub_menu_popover->showJS());
@@ -94,6 +94,8 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_legalchargepaid','Legal Charge Paid');
 		$transactions_sub_menus->addMenuItem('transactions_legalchargereceived','Legal Charge Received');
 		$transactions_sub_menus->addMenuItem('transactions_visitcharge','Visit Charge');
+		$transactions_sub_menus->addMenuItem('transactions_bankdeposit','Cash Bank Deposit');
+		$transactions_sub_menus->addMenuItem('transactions_bankwithdrawl','Cash Bank Withdrawl');
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
 		// $books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');

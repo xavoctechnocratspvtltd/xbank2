@@ -42,6 +42,7 @@ class View_DuesReceiveList extends View{
 		$grid = $this->add('Grid_AccountsBase');
 		$grid->setModel($due_premiums,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos', 'Amount','DueDate','agent','dealer'));
 		$grid->addSno();
+		$grid->addPaginator(50);
 
 		$grid->addTotals(array('Amount'));
 

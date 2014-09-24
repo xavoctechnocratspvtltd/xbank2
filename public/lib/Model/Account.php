@@ -417,7 +417,7 @@ class Model_Account extends Model_Table {
 		$account_dr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'CONVEYANCE EXPENSES');
 		$staff_model=$this->add('Model_Staff')->load($staff);
-		$narration.="-".$staff_model['name'];
+		$narration.= " - ".$staff_model['name'];
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
 		$transaction->createNewTransaction(TRA_CONVEYANCE_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_account_id'=>$staff));
@@ -573,6 +573,12 @@ class Model_Account extends Model_Table {
 		$transaction_row->_dsql()->del('fields')->field('SUM(amountDr) sdr')->field('SUM(amountCr) scr');
 		$result = $transaction_row->_dsql()->getHash();
 
+		if($this['OpeningBalanceCr'] ==null){
+			$temp_account = $this->add('Model_Account')->load($this->id);
+			$this['OpeningBalanceCr'] = $temp_account['OpeningBalanceCr'];
+			$this['OpeningBalanceDr'] = $temp_account['OpeningBalanceDr'];
+		}
+
 		$cr = $result['scr'];
 		if(!$forPandL) $cr = $cr + $this['OpeningBalanceCr'];
 		if(strtolower($side) =='cr') return $cr;
@@ -582,6 +588,24 @@ class Model_Account extends Model_Table {
 		if(strtolower($side) =='dr') return $dr;
 
 		return array('CR'=>$cr,'DR'=>$dr,'cr'=>$cr,'dr'=>$dr,'Cr'=>$cr,'Dr'=>$dr);
+	}
+
+	function allDrCrSum($what, $from_date=null,$to_date=null){
+
+		if(!$from_date) $from_date = $this->api->today;
+		if(!$to_date) $to_date = $this->api->today;
+
+		$transaction_row=$this->add('Model_TransactionRow');
+		$transaction_join=$transaction_row->join('transactions.id','transaction_id');
+		$transaction_join->addField('transaction_date','created_at');
+		$transaction_row->addCondition('transaction_date','>=',$from_date);
+		$transaction_row->addCondition('transaction_date','<',$this->api->nextDate($to_date));
+		$transaction_row->addCondition('account_id',$this->id);
+
+		$transaction_row->_dsql()->del('fields')->field('SUM(amountDr) sdr')->field('SUM(amountCr) scr');
+		$result = $transaction_row->_dsql()->getHash();
+
+		return $result['s'.strtolower($what)];
 	}
 
 	function isMatured(){

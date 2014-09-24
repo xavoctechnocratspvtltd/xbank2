@@ -7,7 +7,7 @@ class page_dashboard_opened extends Page {
 		$heading = $this->add('H2')->set(array('Account Open Today List','icon'=>'flag'));
 
 		$grid=$this->add('Grid_AccountsBase');
-		$accounts=$this->add('Model_Account');
+		$accounts=$this->add('Model_Active_Account');
 		$accounts->addCondition('created_at','>=',$this->api->today);
 		$accounts->addCondition('created_at','<',$this->api->nextDate($this->api->today));
 

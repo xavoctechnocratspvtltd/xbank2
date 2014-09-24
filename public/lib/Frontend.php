@@ -109,6 +109,18 @@ class Frontend extends ApiFrontend {
         return date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " -1 MONTH"));
     }
 
+    function nextYear($date=null){
+        if(!$date) $date=$this->api->today;
+
+        return date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " +1 YEAR"));
+    }
+
+    function previousYear($date=null){
+        if(!$date) $date=$this->api->today;
+
+        return date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " -1 YEAR"));
+    }
+
     function getFinancialYear($date=null,$start_end = 'both'){
         if(!$date) $date = $this->api->now;
         $month = date('m',strtotime($date));

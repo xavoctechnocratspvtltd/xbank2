@@ -1,6 +1,7 @@
 <?php
 
 class View_DuesGiveList extends View{
+	
 	public $from_date;
 	public $to_date;
 	
@@ -21,12 +22,18 @@ class View_DuesGiveList extends View{
 
 		$dds_maturity_accounts->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
 
+		$dds_member_j = $dds_maturity_accounts->join('members','member_id');
+		$dds_member_j->addField('member_name','name');
+		$dds_member_j->addField('FatherName');
+		$dds_member_j->addField('PermanentAddress');
+		$dds_member_j->addField('PhoneNos');
 		
 		$dds_maturity_accounts->add('Controller_Acl');
 
-		$dds_grid = $dds_view->add('Grid');
-		$dds_grid->setModel($dds_maturity_accounts,array('AccountNumber','maturity_date','MaturityAmount'));
-
+		$dds_grid = $dds_view->add('Grid_AccountsBase');
+		$dds_grid->setModel($dds_maturity_accounts,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos', 'MaturityAmount','maturity_date','agent'));
+		$dds_grid->addSno();
+		
 		$dds_grid->addTotals(array('MaturityAmount'));
 		$dds_heading->js('click',$dds_grid->js()->toggle());
 		// Recurring View
@@ -42,16 +49,22 @@ class View_DuesGiveList extends View{
 
 		$recurring_maturity_accounts->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
 
+		$recurring_member_j = $recurring_maturity_accounts->join('members','member_id');
+		$recurring_member_j->addField('member_name','name');
+		$recurring_member_j->addField('FatherName');
+		$recurring_member_j->addField('PermanentAddress');
+		$recurring_member_j->addField('PhoneNos');
+
 		
 		$recurring_maturity_accounts->add('Controller_Acl');
 
-		$recurring_grid = $recurring_view->add('Grid');
-		$recurring_grid->setModel($recurring_maturity_accounts,array('AccountNumber','maturity_date','MaturityAmount'));
+		$recurring_grid = $recurring_view->add('Grid_AccountsBase');
+		$recurring_grid->setModel($recurring_maturity_accounts,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos', 'MaturityAmount','maturity_date','agent'));
+		$recurring_grid->addSno();
 
 		$recurring_grid->addTotals(array('MaturityAmount'));
 
 		$recurring_heading->js('click',$recurring_grid->js()->toggle());
-
 		// FixedAndMis 
 		
 		$fd_mis_view = $this->add('View');
@@ -65,13 +78,18 @@ class View_DuesGiveList extends View{
 
 		$fd_mis_maturity_accounts->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
 
+		$fd_mis_member_j = $fd_mis_maturity_accounts->join('members','member_id');
+		$fd_mis_member_j->addField('member_name','name');
+		$fd_mis_member_j->addField('FatherName');
+		$fd_mis_member_j->addField('PermanentAddress');
+		$fd_mis_member_j->addField('PhoneNos');
 		
 		$fd_mis_maturity_accounts->add('Controller_Acl');
 
-		$fd_mis_grid = $fd_mis_view->add('Grid');
-		$fd_mis_grid->setModel($fd_mis_maturity_accounts,array('AccountNumber','maturity_date','MaturityAmount'));
-
+		$fd_mis_grid = $fd_mis_view->add('Grid_AccountsBase');
+		$fd_mis_grid->setModel($fd_mis_maturity_accounts,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos', 'MaturityAmount','maturity_date','agent'));
+		$fd_mis_grid->addSno();
 		$fd_mis_grid->addTotals(array('MaturityAmount'));
-		
+		$fd_mis_heading->js('click',$fd_mis_grid->js()->toggle());
 	}
 }

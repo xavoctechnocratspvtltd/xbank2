@@ -4,6 +4,8 @@ class Menu_Base extends Menu {
 	function init(){
 		parent::init();
 
+		$this->addMenuItem('utility_setdate',array(date('d M Y',strtotime($this->api->today)),'swatch'=>(strtotime($this->api->today) != strtotime(date('Y-m-d')) ? 'red':null )));
+
 		$this->addMenuItem('index','Dashboard');
 		$admin = $this->addMenuItem('index','Super Admin');
 

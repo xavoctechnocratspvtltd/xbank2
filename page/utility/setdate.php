@@ -1,6 +1,7 @@
 <?php
 
 class page_utility_setdate extends Page {
+	public $title ='Change The Working Date';
 	function init(){
 		parent::init();
 
@@ -10,7 +11,7 @@ class page_utility_setdate extends Page {
 
 		if($form->isSubmitted()){
 			$this->api->setDate($form['date']);
-			$form->js()->reload()->execute();
+			$this->js()->redirect()->execute();
 		}
 	}
 }

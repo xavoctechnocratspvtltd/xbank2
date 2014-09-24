@@ -57,12 +57,13 @@ class Frontend extends ApiFrontend {
         }
 
         
-        $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
 
         // $header_menu1->addMenuItem('index',array('Home','icon'=>'home','swatch'=>'yellow'));
 
         $this->today = date('Y-m-d',strtotime($this->recall('current_date',date('Y-m-d'))));
         $this->now = date('Y-m-d H:i:s',strtotime($this->recall('current_date',date('Y-m-d H:i:s'))));
+        
+        $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
 
     }
 

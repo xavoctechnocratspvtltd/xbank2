@@ -19,7 +19,7 @@ class Model_Member extends Model_Table {
 		$this->addField('state')->mandatory(true);
 		$this->addField('FatherName')->caption('Father / Husband Name')->mandatory(true);
 		$this->addField('Cast')->mandatory(true);
-		$this->addField('PermanentAddress')->type('text')->hint('Leave Blank if same as Current Address');
+		$this->addField('PermanentAddress')->type('text')->hint('Leave Blank if same as Current Address')->display(array('grid'=>'shorttext'));
 		$this->addField('Occupation')->enum(array('Business','Service','Self-Employed','Student','House Wife'));
 		$this->addField('DOB')->type('date')->mandatory(true);
 		$this->addField('PhoneNos')->mandatory(true);

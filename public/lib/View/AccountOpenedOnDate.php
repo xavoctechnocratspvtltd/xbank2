@@ -4,6 +4,7 @@
 class View_AccountOpenedOnDate extends View{
 	public $from_date;
 	public $to_date;
+	
 	function init(){
 		parent::init();
 

@@ -30,11 +30,6 @@ class page_accounts_Loan extends Page {
 					$form->displayError('Amount',"Amount is grater than 80% of  FD Amount");
 			}
 
-
-
-
-
-
 			if($crud->isEditing('edit')) {
 				$extra_info = json_decode($crud->form->model['extra_info'],true);
 				$extra_info['loan_from_account'] = $form['loan_from_account'];

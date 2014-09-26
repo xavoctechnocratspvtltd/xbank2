@@ -6,7 +6,7 @@ class page_transactions_bankdeposit extends Page {
 	function init(){
 		parent::init();
 
-		$bank_account_model = $this->add('Model_Account');
+		$bank_account_model = $this->add('Model_Active_Account');
 
 		$bank_account_model->addCondition($this->api->db->dsql()->orExpr()
 				->where($bank_account_model->scheme_join->table_alias.'.name',BANK_ACCOUNTS_SCHEME)
@@ -19,7 +19,7 @@ class page_transactions_bankdeposit extends Page {
 			->validateNotNull()
 			->setModel($bank_account_model,'AccountNumber');
 
-		$form->addField('Number','amount')->validateNotNull();
+		$form->addField('Number','amount')->validateNotNull()->belowField()->add('Text')->set('Please Consider Bank Limit Before Depositing');
 		$form->addField('line','staff_name');
 		$form->addField('Text','narration');
 		$form->addSubmit('Deposit Cash');

@@ -29,7 +29,7 @@ class Model_Premium extends Model_Table {
 		$this['PaidOn'] = $on_date;
 		$this->saveAs('Model_Premium');
 
-		// $this->reAdjustPaidValues($on_date);
+		$this->reAdjustPaidValue($on_date);
 
 		$this->giveAgentCommission($on_date);
 	}
@@ -38,8 +38,8 @@ class Model_Premium extends Model_Table {
 		if(!$on_date) $on_date = $this->api->now;
 
 		$all_paid_noncommissioned_preimums = $this->ref('account_id')->ref('Premium');
-		$all_paid_noncommissioned_preimums->addCondition('Paid',true);
-		$all_paid_noncommissioned_preimums->addCondition('AgentCommissionSend',false);
+		$all_paid_noncommissioned_preimums->addCondition('Paid','<>',0);
+		$all_paid_noncommissioned_preimums->addCondition('AgentCommissionSend',0);
 
 		$commission = 0;
 
@@ -90,6 +90,23 @@ class Model_Premium extends Model_Table {
 		$loan_premiums->_dsql()->debug()->group('account_id');
 
 		return $this;
+	}
+
+	function reAdjustPaidValue($on_date=null){
+		if(!$on_date) $on_date = $this->api->today;
+		$premiums_to_affect = $this->ref('account_id')->ref('Premium');
+		$premiums_to_affect->_dsql()->where("(DueDate <='$on_date' or PaidOn is not null) and Paid = 0");
+		$premiums_to_affect->setOrder('id');
+
+		foreach ($premiums_to_affect as $junk) {
+			$paid_premiums_before_date = $this->add('Model_Premium');
+			$paid_premiums_before_date->addCondition('account_id',$premiums_to_affect['account_id']);
+			$paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
+			$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);
+
+			$premiums_to_affect['Paid'] = $paid_premiums_before_date->count()->getOne();
+			$premiums_to_affect->saveAs('Model_Premium');
+		}
 	}
 
     // function reAdjustPaidValues($on_date=null){

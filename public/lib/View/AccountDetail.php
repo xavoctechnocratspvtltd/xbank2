@@ -54,7 +54,7 @@ class View_AccountDetail extends View {
 			$this->template->trySet('emidetails',$premium_count . ' x ' .$premium_amount);
 		}
 
-		$premium_grid_field = array('DueDate','Amount','paid','paidOn','agentCommisionSend','agentCommissionPercentage','PaneltyCharged');
+		$premium_grid_field = array('DueDate','Amount','Paid','PaidOn','AgentCommissionSend','AgentCommissionPercentage','PaneltyCharged','PaneltyPosted');
 		$premium = $ac_m->ref('Premium');
 		$grid= $this->add('Grid',null,'premiumdetail');
 		$grid->setModel($premium,$premium_grid_field);

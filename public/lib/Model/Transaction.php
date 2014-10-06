@@ -195,45 +195,66 @@ class Model_Transaction extends Model_Table {
 		$other_transaction = $this->add('Model_Transaction');
 		$other_transaction->createNewTransaction($this->transaction_type,$other_branch,$this->transaction_date,$this->Narration,$this->only_transaction,$this->options);
 
+		$my_branch_and_division_account = $other_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $this->ref('branch_id')->get('Code');
+		$other_branch_and_division_account = $this->ref('branch_id')->get('Code') . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $other_branch['Code'];
+
 		$dr_total_amount=0;
-		
+		// echo "<pre>";
+		// print_r($this->dr_accounts);
+		// echo "</pre>";
+
+		// echo "<pre>";
+		// print_r($this->cr_accounts);
+		// echo "</pre>";
 		foreach ($this->dr_accounts as $accountNumber=>$dtl) {
+			// echo "dr " .$accountNumber .' in '. $dtl['account']['branch_id'] .' while i m in '. $this['branch_id'].'<br/>';
 			$dr_total_amount += $dtl['amount'];
-			if($this->all_debit_accounts_are_mine){
-				$my_transaction->addDebitAccount($dtl['account'],$dtl['amount']);
-			}
-			else{
-				$other_transaction->addDebitAccount($dtl['account'],$dtl['amount']);
-			}
+			// if($this->all_debit_accounts_are_mine){
+			// 	$my_transaction->addDebitAccount($dtl['account'],$dtl['amount']);
+			// }
+			// else{
+				if($dtl['account']['branch_id'] != $this['branch_id']){
+					$my_transaction->addCreditAccount($my_branch_and_division_account,$dtl['amount']);
+					$other_transaction->addCreditAccount($other_branch_and_division_account,$dtl['amount']);
+					$other_transaction->addDebitAccount($dtl['account'],$dtl['amount']);
+				}else{
+					$my_transaction->addDebitAccount($dtl['account'],$dtl['amount']);
+				}
+			// }
 		}
 
-		$my_branch_and_division_account = $other_branch['Code'] . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $this->ref('branch_id')->get('Code');
 		
-		if($this->all_debit_accounts_are_mine)
-			$my_transaction->addCreditAccount($my_branch_and_division_account,$dr_total_amount);
-		else
-			$my_transaction->addDebitAccount($my_branch_and_division_account,$dr_total_amount);
+		// if($this->all_debit_accounts_are_mine)
+		// 	$my_transaction->addCreditAccount($my_branch_and_division_account,$dr_total_amount);
+		// else
+		// 	$my_transaction->addDebitAccount($my_branch_and_division_account,$dr_total_amount);
 			
 
 		// One Transaction for other_branch 
 		$cr_total_amount = 0;
 		
 		foreach ($this->cr_accounts as $accountNumber=>$dtl) {
+			// echo "cr " .$accountNumber .' in '. $dtl['account']['branch_id'] .' while i m in '. $this['branch_id'].'<br/>';
 			$cr_total_amount += $dtl['amount'];
-			if($this->all_credit_accounts_are_mine){
-				$my_transaction->addCreditAccount($dtl['account'],$dtl['amount']);
-			}
-			else{
-				$other_transaction->addCreditAccount($dtl['account'],$dtl['amount']);
-			}
+			// if($this->all_credit_accounts_are_mine){
+			// 	$my_transaction->addCreditAccount($dtl['account'],$dtl['amount']);
+			// }
+			// else{
+				if($dtl['account']['branch_id'] != $this['branch_id']){
+					$my_transaction->addCreditAccount($my_branch_and_division_account,$dtl['amount']);
+					$other_transaction->addDebitAccount($other_branch_and_division_account,$dtl['amount']);
+					$other_transaction->addCreditAccount($dtl['account'],$dtl['amount']);
+				}else{
+					$my_transaction->addCreditAccount($dtl['account'],$dtl['amount']);
+				}
+			// }
 		}
 
-		$other_branch_and_division_account = $this->ref('branch_id')->get('Code') . SP . BRANCH_AND_DIVISIONS . SP . "for" . SP . $other_branch['Code'];
 
-		if($this->all_credit_accounts_are_mine)
-			$other_transaction->addCreditAccount($other_branch_and_division_account,$cr_total_amount);		
-		else
-			$other_transaction->addDebitAccount($other_branch_and_division_account,$cr_total_amount);
+		// if($this->all_credit_accounts_are_mine)
+		// 	$other_transaction->addCreditAccount($other_branch_and_division_account,$cr_total_amount);		
+		// else
+		// 	$other_transaction->addDebitAccount($other_branch_and_division_account,$cr_total_amount);
 		
 
 		if($dr_total_amount != $cr_total_amount ) throw $this->exception('Inter Branch Transaction must have same amounts');

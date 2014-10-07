@@ -6,7 +6,22 @@ class page_transactions_withdrawl extends Page {
 	function init(){
 		parent::init();
 
-		$account_model=$this->add('Model_Account');
+		// Deactivate Account Remove
+		$account_model=$this->add('Model_Account',array('table_alias'=>'acc'));
+		
+		// Loan PL and VL not allowed
+		$account_model->addCondition('SchemeType','<>',ACCOUNT_TYPE_LOAN);
+		// CC Allowed
+
+		// Recurring, MIS, FD and DDS only if deactivated
+		$account_model->addCondition(
+			$account_model->dsql()->orExpr()
+				->where('acc.ActiveStatus = 1 AND _s.SchemeType not in ("'.ACCOUNT_TYPE_FIXED.'","'.ACCOUNT_TYPE_RECURRING.'","'.ACCOUNT_TYPE_DDS.'")')
+				->where('acc.ActiveStatus = 0 AND _s.SchemeType in ("'.ACCOUNT_TYPE_FIXED.'","'.ACCOUNT_TYPE_RECURRING.'","'.ACCOUNT_TYPE_DDS.'")')
+			);
+
+		// In Case of No Image ... Stop withdrawl == Done in withdrawl function in modelaccount
+		
 		// $account_model->addCondition('branch_id',$this->api->currentBranch->id);
 
 		$cols= $this->add('Columns');
@@ -17,8 +32,24 @@ class page_transactions_withdrawl extends Page {
 		// $account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
 		$account_field->setModel($account_model,'AccountNumber');
 
-		$form->addField('Number','amount')->validateNotNull();
-		$form->addField('autocomplete/Basic','account_to_credit')->setFieldHint('sdfsd')->setModel('Account','AccountNumber');
+		$amount_field = $form->addField('Number','amount')->validateNotNull();
+		$amount_field_view = $amount_field->belowField()->add('View');
+
+		if($_GET['check_min']){
+			$acc_bal_temp = $this->add('Model_Account_SavingAndCurrent');
+			$acc_bal_temp->tryLoadBy('AccountNumber',$_GET['AccountNumber']);
+
+			$bal = $acc_bal_temp->getOpeningBalance();
+			$bal_cr = $bal['Cr'] - $bal['Dr'];
+			if($bal_cr- $_GET['amount'] < 200 AND $bal_cr- $_GET['amount'] > 0 ) $amount_field_view->set('Bellow');
+		}
+
+		$amount_field->js('change',$amount_field_view->js()->reload(array('check_min'=>1,'AccountNumber'=>$account_field->js()->val(),'amount'=>$amount_field->js()->val())));
+
+		$account_to_credit_model = $this->add('Model_Account');
+		$account_to_credit_model->addCondition('scheme_name','<>',CASH_ACCOUNT_SCHEME);
+		$form->addField('autocomplete/Basic','account_to_credit')->setFieldHint('sdfsd')->setModel($account_to_credit_model,'AccountNumber');
+
 		$form->addField('Text','narration');
 		$form->addSubmit('Withdrawl');
 

@@ -378,6 +378,8 @@ class Model_Account extends Model_Table {
 		if(!isset($this->transaction_withdraw_type)) throw $this->exception('transaction_withdraw_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_withdraw_narration)) throw $this->exception('default_transaction_withdraw_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 
+		if(!$this['sig_image_id']) throw $this->exception('No Signature Found, Cannot Withdraw','ValidityCheck')->setField('account');
+
 		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace("{{SchemeType}}", $this['SchemeType'], $this->default_transaction_withdraw_narration));
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$accounts_to_credit OR !is_array($accounts_to_credit)) $accounts_to_credit = array();

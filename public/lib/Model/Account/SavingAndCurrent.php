@@ -37,7 +37,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		$min_limit= $this->ref('scheme_id')->get('MinLimit');
 
 		if($amount > ($balance)){
-			throw $this->exception('Cannot withdraw more ammount');
+			throw $this->exception('Cannot withdraw amount','ValidityCheck')->setField('amount');
 		}
 		
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);

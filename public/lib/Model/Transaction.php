@@ -214,7 +214,7 @@ class Model_Transaction extends Model_Table {
 			// }
 			// else{
 				if($dtl['account']['branch_id'] != $this['branch_id']){
-					$my_transaction->addCreditAccount($my_branch_and_division_account,$dtl['amount']);
+					$my_transaction->addDebitAccount($my_branch_and_division_account,$dtl['amount']);
 					$other_transaction->addCreditAccount($other_branch_and_division_account,$dtl['amount']);
 					$other_transaction->addDebitAccount($dtl['account'],$dtl['amount']);
 				}else{

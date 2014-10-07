@@ -56,8 +56,9 @@ class View_AccountDetail extends View {
 
 		$premium_grid_field = array('DueDate','Amount','Paid','PaidOn','AgentCommissionSend','AgentCommissionPercentage','PaneltyCharged','PaneltyPosted');
 		$premium = $ac_m->ref('Premium');
-		$grid= $this->add('Grid',null,'premiumdetail');
+		$grid= $this->add('Grid_AccountsBase',null,'premiumdetail');
 		$grid->setModel($premium,$premium_grid_field);
+		$grid->addSno();
 
 		$ac_m->reload();
 		$this->setModel($ac_m);

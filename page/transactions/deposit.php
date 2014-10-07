@@ -51,7 +51,10 @@ class page_transactions_deposit extends Page {
 
 		$amount_field->js('change',$pan_details->js()->reload(array('amount_filled'=>$amount_field->js()->val(),'account_selected'=>$account_field->js()->val())));
 
-		$form->addField('autocomplete/Basic','account_to_debit')->setFieldHint('sdfsd')->setModel('Account','AccountNumber');
+		$account_to_debit_model = $this->add('Model_Account');
+		$account_to_debit_model->addCondition('scheme_name','<>',CASH_ACCOUNT_SCHEME);
+		
+		$form->addField('autocomplete/Basic','account_to_debit')->setFieldHint('sdfsd')->setModel($account_to_debit_model,'AccountNumber');
 		$form->addField('Text','narration');
 		$form->addSubmit('Deposit');
 

@@ -142,7 +142,7 @@ class Model_Account_Recurring extends Model_Account{
 			$unpaid_premiums->payNowForRecurring($on_date); // Doing Aganet commission and Paid value also
 		}
 
-		$this->reAdjustPaidValue($on_date);
+		// $this->reAdjustPaidValue($on_date);
 	}
 
 	function reAdjustPaidValue($on_date=null){

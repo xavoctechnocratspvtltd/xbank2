@@ -31,13 +31,13 @@ class page_transactions_jv extends Page {
 		$dr_account_col->add('H3')->set('Debit');
 		$dr_amount_col->add('H3')->set('-');
 
-		$account_cr_model=$this->add('Model_Account');
-		$account_cr_model->add('Controller/Acl');
+		$account_cr_model=$this->add('Model_Active_Account');
+		$account_cr_model->add('Controller_Acl');
 		// $account_cr_model->addCondition('branch_id',$this->api->currentBranch->id);
 		// $account_cr_model->filter(array($account_cr_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Branch & Divisions%')));
 
-		$account_dr_model=$this->add('Model_Account');
-		$account_dr_model->add('Controller/Acl');
+		$account_dr_model=$this->add('Model_Active_Account');
+		$account_dr_model->add('Controller_Acl');
 		// $account_dr_model->addCondition('branch_id',$this->api->currentBranch->id);
 		// $account_dr_model->filter(array($account_dr_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Branch & Divisions%')));
 

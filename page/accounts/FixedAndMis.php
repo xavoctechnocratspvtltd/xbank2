@@ -47,16 +47,18 @@ class page_Accounts_FixedAndMis extends Page {
 			$account_fixedandmis_model->hook('editing');
 		}
 
-		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id'),array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','mo','team'));
+		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id','sig_image_id'),array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','mo','team'));
 
 		if($crud->isEditing()){
-			$type_field = $crud->form->getElement('account_type');
-			$type_field->js(true)->univ()->bindConditionalShow(array(
-					''=>array(),
-					'FD'=>array('MaturityToAccount_id'),
-					'MIS'=>array('intrest_to_account_id')
-					),'div .atk-form-row');
-			$crud->form->getElement('account_type')->setEmptyText('Please Select');
+			if($crud->form->hasElement('account_type')){
+				$type_field = $crud->form->getElement('account_type');
+				$type_field->js(true)->univ()->bindConditionalShow(array(
+						''=>array(),
+						'FD'=>array('MaturityToAccount_id'),
+						'MIS'=>array('intrest_to_account_id')
+						),'div .atk-form-row');
+				$crud->form->getElement('account_type')->setEmptyText('Please Select');
+			}
 		}
 
 		if($crud->isEditing('add')){

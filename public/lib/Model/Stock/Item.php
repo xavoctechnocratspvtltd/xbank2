@@ -34,6 +34,19 @@ class Model_Stock_Item extends Model_Table {
 	}
 
 	function beforeSave(){
+
+		$tmp = $this->add('Model_Stock_Item');
+		$tmp->addCondition('name',$this['name']);
+		$tmp->addCondition('category_id',$this['category_id']);
+
+		if($this->loaded()){
+			$tmp->addCondition('id','<>',$this->id);
+		}
+
+		$tmp->tryLoadAny();
+		if($tmp->loaded())
+			throw $this->exception('Name Already Exists','ValidityCheck')->setField('name');
+
 		if($this['is_consumable'] and $this['is_issueable'])
 							throw $this->exception("Can't Mark A single Item Issueable and Consumbale");
 

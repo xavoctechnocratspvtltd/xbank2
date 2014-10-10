@@ -5,13 +5,29 @@ class Model_Stock_Container extends Model_Table {
 	function init(){
 		parent::init();
 
+		$this->hasOne('Branch','branch_id');
 		$this->addField('name');
 		$this->hasMany('Stock_Item','item_id');
 		$this->hasMany('Stock_Row','container_id');
 		
+		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);
 		$this->add('dynamic_model/Controller_AutoCreator');
 
+	}
+
+	function beforeSave(){
+		$tmp = $this->add('Model_Stock_Container');
+		$tmp->addCondition('name',$this['name']);
+		$tmp->addCondition('branch_id',$this['branch_id']);
+
+		if($this->loaded()){
+			$tmp->addCondition('id','<>',$this->id);
+		}
+
+		$tmp->tryLoadAny();
+		if($tmp->loaded())
+			throw $this->exception('Name Already Exists','ValidityCheck')->setField('name');
 	}
 
 	function createNew($name,$other_fields=array(),$form=null){

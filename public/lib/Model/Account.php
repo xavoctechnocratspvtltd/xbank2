@@ -419,6 +419,9 @@ class Model_Account extends Model_Table {
 		$account_dr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'CONVEYANCE EXPENSES');
 		$staff_model=$this->add('Model_Staff')->load($staff);
+		if(!$narration)
+			$narration = "Conveyance Amount paid to ";
+
 		$narration.= " - ".$staff_model['name'];
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
@@ -434,11 +437,18 @@ class Model_Account extends Model_Table {
 	}
 
 
-	function fuel($amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
+	function fuel($staff, $amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
 
 		if(!$transaction_date) $transaction_date = $this->api->now;
 		if(!$in_branch) $in_branch = $this->api->current_branch;
+
+		$staff_model=$this->add('Model_Staff')->load($staff);
+
+		if(!$narration)
+			$narration = "Fuel Amount paid to ";
+
+		$narration .= " - ".$staff_model['name'];
 
 		$account_cr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$amount_from_account);
@@ -446,7 +456,7 @@ class Model_Account extends Model_Table {
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'FUEL EXPENSES');
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_FUEL_CAHRGES,$in_branch,$transaction_date,$narration);
+		$transaction->createNewTransaction(TRA_FUEL_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_account_id'=>$staff));
 		
 		$transaction->addDebitAccount($account_dr,$amount);
 		$transaction->addCreditAccount($account_cr,$amount);			
@@ -463,12 +473,15 @@ class Model_Account extends Model_Table {
 		if(!$transaction_date) $transaction_date = $this->api->now;
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
+
 		$account_cr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$amount_from_account);
 		$account_dr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'LEGAL EXPENSES PAID');
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		if(!$narration) $narration = 'Legal Charges Paid in '. $account_cr['AccountNumber'];
+
 		$transaction->createNewTransaction(TRA_LEGAL_CHARGE_PAID,$in_branch,$transaction_date,$narration);
 		
 		$transaction->addDebitAccount($account_dr,$amount);
@@ -493,6 +506,8 @@ class Model_Account extends Model_Table {
 		$account_dr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'LEGAL EXPENSES RECEIVED');
 		$transaction = $this->add('Model_Transaction');
+		if(!$narration) $narration = 'Legal Charges Debited in '. $account_cr['AccountNumber'];
+		
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
 		$transaction->createNewTransaction(TRA_LEGAL_CHARGE_RECEIVED,$in_branch,$transaction_date,$narration);
 		
@@ -518,6 +533,32 @@ class Model_Account extends Model_Table {
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
 		$transaction->createNewTransaction(TRA_VISIT_CHARGE,$in_branch,$transaction_date,$narration);
+		
+		$transaction->addDebitAccount($account_dr,$amount);
+		$transaction->addCreditAccount($account_cr,$amount);			
+
+		$transaction->execute();
+
+		return $transaction->id;
+
+	}
+
+	function forcloseTransaction($amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
+		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');
+
+		if(!$transaction_date) $transaction_date = $this->api->now;
+		if(!$in_branch) $in_branch = $this->api->current_branch;
+
+		
+		$account_dr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$amount_from_account);
+		$account_cr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'For Closed');
+		$transaction = $this->add('Model_Transaction');
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		if(!$narration) $narration = 'For Close Charges Debited in '. $account_cr['AccountNumber'];
+
+		$transaction->createNewTransaction(TRA_FORCLOSE_CHARGE,$in_branch,$transaction_date,$narration);
 		
 		$transaction->addDebitAccount($account_dr,$amount);
 		$transaction->addCreditAccount($account_cr,$amount);			

@@ -7,7 +7,24 @@ class Model_Stock_Row extends Model_Table {
 		$this->hasOne('Stock_Container','container_id');
 		$this->addField('name');
 		$this->hasMany('Stock_Item','item_id');
+		
+		$this->addHook('beforeSave',$this);
+
 		$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave(){
+		$tmp = $this->add('Model_Stock_Row');
+		$tmp->addCondition('name',$this['name']);
+		$tmp->addCondition('container_id',$this['container_id']);
+
+		if($this->loaded()){
+			$tmp->addCondition('id','<>',$this->id);
+		}
+
+		$tmp->tryLoadAny();
+		if($tmp->loaded())
+			throw $this->exception('Name Already Exists','ValidityCheck')->setField('name');
 	}
 
 	function createNew($name,$other_fields=array(),$form=null){

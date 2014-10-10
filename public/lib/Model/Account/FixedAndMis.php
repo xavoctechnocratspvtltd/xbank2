@@ -26,6 +26,25 @@ class Model_Account_FixedAndMis extends Model_Account{
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
+	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null,$on_date=null,$in_branch=null){
+		if(!$on_date) $on_date = $this->api->today;
+
+
+		$balance = $this->getOpeningBalance($this->api->nextDate($on_date));
+		$balance = $balance['CR'] - $balance['DR'];
+		$min_limit= 0; // No minimum limit for FD .. Let all money be withdrawn
+
+		if($amount > ($balance)){
+			throw $this->exception('Cannot withdraw amount less then '. $balance ,'ValidityCheck')->setField('amount');
+		}
+		
+		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
+		$this['LastCurrentInterestUpdatedAt'] = $on_date;
+
+		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date,$in_branch);
+		$this->save();
+	}
+
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber=null,$otherValues=null,$form=null,$created_at=null){
 		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber($otherValues['account_type']);
 		$scheme = $this->add('Model_Scheme')->load($scheme_id);

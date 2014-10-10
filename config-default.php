@@ -118,6 +118,7 @@ define('TRA_FUEL_CAHRGES',  'FuelCharge');
 define('TRA_LEGAL_CHARGE_PAID',  'LegalChargePaid');
 define('TRA_LEGAL_CHARGE_RECEIVED',  'LegalChargeReceived');
 define('TRA_VISIT_CHARGE',  'VisitCharge');
+define('TRA_FORCLOSE_CHARGE',  'ForCloseTransaction');
 define('TRA_BANK_DEPOSIT',  'BANK DEPOSIT');
 define('TRA_BANK_WITHDRAWL',  'BANK WITHDRAWL');
 

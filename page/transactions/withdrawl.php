@@ -16,14 +16,12 @@ class page_transactions_withdrawl extends Page {
 		// Recurring, MIS, FD and DDS only if deactivated
 		$account_model->addCondition(
 			$account_model->dsql()->orExpr()
-				->where('acc.ActiveStatus = 1 AND _s.SchemeType not in ("'.ACCOUNT_TYPE_FIXED.'","'.ACCOUNT_TYPE_RECURRING.'","'.ACCOUNT_TYPE_DDS.'")')
-				->where('acc.ActiveStatus = 0 AND _s.SchemeType in ("'.ACCOUNT_TYPE_FIXED.'","'.ACCOUNT_TYPE_RECURRING.'","'.ACCOUNT_TYPE_DDS.'")')
+				->where('(acc.ActiveStatus = 1 AND _s.SchemeType not in ("'.ACCOUNT_TYPE_FIXED.'","'.ACCOUNT_TYPE_RECURRING.'","'.ACCOUNT_TYPE_DDS.'"))')
+				->where('(acc.ActiveStatus = 0 AND _s.SchemeType in ("'.ACCOUNT_TYPE_FIXED.'","'.ACCOUNT_TYPE_RECURRING.'","'.ACCOUNT_TYPE_DDS.'"))')
 			);
 
 		// In Case of No Image ... Stop withdrawl == Done in withdrawl function in modelaccount
 		
-		// $account_model->addCondition('branch_id',$this->api->currentBranch->id);
-
 		$cols= $this->add('Columns');
 		$left_col = $cols->addColumn(6);
 		$right_col = $cols->addColumn(6);
@@ -39,9 +37,12 @@ class page_transactions_withdrawl extends Page {
 			$acc_bal_temp = $this->add('Model_Account_SavingAndCurrent');
 			$acc_bal_temp->tryLoadBy('AccountNumber',$_GET['AccountNumber']);
 
-			$bal = $acc_bal_temp->getOpeningBalance();
-			$bal_cr = $bal['Cr'] - $bal['Dr'];
-			if($bal_cr- $_GET['amount'] < 200 AND $bal_cr- $_GET['amount'] > 0 ) $amount_field_view->set('Bellow');
+			if($acc_bal_temp->loaded()){
+				$bal = $acc_bal_temp->getOpeningBalance();
+				$bal_cr = $bal['Cr'] - $bal['Dr'];
+				if($bal_cr- $_GET['amount'] < 200 AND $bal_cr- $_GET['amount'] > 0 ) $amount_field_view->set('Bellow');
+			}
+
 		}
 
 		$amount_field->js('change',$amount_field_view->js()->reload(array('check_min'=>1,'AccountNumber'=>$account_field->js()->val(),'amount'=>$amount_field->js()->val())));
@@ -58,7 +59,8 @@ class page_transactions_withdrawl extends Page {
 			if($account->loaded()){
 				$right_col->add('H3')->set(array('Signature For - '));
 				$right_col->add('View')->set($_GET['account_selected']);
-				$img=$right_col->add('View')->setElement('img')->setAttr('src','../signatures/sig_'.$account->ref('member_id')->get('id').'.JPG');
+				// $img=$right_col->add('View')->setElement('img')->setAttr('src','../signatures/sig_'.$account->ref('member_id')->get('id').'.JPG');
+				$img=$right_col->add('View')->setElement('img')->setAttr('src',$account['sig_image']);
 				$img->js('mouseover',$img->js()->width('200%'));
 				$img->js('mouseout',$img->js()->width('100%'));
 				$account_field->other_field->set($_GET['account_selected']);

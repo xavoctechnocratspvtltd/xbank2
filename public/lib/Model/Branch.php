@@ -17,6 +17,7 @@ class Model_Branch extends Model_Table {
 		$this->hasMany('Account','branch_id');
 		$this->hasMany('Closing','branch_id');
 		$this->hasMany('Mo','branch_id');
+		$this->hasMany('Stock_Container','branch_id');
 
 		$this->addHook('afterInsert',$this);
 

@@ -56,7 +56,7 @@ class Frontend extends ApiFrontend {
             $this->title = ' :: [' . $this->api->current_branch['name'].']';
         }
 
-        
+        $this->jui->addStaticStylesheet('hindi');
 
         // $header_menu1->addMenuItem('index',array('Home','icon'=>'home','swatch'=>'yellow'));
 

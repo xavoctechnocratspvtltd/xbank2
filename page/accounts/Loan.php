@@ -18,15 +18,20 @@ class page_accounts_Loan extends Page {
 		$account_loan_model->setOrder('id','desc');
 		
 		$crud->addHook('myupdate',function($crud,$form){
-			$loan_against_account_field = $crud->form->getElement('LoanAgainstAccount_id');
-			$amount=($loan_against_account_field->model['Amount']*80)/100;
+
+			$member_check_for_sm = $this->add('Model_Member');
+			$member_check_for_sm->load($form['member_id']);
+			if($member_check_for_sm->ref('Account')->addCondition('AccountNumber','like','%sm%')->count()->getOne() <= 0 )
+				$form->displayError('member_id','Not an SM');
 			
-			if($crud->form->get('Amount')!=$amount){
+			if($crud->form->get('account_type') == 'Loan Against Deposit'){
+				
 				$account=$crud->add('Model_Account');
 				$account->load($form['LoanAgainstAccount_id']);
-				$amount=$account['Amount']*80/100;
+				$amount_allowed = $account['Amount']*80/100;
 				$loan_amount=$form['Amount'];
-				if($amount<$loan_amount)
+
+				if($loan_amount > $amount_allowed)
 					$form->displayError('Amount',"Amount is grater than 80% of  FD Amount");
 			}
 
@@ -74,7 +79,7 @@ class page_accounts_Loan extends Page {
 		if($crud->isEditing()){
 			$loan_from_account_field = $crud->form->addField('autocomplete/Basic','loan_from_account')->validateNotNull();
 			$loan_from_account_field->setModel('Account');
-
+			$account_loan_model->getElement('ModeOfOperation')->system(true);
 		}
 		
 
@@ -84,7 +89,7 @@ class page_accounts_Loan extends Page {
 			// $account_loan_model->hook('editing');
 		}
 		
-		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id','doc_image_id','sig_image_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer','doc_image','sig_image'));
+		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id','doc_image_id','sig_image_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer','doc_image','sig_image'));
 
 		if($crud->isEditing()){			//TODO 
 			$loan_against_account_field = $crud->form->getElement('LoanAgainstAccount_id');
@@ -94,8 +99,6 @@ class page_accounts_Loan extends Page {
 				$loan_against_account_field->model->addCondition('ActiveStatus',true);
 			}
 
-				// throw new Exception("Error Processing Request", 1);
-				
 
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
             $loan_from_account = json_decode($crud->form->model['extra_info'],true);
@@ -114,7 +117,7 @@ class page_accounts_Loan extends Page {
 			// 	return ;
 			// });
 
-			$member_field->model->_dsql()->having('('.$member_field->model->dsql()->expr($member_field->model->refSQL('Account')->addCondition('AccountNumber','like','%sm%')->count()->render().')'),'>',0); 
+			// $member_field->getModel()->debug()->_dsql()->having('('.$member_field->model->dsql()->expr($member_field->model->refSQL('Account')->addCondition('AccountNumber','like','%sm%')->count()->render().')'),'>',0); 
 
 			$member_existing_loan_view = $member_field->other_field->belowField()->add('View');
 			if($_GET['check_existing_loan_member_id']){

@@ -19,6 +19,10 @@ class page_stock_row extends Page {
 		});
 		
 		$crud->setModel($row);		
+
+		if($crud->isEditing()){
+			$crud->form->getElement('container_id')->getModel()->add('Controller_Acl');
+		}
 	
 		if($g=$crud->grid){
 			$g->addPaginator(10);

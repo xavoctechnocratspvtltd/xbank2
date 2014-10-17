@@ -29,6 +29,7 @@ class page_transactions_withdrawl extends Page {
 		$account_field = $form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull();
 		// $account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
 		$account_field->setModel($account_model,'AccountNumber');
+		$account_mode_view = $account_field->belowField()->add('View');
 
 		$amount_field = $form->addField('Number','amount')->validateNotNull();
 		$amount_field_view = $amount_field->belowField()->add('View');
@@ -59,6 +60,7 @@ class page_transactions_withdrawl extends Page {
 			if($account->loaded()){
 				$right_col->add('H3')->set(array('Signature For - '));
 				$right_col->add('View')->set($_GET['account_selected']);
+				$right_col->add('View')->setHtml('Account Mode: ' . $account['ModeOfOperation'] . ($account['ModeOfOperation'] == 'Joint'? '<font color=red> Check All Signatures </font>':''));
 				// $img=$right_col->add('View')->setElement('img')->setAttr('src','../signatures/sig_'.$account->ref('member_id')->get('id').'.JPG');
 				$img=$right_col->add('View')->setElement('img')->setAttr('src',$account['sig_image']);
 				$img->js('mouseover',$img->js()->width('200%'));

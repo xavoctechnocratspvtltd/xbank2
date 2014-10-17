@@ -6,6 +6,7 @@ class page_stock_container extends Page {
 		$crud=$this->add('xCRUD');
 
 		$container=$this->add('Model_Stock_Container');
+		$container->add('Controller_Acl');
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false; // Always required to bypass the bellow code in editing crud mode

@@ -35,6 +35,7 @@ class Model_Stock_Container extends Model_Table {
 		if($this->loaded())
 			throw $this->exception('Please call on loaded Object');
 		$this['name']=$name;
+		$this['branch_id']=$this->api->currentBranch->id;
 		$this->save();
 	}
 

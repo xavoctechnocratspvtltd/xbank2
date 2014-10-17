@@ -14,8 +14,8 @@ class page_transactions_jv extends Page {
 		$form = $this->add('Form');
 
 		$cols = $form->add('Columns');
-		$cr_col = $cols->addColumn(6);
 		$dr_col = $cols->addColumn(6);
+		$cr_col = $cols->addColumn(6);
 
 		$cr_col_cols=$cr_col->add('Columns');
 		$cr_account_col = $cr_col_cols->addColumn(6);

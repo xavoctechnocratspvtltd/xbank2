@@ -18,15 +18,15 @@ class page_reports_member_member extends Page {
 		$grid->addColumn('expander','accounts');
 		$grid->addColumn('expander','guarantor_in');
 
-		$js=array(
-			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
-			$this->js()->_selector('#header')->toggle(),
-			$this->js()->_selector('#footer')->toggle(),
-			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
-			$this->js()->_selector('.atk-form')->toggle(),
-			);
+		// $js=array(
+		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+		// 	$this->js()->_selector('#header')->toggle(),
+		// 	$this->js()->_selector('#footer')->toggle(),
+		// 	$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+		// 	$this->js()->_selector('.atk-form')->toggle(),
+		// 	);
 
-		$grid->js('click',$js);
+		// $grid->js('click',$js);
 	}
 
 	function page_details(){

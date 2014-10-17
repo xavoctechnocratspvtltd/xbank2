@@ -1,6 +1,9 @@
 <?php
 
 class page_stock_main extends Page {
+
+	public $title= 'Stock Manager';
+	
 	function init(){
 		parent::init();
 

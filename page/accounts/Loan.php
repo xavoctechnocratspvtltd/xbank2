@@ -19,7 +19,7 @@ class page_accounts_Loan extends Page {
 		
 		$crud->addHook('myupdate',function($crud,$form){
 
-			$member_check_for_sm = $this->add('Model_Member');
+			$member_check_for_sm = $crud->add('Model_Member');
 			$member_check_for_sm->load($form['member_id']);
 			if($member_check_for_sm->ref('Account')->addCondition('AccountNumber','like','%sm%')->count()->getOne() <= 0 )
 				$form->displayError('member_id','Not an SM');

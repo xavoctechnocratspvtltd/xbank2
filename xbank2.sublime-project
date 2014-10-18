@@ -3,11 +3,11 @@
 	[
 		{
 			"follow_symlinks": true,
-			"path": "/var/www/xbank/administrator"
+			"path": "."
 		},
 		{
 			"follow_symlinks": true,
-			"path": "."
+			"path": "/var/www/xbank/administrator/components/com_xbank"
 		}
 	]
 }

@@ -10,6 +10,8 @@ class Model_PendingAccount extends Model_Account {
 	function approve(){
 		if(!$this->loaded()) throw $this->exception('Pending Account must be loaded to approve');
 
+
+
 		$model="";
 
 		if(in_array($this['account_type'],explode(",",LOAN_TYPES)))
@@ -23,6 +25,16 @@ class Model_PendingAccount extends Model_Account {
 		}
 
 		$extra_info = json_decode($this['extra_info'],true);
+		
+		$account_model = $this->add('Model_Account');
+		$account_model->load($extra_info['loan_from_account']);
+		$op_bal = $account_model->getOpeningBalance($this->api->nextDate($this->api->today));
+
+		$op_bal = $op_bal['dr']-$op_bal['cr'];
+
+		if(($op_bal - $this['Amount']) <= 0 ){
+			$this->api->js()->univ()->errorMessage('Not Sufficient Balance as on Date, Current Balance is ' . $op_bal . ' /-')->execute();
+		}		
 
 		$new_account = $this->add('Model_Account'.$model);
 		$otherValues = $this->data;
@@ -36,6 +48,6 @@ class Model_PendingAccount extends Model_Account {
 	}
 
 	function reject(){
-
+		$this->delete();
 	}
 }

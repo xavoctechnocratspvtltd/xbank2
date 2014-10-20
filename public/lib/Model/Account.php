@@ -128,10 +128,12 @@ class Model_Account extends Model_Table {
 
 	function defaultBeforeSave(){
 
-		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber']) AND !@$this->allow_any_name ){
+		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber']) AND !$this->allow_any_name ){
 			throw $this->exception('AccountNumber Format not accpeted')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
 
+		if(substr($this['AccountNumber'],0,3) !== $this->api->current_branch['Code'])
+			throw $this->exception('AccountNumber Format not accpeted, Must Have This account Code in Start','ValidityCheck')->addMoreInfo('acc',$this['AccountNumber'])->setField('AccountNumber');
 
 		// PandLGroup set default
 		if(!$this['Group'])

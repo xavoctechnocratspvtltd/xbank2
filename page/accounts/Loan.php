@@ -9,10 +9,10 @@ class page_accounts_Loan extends Page {
 	}
 
 	function page_pendingAccounts(){
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('allow_del'=>false));
 		$account_loan_model = $this->add('Model_Account_Loan',array('table'=>'accounts_pending'));
 		$account_loan_model->addField('is_approved')->type('boolean')->defaultValue(false);
-		$account_loan_model->addCondition('is_approved',false);
+		$account_loan_model->addCondition('is_approved',0); // Status asked as Pending
 
 		$account_loan_model->add('Controller_Acl');
 		$account_loan_model->setOrder('id','desc');
@@ -77,8 +77,23 @@ class page_accounts_Loan extends Page {
 
 
 		if($crud->isEditing()){
+
+			$loan_from_account_model =$this->add('Model_Active_Account');
+			// $loan_from_account_model->join('schemes','scheme_id')->addField('scheme_name','name');
+
+			$loan_from_account_model->addCondition(
+					$loan_from_account_model->dsql()->orExpr()
+						->where($loan_from_account_model->scheme_join->table_alias.'.name',BANK_ACCOUNTS_SCHEME)
+						->where($loan_from_account_model->scheme_join->table_alias.'.name',BANK_OD_SCHEME)
+						->where($loan_from_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_SAVING)
+						->where($loan_from_account_model->scheme_join->table_alias.'.name',ACCOUNT_TYPE_CC)
+						->where($loan_from_account_model->scheme_join->table_alias.'.name',CASH_ACCOUNT_SCHEME)
+
+				);
+
+
 			$loan_from_account_field = $crud->form->addField('autocomplete/Basic','loan_from_account')->validateNotNull();
-			$loan_from_account_field->setModel('Account');
+			$loan_from_account_field->setModel($loan_from_account_model);
 			$account_loan_model->getElement('ModeOfOperation')->system(true);
 		}
 		
@@ -99,6 +114,25 @@ class page_accounts_Loan extends Page {
 				$loan_against_account_field->model->addCondition('ActiveStatus',true);
 			}
 
+			
+			// 	$account_model=$this->add('Model_Active_Account');
+
+			// // NO BANK FOR ANY BRANCH
+			// $account_model->addCondition('scheme_name','<>',BANK_ACCOUNTS_SCHEME);
+			// $account_model->addCondition('scheme_name','<>',BANK_OD_SCHEME);
+			
+			// // NO CASH FOR ANY BRANCH
+			// $account_model->addCondition('scheme_name','<>',CASH_ACCOUNT_SCHEME);
+			
+			// // NO DEFAULT ACCOUNTS FOR OTHER BRANCH
+			// $account_model->addCondition(
+			// 	$account_model->dsql()->orExpr()
+			// 		->where('branch_id',$this->api->current_branch->id)
+			// 		->where('DefaultAC',false)
+			// 	);
+			
+			// // No Fixed and Mis Accounts For Any Branch
+			// $account_model->addCondition('SchemeType','<>',ACCOUNT_TYPE_FIXED);
 
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
             $loan_from_account = json_decode($crud->form->model['extra_info'],true);
@@ -112,6 +146,7 @@ class page_accounts_Loan extends Page {
 					),'div .atk-form-row');
 
 			$member_field = $crud->form->getElement('member_id');
+
 
 			// $member_field->model->addExpression('count_sm')->set(function($m,$q){
 			// 	return ;
@@ -236,7 +271,7 @@ class page_accounts_Loan extends Page {
 			$crud->grid->js('reload')->reload();
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','comment');
-			$crud->grid->addColumn('expander','edit_document');
+			// $crud->grid->addColumn('expander','edit_document');
 			$crud->grid->addColumn('expander','edit_guarantor');
 			$crud->grid->addColumn('expander','edit');
 			$crud->grid->addColumn('button','edit');
@@ -379,7 +414,6 @@ class page_accounts_Loan extends Page {
 			}
 
 		}
-	}
 
 	function page_accounts_edit_document(){
 		$this->api->stickyGET('accounts_id');
@@ -413,3 +447,5 @@ class page_accounts_Loan extends Page {
 	function page_accounts_Loan_accounts_comment(){
 		
 	}
+
+}

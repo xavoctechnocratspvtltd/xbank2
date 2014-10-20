@@ -57,12 +57,13 @@ class page_accounts_CC extends Page {
 		}
 
 		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'),array('AccountNumber','AccountDisplayName','member','scheme','Amount','agent','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
-
+		$crud->add('Controller_DocumentsManager',array('doc_type'=>'CCAccount'));
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(50);
 			$crud->grid->addQuickSearch(array('AccountNumber','AccountDisplayName','member','scheme'));
 			$crud->grid->addColumn('expander','edit_document');
+			$crud->grid->addColumn('expander','edit_guarantors');
 		}
 
 		if($crud->isEditing('add')){
@@ -82,6 +83,19 @@ class page_accounts_CC extends Page {
 		if($crud->form){
 			$crud->form->getElement('documents_id')->getModel()->addCondition('CCAccount',true);
 		}
+	}
+
+	function page_edit_guarantors(){
+		$this->api->stickyGET('accounts_id');
+
+
+		$account_guarantors=$this->add('Model_AccountGuarantor');
+		$account_guarantors->addCondition('account_id',$_GET['accounts_id']);
+		$account_guarantors->getElement('member_id')->caption('Guarantor');
+
+		$crud=$this->add('CRUD');
+		$crud->setModel($account_guarantors, array('member_id','member'));
+
 	}
 
 }

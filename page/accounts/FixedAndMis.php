@@ -39,7 +39,24 @@ class page_Accounts_FixedAndMis extends Page {
 			   	$o->move($f->other_field,'last');
 			}
 			$debit_account = $crud->form->addField('autocomplete/Basic','debit_account');
-			$debit_account->setModel('Account','AccountNumber')->addCondition('branch_id',$this->api->currentBranch->id);
+			
+			$debit_account_model = $this->add('Model_Active_Account');
+		
+			$debit_account_model->addCondition(
+					$debit_account_model->dsql()->orExpr()
+						->where($debit_account_model->scheme_join->table_alias.'.name',BANK_ACCOUNTS_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.name',BANK_OD_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_SAVING)
+						->where($debit_account_model->scheme_join->table_alias.'.name',SUSPENCE_ACCOUNT_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.name',CASH_ACCOUNT_SCHEME)
+
+				);
+
+			$debit_account_model->add('Controller_Acl');
+
+			$debit_account->setModel($debit_account_model,'AccountNumber');
+
+
 
 		}
 
@@ -62,6 +79,26 @@ class page_Accounts_FixedAndMis extends Page {
 		}
 
 		if($crud->isEditing('add')){
+
+			$member_field  = $crud->form->getElement('member_id');
+			$amount_field = $crud->form->getElement('Amount');
+			$pan_details = $amount_field->belowField()->add('View');
+
+			if($_GET['member_id_for_pan']){
+				$member_model_for_pan =$this->add('Model_Member');
+				$member_model_for_pan->load($_GET['member_id_for_pan']);
+				if($_GET['amount_filled'] >=50000 and (strlen($member_model_for_pan['PanNo']) != 10) ){
+					$pan_details->setHTML('<font color="red">No Pan Card Found</font>');
+				}elseif($_GET['amount_filled'] < 50000 and strlen($member_model_for_pan['PanNo']) != 10){
+					$pan_details->set('Pan Card Not Found, But not needed');
+				}else{
+					$pan_details->set('Pan Card Found');
+				}
+				return;
+			}
+
+			$amount_field->js('change',$pan_details->js()->reload(array('amount_filled'=>$amount_field->js()->val(),'member_id_for_pan'=>$member_field->js()->val())));
+			
 			$o->now();
 		}
 

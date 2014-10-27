@@ -45,7 +45,7 @@ class Model_Account extends Model_Table {
 		$this->addField('NomineeAge');
 		$this->addField('RelationWithNominee')->enum(array('Father','Mother','Husband','Wife','Brother','Sister','Son','Daughter'));
 		$this->addField('MinorNomineeDOB');
-		$this->addField('MinorNomineeParentName');
+		$this->addField('MinorNomineeParentName')->type('text')->caption('Minor Nominee Parents Details');
 		$this->addField('DefaultAC')->type('boolean')->defaultValue(false);
 		$this->addField('created_at')->type('datetime')->sortable(true);//->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime');//->defaultValue($this->api->now);
@@ -128,8 +128,10 @@ class Model_Account extends Model_Table {
 
 	function defaultBeforeSave(){
 
-		if(!$this->loaded() AND !$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !preg_match("/[A-Z]{5}\d*$/", $this['AccountNumber']) AND !$this->allow_any_name ){
-			throw $this->exception('AccountNumber Format not accpeted')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
+		// throw new \Exception($this['account_type'], 1);
+		if(!$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !$this->allow_any_name AND !$this->loaded() ){
+			if(($this->ref('branch_id')->get('Code').$this['account_type']) != substr($this['AccountNumber'], 0,5) OR ($this->ref('branch_id')->get('Code').$this['account_type']) != substr($this['AccountNumber'], 0,6))
+				throw $this->exception('AccountNumber Format not accpeted '.($this->ref('branch_id')->get('Code').$this['account_type']))->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
 
 		if(substr($this['AccountNumber'],0,3) !== $this->api->current_branch['Code'])

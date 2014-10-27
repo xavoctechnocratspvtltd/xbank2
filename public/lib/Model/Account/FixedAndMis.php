@@ -47,7 +47,9 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber=null,$otherValues=null,$form=null,$created_at=null){
 		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber($otherValues['account_type']);
+
 		$scheme = $this->add('Model_Scheme')->load($scheme_id);
+		
 		if($scheme['MinLimit']){
 			if($otherValues['Amount']< $scheme['MinLimit'])
 				throw $this->exception('Minimum Limit set as '.$scheme['MinLimit'], 'ValidityCheck')->setField('Amount');
@@ -55,7 +57,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 		$this->createInitialTransaction($created_at, $form);
-		$this->giveAgentCommission();
+		if($form['agent_id'])
+			$this->giveAgentCommission();
 	}
 
 	function createInitialTransaction($on_date, $form){

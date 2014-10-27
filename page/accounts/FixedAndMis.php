@@ -16,6 +16,34 @@ class page_Accounts_FixedAndMis extends Page {
 			try {
 				$crud->api->db->beginTransaction();
 
+					if($form['account_type']=='MIS' and !$form['intrest_to_account_id']){
+						$form->displayError('intrest_to_account_id','Field is must for MIS type accounts');
+					}
+
+					$account = $crud->add('Model_Account');
+					$account->loadBy('AccountNumber',$form['debit_account']);
+					if($account['SchemeType']==ACCOUNT_TYPE_SAVING and $account['member_id'] != $form['member_id']){
+						$form->displayError('debit_account','Account must be of same member');
+					}
+
+					$intrest_to_account_model = $this->add('Model_Account');
+					$intrest_to_account_model->addCondition('id',$form['intrest_to_account_id']);
+					$intrest_to_account_model->tryLoadAny();
+					if($form['intrest_to_account_id'] AND $intrest_to_account_model['member_id'] != $form['member_id']){
+						$form->displayError('intrest_to_account_id','Not for same member ');
+					}
+
+					if($form['MaturityToAccount_id']){
+						$maturity_to_account_model = $this->add('Model_Account');
+						$maturity_to_account_model->addCondition('id',$form['MaturityToAccount_id']);
+						$maturity_to_account_model->tryLoadAny();
+						if($maturity_to_account_model['member_id'] != $form['member_id']){
+							$form->displayError('MaturityToAccount','Not for same member ');
+						}
+
+					}
+
+					$fixedAndMis_account_model->allow_any_name = true;
 			    	$fixedAndMis_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch,null,$form->getAllFields(),$form);
 			    $crud->api->db->commit();
 			}catch(Exception_ValidityCheck $e){
@@ -36,7 +64,7 @@ class page_Accounts_FixedAndMis extends Page {
 			for($k=2;$k<=4;$k++) {
 			    $f = $crud->form->addField('autocomplete/Basic','member_ID_'.$k);
 			   	$f->setModel('Member');
-			   	$o->move($f->other_field,'last');
+			   	// $o->move($f->other_field,'last');
 			}
 			$debit_account = $crud->form->addField('autocomplete/Basic','debit_account');
 			
@@ -64,7 +92,7 @@ class page_Accounts_FixedAndMis extends Page {
 			$account_fixedandmis_model->hook('editing');
 		}
 
-		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id','sig_image_id'),array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','mo','team'));
+		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','mo_id','team_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeParentName','sig_image_id'),array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','mo','team'));
 
 		if($crud->isEditing()){
 			if($crud->form->hasElement('account_type')){
@@ -76,6 +104,33 @@ class page_Accounts_FixedAndMis extends Page {
 						),'div .atk-form-row');
 				$crud->form->getElement('account_type')->setEmptyText('Please Select');
 			}
+
+			$intrest_to_account_model = $crud->form->getElement('intrest_to_account_id')->getModel();
+			$intrest_to_account_model->addCondition('SchemeType',ACCOUNT_TYPE_SAVING);
+
+			$nominee_age_field = $crud->form->getElement('NomineeAge');
+			
+			$nominee_age_field->js(true)->univ()->bindConditionalShow(array(
+						''=>array(),
+						'1'=>array('MinorNomineeParentName'),
+						'2'=>array('MinorNomineeParentName'),
+						'3'=>array('MinorNomineeParentName'),
+						'4'=>array('MinorNomineeParentName'),
+						'5'=>array('MinorNomineeParentName'),
+						'6'=>array('MinorNomineeParentName'),
+						'7'=>array('MinorNomineeParentName'),
+						'8'=>array('MinorNomineeParentName'),
+						'9'=>array('MinorNomineeParentName'),
+						'10'=>array('MinorNomineeParentName'),
+						'11'=>array('MinorNomineeParentName'),
+						'12'=>array('MinorNomineeParentName'),
+						'13'=>array('MinorNomineeParentName'),
+						'14'=>array('MinorNomineeParentName'),
+						'15'=>array('MinorNomineeParentName'),
+						'16'=>array('MinorNomineeParentName'),
+						'17'=>array('MinorNomineeParentName'),
+						),'div .atk-form-row');
+
 		}
 
 		if($crud->isEditing('add')){
@@ -98,7 +153,17 @@ class page_Accounts_FixedAndMis extends Page {
 			}
 
 			$amount_field->js('change',$pan_details->js()->reload(array('amount_filled'=>$amount_field->js()->val(),'member_id_for_pan'=>$member_field->js()->val())));
-			
+			for($k=2;$k<=4;$k++) {
+			    $f = $crud->form->getElement('member_ID_'.$k);
+			   	$o->move($f->other_field,'before','intrest_to_account_id');
+			}
+
+			$type_field = $crud->form->getElement('ModeOfOperation');
+				$type_field->js(true)->univ()->bindConditionalShow(array(
+						'Self'=>array('Nominee','NomineeAge','RelationWithNominee'),
+						'Joint'=>array('member_ID_1','member_ID_2','member_ID_3','member_ID_4'),
+						),'div .atk-form-row');
+
 			$o->now();
 		}
 

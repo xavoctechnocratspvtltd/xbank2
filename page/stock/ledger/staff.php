@@ -5,12 +5,12 @@ class page_stock_ledger_staff extends Page {
 
 		$form=$this->add('Form');
 		$staff_field=$form->addField('dropdown','staff')->setEmptyText('Please Select');
-		$staff_field->setModel('Staff');
+		$staff_field->setModel('Stock_Staff');
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
-		$form->addSubmit('Get');
+		$form->addSubmit('GET');
 		$v=$this->add('View');
 		$view_consume=$v->add('View_Staff_Consume',array('staff'=>$_GET['staff'],'from_date'=>$_GET['from_date'],'to_date'=>$form['to_date'],'filter'=>1));
 		$view_issue=$v->add('View_Staff_Issue',array('staff'=>$_GET['staff'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date']));

@@ -7,30 +7,30 @@ class page_stock_actions_issue extends Page {
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 
+		// Issue Form
 		$form=$this->add('Form');
 		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
+		$item_model=$this->add('Model_Stock_Item');
+		$item_model->addCondition('is_issueable',true);
 		$item_field->setModel('Stock_Item');
-
 		$staff_field=$form->addField('dropdown','staff')->setEmptyText('Please Select');
-		$staff_field->setModel('Staff');
-
+		$staff_field->setModel('Stock_Staff');
 		$agent_field=$form->addField('dropdown','agent')->setEmptyText('Please Select');
-		$agent_field->setModel('Agent');
+		$agent_field->setModel('Stock_Agent');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
-		$dealer_field->setModel('Dealer');
-
+		$dealer_field->setModel('Stock_Dealer');
 		$form->addField('line','qty');
 		$form->addField('text','narration');
 		$form->addSubmit('Issue');
 
-
+		// Search form
 		$form_search=$this->add('Form');
 		$item_field=$form_search->addField('dropdown','item')->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');
 		$form_search->addField('DatePicker','from_date');
 		$form_search->addField('DatePicker','to_date');
 		$form_search->addSubmit('GET LIST');
-
+		
 		$search_btn->js('click',array($form_search->js()->toggle(),$form->js()->hide()));
 		$add_btn->js('click',array($form->js()->toggle(),$form_search->js()->hide()));
 		$form_search->js(true)->hide();
@@ -58,18 +58,8 @@ class page_stock_actions_issue extends Page {
 		$crud->setModel($issue_transaction,array('branch','item','staff','qty','issue_date','narration','transaction_type'));
 
 		if($form->isSubmitted()){
-			$item=$this->add('Model_Stock_Item')->load($form['item']);
-			$staff=$this->add('Model_Staff')->tryLoad($form['staff']);
-			$agent=$this->add('Model_Agent')->tryLoad($form['agent']);
-			$dealer=$this->add('Model_Dealer')->tryLoad($form['dealer']);
-			$transaction=$this->add('Model_Stock_Transaction');
-
-			if($item['is_consumable'])
-					$transaction->consume($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
-			if($item['is_issueable'])
-					$transaction->issue($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
-			$form->js(null,$crud->grid->js()->reload())->reload()->execute();
-
+			// Todo Issue Item
+			//$form->js(null,$crud->grid->js()->reload())->reload()->execute();
 		}
 
 		if($form_search->isSubmitted()){

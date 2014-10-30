@@ -6,16 +6,17 @@ class page_stock_actions_sold extends Page {
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 
+		// Sold stock Form
 		$form=$this->add('Form');
 		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
 		$item_field->setModel('Stock_Item');
-
 		$form->addField('line','qty');
 		$form->addField('line','rate');
 		// $form->addField('line','amount');
 		$form->addField('text','narration');
 		$form->addSubmit('Sold');
 
+		//Search Form 
 		$form_search=$this->add('Form');
 		$item_field=$form_search->addField('dropdown','item')->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');
@@ -50,14 +51,8 @@ class page_stock_actions_sold extends Page {
 		$crud->setModel($sold_transaction,array('branch','item','qty','rate','amount','created_at'));
 
 		if($form->isSubmitted()){
-			$item=$this->add('Model_Stock_Item')->load($form['item']);
-			// throw new Exception($item->getDeadQty($form['qty']));
-			
-			if(!$item->getDeadQty($form['qty']))
-				$form->displayError('qty',"dead Item is not  in Such qty");
-			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->sold($item,$form['qty'],$form['rate'],$form['narration']);
-			$form->js(null,$crud->grid->js()->reload())->reload()->execute();
+			// todo dead Item Sold Submission
+			// $form->js(null,$crud->grid->js()->reload())->reload()->execute();
 
 		}
 

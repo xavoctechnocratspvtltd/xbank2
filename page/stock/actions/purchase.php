@@ -8,9 +8,11 @@ class page_stock_actions_purchase extends Page {
 		$add_btn=$this->add('Button')->set('Add');
 		$form=$this->add('Form');
 		$party_field=$form->addField('dropdown','party')->setEmptyText('Please Select');
-		$party_field->setModel('Stock_Party');	
+		$party_field->setModel('Stock_Party');
+		//adding auto complete 
 		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select');
-		$item_field->setModel('Stock_Item');	
+		$item_field->setModel('Stock_Item');
+		//end of autocomplete
 		$form->addField('line','qty');
 		$form->addField('line','rate');
 		$form->addField('text','narration');
@@ -28,11 +30,11 @@ class page_stock_actions_purchase extends Page {
 		$form_search->js(true)->hide();
 		$form->js(true)->hide();
 
-
 		$crud=$this->add('CRUD',array('allow_add'=>false));
 		$purchase_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_transaction->addCondition('transaction_type','Purchase');
 
+		// DO Search Filter 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('item');
@@ -46,22 +48,17 @@ class page_stock_actions_purchase extends Page {
 			if($_GET['to_date'])
 				$purchase_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
+		//End of serach filter
+
 		$crud->setModel($purchase_transaction,array('item','party','branch','qty','rate','narration','created_at'));
 
 		if($form->isSubmitted()){
-			$party=$this->add('Model_Stock_Party');
-			$party->load($form['party']);
-			$item=$this->add('Model_Stock_Item');
-			$item->load($form['item']);
-			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->purchase($party,$item,$form['qty'],$form['rate'],$form['narration']);
-			$form->js()->reload(null,$crud->grid->js()->reload())->execute();
+			// todo Purchase submitted
 		}
 
 		if($form_search->isSubmitted()){
 			$crud->grid->js()->reload(array('item'=>$form_search['item'],'from_date'=>$form_search['from_date']?:0,'to_date'=>$form_search['to_date']?:0,'filter'=>1))->execute();
 		}
 	}
-
-
+	
 }

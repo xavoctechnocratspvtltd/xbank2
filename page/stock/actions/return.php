@@ -33,6 +33,7 @@ class page_stock_actions_return extends Page {
 		$purchase_return_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_return_transaction->addCondition('transaction_type','PurchaseReturn');
 		
+		// DO Search Filter		
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('item');
@@ -46,18 +47,12 @@ class page_stock_actions_return extends Page {
 			if($_GET['to_date'])
 				$purchase_return_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
-
+		// end Search Filter
 
 		$crud->setModel($purchase_return_transaction,array('item','party','branch','qty','rate','narration','created_at'));
 
 		if($form->isSubmitted()){
-			$party=$this->add('Model_Stock_Party');
-			$party->load($form['party']);
-			$item=$this->add('Model_Stock_Item');
-			$item->load($form['item']);
-			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->purchaseReturn($party,$item,$form['qty'],$form['rate'],$form['narration']);
-			$form->js()->reload(null,$crud->js()->reload())->execute();
+			// todo purchase return 
 		}
 
 		if($form_search->isSubmitted()){

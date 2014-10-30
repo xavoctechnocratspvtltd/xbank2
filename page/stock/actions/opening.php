@@ -51,11 +51,8 @@ class page_stock_actions_opening extends Page {
 		$crud->setModel($openning_transaction,array('branch','item','qty','rate','created_at','narration'));
 
 		if($form->isSubmitted()){
-			$item=$this->add('Model_Stock_Item');
-			$item->load($form['item']);
-			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->openning($item,$form['qty'],$form['rate'],$form['narration']);
-			$form->js(null,$crud->grid->js()->reload())->reload()->execute();
+			// Todo Form Submission
+			// $form->js(null,$crud->grid->js()->reload())->reload()->execute();
 		}
 
 		if($form_search->isSubmitted()){

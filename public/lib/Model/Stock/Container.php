@@ -6,12 +6,16 @@ class Model_Stock_Container extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Branch','branch_id');
-		$this->addField('name');
-		$this->hasMany('Stock_Item','item_id');
-		$this->hasMany('Stock_Row','container_id');
+		$this->addCondition('branch_id',$this->api->current_branch->id);
 		
-		$this->addHook('beforeSave',$this);
-		$this->addHook('beforeDelete',$this);
+		$this->addField('name');
+		
+		$this->hasMany('Stock_Row','container_id');
+		$this->hasMany('Stock_ContainerRowItemQty','container_id');
+		
+		// $this->addHook('beforeSave',$this);
+		// $this->addHook('beforeDelete',$this);
+		
 		$this->add('dynamic_model/Controller_AutoCreator');
 
 	}
@@ -39,15 +43,16 @@ class Model_Stock_Container extends Model_Table {
 		$this->save();
 	}
 
-	function remove(){
-		if(!$this->loaded())
-			throw $this->exception('Unable To determine the record to be delete');
-		$this->delete();
-	}
 
 	function beforeDelete(){
 		if($this->ref('Stock_Row')->count()->getOne()>0)
 			throw $this->exception('Can Not delete this container, It contains rows');
+	}
+	
+	function remove(){
+		if(!$this->loaded())
+			throw $this->exception('Unable To determine the record to be delete');
+		$this->delete();
 	}
 
 	function addRow($name){
@@ -75,11 +80,11 @@ class Model_Stock_Container extends Model_Table {
 		return $row->isExist($this);
 
 	}
-
-	
+	 
 	function allRows(){
 		if(!$this->loaded())
 			throw $this->exception('Unable To determine Container, Please Specify');
 		return $this->ref('Stock_Row');
-	}
+	}	
+
 }

@@ -7,23 +7,21 @@ class page_stock_actions_submit extends Page {
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 
+		// Add Form 
 		$form=$this->add('Form');
 		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
 		$item_field->setModel('Stock_Item');
-
 		$staff_field=$form->addField('dropdown','staff')->setEmptyText('Please Select');
-		$staff_field->setModel('Staff');
-
+		$staff_field->setModel('Stock_Staff');
 		$agent_field=$form->addField('dropdown','agent')->setEmptyText('Please Select');
-		$agent_field->setModel('Agent');
+		$agent_field->setModel('Stock_Agent');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
-		$dealer_field->setModel('Dealer');
-
+		$dealer_field->setModel('Stock_Dealer');
 		$form->addField('line','qty');
 		$form->addField('text','narration');
 		$form->addSubmit('Issue');
 
-
+		//Search Form
 		$form_search=$this->add('Form');
 		$item_field=$form_search->addField('dropdown','item')->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');
@@ -58,17 +56,8 @@ class page_stock_actions_submit extends Page {
 		$crud->setModel($submit_transaction,array('branch','staff','agent','dealer','item','qty','submit_date','narration'));
 
 		if($form->isSubmitted()){
-			
-			$staff=$this->add('Model_Staff')->tryLoad($form['staff']);
-			$agent=$this->add('Model_Agent')->tryLoad($form['agent']);
-			$dealer=$this->add('Model_Dealer')->tryLoad($form['dealer']);
-
-			$item=$this->add('Model_Stock_Item')->load($form['item']);
-			if(!$item->canSubmit($form['qty']))
-				$form->displayError('qty',"This Item is not issue in Such qty");
-			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->submit($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
-			$form->js(null,$crud->grid->js()->reload())->reload()->execute();
+			//Todo Submit Stock  
+			// $form->js(null,$crud->grid->js()->reload())->reload()->execute();
 		}
 
 		if($form_search->isSubmitted()){

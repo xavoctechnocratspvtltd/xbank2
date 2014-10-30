@@ -11,12 +11,12 @@ class page_stock_actions_dead extends Page {
 		$item_field->setModel('Stock_Item');
 
 		$staff_field=$form->addField('dropdown','staff')->setEmptyText('Please Select');
-		$staff_field->setModel('Staff');
+		$staff_field->setModel('Stock_Staff');
 
 		$agent_field=$form->addField('dropdown','agent')->setEmptyText('Please Select');
-		$agent_field->setModel('Agent');
+		$agent_field->setModel('Stock_Agent');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
-		$dealer_field->setModel('Dealer');
+		$dealer_field->setModel('Stock_Dealer');
 
 		$form->addField('line','qty');
 		$form->addField('text','narration');

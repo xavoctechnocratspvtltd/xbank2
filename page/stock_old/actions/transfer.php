@@ -59,11 +59,7 @@ class page_stock_actions_transfer extends Page {
 		$crud->setModel($transfer_transaction,array('item','to_branch','qty','rate','created_at','narration'));
 
 		if($form->isSubmitted()){
-			$branch=$this->add('Model_Branch');
-			$branch->load($form['branch']);
-			$item=$this->add('Model_Stock_Item');
-			$item->load($form['item']);
-			$transaction=$this->add('Model_Stock_Transaction');
+
 			$transaction->transfer($item,$branch,$form['qty'],$form['rate'],$form['narration']);
 			$form->js()->reload(null,$grid->js()->reload())->execute();
 		}

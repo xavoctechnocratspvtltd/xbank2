@@ -3,7 +3,7 @@
 class page_stock_actions_return extends Page {
 	function init(){
 		parent::init();
-
+ 
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 		$form=$this->add('Form');
@@ -29,7 +29,7 @@ class page_stock_actions_return extends Page {
 		$form->js(true)->hide();
 
 		// $crud=$this->add('crud');
-		$crud=$this->add('CRUD',array('allow_add'=>false));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false));
 		$purchase_return_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_return_transaction->addCondition('transaction_type','PurchaseReturn');
 		
@@ -52,7 +52,13 @@ class page_stock_actions_return extends Page {
 		$crud->setModel($purchase_return_transaction,array('item','party','branch','qty','rate','narration','created_at'));
 
 		if($form->isSubmitted()){
-			// todo purchase return 
+			$party=$this->add('Model_Stock_Party');
+			$party->load($form['party']);
+			$item=$this->add('Model_Stock_Item');
+			$item->load($form['item']);
+			$transaction=$this->add('Model_Stock_Transaction');
+			$transaction->purchaseReturn($party,$item,$form['qty'],$form['rate'],$form['narration']);
+			$form->js()->reload(null,$crud->js()->reload())->execute();		
 		}
 
 		if($form_search->isSubmitted()){

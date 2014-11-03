@@ -8,7 +8,9 @@ class page_stock_actions_purchase extends Page {
 		$add_btn=$this->add('Button')->set('Add');
 		$form=$this->add('Form');
 		$party_field=$form->addField('dropdown','party')->setEmptyText('Please Select');
-		$party_field->setModel('Stock_Party');
+		$party_model = $this->add('Model_Stock_Party');
+		$party_model->addCondition('is_active',true);
+		$party_field->setModel($party_model);
 		//adding auto complete 
 		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');
@@ -30,7 +32,7 @@ class page_stock_actions_purchase extends Page {
 		$form_search->js(true)->hide();
 		$form->js(true)->hide();
 
-		$crud=$this->add('CRUD',array('allow_add'=>false));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false));
 		$purchase_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_transaction->addCondition('transaction_type','Purchase');
 
@@ -53,7 +55,20 @@ class page_stock_actions_purchase extends Page {
 		$crud->setModel($purchase_transaction,array('item','party','branch','qty','rate','narration','created_at'));
 
 		if($form->isSubmitted()){
-			// todo Purchase submitted
+			$party=$this->add('Model_Stock_Party');
+			$party->load($form['party']);
+			$item=$this->add('Model_Stock_Item');
+			$item->load($form['item']);
+			$transaction=$this->add('Model_Stock_Transaction');
+			$transaction->purchase($party,$item,$form['qty'],$form['rate'],$form['narration']);
+			
+			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
+			$criq_model->addStockInGeneral($item,$form['qty']);
+
+			$js=array($crud->grid->js()->reload(),
+					$form->js()->univ()->successMessage("Purchase Transaction Added Successfully")
+					);
+			$form->js()->reload(null,$js)->execute();
 		}
 
 		if($form_search->isSubmitted()){

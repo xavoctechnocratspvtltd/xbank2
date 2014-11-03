@@ -23,7 +23,7 @@ class Model_Stock_Item extends Model_Table {
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-
+ 
 	function createNew($name,$other_fields=array(),$form=nulll){
 		if($this->loaded())
 			throw $this->exception('This Function create New Items, So please pass Empty Object');

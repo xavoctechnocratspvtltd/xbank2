@@ -8,13 +8,13 @@ class Model_Stock_Container extends Model_Table {
 		$this->hasOne('Branch','branch_id');
 		$this->addCondition('branch_id',$this->api->current_branch->id);
 		
-		$this->addField('name');
+		$this->addField('name')->mandatory(true);
 		
 		$this->hasMany('Stock_Row','container_id');
 		$this->hasMany('Stock_ContainerRowItemQty','container_id');
 		
-		// $this->addHook('beforeSave',$this);
-		// $this->addHook('beforeDelete',$this);
+		$this->addHook('beforeSave',$this);
+		$this->addHook('beforeDelete',$this);
 		
 		$this->add('dynamic_model/Controller_AutoCreator');
 
@@ -45,8 +45,10 @@ class Model_Stock_Container extends Model_Table {
 
 
 	function beforeDelete(){
-		if($this->ref('Stock_Row')->count()->getOne()>0)
-			throw $this->exception('Can Not delete this container, It contains rows');
+		if($this['name']=='General'){
+			throw $this->exception('You can not Delete this Container, It is system generated');
+		}
+
 	}
 	
 	function remove(){
@@ -87,4 +89,25 @@ class Model_Stock_Container extends Model_Table {
 		return $this->ref('Stock_Row');
 	}	
 
+	function loadGeneralContainer($branch_id=null){
+		
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+		$this->addCondition('branch_id',$branch_id);
+		$this->addCondition('name','General');
+		$this->tryLoadAny();
+		return $this;
+	}
+
+	function loadContainer($container_id){
+		
+		$this->addCondition('branch_id',$this->api->current_branch->id);
+		$this->addCondition('id',$container_id);
+		$this->tryLoadAny();
+		if($this->loaded()){
+			return $this;
+		}else 
+			throw $this->exception("Container( ".$container_id.") not Exits");			
+							
+	}
 }

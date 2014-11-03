@@ -13,6 +13,7 @@ class Model_Stock_Member extends Model_Table {
 		$this->addField('address');
 		$this->addField('ph_no');
 		$this->addField('type')->enum(array('Agent', 'Dealer', 'Party', 'Staff', 'Supplier'));	
+		$this->addField('is_active')->type('boolean');
 		
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

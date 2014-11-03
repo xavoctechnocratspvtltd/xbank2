@@ -10,10 +10,12 @@ class Model_Stock_Row extends Model_Table {
 
 		$this->hasOne('Stock_Container','container_id');
 		
-		$this->addField('name');
+		$this->addField('name')->mandatory(true);
 		
 		$this->hasMany('Stock_ContainerRowItemQty','row_id');
 
+		$this->addHook('beforeSave',$this);
+		$this->addHook('beforeDelete',$this);
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
@@ -28,9 +30,28 @@ class Model_Stock_Row extends Model_Table {
 		$this->save();
 	}
 
+	function beforeSave($row){
+			
+		$tmp = $this->add('Model_Stock_Row');
+		$tmp->addCondition('branch_id',$this['branch_id']);
+		$tmp->addCondition('container_id',$row['container_id']);
+		$tmp->addCondition('name',$this['name']);
+
+		if($this->loaded()){
+			$tmp->addCondition('id','<>',$this->id);
+		}
+
+		$tmp->tryLoadAny();
+		if($tmp->loaded())			
+			throw $this->exception('Name Already Exists in this Conatiner','ValidityCheck')->setField('name');
+
+	}	
+
 	function beforeDelete(){
-		if($this->ref('Stock_Item')->count()->getOne() > 0)
-			throw $this->exception('You can not delete this Row it Contain Items');
+
+		if($this['name']=='General' AND $this['container']=='General')
+			throw $this->exception('You can not Delete this Row, It is system Generated');
+
 	}
 
 	function remove(){
@@ -60,6 +81,27 @@ class Model_Stock_Row extends Model_Table {
 
 	function moveItem(){
 		
+	}
+
+	function loadGeneralRow(){
+		
+		$cntr_model = $this->add('Model_Stock_Container');
+		$cntr_model->loadGeneralContainer();
+		$this->addCondition('container_id',$cntr_model->id);
+		$this->addCondition('name','General');
+		$this->tryLoadAny();
+		return $this;
+	}
+
+	function loadRow($row,$container_id){		
+		$row_model = $this->add('Model_Stock_Row');
+		$this->addCondition('id',$row);
+		$this->addCondition('container_id',$container_id);
+		$this->tryLoadAny();
+		if($this->loaded()){
+			return $this;	
+		}else
+			throw $this->exception("Row( ".$row.") not Exits");			
 	}
 
 }

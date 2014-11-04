@@ -45,7 +45,7 @@ class Model_Stock_Container extends Model_Table {
 
 
 	function beforeDelete(){
-		if($this['name']=='General'){
+		if($this['name']=='General' or $this['name']=='Dead'){
 			throw $this->exception('You can not Delete this Container, It is system generated');
 		}
 
@@ -91,10 +91,28 @@ class Model_Stock_Container extends Model_Table {
 
 	function loadGeneralContainer($branch_id=null){
 		
+		$this->_dsql()->del('where');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+			
+		$this->addCondition('branch_id',$branch_id);
+		$this->addCondition('name','General');
+		$this->tryLoadAny();
+		if(!$this->loaded()){
+			throw new Exception($branch_id);
+			return false;	
+		}
+		return $this;	
+				
+	}
+
+	function loadDeadContainer($branch_id=null){
+		
 		if(!$branch_id)
 			$branch_id = $this->api->current_branch->id;
 		$this->addCondition('branch_id',$branch_id);
-		$this->addCondition('name','General');
+		$this->addCondition('name','Dead');
 		$this->tryLoadAny();
 		return $this;
 	}

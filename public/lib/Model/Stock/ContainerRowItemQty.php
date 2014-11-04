@@ -11,7 +11,7 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 		$this->hasOne('Stock_Row','row_id')->defaultValue('Null');
 		$this->hasOne('Stock_Item','item_id')->defaultValue('Null');
 
-		$this->addField('qty');
+		$this->addField('qty'); 
 		
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -35,8 +35,40 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 
 		$container_model = $this->add('Model_Stock_Container');
 		$container_model->loadGeneralContainer($branch_id);
+		
 		$row_model = $this->add('Model_Stock_Row');
 		$row_model->loadGeneralRow();
+			if($row_model->loaded()){
+				$this->addCondition('container_id',$container_model->id);
+				$this->addCondition('row_id',$row_model->id);
+				$this->addCondition('item_id',$item->id);
+				$this->tryLoadAny();
+				if($this->loaded()){
+					$this['qty']=$this['qty'] + $qty;
+					$this['branch_id'] = $branch_id;
+					$this['container_id'] = $container_model->id;
+					$this->update();	
+				}else{
+					$this['item_id']=$item->id;
+					$this['qty']=$qty;
+					$this['container_id'] = $container_model->id;
+					$this['branch_id'] = $branch_id;
+					$this->save();
+				}
+			}
+	}
+
+	function addStockInDead($item,$qty,$branch_id=null){
+		if($this->loaded())
+			throw $this->exception('Please Call on unloaded Object');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+
+		$container_model = $this->add('Model_Stock_Container');
+		$container_model->loadDeadContainer($branch_id);
+		$row_model = $this->add('Model_Stock_Row');
+		$row_model->loadDeadRow();
 			if($row_model->loaded()){
 				$this->addCondition('container_id',$container_model->id);
 				$this->addCondition('row_id',$row_model->id);
@@ -65,6 +97,29 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 		$container_model->loadGeneralContainer();
 		$row_model = $this->add('Model_Stock_Row');
 		$row_model->loadGeneralRow();
+			if($row_model->loaded()){
+				$this->addCondition('container_id',$container_model->id);
+				$this->addCondition('row_id',$row_model->id);
+				$this->addCondition('item_id',$item->id);
+				$this->tryLoadAny();
+				if($this->loaded()){
+					if($qty > $this['qty']){
+						throw $this->exception("No Enough Item (".$item['name'].") in General Conatiner");					
+					}
+					$this['qty']=$this['qty'] - $qty;
+					$this->update();	
+				}
+			}	
+	}
+	
+	function destroyStockFromDead($item,$qty){
+		if($this->loaded())
+			throw $this->exception('Please Call on unloaded Object');
+
+		$container_model = $this->add('Model_Stock_Container');
+		$container_model->loadDeadContainer();
+		$row_model = $this->add('Model_Stock_Row');
+		$row_model->loadDeadRow();
 			if($row_model->loaded()){
 				$this->addCondition('container_id',$container_model->id);
 				$this->addCondition('row_id',$row_model->id);
@@ -113,7 +168,6 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 
 	function removeStock($container,$row,$item,$qty,$branch_id=null){
 
-
 		if(!$branch_id)
 			$branch_id = $this->api->current_branch->id;
 
@@ -125,6 +179,41 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 		}else
 			throw $this->exception("No Enough Item (".$item['name'].") in Conatiner ( ". $container['name']." )");					
 
+	}
+
+	function addStock($container,$row,$item,$qty,$branch_id=null){
+		if($this->loaded())
+			throw $this->exception('Please Call on unloaded Object');
+		
+		if($container->loaded() and (!$container instanceof Model_Stock_Container))
+			throw $this->exception('loaded object of Container Model');			
+		if($row->loaded() and (!$row instanceof Model_Stock_row))
+			throw $this->exception('loaded object of Row Model');
+		if($item->loaded() and (!$item instanceof Model_Stock_Item))
+			throw $this->exception('loaded object of Item Model');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+
+
+			if($row->loaded()){
+				$this->addCondition('container_id',$container->id);
+				$this->addCondition('row_id',$row->id);
+				$this->addCondition('item_id',$item->id);
+				$this->tryLoadAny();
+				if($this->loaded()){
+					$this['qty']=$this['qty'] + $qty;
+					$this['branch_id'] = $branch_id;
+					$this['container_id'] = $container->id;
+					$this->update();	
+				}else{
+					$this['item_id']=$item->id;
+					$this['qty']=$qty;
+					$this['container_id'] = $container->id;
+					$this['branch_id'] = $branch_id;
+					$this->save();
+				}
+			}
 	}	
 
 }

@@ -14,7 +14,7 @@ class page_stock_actions extends Page {
 		$tab1=$tabs->addTabURL('stock_actions_issue','Issue Stock');
 		$tab1=$tabs->addTabURL('stock_actions_consume','Consume Stock');
 		$tab1=$tabs->addTabURL('stock_actions_submit','Submit Stock');
-		$tab1=$tabs->addTabURL('stock_actions_sold','Sold Dead Stock');
+		$tab1=$tabs->addTabURL('stock_actions_deadsold','Sold Dead Stock');
 
 	}
 }

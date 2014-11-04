@@ -4,7 +4,7 @@ class Model_Stock_Item extends Model_Table {
 	var $table= "stock_items";
 	function init(){
 		parent::init();
-
+ 
 		$this->hasOne('Branch','branch_id');
 		$this->addCondition('branch_id',$this->api->current_branch->id);
 		$this->hasOne('Stock_Category','category_id');
@@ -17,7 +17,7 @@ class Model_Stock_Item extends Model_Table {
 		
 		$this->hasMany('Stock_Transaction','item_id');
 		$this->hasMany('Stock_ContainerRowItemQty','item_id');
-
+ 
 		$this->_dsql()->order('name','asc');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
@@ -41,7 +41,7 @@ class Model_Stock_Item extends Model_Table {
 			throw $this->exception('Unable To determine The Recored to be delete ');
 		$this->delete();
 	}
-
+	
 	function isExistInRow($row){
 		if(!$this->loaded())
 			throw $this->exception('Item model is not loaded');
@@ -55,6 +55,27 @@ class Model_Stock_Item extends Model_Table {
 			return $this;
 		else 
 			return false;
+	}
+
+	function isExistInContainerRow($container,$row){
+		if(!$this->loaded())
+			throw $this->exception('Item model is not loaded');
+
+		if( (!$row->loaded()) or (!$row instanceof Model_Stock_Row))
+			throw $this->exception('Please pass loaded object of Row');
+
+		if( (!$container->loaded()) or (!$container instanceof Model_Stock_Container))
+			throw $this->exception('Please pass loaded object of Container');
+
+		$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
+		$criq_model->addCondition('container_id',$container->id);
+		$criq_model->addCondition('row_id',$row->id);
+		$criq_model->addCondition('item_id',$this['id']);
+		$criq_model->tryLoadAny();
+		if(!$criq_model->loaded()){
+			return false;
+		}
+		return $this;
 	}
 
 	function markConsumeable(){
@@ -130,12 +151,56 @@ class Model_Stock_Item extends Model_Table {
 		// todo
 	}
 
-	function getDeadQty(){
-		// todo
+	function getDeadQty($qty,$as_on=null){
+		if(!$as_on)
+			$as_on=$this->api->now;
+		
+		$dead_tra = $this->add('Model_Stock_Transaction');
+		$dead_tra->addCondition('item_id',$this->id);
+		$dead_tra->addCondition('created_at','<',$this->api->nextDate($as_on));
+		$dead_tra->addCondition('transaction_type','DeadSubmit');
+		$dead_tra_qty = ($dead_tra->sum('qty')->getOne())?:0;
+		return (($dead_tra_qty>=$qty)?:0);
 	}	
 
 	function getAllPurchase(){
 		// todo
+	}
+
+	function canSubmit($qty,$on_date=null,$staff=null,$agent=null,$dealer=null){
+		if(!$on_date) $on_date= $this->api->today;		
+
+		if($staff->loaded() + $dealer->loaded() + $agent->loaded() > 1)
+			throw $this->exception('Only One of Satff/Dealer/Agent is required', 'ValidityCheck')->setField('item');
+		
+		$member = null;
+		if($staff->loaded())
+			$member = $staff;
+		elseif($agent->loaded())
+			$member = $agent;
+		else
+			$member = $dealer;
+		
+						
+		$transaction_stock_issue=$this->add('Model_Stock_Transaction');
+		$transaction_stock_issue->addCondition('transaction_type','Issue');
+		$transaction_stock_issue->addCondition('item_id',$this->id);
+		$transaction_stock_issue->addCondition('member_id',$member->id);
+		$transaction_stock_issue->addCondition('created_at','<',$this->api->nextDate($on_date));	
+		$transaction_stock_issue_qty=$transaction_stock_issue->sum('qty')->getOne();
+		$issue_qty = $transaction_stock_issue_qty?:0;
+		
+		
+		$transaction_stock_submit=$this->add('Model_Stock_Transaction');
+		$transaction_stock_submit->addCondition('transaction_type','Submit');
+		$transaction_stock_submit->addCondition('item_id',$this->id);
+		$transaction_stock_submit->addCondition('member_id',$member->id);
+		$transaction_stock_submit->addCondition('created_at','<',$this->api->nextDate($on_date));
+
+		$transaction_stock_submit_qty=$transaction_stock_submit->sum('qty')->getOne();
+		$submit_qty = $transaction_stock_submit_qty?:0;
+
+		return ((($issue_qty-$submit_qty) >= $qty)?:0);
 	}
 
 

@@ -7,16 +7,16 @@ class page_stock_actions_purchase extends Page {
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 		$form=$this->add('Form');
-		$party_field=$form->addField('dropdown','party')->setEmptyText('Please Select');
+		$party_field=$form->addField('dropdown','party')->validateNotNull()->setEmptyText('Please Select');
 		$party_model = $this->add('Model_Stock_Party');
 		$party_model->addCondition('is_active',true);
 		$party_field->setModel($party_model);
 		//adding auto complete 
-		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select');
+		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');
 		//end of autocomplete
-		$form->addField('line','qty');
-		$form->addField('line','rate');
+		$form->addField('line','qty')->validateNotNull();
+		$form->addField('line','rate')->validateNotNull();
 		$form->addField('text','narration');
 		$form->addSubmit('Purchase');
 
@@ -66,7 +66,7 @@ class page_stock_actions_purchase extends Page {
 			$criq_model->addStockInGeneral($item,$form['qty']);
 
 			$js=array($crud->grid->js()->reload(),
-					$form->js()->univ()->successMessage("Purchase Transaction Added Successfully")
+					$form->js()->univ()->successMessage("Item ( ".$item['name'] ." ) Purchase Successfully")
 					);
 			$form->js()->reload(null,$js)->execute();
 		}

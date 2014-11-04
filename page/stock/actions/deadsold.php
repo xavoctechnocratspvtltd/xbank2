@@ -1,6 +1,6 @@
 <?php
 
-class page_stock_actions_sold extends Page {
+class page_stock_actions_deadsold extends Page {
 	function init(){
 		parent::init();
 		$search_btn=$this->add('Button')->set('Search');
@@ -8,10 +8,10 @@ class page_stock_actions_sold extends Page {
 
 		// Sold stock Form
 		$form=$this->add('Form');
-		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
+		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select')->validateNotNull();
 		$item_field->setModel('Stock_Item');
-		$form->addField('line','qty');
-		$form->addField('line','rate');
+		$form->addField('line','qty')->validateNotNull();
+		$form->addField('line','rate')->validateNotNull();
 		// $form->addField('line','amount');
 		$form->addField('text','narration');
 		$form->addSubmit('Sold');
@@ -32,7 +32,7 @@ class page_stock_actions_sold extends Page {
 		// $crud=$this->add('crud');
 		$crud=$this->add('CRUD',array('allow_add'=>false));
 		$sold_transaction=$this->add('Model_Stock_Transaction');
-		$sold_transaction->addCondition('transaction_type','Sold');
+		$sold_transaction->addCondition('transaction_type','DeadSold');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -51,9 +51,22 @@ class page_stock_actions_sold extends Page {
 		$crud->setModel($sold_transaction,array('branch','item','qty','rate','amount','created_at'));
 
 		if($form->isSubmitted()){
-			// todo dead Item Sold Submission
-			// $form->js(null,$crud->grid->js()->reload())->reload()->execute();
 
+			$item=$this->add('Model_Stock_Item')->load($form['item']);
+			
+			if(!$item->getDeadQty($form['qty']))
+				$form->displayError('qty',"DeadSubmit Item is not  in Such qty");
+			
+			$transaction=$this->add('Model_Stock_Transaction');
+			$transaction->deadSold($item,$form['qty'],$form['rate'],$form['narration']);
+
+			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
+			$criq_model->destroyStockFromDead($item,$form['qty']);
+
+			$js = array($crud->grid->js()->reload(),
+					$form->js()->univ()->successMessage("Dead Item ( ".$item['name']." ) with qty ( ".$form['qty']." ) Sold Successfully")			
+					);
+			$form->js(null,$js)->reload()->execute();
 		}
 
 		if($form_search->isSubmitted()){

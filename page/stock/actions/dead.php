@@ -39,7 +39,7 @@ class page_stock_actions_dead extends Page {
 		$crud=$this->add('CRUD',array('allow_add'=>false));
 
 		$dead_transaction=$this->add('Model_Stock_Transaction');
-		$dead_transaction->addCondition('transaction_type','Dead');
+		$dead_transaction->addCondition('transaction_type','DeadSubmit');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -58,17 +58,26 @@ class page_stock_actions_dead extends Page {
 		$crud->setModel($dead_transaction,array('branch','staff','agent','dealer','item','qty','created_at','narration'));
 
 		if($form->isSubmitted()){
-			$item=$this->add('Model_Stock_Item');
-			$item->load($form['item']);
-			$staff=$this->add('Model_Staff')->tryLoad($form['staff']);
-			$agent=$this->add('Model_Agent')->tryLoad($form['agent']);
-			$dealer=$this->add('Model_Dealer')->tryLoad($form['dealer']);
+			
+			$item=$this->add('Model_Stock_Item')->load($form['item']);
+
+			$staff=$this->add('Model_Stock_Staff')->tryLoad($form['staff']);
+			$agent=$this->add('Model_Stock_Agent')->tryLoad($form['agent']);
+			$dealer=$this->add('Model_Stock_Dealer')->tryLoad($form['dealer']);
+			
+			if(!$item->canSubmit($form['qty'],null,$staff,$agent,$dealer))
+				$form->displayError('qty',"This Item is not issue to ".$staff['name'].$agent['name'].$dealer['name']." Such qty");	
+
 			$transaction=$this->add('Model_Stock_Transaction');
 			$transaction->dead($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
 			
-			$tr=$this->add('Model_Stock_Transaction');
-			$tr->submit($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
-			$form->js(null,$crud->grid->js()->reload())->reload()->execute();
+			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
+			$criq_model->addStockInDead($item,$form['qty']);
+
+			$js = array($crud->grid->js()->reload(),
+					$form->js()->univ()->successMessage("Item ( ".$item['name']." ) with ".$staff['name'].$agent['name'].$dealer['name']." DeadSubmited Successfully")			
+					);
+			$form->js(null,$js)->reload()->execute();
 		}
 
 		if($form_search->isSubmitted()){

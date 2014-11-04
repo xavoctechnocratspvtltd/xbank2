@@ -32,7 +32,7 @@ class page_stock_actions_transfer extends Page {
 		// $from_container_field->js('change',$form->js()->atk4_form('reloadField','from_row',array($this->api->url(),'from_container'=>$from_container_field->js()->val())));
 		// if($_GET['from_container']){
 
-			// }	
+		// 	}	
 			// From Row
 		$from_row_field = $form->addField('dropdown','from_row','Row')->validateNotNull()->setEmptyText('Please Select');
 		$from_row_model = $this->add('Model_Stock_Row');
@@ -99,10 +99,15 @@ class page_stock_actions_transfer extends Page {
 			$container_model->loadContainer($form['from_container']);
 
 			$row_model = $this->add('Model_Stock_Row');
-			$row_model->loadRow($form['from_row'],$form['from_container']);
+			if(!$row_model->loadRow($form['from_row'],$form['from_container']))
+				$form->displayError('from_row','Row not Exist');
 
 			$item_model = $this->add('Model_Stock_Item');
 			$item_model->load($form['from_item']);
+			
+			if(!$item_model->isExistInContainerRow($container_model,$row_model))
+				$form->displayError('from_item','Item not Exist');
+
 
 			$to_branch_model = $this->add('Model_Branch');
 			$to_branch_model->load($form['to_branch']);
@@ -117,7 +122,7 @@ class page_stock_actions_transfer extends Page {
 			$criq1_model->addStockInGeneral($item_model,$form['from_qty'],$form['to_branch']);	
 			
 			$js = array($crud->js()->reload(),
-					$form->js()->univ()->successMessage("Item ( ".$form['from_item']." ) From Branch ( ".$form['from_branch']." ) To Branch ( ".$form['to_branch']." ) Transfer Successfully" )
+					$form->js()->univ()->successMessage("Item ( ".$item_model['name']." ) From Branch ( ".$this->api->currentBranch['name']." ) To Branch ( ".$to_branch_model['name']." ) Transfer Successfully" )
 					);
 			$form->js()->reload(null,$js)->execute();	
 		}

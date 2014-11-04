@@ -52,7 +52,19 @@ class page_stock_actions_opening extends Page {
 
 		if($form->isSubmitted()){
 			// Todo Form Submission
-			// $form->js(null,$crud->grid->js()->reload())->reload()->execute();
+			$item=$this->add('Model_Stock_Item');
+			$item->load($form['item']);
+			$transaction=$this->add('Model_Stock_Transaction');
+			$transaction->openning($item,$form['qty'],$form['rate'],$form['narration']);
+			
+			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
+			$criq_model->addStockInGeneral($item,$form['qty']);
+
+			$js=array($crud->grid->js()->reload(),
+					$form->js()->univ()->successMessage("Opening Item( ".$item['name']." ) Added Successfully")
+					);
+			$form->js()->reload(null,$js)->execute();
+
 		}
 
 		if($form_search->isSubmitted()){

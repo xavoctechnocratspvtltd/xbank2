@@ -8,8 +8,14 @@ class page_stock_actions_consume extends Page {
 		$add_btn=$this->add('Button')->set('Add');
 		// Form 
 		$form=$this->add('Form');
+		$container_field = $form->addField('dropdown','container')->validateNotNull()->setEmptyText('Please Select');
+		$container_field->setModel('Stock_Container');
+		$row_field = $form->addField('dropdown','row')->validateNotNull()->setEmptyText('Please Select');
+		$row_field->setModel('Stock_Row');
 		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
-		$item_field->setModel('Stock_Item');
+		$item_model=$this->add('Model_Stock_Item');
+		$item_model->addCondition('is_consumable',true);
+		$item_field->setModel($item_model);
 		$staff_field=$form->addField('dropdown','staff')->setEmptyText('Please Select');
 		$staff_field->setModel('Stock_Staff');
 		$agent_field=$form->addField('dropdown','agent')->setEmptyText('Please Select');
@@ -18,7 +24,7 @@ class page_stock_actions_consume extends Page {
 		$dealer_field->setModel('Stock_Dealer');
 		$form->addField('line','qty');
 		$form->addField('text','narration');
-		$form->addSubmit('Issue');
+		$form->addSubmit('Consume');
 
 		// Search Form
 		$form_search=$this->add('Form');
@@ -36,7 +42,7 @@ class page_stock_actions_consume extends Page {
 		// $crud=$this->add('crud');
 		$crud=$this->add('CRUD',array('allow_add'=>false));
 		$issue_transaction=$this->add('Model_Stock_Transaction');
-		$issue_transaction->addCondition('transaction_type',array('Issue','Consume'));
+		$issue_transaction->addCondition('transaction_type','Consume');
 		
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -55,8 +61,30 @@ class page_stock_actions_consume extends Page {
 		$crud->setModel($issue_transaction,array('branch','item','staff','qty','issue_date','narration','transaction_type'));
 
 		if($form->isSubmitted()){
-			// Todo Consume Item
-			// $form->js(null,$crud->grid->js()->reload())->reload()->execute();
+			$item=$this->add('Model_Stock_Item')->load($form['item']);
+			$container=$this->add('Model_Stock_Container')->tryLoad($form['container']);
+			$row=$this->add('Model_Stock_Row')->tryLoad($form['row']);
+			
+			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
+			$old_qty = $criq_model->getItemQty($container,$row,$item);
+			if($form['qty'] > $old_qty){
+				throw $this->exception("This ( ".$item['name'] ." ) Is not availeble in such Qty ( ".$form['qty']." )", 'ValidityCheck')->setField('qty');
+			}
+			$staff=$this->add('Model_Stock_Staff')->tryLoad($form['staff']);
+			$agent=$this->add('Model_Stock_Agent')->tryLoad($form['agent']);
+			$dealer=$this->add('Model_Stock_Dealer')->tryLoad($form['dealer']);
+			$transaction=$this->add('Model_Stock_Transaction');
+
+			if($item['is_consumable']){
+				$transaction->consume($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
+				$criq_model->removeStock($container,$row,$item,$form['qty']);
+			}
+			
+			//todo item removed from its current location	
+			$js = array($crud->grid->js()->reload(),
+					$form->js()->univ()->successMessage("item ( ".$item['name']." ) consume by ( ".$staff['name'].$agent['name'].$dealer['name']." ) Qty ( ".$form['qty']." )")
+				);
+			$form->js(null,$js)->reload()->execute();
 		}
 
 		if($form_search->isSubmitted()){

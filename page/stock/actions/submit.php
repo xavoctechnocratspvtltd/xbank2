@@ -56,8 +56,25 @@ class page_stock_actions_submit extends Page {
 		$crud->setModel($submit_transaction,array('branch','staff','agent','dealer','item','qty','submit_date','narration'));
 
 		if($form->isSubmitted()){
-			//Todo Submit Stock  
-			// $form->js(null,$crud->grid->js()->reload())->reload()->execute();
+			
+			$staff=$this->add('Model_Stock_Staff')->tryLoad($form['staff']);
+			$agent=$this->add('Model_Stock_Agent')->tryLoad($form['agent']);
+			$dealer=$this->add('Model_Stock_Dealer')->tryLoad($form['dealer']);
+
+			$item=$this->add('Model_Stock_Item')->load($form['item']);
+			if(!$item->canSubmit($form['qty'],$staff,$agent,$dealer))
+				$form->displayError('qty',"This Item is not issue in Such qty");
+
+			$transaction=$this->add('Model_Stock_Transaction');
+			$transaction->submit($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
+			
+			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
+			$criq_model->addStockInGeneral($item,$form['qty']);
+
+			$js=array($crud->grid->js()->reload(),
+					$form->js()->univ()->successMessage("Item ( ".$item['name']." ) submitted Succesfully")
+					);
+			$form->js()->reload(null,$js)->execute();
 		}
 
 		if($form_search->isSubmitted()){

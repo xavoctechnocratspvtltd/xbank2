@@ -2,7 +2,7 @@
 
 class Model_Stock_Transaction extends Model_Table {
 	var $table= "stock_transactions";
-	function init(){
+	function init(){  
 		parent::init();
 		$this->hasOne('Stock_Item','item_id');
 		$this->hasOne('Stock_Party','party_id');

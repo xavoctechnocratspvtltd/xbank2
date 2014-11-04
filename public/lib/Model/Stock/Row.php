@@ -49,7 +49,7 @@ class Model_Stock_Row extends Model_Table {
 
 	function beforeDelete(){
 
-		if($this['name']=='General' AND $this['container']=='General')
+		if( ($this['name']=='General' AND $this['container']=='General') or ($this['name']=='Dead' AND $this['container']=='Dead'))
 			throw $this->exception('You can not Delete this Row, It is system Generated');
 
 	}
@@ -93,15 +93,25 @@ class Model_Stock_Row extends Model_Table {
 		return $this;
 	}
 
-	function loadRow($row,$container_id){		
-		$row_model = $this->add('Model_Stock_Row');
-		$this->addCondition('id',$row);
-		$this->addCondition('container_id',$container_id);
+	function loadDeadRow(){
+		
+		$cntr_model = $this->add('Model_Stock_Container');
+		$cntr_model->loadDeadContainer();
+		$this->addCondition('container_id',$cntr_model->id);
+		$this->addCondition('name','Dead');
 		$this->tryLoadAny();
-		if($this->loaded()){
+		return $this;
+	}
+
+	function loadRow($row,$container_id){
+						
+		$row_model = $this->add('Model_Stock_Row');
+		$this->load($row);
+		if($this['container_id'] == $container_id){
 			return $this;	
 		}else
-			throw $this->exception("Row( ".$row.") not Exits");			
+			return 0;
+			// throw $this->exception("Row( ".$row.") not Exits");			
 	}
 
 }

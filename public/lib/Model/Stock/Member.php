@@ -15,6 +15,7 @@ class Model_Stock_Member extends Model_Table {
 		$this->addField('type')->enum(array('Agent', 'Dealer', 'Party', 'Staff', 'Supplier'));	
 		$this->addField('is_active')->type('boolean');
 		
+		$this->hasMany('Model_Stock_Transaction','member_id');
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
@@ -26,6 +27,7 @@ class Model_Stock_Member extends Model_Table {
 		$this['address']=$other_fields['address'];
 		$this['ph_no']=$other_fields['ph_no'];
 		$this['type']=$other_fields['type'];
+		$this['is_active']=$other_fields['is_active'];
 		$this->save();
 	}
 	

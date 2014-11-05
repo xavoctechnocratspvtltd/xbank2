@@ -19,7 +19,7 @@ class page_stock_actions_submit extends Page {
 		$dealer_field->setModel('Stock_Dealer');
 		$form->addField('line','qty');
 		$form->addField('text','narration');
-		$form->addSubmit('Issue');
+		$form->addSubmit('Submit');
 
 		//Search Form
 		$form_search=$this->add('Form');
@@ -62,7 +62,7 @@ class page_stock_actions_submit extends Page {
 			$dealer=$this->add('Model_Stock_Dealer')->tryLoad($form['dealer']);
 
 			$item=$this->add('Model_Stock_Item')->load($form['item']);
-			if(!$item->canSubmit($form['qty'],$staff,$agent,$dealer))
+			if(!$item->canSubmit($form['qty'],null,$staff,$agent,$dealer))
 				$form->displayError('qty',"This Item is not issue in Such qty");
 
 			$transaction=$this->add('Model_Stock_Transaction');

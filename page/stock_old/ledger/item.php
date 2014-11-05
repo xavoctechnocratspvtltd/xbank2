@@ -3,7 +3,7 @@
 class page_stock_ledger_item extends Page {
 	function init(){
 		parent::init();
-
+	
 		$form=$this->add('Form');
 		$item_field=$form->addField('dropdown','item')->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');

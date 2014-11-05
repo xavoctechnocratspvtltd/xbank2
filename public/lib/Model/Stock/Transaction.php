@@ -6,7 +6,7 @@ class Model_Stock_Transaction extends Model_Table {
 		parent::init();
 		
 		$this->hasOne('Branch','branch_id');
-		$this->addCondition('branch_id',$this->api->current_branch->id);
+		// $this->addCondition('branch_id',$this->api->current_branch->id);
 		$this->hasOne('Stock_Item','item_id');
 		$this->hasOne('Model_Stock_Member','member_id');
 		

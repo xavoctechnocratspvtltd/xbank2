@@ -82,12 +82,12 @@ class Model_Stock_Transaction extends Model_Table {
 
 	}
 
-	function purchase($party,$item,$qty,$rate,$narration,$branch=null){
+	function purchase($supplier,$item,$qty,$rate,$narration,$branch=null){
 		
 		if($this->loaded())
 			throw $this->exception('Please Call On Empty Object','Transaction');
-		if(!$party->loaded() and (!$party instanceof Model_Stock_Party))
-			throw $this->exception('Please Pass loaded object of Party');
+		if(!$supplier->loaded() and (!$supplier instanceof Model_Stock_Supplier))
+			throw $this->exception('Please Pass loaded object of Supplier');
 		
 		if(!$item->loaded() and (!$item instanceof Model_Stock_Item))
 			throw $this->exception('Please Pass loaded object of Item');
@@ -95,7 +95,7 @@ class Model_Stock_Transaction extends Model_Table {
 		if(!$branch)
 			$branch=$this->api->currentBranch;
 		 
-		$this['member_id']=$party->id;
+		$this['member_id']=$supplier->id;
 		$this['branch_id']=$branch->id;
 		$this['item_id']=$item->id;
 		$this['qty']=$qty;
@@ -110,9 +110,8 @@ class Model_Stock_Transaction extends Model_Table {
 			throw $this->exception('Please Call On Empty Object');
 		if(!$branch)
 				$branch=$this->api->currentBranch;
-		if(!($party instanceof Model_Stock_Party) and !$party->loaded())
+		if(!($party instanceof Model_Stock_Supplier) and !$party->loaded())
 			throw $this->exception('Please pass loaded object of Party');
-		
 		if(!($item instanceof Model_Stock_Item) and !$item->loaded())
 			throw $this->exception('Please pass loaded object of Item');
 		if(!$item_purchased=$this->isPurchased($party,$item,$branch))

@@ -7,10 +7,10 @@ class page_stock_actions_purchase extends Page {
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 		$form=$this->add('Form');
-		$party_field=$form->addField('dropdown','party')->validateNotNull()->setEmptyText('Please Select');
-		$party_model = $this->add('Model_Stock_Party');
-		$party_model->addCondition('is_active',true);
-		$party_field->setModel($party_model);
+		$supplier_field=$form->addField('dropdown','supplier')->validateNotNull()->setEmptyText('Please Select');
+		$supplier_model = $this->add('Model_Stock_Supplier');
+		$supplier_model->addCondition('is_active',true);
+		$supplier_field->setModel($supplier_model);
 		//adding auto complete 
 		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');
@@ -52,15 +52,15 @@ class page_stock_actions_purchase extends Page {
 		}
 		//End of serach filter
 
-		$crud->setModel($purchase_transaction,array('item','party','branch','qty','rate','narration','created_at'));
+		$crud->setModel($purchase_transaction,array('item','supplier','branch','qty','rate','narration','created_at'));
 
 		if($form->isSubmitted()){
-			$party=$this->add('Model_Stock_Party');
-			$party->load($form['party']);
+			$supplier=$this->add('Model_Stock_Supplier');
+			$supplier->load($form['supplier']);
 			$item=$this->add('Model_Stock_Item');
 			$item->load($form['item']);
 			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->purchase($party,$item,$form['qty'],$form['rate'],$form['narration']);
+			$transaction->purchase($supplier,$item,$form['qty'],$form['rate'],$form['narration']);
 			
 			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
 			$criq_model->addStockInGeneral($item,$form['qty']);

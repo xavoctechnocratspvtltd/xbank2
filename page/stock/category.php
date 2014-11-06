@@ -4,7 +4,7 @@ class page_stock_category extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('allow_edit'=>false));
 
 		$category=$this->add('Model_Stock_Category');
 

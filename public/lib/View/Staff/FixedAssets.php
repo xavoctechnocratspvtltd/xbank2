@@ -10,6 +10,7 @@ class View_Staff_FixedAssets extends View {
 		$this->api->stickyGET('staff');
 		$this->api->stickyGET('from_date');
 		$this->api->stickyGET('to_date');
+
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');
 		$transaction_j_item->addField('is_fixedassets');
@@ -17,12 +18,12 @@ class View_Staff_FixedAssets extends View {
 		$transaction->addCondition('transaction_type','Issue');
 
 		$grid=$this->add('Grid_AccountsBase');
-		$staff_model=$this->add('Model_Staff');
+		$staff_model=$this->add('Model_Stock_Staff');
 		if($_GET['filter']){
 						
 			if($_GET['staff']){
 				$staff_model->load($_GET['staff']);
-				$transaction->addCondition('staff_id',$_GET['staff']);
+				$transaction->addCondition('member_id',$_GET['staff']);
 			}
 
 			if($_GET['from_date'])
@@ -43,7 +44,7 @@ class View_Staff_FixedAssets extends View {
 		$grid->addSno();
 
 		$grid->addHook('formatRow',function($grid){
-			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning'))){
+			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit'))){
 				$fill='DR';
 				$no_fill='CR';
 			}else{

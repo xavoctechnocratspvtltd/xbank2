@@ -49,6 +49,9 @@ class Model_Stock_Container extends Model_Table {
 			throw $this->exception('You can not Delete this Container, It is system generated');
 		}
 
+		if( $this->ref('Stock_Row')->count()->getOne() > 0 ) 
+			throw $this->exception("You can not Delete this Container, It Contains Row(s)");
+			
 	}
 	
 	function remove(){

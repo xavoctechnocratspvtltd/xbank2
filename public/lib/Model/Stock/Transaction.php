@@ -14,7 +14,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->addField('rate'); 
 		$this->addField('amount');
 		$this->addField('narration');
-		$this->addField('created_at')->type('date')->defaultValue(date('Y-m-d'));
+		$this->addField('created_at')->type('date')->defaultValue($this->api->today);
 		$this->addField('issue_date');
 		$this->addField('submit_date');
 		$this->addField('transaction_type')->enum(array('Purchase','Issue','Consume','Submit','PurchaseReturn','DeadSubmit','Transfer','Move','Openning','Sold','DeadSold'));
@@ -22,7 +22,7 @@ class Model_Stock_Transaction extends Model_Table {
 		
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('afterInsert',$this);
-		$this->addHook('afterSave',$this);
+		$this->addHook('beforeSave',$this);
 		
 
 		$this->add('dynamic_model/Controller_AutoCreator');
@@ -62,8 +62,24 @@ class Model_Stock_Transaction extends Model_Table {
 
 	}
 
-	function afterSave($transaction){
-		
+	function beforeSave($transaction){
+		switch ($transaction['transaction_type']) {
+			case 'Openning':
+				$tmp = $this->add('Model_Stock_Transaction');
+				$tmp->addCondition('transaction_type','Openning');
+				$tmp->addCondition('item_id',$this['item_id']);
+				$tmp->addCondition('branch_id',$this['branch_id']);
+
+				if($this->loaded()){
+					$tmp->addCondition('id','<>',$this->id);
+				}
+
+				$tmp->tryLoadAny();
+				if($tmp->loaded())
+					throw $this->exception("Opening Stock of Item ( ".$tmp['item']." ) Already Exists with Qty ( ".$tmp['qty']." )",'ValidityCheck')->setField('item_id');	
+			break;	
+		}
+
 	}
 
 	function purchase($party,$item,$qty,$rate,$narration,$branch=null){
@@ -314,7 +330,8 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['rate']=$rate;
 		$this['transaction_type']='Openning';
 		$this['narration']=$narration;
-		$this->save();			
+		$this->save();
+
 	}
 
 	function deadSold($item,$qty,$rate,$narration,$branch=null){

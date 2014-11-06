@@ -14,10 +14,11 @@ class Model_Stock_Item extends Model_Table {
 		$this->addField('is_consumable')->type('boolean')->defaultValue(false);
 		$this->addField('is_issueable')->type('boolean')->defaultValue(false);
 		$this->addField('is_fixedassets')->type('boolean')->defaultValue(false);
+		$this->addField('is_active')->type('boolean')->defaultValue(true);
 		
 		$this->hasMany('Stock_Transaction','item_id');
 		$this->hasMany('Stock_ContainerRowItemQty','item_id');
- 
+ 		$this->addHook('beforeDelete',$this);
 		$this->_dsql()->order('name','asc');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
@@ -42,6 +43,11 @@ class Model_Stock_Item extends Model_Table {
 		$this->delete();
 	}
 	
+	function beforeDelete($model){
+		if($this->ref('Stock_Transaction')->count()->getOne() > 0)
+			throw $this->exception('Item ( '.$model['name'].' ) Cannot Delete');	
+	}
+
 	function isExistInRow($row){
 		if(!$this->loaded())
 			throw $this->exception('Item model is not loaded');

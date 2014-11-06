@@ -5,23 +5,25 @@ class View_Staff_Consume extends View {
 		parent::init();
 		// if(!$_GET['filter'])
 		// 	throw $this->exception('Something is wrong');
-		// 	
+			
 		$this->add('H3')->set('Staff Consume Ledger');
 		$this->api->stickyGET('staff');
 		$this->api->stickyGET('from_date');
 		$this->api->stickyGET('to_date');
+ 
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');
 		$transaction_j_item->addField('is_consumable');
 		$transaction->addCondition('is_consumable',true);
 		$transaction->addCondition('transaction_type','Consume');
+		
 		$grid=$this->add('Grid_AccountsBase');
-		$staff_model=$this->add('Model_Staff');
+		$staff_model=$this->add('Model_Stock_Staff');
 		if($_GET['filter']){
 						
 			if($_GET['staff']){
 				$staff_model->load($_GET['staff']);
-				$transaction->addCondition('staff_id',$_GET['staff']);
+				$transaction->addCondition('member_id',$_GET['staff']);
 			}
 
 			if($_GET['from_date'])
@@ -34,7 +36,6 @@ class View_Staff_Consume extends View {
 
 		// $openning_bal=$staff_model->getQty($_GET['from_date']);
 		$grid->setModel($transaction,array('item','qty','created_at'));	
-
 		$grid->addColumn('text','DR');
 		$grid->addColumn('text','CR');
 		$grid->removeColumn('qty');
@@ -42,7 +43,7 @@ class View_Staff_Consume extends View {
 		$grid->addSno();
 
 		$grid->addHook('formatRow',function($grid){
-			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning'))){
+			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit'))){
 				$fill='DR';
 				$no_fill='CR';
 			}else{
@@ -58,12 +59,8 @@ class View_Staff_Consume extends View {
 				$grid->current_row[$no_fill] ='';
 		});
 
-
-
 		// $grid->addOpeningBalance(0,'DR',array('narration'=>'Openning Balance'),'DR');
 		$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
-
-
 
 	}
 }

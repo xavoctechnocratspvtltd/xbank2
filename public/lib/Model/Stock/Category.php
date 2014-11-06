@@ -11,8 +11,8 @@ class Model_Stock_Category extends Model_Table {
 			
 		$this->addField('name');
 		
-		$this->hasMany('Stock_Item','item_id');
-		
+		$this->hasMany('Stock_Item','category_id');
+		$this->addHook('beforeDelete',$this);	
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
@@ -35,5 +35,8 @@ class Model_Stock_Category extends Model_Table {
 		return $item_model;
 	}		
 
-	
+	function beforeDelete($model){
+		if($this->ref('Stock_Item')->count()->getOne() > 0)
+			throw $this->exception('Category ( '.$model['name'].' ) cannot be deleted, it contains Item(s)');
+	}
 }

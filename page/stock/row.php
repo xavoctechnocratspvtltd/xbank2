@@ -4,7 +4,7 @@ class page_stock_row extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('allow_edit'=>false));
 
 		$row=$this->add('Model_Stock_Row');
 

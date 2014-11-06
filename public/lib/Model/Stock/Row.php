@@ -47,10 +47,13 @@ class Model_Stock_Row extends Model_Table {
 
 	}	
 
-	function beforeDelete(){
+	function beforeDelete($model){
 
 		if( ($this['name']=='General' AND $this['container']=='General') or ($this['name']=='Dead' AND $this['container']=='Dead'))
 			throw $this->exception('You can not Delete this Row, It is system Generated');
+
+		if($this->ref('Stock_ContainerRowItemQty')->count()->getOne() > 0)
+			throw $this->exception("Row ( ".$model['name']." ) cannot be Delete");
 
 	}
 

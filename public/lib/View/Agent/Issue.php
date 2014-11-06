@@ -10,6 +10,7 @@ class View_Agent_Issue extends View {
 		$this->api->stickyGET('agent');
 		$this->api->stickyGET('from_date');
 		$this->api->stickyGET('to_date');
+
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');
 		$transaction_j_item->addField('is_issueable');
@@ -17,12 +18,12 @@ class View_Agent_Issue extends View {
 		$transaction->addCondition('transaction_type',array('Issue','Submit'));
 
 		$grid=$this->add('Grid_AccountsBase');
-		$agent_model=$this->add('Model_Agent');
+		$agent_model=$this->add('Model_Stock_Agent');
 		if($_GET['filter']){
 						
 			if($_GET['agent']){
 				$agent_model->load($_GET['agent']);
-				$transaction->addCondition('agent_id',$_GET['agent']);
+				$transaction->addCondition('member_id',$_GET['agent']);
 			}
 
 			if($_GET['from_date'])
@@ -43,7 +44,7 @@ class View_Agent_Issue extends View {
 		$grid->addSno();
 
 		$grid->addHook('formatRow',function($grid){
-			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning'))){
+			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit'))){
 				$fill='DR';
 				$no_fill='CR';
 			}else{

@@ -4,7 +4,7 @@ class page_stock_item extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('allow_edit'=>false));
 
 		$item=$this->add('Model_Stock_Item');
 		$crud->addHook('myupdate',function($crud,$form){

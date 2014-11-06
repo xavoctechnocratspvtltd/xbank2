@@ -17,7 +17,7 @@ class page_stock_ledger_supplier extends Page {
 
 		$grid=$this->add('Grid_AccountsBase');
 		if($_GET['filter']){
-						
+						 
 			if($_GET['supplier']){	
 				$transaction->addCondition('party_id',$_GET['supplier']);
 			}

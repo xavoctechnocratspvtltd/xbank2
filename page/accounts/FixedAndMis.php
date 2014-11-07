@@ -26,7 +26,7 @@ class page_Accounts_FixedAndMis extends Page {
 						$form->displayError('debit_account','Account must be of same member');
 					}
 
-					$intrest_to_account_model = $this->add('Model_Account');
+					$intrest_to_account_model = $crud->add('Model_Account');
 					$intrest_to_account_model->addCondition('id',$form['intrest_to_account_id']);
 					$intrest_to_account_model->tryLoadAny();
 					if($form['intrest_to_account_id'] AND $intrest_to_account_model['member_id'] != $form['member_id']){
@@ -34,7 +34,7 @@ class page_Accounts_FixedAndMis extends Page {
 					}
 
 					if($form['MaturityToAccount_id']){
-						$maturity_to_account_model = $this->add('Model_Account');
+						$maturity_to_account_model = $crud->add('Model_Account');
 						$maturity_to_account_model->addCondition('id',$form['MaturityToAccount_id']);
 						$maturity_to_account_model->tryLoadAny();
 						if($maturity_to_account_model['member_id'] != $form['member_id']){

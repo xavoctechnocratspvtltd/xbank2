@@ -5,21 +5,19 @@ class page_stock_ledger_item extends Page {
 		parent::init();
 
 		$form=$this->add('Form');
-		$item_field=$form->addField('dropdown','item')->setEmptyText('Please Select');
+		$item_field=$form->addField('dropdown','item')->validateNotNull()->setEmptyText('Please Select');
 		$item_field->setModel('Stock_Item');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		// $form->addField('CheckBox','include_dead');
 		$form->addSubmit('GET');
 		$transaction=$this->add('Model_Stock_Transaction');
+		$transaction->addCondition('transaction_type','<>',array('DeadSubmit','DeadSold'));
 		
 		$grid=$this->add('Grid_AccountsBase');
 
 		$item_model=$this->add('Model_Stock_Item');
-
-		$transaction->addCondition('transaction_type','<>','Dead');
-		if($_GET['filter']){
-						
+		if($_GET['filter']){						
 			if($_GET['item']){
 				$item_model->load($_GET['item']);
 				$transaction->addCondition('item_id',$_GET['item']);
@@ -33,7 +31,8 @@ class page_stock_ledger_item extends Page {
 
 		}else
 			$transaction->addCondition('id',-1);
-
+	
+		$transaction->setOrder('created_at','asc');	
 		$openning_bal=$item_model->getQty($_GET['from_date']?:'1970-01-01');
 		$grid->setModel($transaction,array('item','narration','transaction_type','qty','created_at'));	
 
@@ -66,7 +65,6 @@ class page_stock_ledger_item extends Page {
 
 		$grid->addOpeningBalance($openning_bal,'DR',array('narration'=>'Openning Balance'),'DR');
 		$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
-
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('item'=>$form['item']?:0,'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date'],'filter'=>1))->execute();

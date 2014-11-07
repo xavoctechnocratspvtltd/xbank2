@@ -31,5 +31,32 @@ class Model_Stock_Member extends Model_Table {
 		$this->save();
 	}
 	
+	function getOpeningQty($member,$item,$as_on){
+
+		if(!$as_on)	
+			$as_on = '1970-01-01';
+
+		if(!$member)
+			throw new \Exception("must pass member");
+				
+		$submit_tra = $this->add('Model_Stock_Transaction');
+		$submit_tra->addCondition('item_id',$item);
+		$submit_tra->addCondition('created_at','<',$as_on);
+		$submit_tra->addCondition('member_id',$member);
+		$submit_tra->addCondition('transaction_type','Submit');
+		$submit_tra_qty = ($submit_tra->sum('qty')->getOne())?:0;
+
+		$issue_tra = $this->add('Model_Stock_Transaction');
+		$issue_tra->addCondition('item_id',$item);
+		$issue_tra->addCondition('branch_id',$this->api->currentBranch->id);
+		$issue_tra->addCondition('created_at','<',$as_on);
+		$issue_tra->addCondition('member_id',$member);
+		$issue_tra->addCondition('transaction_type','Issue');
+		$issue_tra->tryLoadAny();
+		$issue_tra_qty = ($issue_tra->sum('qty')->getOne())?:0;
 		
+		return($issue_tra_qty - $submit_tra_qty);
+		
+	}		
+
 }

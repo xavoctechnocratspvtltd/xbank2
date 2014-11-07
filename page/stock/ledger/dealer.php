@@ -4,6 +4,9 @@ class page_stock_ledger_Dealer extends Page {
 		parent::init();
 
 		$form=$this->add('Form');
+		$item_field=$form->addField('dropdown','item')->setEmptyText('Please Select');
+		$item_field->setModel('Stock_Item');
+
 		$staff_field=$form->addField('dropdown','dealer')->validateNotNull()->setEmptyText('Please Select');
 		$staff_field->setModel('Stock_Dealer');
 
@@ -17,7 +20,7 @@ class page_stock_ledger_Dealer extends Page {
 		$view_consume=$v->add('View_StockMember_Consume',array('member'=>$_GET['dealer'],'from_date'=>$_GET['from_date'],'to_date'=>$form['to_date'],'filter'=>$_GET['filter'],'type'=>'Dealer'));
 		
 		$v->add('H4')->set('Dealer Issue Leadger');
-		$view_issue=$v->add('View_StockMember_Issue',array('member'=>$_GET['dealer'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'filter'=>$_GET['filter'],'type'=>'Dealer'));
+		$view_issue=$v->add('View_StockMember_Issue',array('item'=>$_GET['item'],'member'=>$_GET['dealer'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'filter'=>$_GET['filter'],'type'=>'Dealer'));
 
 		$v->add('H4')->set('Dealer FixedAssets Leadger');
 		$view_fixed=$v->add('View_StockMember_FixedAssets',array('member'=>$_GET['dealer'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'filter'=>$_GET['filter'],'type'=>'Dealer'));

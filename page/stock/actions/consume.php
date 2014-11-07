@@ -9,10 +9,18 @@ class page_stock_actions_consume extends Page {
 		// Form 
 		$form=$this->add('Form');
 		$container_field = $form->addField('dropdown','container')->validateNotNull()->setEmptyText('Please Select');
-		$container_field->setModel('Stock_Container');
+		$container_model = $this->add('Model_Stock_Container');
+		$container_model->addCondition('name','<>','General');
+		$container_model->addCondition('name','<>','Dead');
+		$container_field->setModel($container_model);
+
 		$row_field = $form->addField('dropdown','row')->validateNotNull()->setEmptyText('Please Select');
-		$row_field->setModel('Stock_Row');
-		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
+		$row_model = $this->add('Model_Stock_Row');
+		$row_model->addCondition('name','<>','General');
+		$row_model->addCondition('name','<>','Dead');
+		$row_field->setModel($row_model);
+		
+		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();
 		$item_model=$this->add('Model_Stock_Item');
 		$item_model->addCondition('is_consumable',true);
 		$item_field->setModel($item_model);
@@ -22,7 +30,7 @@ class page_stock_actions_consume extends Page {
 		$agent_field->setModel('Stock_Agent');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('Stock_Dealer');
-		$form->addField('line','qty');
+		$form->addField('Number','qty')->validateNotNull();
 		$form->addField('text','narration');
 		$form->addSubmit('Consume');
 
@@ -61,6 +69,7 @@ class page_stock_actions_consume extends Page {
 		$crud->setModel($issue_transaction,array('branch','item','staff','qty','issue_date','narration','transaction_type'));
 
 		if($form->isSubmitted()){
+
 			$item=$this->add('Model_Stock_Item')->load($form['item']);
 			$container=$this->add('Model_Stock_Container')->tryLoad($form['container']);
 			$row=$this->add('Model_Stock_Row')->tryLoad($form['row']);

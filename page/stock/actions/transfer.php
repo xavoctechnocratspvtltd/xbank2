@@ -43,7 +43,7 @@ class page_stock_actions_transfer extends Page {
 		$from_item_field = $form->addField('autocomplete/Basic','from_item','Item')->validateNotNull();//->setEmptyText('Please Select');
 		$from_item_field->setModel('Stock_Item');	
 		$from_item_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);		
-		$from_qty_field = $form->addField('line','from_qty','Qty')->validateNotNull();
+		$from_qty_field = $form->addField('Number','from_qty','Qty')->validateNotNull();
 		$from_qty_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);		
 		$from_narration_field = $form->addField('text','from_narration','Narration');
 		$from_narration_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);

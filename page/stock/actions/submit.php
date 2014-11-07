@@ -9,15 +9,17 @@ class page_stock_actions_submit extends Page {
 
 		// Add Form 
 		$form=$this->add('Form');
-		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
-		$item_field->setModel('Stock_Item');
+		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();
+		$item_model = $this->add('Model_Stock_Item');
+		$item_model->addCondition('is_issueable',true);
+		$item_field->setModel($item_model);
 		$staff_field=$form->addField('dropdown','staff')->setEmptyText('Please Select');
 		$staff_field->setModel('Stock_Staff');
 		$agent_field=$form->addField('dropdown','agent')->setEmptyText('Please Select');
 		$agent_field->setModel('Stock_Agent');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('Stock_Dealer');
-		$form->addField('line','qty');
+		$form->addField('Number','qty')->validateNotNull();
 		$form->addField('text','narration');
 		$form->addSubmit('Submit');
 

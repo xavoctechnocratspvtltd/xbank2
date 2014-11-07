@@ -105,17 +105,17 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->save();		
 	}
 
-	function purchaseReturn($party,$item,$qty,$rate,$narration,$branch=null){
+	function purchaseReturn($supplier,$item,$qty,$rate,$narration,$branch=null){
 		if($this->loaded())
 			throw $this->exception('Please Call On Empty Object');
 		if(!$branch)
 				$branch=$this->api->currentBranch;
-		if(!($party instanceof Model_Stock_Supplier) and !$party->loaded())
-			throw $this->exception('Please pass loaded object of Party');
+		if(!($supplier instanceof Model_Stock_Supplier) and !$supplier->loaded())
+			throw $this->exception('Please pass loaded object of Supplier');
 		if(!($item instanceof Model_Stock_Item) and !$item->loaded())
 			throw $this->exception('Please pass loaded object of Item');
-		if(!$item_purchased=$this->isPurchased($party,$item,$branch))
-			throw $this->exception("Item ( ".$item['name']." ) is Not Purchase in Given Branch, Check Again");
+		if(!$item_purchased=$this->isPurchased($supplier,$item,$branch))
+			throw $this->exception("Item ( ".$item['name']." ) is Not Purchase in Given Branch with Suppllier ( ".$supplier['name']." )");
 		
 		$criq_model = $this->add('Model_Stock_ContainerRowItemQty');	
 		$item_in_general_stock = $criq_model->getItemFromGeneral($item);
@@ -125,7 +125,7 @@ class Model_Stock_Transaction extends Model_Table {
 		}	
 
 		$tra=$this->add('Model_Stock_Transaction');
-		$tra['member_id']=$party->id;
+		$tra['member_id']=$supplier->id;
 		$tra['branch_id']=$branch->id;
 		$tra['item_id']=$item->id;
 		$tra['qty']=$qty;
@@ -134,9 +134,8 @@ class Model_Stock_Transaction extends Model_Table {
 		$tra['narration']=$narration;
 		$tra->save();
 
-		// TODO after purchase return remove item from general stock
-
-		// throw $this->exception(' Exception text', 'ValidityCheck')->setField('FieldName');
+		// DO after purchase return remove item from general stock
+			//removing item from general stock is done at aftersave Hook
 	}
 
 	function isPurchased($party,$item,$branch=null){

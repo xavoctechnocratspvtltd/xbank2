@@ -6,13 +6,20 @@ class page_stock_actions_return extends Page {
  
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
+
 		$form=$this->add('Form');
-		$party_field=$form->addField('dropdown','party')->setEmptyText('Please Select');
-		$party_field->setModel('Stock_Party');	
-		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select');
-		$item_field->setModel('Stock_Item');	
-		$form->addField('line','qty');
-		$form->addField('line','rate');
+		$supplier_field=$form->addField('dropdown','supplier')->validateNotNull()->setEmptyText('Please Select');
+		$supplier_model=$this->add('Model_Stock_Supplier');
+		$supplier_model->addCondition('is_active',true);
+		$supplier_field->setModel($supplier_model);
+
+		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select');
+		$item_model = $this->add('Model_Stock_Item');
+		$item_model->addCondition('is_active',true);
+		$item_field->setModel($item_model);
+
+		$form->addField('Number','qty')->validateNotNull();
+		$form->addField('Number','rate')->validateNotNull();
 		$form->addField('text','narration');
 		$form->addSubmit('Purchase Return');
 
@@ -49,15 +56,15 @@ class page_stock_actions_return extends Page {
 		}
 		// end Search Filter
 
-		$crud->setModel($purchase_return_transaction,array('item','party','branch','qty','rate','narration','created_at'));
+		$crud->setModel($purchase_return_transaction,array('item','supplier','branch','qty','rate','narration','created_at'));
 
 		if($form->isSubmitted()){
-			$party=$this->add('Model_Stock_Party');
-			$party->load($form['party']);
+			$supplier=$this->add('Model_Stock_Supplier');
+			$supplier->load($form['supplier']);
 			$item=$this->add('Model_Stock_Item');
 			$item->load($form['item']);
 			$transaction=$this->add('Model_Stock_Transaction');
-			$transaction->purchaseReturn($party,$item,$form['qty'],$form['rate'],$form['narration']);
+			$transaction->purchaseReturn($supplier,$item,$form['qty'],$form['rate'],$form['narration']);
 			$form->js()->reload(null,$crud->js()->reload())->execute();		
 		}
 

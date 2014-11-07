@@ -13,10 +13,12 @@ class page_stock_actions_purchase extends Page {
 		$supplier_field->setModel($supplier_model);
 		//adding auto complete 
 		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select');
-		$item_field->setModel('Stock_Item');
+		$item_model = $this->add('Model_Stock_Item');
+		$item_model->addCondition('is_active',true);	
+		$item_field->setModel($item_model);
 		//end of autocomplete
-		$form->addField('line','qty')->validateNotNull();
-		$form->addField('line','rate')->validateNotNull();
+		$form->addField('Number','qty')->validateNotNull();
+		$form->addField('Number','rate')->validateNotNull();
 		$form->addField('text','narration');
 		$form->addSubmit('Purchase');
 

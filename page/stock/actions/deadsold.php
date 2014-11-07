@@ -10,7 +10,7 @@ class page_stock_actions_deadsold extends Page {
 		$form=$this->add('Form');
 		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select')->validateNotNull();
 		$item_field->setModel('Stock_Item');
-		$form->addField('line','qty')->validateNotNull();
+		$form->addField('Number','qty')->validateNotNull();
 		$form->addField('line','rate')->validateNotNull();
 		// $form->addField('line','amount');
 		$form->addField('text','narration');

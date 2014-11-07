@@ -9,11 +9,18 @@ class page_stock_actions_issue extends Page {
 
 		// Issue Form
 		$form=$this->add('Form');
+		$container_field = $form->addField('dropdown','container')->validateNotNull()->setEmptyText('Please Select');		
+		$container_model = $this->add('Model_Stock_Container');
+		$container_model->addCondition('name','<>','General');
+		$container_model->addCondition('name','<>','Dead');
+		$container_field->setModel($container_model);
 
-		$container_field = $form->addField('dropdown','container')->validateNotNull()->setEmptyText('Please Select');
-		$container_field->setModel('Stock_Container');
 		$row_field = $form->addField('dropdown','row')->validateNotNull()->setEmptyText('Please Select');
-		$row_field->setModel('Stock_Row');
+		$row_model = $this->add('Model_Stock_Row');
+		$row_model->addCondition('name','<>','General');
+		$row_model->addCondition('name','<>','Dead');
+		$row_field->setModel($row_model);
+
 		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select')->validateNotNull();
 		$item_model=$this->add('Model_Stock_Item');
 		$item_model->addCondition('is_issueable',true);
@@ -24,7 +31,7 @@ class page_stock_actions_issue extends Page {
 		$agent_field->setModel('Stock_Agent');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('Stock_Dealer');
-		$form->addField('line','qty')->validateNotNull();
+		$form->addField('Number','qty')->validateNotNull();
 		$form->addField('text','narration');
 		$form->addSubmit('Issue');
 

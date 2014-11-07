@@ -8,11 +8,11 @@ class page_stock_actions_opening extends Page {
 		$add_btn=$this->add('Button')->set('Add');
 
 		$form=$this->add('Form');
-		$item_field=$form->addField('autocomplete/Basic','item');//->setEmptyText('Please Select')->validateNotNull();
+		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();
 		$item_field->setModel('Stock_Item');
 
-		$form->addField('line','qty');
-		$form->addField('line','rate');
+		$form->addField('Number','qty')->validateNotNull();
+		$form->addField('line','rate')->validateNotNull();
 		$form->addField('text','narration');
 
 		$form->addSubmit('Save');

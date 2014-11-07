@@ -29,7 +29,7 @@ class Model_Stock_Item extends Model_Table {
 		if($this->loaded())
 			throw $this->exception('This Function create New Items, So please pass Empty Object');
 		
-		if( ($other_fields['is_consumable'] + $other_fields['is_issueable'] + $other_fields['is_fixedassets'] ) > 1)
+		if( ($other_fields['is_consumable'] + $other_fields['is_issueable'] + $other_fields['is_fixedassets'] ) > 1 or ($other_fields['is_consumable'] + $other_fields['is_issueable'] + $other_fields['is_fixedassets'] ) <= 0)
 			throw $this->exception('select any one from (is_consumable, is_issueable, is_fixedassets)');
 
 		$this['name']=$name;

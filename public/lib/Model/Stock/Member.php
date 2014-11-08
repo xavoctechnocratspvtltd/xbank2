@@ -57,6 +57,34 @@ class Model_Stock_Member extends Model_Table {
 		
 		return($issue_tra_qty - $submit_tra_qty);
 		
+	}
+
+	function getSupplierOpeningQty($member,$item,$as_on){
+		if(!$as_on)	
+			$as_on = '1970-01-01';
+
+		if(!$member)
+			throw new \Exception("must pass supplier");
+				
+		$purchase_tra = $this->add('Model_Stock_Transaction');
+		if($item)
+			$purchase_tra->addCondition('item_id',$item);
+		$purchase_tra->addCondition('created_at','<',$as_on);
+		$purchase_tra->addCondition('member_id',$member);
+		$purchase_tra->addCondition('transaction_type','Purchase');
+		$purchase_tra_qty = ($purchase_tra->sum('qty')->getOne())?:0;
+
+		$return_tra = $this->add('Model_Stock_Transaction');
+		if($item)
+			$return_tra->addCondition('item_id',$item);
+		$return_tra->addCondition('branch_id',$this->api->currentBranch->id);
+		$return_tra->addCondition('created_at','<',$as_on);
+		$return_tra->addCondition('member_id',$member);
+		$return_tra->addCondition('transaction_type','PurchaseReturn');
+		$return_tra->tryLoadAny();
+		$return_tra_qty = ($return_tra->sum('qty')->getOne())?:0;
+		
+		return( $purchase_tra_qty - $return_tra_qty);			
 	}		
 
 }

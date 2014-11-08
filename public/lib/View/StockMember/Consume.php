@@ -10,7 +10,7 @@ class View_StockMember_Consume extends View {
 		$transaction_j_item->addField('is_consumable');
 		$transaction->addCondition('is_consumable',true);
 		$transaction->addCondition('transaction_type','Consume');
-		 
+		  
 		$grid=$this->add('Grid_AccountsBase');
 		$member_model=$this->add('Model_Stock_Member');
 		

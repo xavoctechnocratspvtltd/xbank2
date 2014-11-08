@@ -12,7 +12,7 @@ class View_StockMember_FixedAssets extends View {
 		$transaction_j_item->addField('is_fixedassets');
 		$transaction->addCondition('is_fixedassets',true);
 		$transaction->addCondition('transaction_type','Issue');
-
+ 
 		$grid=$this->add('Grid_AccountsBase');
 		$member_model=$this->add('Model_Stock_Member');
 		if($this->filter){

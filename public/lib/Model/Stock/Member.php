@@ -35,7 +35,6 @@ class Model_Stock_Member extends Model_Table {
 
 		if(!$as_on)	
 			$as_on = '1970-01-01';
-
 		if(!$member)
 			throw new \Exception("must pass member");
 				
@@ -43,9 +42,11 @@ class Model_Stock_Member extends Model_Table {
 		$submit_tra->addCondition('item_id',$item);
 		$submit_tra->addCondition('created_at','<',$as_on);
 		$submit_tra->addCondition('member_id',$member);
-		$submit_tra->addCondition('transaction_type','Submit');
+		// $submit_tra->addCondition('transaction_type','Submit');
+		$submit_tra->addCondition('transaction_type',array('Submit','DeadSubmit'));
 		$submit_tra_qty = ($submit_tra->sum('qty')->getOne())?:0;
 
+		
 		$issue_tra = $this->add('Model_Stock_Transaction');
 		$issue_tra->addCondition('item_id',$item);
 		$issue_tra->addCondition('branch_id',$this->api->currentBranch->id);
@@ -55,6 +56,7 @@ class Model_Stock_Member extends Model_Table {
 		$issue_tra->tryLoadAny();
 		$issue_tra_qty = ($issue_tra->sum('qty')->getOne())?:0;
 		
+				
 		return($issue_tra_qty - $submit_tra_qty);
 		
 	}
@@ -86,5 +88,25 @@ class Model_Stock_Member extends Model_Table {
 		
 		return( $purchase_tra_qty - $return_tra_qty);			
 	}		
+
+	function getQty($member,$item,$as_on,$to_date,$transaction_type){
+		if(!$as_on)	
+			$as_on = '1970-01-01';
+		if(!$to_date)
+			$this->api->now;	
+		if(!$member)
+			throw new \Exception("must pass supplier");
+				
+		$tra = $this->add('Model_Stock_Transaction');
+		if($item)
+			$tra->addCondition('item_id',$item);
+		$tra->addCondition('created_at','>',$as_on);
+		$tra->addCondition('member_id',$member);
+		$tra->addCondition('branch_id',$this->api->currentBranch->id);
+		$tra->addCondition('transaction_type',$transaction_type);
+		// $tra->addCondition('created_at','<',$to_date);
+		$tra_qty = ($tra->sum('qty')->getOne())?:0;
+		return($tra_qty);				
+	}
 
 }

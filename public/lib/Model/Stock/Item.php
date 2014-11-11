@@ -131,12 +131,28 @@ class Model_Stock_Item extends Model_Table {
 		// todo
 	}
 
-	function sold(){
-		// todo
+	function amount($as_on=null){
+		if(!$as_on)
+			$as_on=$this->api->now;
+		return $this->getQty($as_on)*$this->getAvgRate($as_on);
 	}
 
-	function getAvgRate(){
-		// todo
+	function getAvgRate($as_on){
+		if(!$this->loaded())
+			throw new \Exception("pass loaded model of item");
+		if($as_on)
+			$as_on=$this->api->now;
+
+		$purchase_tra = $this->add('Model_Stock_Transaction');
+		$purchase_tra->addCondition('item_id',$this->id);
+		$purchase_tra->addCondition('created_at','<',$this->api->nextDate($this->api->now));
+		$purchase_tra->addCondition('transaction_type','Purchase');
+		$purchase_tra_qty = ($purchase_tra->sum('rate')->getOne())?:0;
+		$no_of_puchase=$purchase_tra->count()->getOne()?:1;
+		// throw new Exception($purchase_tra_qty/$no_of_puchase, 1);
+		
+		return $purchase_tra_qty/$no_of_puchase;
+		
 	}
 
 	function getDetail(){
@@ -308,5 +324,20 @@ class Model_Stock_Item extends Model_Table {
 		return (($openning_tra_qty+$purchase_tra_qty+$submit_tra_qty+$transfer_to_this_branch_tra_qty+$dead_tra_qty)-($issue_tra_qty+$sold_tra_qty+$transfer_from_this_branch_tra_qty+$purchase_return_tra_qty+$consume_tra_qty+$deadsold_tra_qty));
 
 	}
+
+	// function getItemQty($member,$item,$from_date,$to_date,$transaction_type,$member_type){	
+		
+	// 	$tra_model = $this->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
+	// 	$item_j=$tra_model->join('stock_items','item_id');
+	// 	$tra_model->addCondition('branch_id',$this->api->currentBranch->id);
+	// 	$tra_model->addCondition('created_at','<',$this->api->nextDate($from_date?:$this->api->now));
+	// 	$tra_model->addCondition('transaction_type',$transaction_type);
+	// 	$tra_model->addCondition('member_id',$member);
+	// 	$tra_model->addCondition('item_id',$item);
+	// 	$tra_model_qty = ($tra_model->sum('qty')->getOne())?:0;
+		
+	// 	throw new Exception("m".$member."item".$tra_model['item_id']);
+	// 	return $tra_model_qty;
+	// }
 
 }

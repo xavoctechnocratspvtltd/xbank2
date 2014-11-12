@@ -16,7 +16,7 @@ class page_stock_reports_stock extends Page {
 
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->addSno();
-
+ 
 		$grid->addMethod('format_openning',function($g,$f){
 			$openning_tra = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$openning_tra->join('stock_items','item_id');

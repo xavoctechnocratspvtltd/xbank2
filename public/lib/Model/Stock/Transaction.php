@@ -179,9 +179,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['qty']=$qty;
 		$this['narration']=$narration;
 		$this['transaction_type']='Transfer';
-
-		//todo itemrate
-			//$this['rate']=$item['rate'];
+		$this['rate']=$item->getAvgRate($this->api->now);
 		$this->save();
 	}
 
@@ -201,8 +199,8 @@ class Model_Stock_Transaction extends Model_Table {
 		if(!$branch)
 			$branch = $this->api->currentBranch->id;
 		//todo item Qty Check
-		// if($item->getQty($on_date)<$qty)
-		// 	throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
+		if($item->getQty($on_date)<$qty)
+			throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
 
 		$this['item_id']=$item->id;
 		$this['branch_id']=$branch;
@@ -216,6 +214,7 @@ class Model_Stock_Transaction extends Model_Table {
 		if($dealer->loaded())
 			$this['member_id']=$dealer->id;
 		$this['narration']=$narration;
+		$this['rate']=$item->getAvgRate($this->api->now);
 		$this->save();
 
 	}
@@ -276,7 +275,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['transaction_type']='Submit';
 		$this['narration']=$narration;
 		$this['submit_date']=$this->api->now;
-		
+		$this['rate']=$item->getAvgRate($this->api->now);	
 		if($staff->loaded())
 			$this['member_id']=$staff->id;
 		if($agent->loaded())
@@ -309,6 +308,7 @@ class Model_Stock_Transaction extends Model_Table {
 			$this['member_id']=$agent->id;
 		if($dealer->loaded())
 			$this['member_id']=$dealer->id;
+		$this['rate']=$item->getAvgRate($this->api->now);
 		$this->save();
 	}
 
@@ -386,8 +386,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['qty']=$qty;
 		$this['narration']=$narration;
 		$this['transaction_type']='Move';
-		//todo itemrate
-			//$this['rate']=$item['rate'];
+		$this['rate']=$item->getAvgRate($this->api->now);
 		
 		$this->save();
 

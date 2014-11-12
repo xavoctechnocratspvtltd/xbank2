@@ -9,10 +9,10 @@ class Model_Stock_Member extends Model_Table {
 		$this->hasOne('Branch','branch_id');
 		$this->addCondition('branch_id',$this->api->current_branch->id);
 		
-		$this->addField('name');
+		$this->addField('name')->mandatory(true);
 		$this->addField('address');
-		$this->addField('ph_no');
-		$this->addField('type')->enum(array('Agent', 'Dealer', 'Party', 'Staff', 'Supplier'));	
+		$this->addField('ph_no')->type('int')->mandatory(true);
+		$this->addField('type')->mandatory(true)->enum(array('Agent', 'Dealer', 'Party', 'Staff', 'Supplier'));	
 		$this->addField('is_active')->type('boolean')->defaultValue(true);
 		
 		$this->hasMany('Model_Stock_Transaction','member_id');
@@ -23,12 +23,15 @@ class Model_Stock_Member extends Model_Table {
 
 		if($this->loaded())
 			throw $this->exception('Please call on loaded Object');
-		$this['name']=$name;
-		$this['address']=$other_fields['address'];
-		$this['ph_no']=$other_fields['ph_no'];
-		$this['type']=$other_fields['type'];
-		$this['is_active']=$other_fields['is_active'];
-		$this->save();
+		if(strlen($other_fields['ph_no']) != 10)
+			throw $this->exception("10 Digit Number Only","ValidityCheck")->setField('ph_no');
+
+			$this['name']=$name;
+			$this['address']=$other_fields['address'];
+			$this['ph_no']=$other_fields['ph_no'];
+			$this['type']=$other_fields['type'];
+			$this['is_active']=$other_fields['is_active'];
+			$this->save();
 	}
 	
 	function getOpeningQty($member,$item,$as_on){
@@ -64,30 +67,57 @@ class Model_Stock_Member extends Model_Table {
 	function getSupplierOpeningQty($member,$item,$as_on){
 		if(!$as_on)	
 			$as_on = '1970-01-01';
-
 		if(!$member)
 			throw new \Exception("must pass supplier");
 				
 		$purchase_tra = $this->add('Model_Stock_Transaction');
 		if($item)
 			$purchase_tra->addCondition('item_id',$item);
+		$purchase_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$purchase_tra->addCondition('created_at','<',$as_on);
 		$purchase_tra->addCondition('member_id',$member);
+		$return_tra = $purchase_tra->tryLoadAny();
+
 		$purchase_tra->addCondition('transaction_type','Purchase');
 		$purchase_tra_qty = ($purchase_tra->sum('qty')->getOne())?:0;
-
-		$return_tra = $this->add('Model_Stock_Transaction');
-		if($item)
-			$return_tra->addCondition('item_id',$item);
-		$return_tra->addCondition('branch_id',$this->api->currentBranch->id);
-		$return_tra->addCondition('created_at','<',$as_on);
-		$return_tra->addCondition('member_id',$member);
+		
 		$return_tra->addCondition('transaction_type','PurchaseReturn');
 		$return_tra->tryLoadAny();
 		$return_tra_qty = ($return_tra->sum('qty')->getOne())?:0;
 		
-		return( $purchase_tra_qty - $return_tra_qty);			
+		return( $purchase_tra_qty - $return_tra_qty );			
 	}		
+
+	function getSupplierPurchaseQty($supplier,$item,$from_date,$to_date){
+		if(!$from_date)
+			$from_date = '1970-01-01';
+
+		$purchase_tra = $this->add('Model_Stock_Transaction');
+		$purchase_tra->addCondition('transaction_type','Purchase');
+		$purchase_tra->addCondition('member_id',$supplier);
+		if($from_date)
+			$purchase_tra->addCondition('created_at','>=',$from_date);
+		if($to_date)
+			$purchase_tra->addCondition('created_at','<=',$to_date);
+		$purchase_tra->addCondition('item_id',$item);
+		$purchase_tra->tryLoadAny();
+		return ($purchase_tra->sum('qty')->getOne())?:0;
+
+	}
+
+	function getSupplierPurchaseReturnQty($supplier,$item,$from_date,$to_date){
+		
+		$purchase_return_tra = $this->add('Model_Stock_Transaction');
+		$purchase_return_tra->addCondition('transaction_type','PurchaseReturn');
+		$purchase_return_tra->addCondition('member_id',$supplier);
+		if($from_date)
+			$purchase_return_tra->addCondition('created_at','>=',$from_date);
+		if($to_date)
+			$purchase_return_tra->addCondition('created_at','<=',$to_date);
+		$purchase_return_tra->addCondition('item_id',$item);
+		$purchase_return_tra->tryLoadAny();
+		return ($purchase_return_tra->sum('qty')->getOne())?:0;
+	}
 
 	function getQty($member,$item,$as_on,$to_date,$transaction_type){
 		if(!$as_on)	

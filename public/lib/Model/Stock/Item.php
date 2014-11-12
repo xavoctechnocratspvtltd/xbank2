@@ -146,11 +146,12 @@ class Model_Stock_Item extends Model_Table {
 		$purchase_tra = $this->add('Model_Stock_Transaction');
 		$purchase_tra->addCondition('item_id',$this->id);
 		$purchase_tra->addCondition('created_at','<',$this->api->nextDate($this->api->now));
-		$purchase_tra->addCondition('transaction_type','Purchase');
+		// $purchase_tra->addCondition('transaction_type','Purchase');
+		$purchase_tra->addCondition('transaction_type',array('Purchase','Openning'));
 		$purchase_tra_qty = ($purchase_tra->sum('rate')->getOne())?:0;
 		$no_of_puchase=$purchase_tra->count()->getOne()?:1;
 		// throw new Exception($purchase_tra_qty/$no_of_puchase, 1);
-		
+
 		return $purchase_tra_qty/$no_of_puchase;
 		
 	}

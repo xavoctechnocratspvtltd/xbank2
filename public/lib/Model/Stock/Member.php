@@ -58,7 +58,6 @@ class Model_Stock_Member extends Model_Table {
 		$issue_tra->addCondition('transaction_type','Issue');
 		$issue_tra->tryLoadAny();
 		$issue_tra_qty = ($issue_tra->sum('qty')->getOne())?:0;
-		
 				
 		return($issue_tra_qty - $submit_tra_qty);
 		

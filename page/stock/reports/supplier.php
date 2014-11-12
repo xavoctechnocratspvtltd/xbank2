@@ -2,7 +2,7 @@
 
 class page_stock_reports_supplier extends Page {
 	function page_index(){
-		// parent::init();
+		parent::init();
 
 		$form=$this->add('Form');
 		$staff_field=$form->addField('dropdown','supplier')->validateNotNull()->setEmptyText('Please Select');

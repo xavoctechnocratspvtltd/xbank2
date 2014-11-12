@@ -6,13 +6,13 @@ class page_stock_reports_main extends Page {
 
 		$tabs=$this->add('Tabs');
 
-		$tab1=$tabs->addTabURL('stock_reports_stock','Stock Report');
-		$tab1=$tabs->addTabURL('stock_reports_staff','Staff Report');
-		$tab1=$tabs->addTabURL('stock_reports_agent','Agent Report');
-		$tab1=$tabs->addTabURL('stock_reports_dealer','Dealer Report');
-		$tab1=$tabs->addTabURL('stock_reports_supplier','Supplier Report');
-		// $tab1=$tabs->addTabURL('stock_reports_purchase','Purchase Report');
-		// // $tab1=$tabs->addTabURL('stock_reports_stock','Stock Report');
+		$tabs->addTabURL('stock_reports_stock','Stock Report');
+		$tabs->addTabURL('stock_reports_staff','Staff Report');
+		$tabs->addTabURL('stock_reports_agent','Agent Report');
+		$tabs->addTabURL('stock_reports_dealer','Dealer Report');
+		$tabs->addTabURL('stock_reports_supplier','Supplier Report');
+		$tabs->addTabURL('stock_reports_itemwisestaff','Item wise Staff Report');
+		$tabs->addTabURL('stock_reports_itemtransaction','Item Transaction');
 		// $tab1=$tabs->addTabURL('stock_reports_item','Item Report');
 		// $tab1=$tabs->addTabURL('stock_reports_genral','Genral Report');
 

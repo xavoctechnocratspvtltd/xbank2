@@ -11,7 +11,7 @@ class page_stock_reports_itemwisestaff extends Page{
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addSubmit('Go');
+		$form->addSubmit('GET LIST');
 
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->addSno();

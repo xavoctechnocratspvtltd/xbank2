@@ -22,7 +22,7 @@ class page_stock_reports_stock extends Page {
 			$item_j=$openning_tra->join('stock_items','item_id');
 			$openning_tra->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
 			$openning_tra->addCondition('transaction_type','Openning');
-			$openning_tra->addCondition('branch_id',$this->api->currentBranch->id);
+			$openning_tra->addCondition('branch_id',$g->api->currentBranch->id);
 			$openning_tra->addCondition('item_id',$g->model->id);
 			$openning_tra_qty = ($openning_tra->sum('qty')->getOne())?:0;
 
@@ -57,8 +57,8 @@ class page_stock_reports_stock extends Page {
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
 			$tra_model->addCondition('transaction_type','Transfer');
 			$tra_model->addCondition('item_id',$g->model->id);
-			$tra_model->addCondition('to_branch_id','<>',$this->api->currentBranch->id);
-			$tra_model->addCondition('branch_id',$this->api->currentBranch->id);
+			$tra_model->addCondition('to_branch_id','<>',$g->api->currentBranch->id);
+			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
 
 			$tra_model_qty = ($tra_model->sum('qty')->getOne())?:0;
 			$g->current_row_html[$f]=$tra_model_qty;
@@ -70,8 +70,8 @@ class page_stock_reports_stock extends Page {
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
 			$tra_model->addCondition('transaction_type','Transfer');
 			$tra_model->addCondition('item_id',$g->model->id);
-			$tra_model->addCondition('to_branch_id',$this->api->currentBranch->id);
-			$tra_model->addCondition('branch_id','<>',$this->api->currentBranch->id);
+			$tra_model->addCondition('to_branch_id',$g->api->currentBranch->id);
+			$tra_model->addCondition('branch_id','<>',$g->api->currentBranch->id);
 
 			$tra_model_qty = ($tra_model->sum('qty')->getOne())?:0;
 			$g->current_row_html[$f]=$tra_model_qty;
@@ -81,7 +81,7 @@ class page_stock_reports_stock extends Page {
 			$tra_model = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$tra_model->join('stock_items','item_id');
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
-			$tra_model->addCondition('branch_id',$this->api->currentBranch->id);
+			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
 			$tra_model->addCondition('item_id',$g->model->id);
 			$tra_model->addCondition('transaction_type','Issue');
 
@@ -94,7 +94,7 @@ class page_stock_reports_stock extends Page {
 			$tra_model = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$tra_model->join('stock_items','item_id');
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
-			$tra_model->addCondition('branch_id',$this->api->currentBranch->id);
+			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
 			$tra_model->addCondition('item_id',$g->model->id);
 			$tra_model->addCondition('transaction_type','Consume');
 
@@ -106,7 +106,7 @@ class page_stock_reports_stock extends Page {
 			$tra_model = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$tra_model->join('stock_items','item_id');
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
-			$tra_model->addCondition('branch_id',$this->api->currentBranch->id);
+			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
 			$tra_model->addCondition('item_id',$g->model->id);
 			$tra_model->addCondition('transaction_type','Submit');
 
@@ -118,7 +118,7 @@ class page_stock_reports_stock extends Page {
 			$tra_model = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$tra_model->join('stock_items','item_id');
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
-			$tra_model->addCondition('branch_id',$this->api->currentBranch->id);
+			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
 			$tra_model->addCondition('item_id',$g->model->id);
 			$tra_model->addCondition('transaction_type','DeadSubmit');
 
@@ -130,7 +130,7 @@ class page_stock_reports_stock extends Page {
 			$tra_model = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$tra_model->join('stock_items','item_id');
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
-			$tra_model->addCondition('branch_id',$this->api->currentBranch->id);
+			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
 			$tra_model->addCondition('item_id',$g->model->id);
 			$tra_model->addCondition('transaction_type','DeadSold');
 

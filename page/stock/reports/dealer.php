@@ -18,10 +18,10 @@ class page_stock_reports_dealer extends Page {
 
 		$v=$this->add('View');
 		if($_GET['filter'])
-			$view_consume=$v->add('View_StockMember_Report',array('member'=>$_GET['dealer'],'item'=>$_GET['item'],'from_date'=>$_GET['from_date'],'to_date'=>$form['to_date'],'filter'=>$_GET['filter'],'type'=>'Staff'));
+			$view_consume=$v->add('View_StockMember_Report',array('member'=>$_GET['dealer'],'item'=>$_GET['item'],'from_date'=>$_GET['from_date'],'to_date'=>$form['to_date'],'filter'=>$_GET['filter'],'type'=>'Dealer'));
 
 		if($form->isSubmitted()){
-			$v->js()->reload(array('agent'=>$form['dealer'],'item'=>$form['item'],'from_date'=>$form['from_date']?:'1970-01-01','to_date'=>$form['to_date']?:$this->api->now,'filter'=>1))->execute();		
+			$v->js()->reload(array('dealer'=>$form['dealer'],'item'=>$form['item'],'from_date'=>$form['from_date']?:'1970-01-01','to_date'=>$form['to_date']?:$this->api->now,'filter'=>1))->execute();		
 			//$grid->js()->reload(array('member'=>$form['staff'],'item'=>$form['item'],'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'filter'=>1))->execute();	
 		}
 	

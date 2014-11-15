@@ -27,11 +27,13 @@ class View_StockMember_Report extends View {
 		$grid->deadsubmit = 0;
 		$grid->avgrate = 0;
 		$grid->balance = 0;
+		$grid->from_date = $this->from_date;
+		$grid->to_date = $this->from_date;
 		// array('member'=>$_GET['staff'],'item'=>$_GET['item'],'from_date'=>$_GET['from_date'],'to_date'=>$form['to_date'],'filter'=>$_GET['filter'],'type'=>'Staff');
 		$grid->addMethod('format_openning',function($g,$f){	
 			$member_model = $g->add('Model_Stock_Member');
 			$member_model->load($g->model['member_id']);
-			$qty = $member_model->getOpeningQty($g->model['member_id'],$g->model['item_id'],$this->from_date?:'1970-01-01');						
+			$qty = $member_model->getOpeningQty($g->model['member_id'],$g->model['item_id'],$g->from_date?:'1970-01-01');						
 			$g->current_row_html[$f] = $qty;
 			$g->openning = $qty;			
 			// throw new Exception($g->model['member_id']."i=".$g->model['item_id']."as_on".$this->from_date);	
@@ -40,7 +42,7 @@ class View_StockMember_Report extends View {
 		$grid->addMethod('format_issue',function($g,$f){
 			$member_model = $g->add('Model_Stock_Member');
 			$member_model->load($g->model['member_id']);
-			$qty = $member_model->getQty($g->model['member_id'],$g->model['item_id'],$this->from_date?:'1970-01-01',$this->to_date,'Issue');						
+			$qty = $member_model->getQty($g->model['member_id'],$g->model['item_id'],$g->from_date?:'1970-01-01',$g->to_date,'Issue');						
 			$g->current_row_html[$f] = $qty;
 			$g->issue = $qty;
 		});
@@ -48,7 +50,7 @@ class View_StockMember_Report extends View {
 		$grid->addMethod('format_consume',function($g,$f){
 			$member_model = $g->add('Model_Stock_Member');
 			$member_model->load($g->model['member_id']);
-			$qty = $member_model->getQty($g->model['member_id'],$g->model['item_id'],$this->from_date?:'1970-01-01',$this->to_date,'Consume');						
+			$qty = $member_model->getQty($g->model['member_id'],$g->model['item_id'],$g->from_date?:'1970-01-01',$g->to_date,'Consume');						
 			$g->current_row_html[$f] = $qty;
 			$g->consume = $qty;
 		});
@@ -56,7 +58,7 @@ class View_StockMember_Report extends View {
 		$grid->addMethod('format_submit',function($g,$f){
 			$member_model = $g->add('Model_Stock_Member');
 			$member_model->load($g->model['member_id']);
-			$qty = $member_model->getQty($g->model['member_id'],$g->model['item_id'],$this->from_date?:'1970-01-01',$this->to_date,'Submit');						
+			$qty = $member_model->getQty($g->model['member_id'],$g->model['item_id'],$g->from_date?:'1970-01-01',$g->to_date,'Submit');						
 			$g->current_row_html[$f] = $qty;
 			$g->submit = $qty; 
 		});
@@ -64,7 +66,7 @@ class View_StockMember_Report extends View {
 		$grid->addMethod('format_deadsubmit',function($g,$f){
 			$member_model = $g->add('Model_Stock_Member');
 			$member_model->load($g->model['member_id']);
-			$qty = $member_model->getQty($g->model['member_id'],$g->model['item_id'],$this->from_date?:'1970-01-01',$this->to_date,'DeadSubmit');						
+			$qty = $member_model->getQty($g->model['member_id'],$g->model['item_id'],$g->from_date?:'1970-01-01',$g->to_date,'DeadSubmit');						
 			$g->current_row_html[$f] = $qty;
 			$g->deadsubmit = $qty;
 		});
@@ -87,7 +89,7 @@ class View_StockMember_Report extends View {
 		$grid->addMethod('format_avgrate',function($g,$f){
 			$item_model = $g->add('Model_Stock_Item');
 			$item_model->load($g->model['item_id']);
-			$qty = $item_model->getAvgRate($this->to_date?:$g->api->now);
+			$qty = $item_model->getAvgRate($g->to_date?:$g->api->now);
 			$g->current_row_html[$f] = $qty;
 			$g->avgrate = $qty;			
 		});

@@ -34,10 +34,12 @@ class page_stock_actions_purchase extends Page {
 		$form_search->js(true)->hide();
 		$form->js(true)->hide();
 
+		$this->add('View_Info')->set('Purchase Stock')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false));
 		$purchase_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_transaction->addCondition('transaction_type','Purchase');
-
+		$purchase_transaction->setOrder('created_at','desc');
+		$crud->grid->addPaginator(15);
 		// DO Search Filter 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -54,7 +56,7 @@ class page_stock_actions_purchase extends Page {
 		}
 		//End of serach filter
 
-		$crud->setModel($purchase_transaction,array('item','supplier','branch','qty','rate','narration','created_at'));
+		$crud->setModel($purchase_transaction,array('branch','item','member','qty','rate','created_at','narration'),array('branch','item','member','qty','rate','created_at','narration'));
 
 		if($form->isSubmitted()){
 			$supplier=$this->add('Model_Stock_Supplier');

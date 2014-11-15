@@ -208,9 +208,9 @@ class Model_Stock_Transaction extends Model_Table {
 
 		if(!$branch)
 			$branch = $this->api->currentBranch->id;
-		//todo item Qty Check
-		if($item->getQty($on_date) < $qty)
-			throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
+		// //todo item Qty Check
+		// if($item->getQty($on_date) < $qty)
+		// 	throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
 
 		$this['item_id']=$item->id;
 		$this['branch_id']=$branch;

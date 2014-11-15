@@ -36,10 +36,12 @@ class page_stock_actions_return extends Page {
 		$form->js(true)->hide();
 
 		// $crud=$this->add('crud');
+		$this->add('View_Info')->set('Purchase Return Stock Transaction')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false));
 		$purchase_return_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_return_transaction->addCondition('transaction_type','PurchaseReturn');
-		
+		$purchase_return_transaction->setOrder('created_at','desc');
+		$crud->grid->addPaginator(15);		
 		// DO Search Filter		
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -56,7 +58,7 @@ class page_stock_actions_return extends Page {
 		}
 		// end Search Filter
 
-		$crud->setModel($purchase_return_transaction,array('item','supplier','branch','qty','rate','narration','created_at'));
+		$crud->setModel($purchase_return_transaction,array('branch','item','member','qty','rate','created_at','narration'),array('branch','item','member','qty','rate','created_at','narration'));
 
 		if($form->isSubmitted()){
 			$supplier=$this->add('Model_Stock_Supplier');

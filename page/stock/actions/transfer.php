@@ -74,9 +74,12 @@ class page_stock_actions_transfer extends Page {
 		$form_search->js(true)->hide();
 		$form->js(true)->hide();
 
+		$this->add('View_Info')->set(' Transfer ( Between Branches ) Stock Transaction')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$crud=$this->add('CRUD',array('allow_add'=>false));
 		$transfer_transaction=$this->add('Model_Stock_Transaction');
 		$transfer_transaction->addCondition('transaction_type','Transfer');
+		$transfer_transaction->addCondition('branch_id',$this->api->currentBranch->id);
+		$transfer_transaction->setOrder('created_at','desc');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -92,7 +95,7 @@ class page_stock_actions_transfer extends Page {
 				$transfer_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
 
-		$crud->setModel($transfer_transaction,array('item','to_branch','qty','rate','created_at','narration'));
+		$crud->setModel($transfer_transaction,array('branch','item','qty','rate','narration','created_at','to_branch_id'),array('branch','item','qty','rate','amount','narration','created_at','to_branch_id'));
 
 		if($form->isSubmitted()){
 			$container_model = $this->add('Model_Stock_Container');

@@ -14,7 +14,7 @@ class page_stock_actions_move extends Page {
 		$colmid = $col->addColumn(2);
 		$colright = $col->addColumn(5);
 
-		// Transfer Item from 
+		// Transfer Item from 				
 		$colleft->add('View')->set('From')->setStyle(array('background-color'=>'#f12039','padding'=>'5px'));		
 			// From Container
 		$from_container_field = $form->addField('dropdown','from_container','Container')->validateNotNull()->setEmptyText('Please Select');
@@ -73,9 +73,13 @@ class page_stock_actions_move extends Page {
 		$form_search->js(true)->hide();
 		$form->js(true)->hide();
 
-		$crud=$this->add('CRUD',array('allow_add'=>false));
+		$this->add('View_Info')->set(' Move ( Inner Branch ) Stock Transaction')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_delete'=>false));
 		$transfer_transaction=$this->add('Model_Stock_Transaction');
 		$transfer_transaction->addCondition('transaction_type','Move');
+		$transfer_transaction->setOrder('created_at','desc');
+
+		$crud->grid->addPaginator(10);
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -91,7 +95,7 @@ class page_stock_actions_move extends Page {
 				$transfer_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
  
-		$crud->setModel($transfer_transaction,array('item','to_branch','qty','rate','created_at','narration'));
+		$crud->setModel($transfer_transaction,array('item','qty','rate','created_at','narration'),array('item','qty','rate','created_at','narration'));
 
 		if($form->isSubmitted()){
 			

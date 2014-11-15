@@ -15,6 +15,7 @@ class page_stock_reports_itemwisestaff extends Page{
 
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->addSno();
+		
 		$member_model = $this->add('Model_Stock_Member');
 		$member_model->addCondition('type','<>','Supplier');			
 		$member_model->addCondition('branch_id',$this->api->currentBranch->id);
@@ -75,7 +76,7 @@ class page_stock_reports_itemwisestaff extends Page{
 				if($g->model['transaction_type']=='Consume')	
 					$g->current_row[$f] = $g->balance = $g->consume;
 				else
-					$g->current_row[$f] = $g->balance = ( $g->opening + $g->issue ) - ( $g->submit + $g->deadsubmit ) ;
+					$g->current_row[$f] = $g->balance = ( $g->current_row['opening'] + $g->current_row['issue'] ) - ( $g->current_row['submit'] + $g->current_row['dead'] ) ;
 			});
 
 			//AVG RATE
@@ -88,7 +89,7 @@ class page_stock_reports_itemwisestaff extends Page{
 
 			//AMOUNT
 			$grid->addMethod('format_amount',function($g,$f){
-				$g->current_row[$f] = $g->balance * $g->avgrate;
+				$g->current_row[$f] = $g->current_row['balance'] * $g->current_row['avg_rate'];
 			});
 
 			$grid->setModel($member_model);
@@ -100,8 +101,8 @@ class page_stock_reports_itemwisestaff extends Page{
 			$grid->addColumn('submit','submit');
 			$grid->addColumn('dead','dead');
 			$grid->addColumn('balance','balance');
-			$grid->addColumn('avgrate','avg_rate');
-			$grid->addColumn('amount','amount');
+			$grid->addColumn('avgrate,money','avg_rate');
+			$grid->addColumn('amount,money','amount');
 		}else{
 			$member_model->addCondition('id',-1);
 			$grid->setModel($member_model);
@@ -130,7 +131,7 @@ class page_stock_reports_itemwisestaff extends Page{
 
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('item'=>$form['item'],'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'filter'=>1))->execute();
+			$grid->js()->reload(array('item'=>$form['item'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
 		}
 
 

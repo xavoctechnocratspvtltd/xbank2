@@ -127,9 +127,6 @@ class Model_Stock_Item extends Model_Table {
 		$row_model->addItem($item,$qty);
 	}
 
-	function opening(){
-		// todo
-	}
 
 	function amount($as_on=null){
 		if(!$as_on)
@@ -174,7 +171,7 @@ class Model_Stock_Item extends Model_Table {
 	}
 
 
-	function isConsume(){
+	function getOpening(){
 		// todo
 	}
 

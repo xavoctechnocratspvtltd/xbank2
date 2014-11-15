@@ -42,6 +42,16 @@ class Model_Stock_Transaction extends Model_Table {
 				$item = $this->add('Model_Stock_Item')->load($transaction['item_id']); 
 				$criq_model->destroyStockFromGeneral($item,$transaction['qty']);
 				break;		
+			case 'Openning':
+				$criq_model = $this->add('Model_Stock_ContainerRowItemQty');						
+				$item = $this->add('Model_Stock_Item')->load($transaction['item_id']);
+				$stock = $criq_model->getItemFromGeneral($item,null);					
+				
+				if($stock['qty'] >= $transaction['qty']){
+					$criq_model->destroyStockFromGeneral($item,$transaction['qty']);
+				}else
+					throw $this->exception("cannot Delete this opening stock ( hint for delete move item into GENERAL )",'ValidityCheck')->setField('item_id');
+				break;	
 			default:
 						
 				break;

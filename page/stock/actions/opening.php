@@ -30,10 +30,13 @@ class page_stock_actions_opening extends Page {
 		$form->js(true)->hide();
 
 		// $crud=$this->add('crud');
-		$crud=$this->add('CRUD',array('allow_add'=>false));
+		$this->add('View_Info')->set('Opening Stock')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false));
 		$openning_transaction=$this->add('Model_Stock_Transaction');
 		$openning_transaction->addCondition('transaction_type','Openning');
-		
+		$openning_transaction->setOrder('created_at','desc');
+		$crud->grid->addPaginator(10);
+
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('item');

@@ -92,7 +92,7 @@ class page_stock_actions_issue extends Page {
 			$transaction=$this->add('Model_Stock_Transaction');
 
 			if($item['is_issueable']){
-				$transaction->issue($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
+				$transaction->issue($item,$form['qty'],$form['narration'],$staff,$agent,$dealer,$container,$row);
 				$criq_model->removeStock($container,$row,$item,$form['qty']);
 			}
 					

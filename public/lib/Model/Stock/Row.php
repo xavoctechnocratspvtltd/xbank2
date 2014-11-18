@@ -86,20 +86,30 @@ class Model_Stock_Row extends Model_Table {
 		
 	}
 
-	function loadGeneralRow(){
-		
+	function loadGeneralRow($branch_id=null){
+		$this->_dsql()->del('where');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+
 		$cntr_model = $this->add('Model_Stock_Container');
-		$cntr_model->loadGeneralContainer();
+		$cntr_model->loadGeneralContainer($branch_id);
+		$this->addCondition('branch_id',$branch_id);
 		$this->addCondition('container_id',$cntr_model->id);
 		$this->addCondition('name','General');
 		$this->tryLoadAny();
 		return $this;
 	}
 
-	function loadDeadRow(){
-		
+	function loadDeadRow($branch_id=null){
+		$this->_dsql()->del('where');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+
 		$cntr_model = $this->add('Model_Stock_Container');
-		$cntr_model->loadDeadContainer();
+		$cntr_model->loadDeadContainer($branch_id);
+		$this->addCondition('branch_id',$branch_id);
 		$this->addCondition('container_id',$cntr_model->id);
 		$this->addCondition('name','Dead');
 		$this->tryLoadAny();

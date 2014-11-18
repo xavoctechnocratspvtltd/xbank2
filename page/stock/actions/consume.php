@@ -90,7 +90,7 @@ class page_stock_actions_consume extends Page {
 			$transaction=$this->add('Model_Stock_Transaction');
 
 			if($item['is_consumable']){
-				$transaction->consume($item,$form['qty'],$form['narration'],$staff,$agent,$dealer);
+				$transaction->consume($item,$form['qty'],$form['narration'],$staff,$agent,$dealer,$container,$row);
 				$criq_model->removeStock($container,$row,$item,$form['qty']);
 			}
 			

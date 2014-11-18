@@ -26,7 +26,7 @@ class page_stock_ledger_Dealer extends Page {
 		$view_fixed=$v->add('View_StockMember_FixedAssets',array('member'=>$_GET['dealer'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'filter'=>$_GET['filter'],'type'=>'Dealer'));
 
 		if($form->isSubmitted()){
-			$v->js()->reload(array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
+			$v->js()->reload(array('dealer'=>$form['dealer'],'item'=>$form['item'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
 		}
 
 

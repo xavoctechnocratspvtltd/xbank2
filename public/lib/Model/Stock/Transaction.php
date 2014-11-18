@@ -8,18 +8,23 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->hasOne('Branch','branch_id');
 		// $this->addCondition('branch_id',$this->api->current_branch->id);
 		$this->hasOne('Stock_Item','item_id');
-		$this->hasOne('Model_Stock_Member','member_id');
-		
-		$this->addField('qty');
-		$this->addField('rate'); 
-		$this->addField('amount');
+		$m = $this->hasOne('Model_Stock_Member','member_id');
+		$m->defaultValue(0);
+
+		$this->addField('qty')->defaultValue(0);
+		$this->addField('rate')->defaultValue(0); 
+		$this->addField('amount')->defaultValue(0);
 		$this->addField('narration');
 		$this->addField('created_at')->type('date')->defaultValue($this->api->today);
 		$this->addField('issue_date');
 		$this->addField('submit_date');
 		$this->addField('transaction_type')->enum(array('Purchase','Issue','Consume','Submit','PurchaseReturn','DeadSubmit','Transfer','Move','Openning','Sold','DeadSold'));
-		$this->addField('to_branch_id');
-		
+		$this->addField('to_branch_id')->defaultValue(0);
+		$this->addField('to_container')->defaultValue(0);
+		$this->addField('to_row')->defaultValue(0);
+		$this->addField('from_container')->defaultValue(0);
+		$this->addField('from_row')->defaultValue(0);
+
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('afterInsert',$this);
 		$this->addHook('beforeSave',$this);
@@ -104,14 +109,22 @@ class Model_Stock_Transaction extends Model_Table {
 
 		if(!$branch)
 			$branch=$this->api->currentBranch;
-		 
-		$this['member_id']=$supplier->id;
-		$this['branch_id']=$branch->id;
-		$this['item_id']=$item->id;
-		$this['qty']=$qty;
-		$this['rate']=$rate;
-		$this['transaction_type']='Purchase';
-		$this['narration']=$narration;
+		
+		$container = $this->add('Model_Stock_Container');
+		$container->loadGeneralContainer($this->api->current_branch->id);
+		$row = $this->add('Model_Stock_Row');
+		$row->loadGeneralRow($this->api->current_branch->id);
+
+		$this['member_id'] = $supplier->id;
+		$this['branch_id'] = $branch->id;
+		$this['item_id'] = $item->id;
+		$this['qty'] = $qty;
+		$this['rate'] = $rate;
+		$this['amount'] = $qty * $rate;
+		$this['transaction_type'] = 'Purchase';
+		$this['narration'] = $narration;
+		$this['to_container'] = $container->id;
+		$this['to_row'] = $row->id;
 		$this->save();		
 	}
 
@@ -134,14 +147,22 @@ class Model_Stock_Transaction extends Model_Table {
 			throw $this->exception('No Enough Item in General Conatiner');
 		}	
 
+		$container = $this->add('Model_Stock_Container');
+		$container->loadGeneralContainer($this->api->current_branch->id);
+		$row = $this->add('Model_Stock_Row');
+		$row->loadGeneralRow($this->api->current_branch->id);
+
 		$tra=$this->add('Model_Stock_Transaction');
 		$tra['member_id']=$supplier->id;
 		$tra['branch_id']=$branch->id;
 		$tra['item_id']=$item->id;
 		$tra['qty']=$qty;
 		$tra['rate']=$rate;//$item_purchased['rate'];
+		$tra['amount']=$rate * $qty;
 		$tra['transaction_type']='PurchaseReturn';
 		$tra['narration']=$narration;
+		$this['from_container'] = $container->id;
+		$this['from_row'] = $row->id;
 		$tra->save();
 
 		// DO after purchase return remove item from general stock
@@ -182,7 +203,12 @@ class Model_Stock_Transaction extends Model_Table {
 		$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
 		if($criq_model->getItemQty($container,$row,$item) < $qty)
 			throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
-				
+		
+		$to_container = $this->add('Model_Stock_Container');
+		$to_container->loadGeneralContainer($to_branch->id);
+		$to_row = $this->add('Model_Stock_Row');
+		$to_row->loadGeneralRow($to_branch->id);
+
 		$this['item_id']=$item->id;
 		$this['branch_id']=$this->api->currentBranch->id;
 		$this['to_branch_id']=$to_branch->id;
@@ -190,10 +216,16 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['narration']=$narration;
 		$this['transaction_type']='Transfer';
 		$this['rate']=$item->getAvgRate($this->api->now);
+		$this['amount']=$qty * $this['rate'];
+		$this['from_container'] = $container->id;
+		$this['from_row'] = $row->id;
+		$this['to_container'] = $to_container->id;
+		$this['to_row'] = $to_row->id;
+
 		$this->save();
 	}
 
-	function issue($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$branch=null,$on_date=null){
+	function issue($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$from_container,$from_row,$on_date=null,$branch=null){
 
 		if($staff->loaded() + $dealer->loaded() + $agent->loaded() > 1)
 			throw $this->exception('Only One of Satff/Dealer/Agent is required', 'ValidityCheck')->setField('qty');
@@ -225,11 +257,14 @@ class Model_Stock_Transaction extends Model_Table {
 			$this['member_id']=$dealer->id;
 		$this['narration']=$narration;
 		$this['rate']=$item->getAvgRate($this->api->now);
+		$this['amount']=$this['qty'] * $this['rate'];
+		$this['from_container'] = $from_container['id'];
+		$this['from_row'] = $from_row['id'];
 		$this->save();
 
 	}
 
-	function consume($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$branch=null,$on_date=null){
+	function consume($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$from_container,$from_row,$branch=null,$on_date=null){
 
 		if($staff->loaded() + $dealer->loaded() + $agent->loaded() > 1)
 			throw $this->exception('Only One of Satff/Dealer/Agent is required', 'ValidityCheck')->setField('qty');
@@ -261,6 +296,10 @@ class Model_Stock_Transaction extends Model_Table {
 		if($dealer->loaded())
 			$this['member_id']=$dealer->id;
 		$this['narration']=$narration;
+		$this['rate']=$item->getAvgRate($this->api->now);
+		$this['amount']=$this['qty'] * $this['rate'];
+		$this['from_container'] = $from_container['id'];
+		$this['from_row'] = $from_row['id'];
 		$this->save();
 
 	}
@@ -279,6 +318,11 @@ class Model_Stock_Transaction extends Model_Table {
 		if(!$branch)
 			$branch = $this->api->currentBranch->id;	
 		
+		$container = $this->add('Model_Stock_Container');
+		$container->loadGeneralContainer($this->api->current_branch->id);
+		$row = $this->add('Model_Stock_Row');
+		$row->loadGeneralRow($this->api->current_branch->id);
+
 		$this['item_id']=$item->id;
 		$this['branch_id']=$branch;
 		$this['qty']=$qty;
@@ -292,6 +336,9 @@ class Model_Stock_Transaction extends Model_Table {
 			$this['member_id']=$agent->id;
 		if($dealer->loaded())
 			$this['member_id']=$dealer->id;
+		$this['amount'] = $this['rate'] * $this['qty'];
+		$this['to_container'] = $container['id'];
+		$this['to_row'] = $row['id'];
 		$this->save();
 	}	
 
@@ -305,13 +352,17 @@ class Model_Stock_Transaction extends Model_Table {
 			throw $this->exception('Please loaded object of Item Model');
 		if(!$branch)
 			$branch=$this->api->currentBranch;
-		
+
+		$container = $this->add('Model_Stock_Container');
+		$container->loadDeadContainer($this->api->current_branch->id);
+		$row = $this->add('Model_Stock_Row');
+		$row->loadDeadRow($this->api->current_branch->id);
+
 		$this['item_id']=$item->id;
 		$this['branch_id']=$branch->id;
 		$this['qty']=$qty;
 		$this['narration']=$narration;
 		$this['transaction_type']='DeadSubmit';
-
 		if($staff->loaded())
 			$this['member_id']=$staff->id;
 		if($agent->loaded())
@@ -319,6 +370,9 @@ class Model_Stock_Transaction extends Model_Table {
 		if($dealer->loaded())
 			$this['member_id']=$dealer->id;
 		$this['rate']=$item->getAvgRate($this->api->now);
+		$this['amount'] = $this['rate'] * $this['qty'];
+		$this['to_container'] = $container['id'];
+		$this['to_row'] = $row['id'];
 		$this->save();
 	}
 
@@ -331,13 +385,20 @@ class Model_Stock_Transaction extends Model_Table {
 
 		if(!$branch)
 			$branch=$this->api->currentBranch;
+		$container = $this->add('Model_Stock_Container');
+		$container->loadGeneralContainer($this->api->current_branch->id);
+		$row = $this->add('Model_Stock_Row');
+		$row->loadGeneralRow($this->api->current_branch->id);
 
-		$this['branch_id']=$branch->id;
-		$this['item_id']=$item->id;
-		$this['qty']=$qty;
-		$this['rate']=$rate;
-		$this['transaction_type']='Openning';
-		$this['narration']=$narration;
+		$this['branch_id'] = $branch->id;
+		$this['item_id'] = $item->id;
+		$this['qty'] = $qty;
+		$this['rate'] = $rate;
+		$this['amount'] = $qty * $rate;
+		$this['transaction_type'] = 'Openning';
+		$this['narration'] = $narration;
+		$this['to_container'] = $container['id']; 
+		$this['to_row'] = $row['id'];
 		$this->save();
 
 	}
@@ -352,6 +413,11 @@ class Model_Stock_Transaction extends Model_Table {
 		if(!$branch)
 			$branch=$this->api->currentBranch;
 
+		$container = $this->add('Model_Stock_Container');
+		$container->loadDeadContainer($this->api->current_branch->id);
+		$row = $this->add('Model_Stock_Row');
+		$row->loadDeadRow($this->api->current_branch->id);
+
 		$this['item_id']=$item->id;
 		$this['branch_id']=$branch->id;
 		$this['qty']=$qty;
@@ -359,6 +425,8 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['narration']=$narration;
 		$this['transaction_type']='DeadSold';
 		$this['amount']=$qty*$rate;
+		$this['from_container'] = $container['id'];		
+		$this['from_row'] = $row['id'];		
 		$this->save();
 	}
 
@@ -397,7 +465,11 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['narration']=$narration;
 		$this['transaction_type']='Move';
 		$this['rate']=$item->getAvgRate($this->api->now);
-		
+		$this['amount']=$this['rate'] * $this['qty'];
+		$this['from_container'] = $from_container->id;
+		$this['from_row'] = $from_row->id;
+		$this['to_container'] = $to_container->id;
+		$this['to_row'] = $to_row->id;
 		$this->save();
 
 		$criq_model = $this->add('Model_Stock_ContainerRowItemQty');

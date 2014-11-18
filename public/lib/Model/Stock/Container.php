@@ -103,7 +103,7 @@ class Model_Stock_Container extends Model_Table {
 		$this->addCondition('name','General');
 		$this->tryLoadAny();
 		if(!$this->loaded()){
-			throw new Exception($branch_id);
+			// throw new Exception($branch_id);
 			return false;	
 		}
 		return $this;	
@@ -111,7 +111,8 @@ class Model_Stock_Container extends Model_Table {
 	}
 
 	function loadDeadContainer($branch_id=null){
-		
+		$this->_dsql()->del('where');
+
 		if(!$branch_id)
 			$branch_id = $this->api->current_branch->id;
 		$this->addCondition('branch_id',$branch_id);

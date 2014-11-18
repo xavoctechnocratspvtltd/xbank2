@@ -26,7 +26,7 @@ class page_stock_actions_transfer extends Page {
 		$from_container_field = $form->addField('dropdown','from_container','Container')->validateNotNull()->setEmptyText('Please Select');
 		$from_container_model = $this->add('Model_Stock_Container');
 		$from_container_model->addCondition('branch_id',$this->api->currentBranch->id);
-		$from_container_field->setModel($from_container_model);	
+		$from_container_field->setModel($from_container_model->loadGeneralContainer());	
 		$from_container_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 		
 		// $from_container_field->js('change',$form->js()->atk4_form('reloadField','from_row',array($this->api->url(),'from_container'=>$from_container_field->js()->val())));
@@ -37,7 +37,7 @@ class page_stock_actions_transfer extends Page {
 		$from_row_field = $form->addField('dropdown','from_row','Row')->validateNotNull()->setEmptyText('Please Select');
 		$from_row_model = $this->add('Model_Stock_Row');
 		$from_row_model->addCondition('branch_id',$this->api->currentBranch->id);
-		$from_row_field->setModel($from_row_model);	
+		$from_row_field->setModel($from_row_model->loadGeneralRow());	
 		$from_row_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 			// From Item
 		$from_item_field = $form->addField('autocomplete/Basic','from_item','Item')->validateNotNull();//->setEmptyText('Please Select');

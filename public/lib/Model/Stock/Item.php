@@ -142,14 +142,21 @@ class Model_Stock_Item extends Model_Table {
 
 		$purchase_tra = $this->add('Model_Stock_Transaction');
 		$purchase_tra->addCondition('item_id',$this->id);
-		$purchase_tra->addCondition('created_at','<',$this->api->nextDate($this->api->now));
-		// $purchase_tra->addCondition('transaction_type','Purchase');
+		$return_tra = $purchase_tra->addCondition('created_at','<',$this->api->nextDate($this->api->now));
 		$purchase_tra->addCondition('transaction_type',array('Purchase','Openning'));
-		$purchase_tra_qty = ($purchase_tra->sum('rate')->getOne())?:0;
-		$no_of_puchase=$purchase_tra->count()->getOne()?:1;
-		// throw new Exception($purchase_tra_qty/$no_of_puchase, 1);
+		$purchase_tra_amount = ($purchase_tra->sum('rate')->getOne())?:0;
+		$no_of_puchase=$purchase_tra->sum('qty')->getOne()?:0;
+		
+		$return_tra->addCondition('transaction_type','PurchaseReturn');
+		$return_tra_amount = $return_tra->sum('rate')->getOne()?:0;
+		$no_of_return = $return_tra->sum('qty')->getOne()?:0;
 
-		return $purchase_tra_qty/$no_of_puchase;
+		// throw new \Exception("Error Processing Request"."n=".($no_of_puchase - $no_of_return)."q=".($purchase_tra_amount - $return_tra_amount));
+		$qty =($no_of_puchase - $no_of_return);
+		if(!$qty)
+			$qty=1; 
+		
+		return ($purchase_tra_amount - $return_tra_amount)/$qty;
 		
 	}
 
@@ -166,8 +173,16 @@ class Model_Stock_Item extends Model_Table {
 		// todo
 	}
 
-	function isDead(){
-		// todo
+	function DeadQty($as_on=null){
+		if(!$as_on)
+			$as_on=$this->api->now;
+		
+		$dead_tra = $this->add('Model_Stock_Transaction');
+		$dead_tra->addCondition('item_id',$this->id);
+		$dead_tra->addCondition('created_at','<',$as_on);
+		$dead_tra->addCondition('transaction_type','DeadSubmit');
+		$dead_tra_qty = ($dead_tra->sum('qty')->getOne())?:0;
+		return $dead_tra_qty;
 	}
 
 

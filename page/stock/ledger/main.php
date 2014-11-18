@@ -10,6 +10,7 @@ class page_stock_ledger_main extends Page {
 		$tab1=$tabs->addTabURL('stock_ledger_agent','Agent');
 		$tab1=$tabs->addTabURL('stock_ledger_dealer','Dealer');
 		$tab1=$tabs->addTabURL('stock_ledger_supplier','Supplier');
+		$tab1=$tabs->addTabURL('stock_ledger_deaditem','Dead Item');
 
 	}
 }

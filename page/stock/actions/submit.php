@@ -36,10 +36,14 @@ class page_stock_actions_submit extends Page {
 		$form_search->js(true)->hide();
 		$form->js(true)->hide();
 
-		// $crud=$this->add('crud');
+		$this->add('View_Info')->set('Submit Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$crud=$this->add('CRUD',array('allow_add'=>false));
 		$submit_transaction=$this->add('Model_Stock_Transaction');
 		$submit_transaction->addCondition('transaction_type','Submit');
+		$submit_transaction->setOrder('created_at','desc');
+		if($crud->grid){
+			$crud->grid->addPaginator(10);
+		}
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');

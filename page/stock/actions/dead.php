@@ -35,11 +35,15 @@ class page_stock_actions_dead extends Page {
 		$form_search->js(true)->hide();
 		$form->js(true)->hide();
 
-		// $grid=$this->add('Grid');
+		$this->add('View_Info')->set('Dead Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$crud=$this->add('CRUD',array('allow_add'=>false));
 
 		$dead_transaction=$this->add('Model_Stock_Transaction');
 		$dead_transaction->addCondition('transaction_type','DeadSubmit');
+		$dead_transaction->setOrder('created_at','desc');
+		if($crud->grid){
+			$crud->grid->addPaginator(10);
+		}
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');

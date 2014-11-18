@@ -47,11 +47,16 @@ class page_stock_actions_consume extends Page {
 		$form_search->js(true)->hide();
 		$form->js(true)->hide();
 
-		// $crud=$this->add('crud');
+		$this->add('View_Info')->set('Consume Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$crud=$this->add('CRUD',array('allow_add'=>false));
 		$issue_transaction=$this->add('Model_Stock_Transaction');
 		$issue_transaction->addCondition('transaction_type','Consume');
-		
+		$issue_transaction->setOrder('created_at','desc');
+
+		if($crud->grid){
+			$crud->grid->addPaginator(10);
+		}
+
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('item');

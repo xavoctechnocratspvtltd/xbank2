@@ -35,13 +35,13 @@ class page_stock_reports_itemtransaction extends Page{
 			});
 
 			$grid->addMethod('format_qty',function($g,$f){
-				$item_model = $this->add('Model_Stock_Item');
+				$item_model = $g->add('Model_Stock_Item');
 				$item_model->load($_GET['item']);
 				$g->current_row[$f] = $item_model->getQty($_GET['to_date']);
 			});
 
 			$grid->addMethod('format_avgrate',function($g,$f){
-				$item_model = $this->add('Model_Stock_Item');
+				$item_model = $g->add('Model_Stock_Item');
 				$item_model->load($_GET['item']);
 				$g->current_row[$f] = $item_model->getAvgRate($_GET['to_date']);
 				
@@ -72,8 +72,12 @@ class page_stock_reports_itemtransaction extends Page{
 		$grid->removeColumn('issue_date');
 		$grid->removeColumn('submit_date');
 		$grid->removeColumn('to_branch_id');
+		$grid->removeColumn('to_container');
+		$grid->removeColumn('to_row');
+		$grid->removeColumn('from_container');
+		$grid->removeColumn('from_row');
 
-		if($_GET['filter']){
+		if($_GET['filter'] and !$_GET['transaction_type']){
 			$grid->addOrder()->move('opening','after','transaction_type')->now();
 			$grid->addOrder()->move('qty','after','opening')->now();	
 			$grid->addOrder()->move('avg_rate','after','qty')->now();	

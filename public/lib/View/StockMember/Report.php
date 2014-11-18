@@ -126,6 +126,10 @@ class View_StockMember_Report extends View {
 		$grid->removeColumn('submit_date');
 		$grid->removeColumn('transaction_type');
 		$grid->removeColumn('branch');
+		$grid->removeColumn('to_container');
+		$grid->removeColumn('to_row');
+		$grid->removeColumn('from_container');
+		$grid->removeColumn('from_row');
 		// $grid->removeColumn('amount');
 
 	}

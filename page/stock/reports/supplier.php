@@ -114,7 +114,11 @@ class page_stock_reports_supplier extends Page {
 		$grid->removeColumn('rate');
 		$grid->removeColumn('qty');
 		$grid->removeColumn('amount');
-
+		$grid->removeColumn('to_container');
+		$grid->removeColumn('to_row');
+		$grid->removeColumn('from_container');
+		$grid->removeColumn('from_row');
+		
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('supplier'=>$form['supplier'],'item'=>$form['item'],'from_date'=>$form['from_date']?:'1970-01-01','to_date'=>$form['to_date']?:$this->api->now,'filter'=>1))->execute();
 		}

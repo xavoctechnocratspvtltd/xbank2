@@ -12,11 +12,12 @@ class page_stock_ledger_item extends Page {
 		// $form->addField('CheckBox','include_dead');
 		$form->addSubmit('GET');
 		$transaction=$this->add('Model_Stock_Transaction');
-		$transaction->addCondition('transaction_type','<>',array('DeadSubmit','DeadSold'));
+		$transaction->addCondition('transaction_type','<>',array('DeadSubmit','DeadSold','Openning'));
 		
 		$grid=$this->add('Grid_AccountsBase');
 
 		$item_model=$this->add('Model_Stock_Item');
+
 		if($_GET['filter']){						
 			if($_GET['item']){
 				$item_model->load($_GET['item']);
@@ -28,12 +29,13 @@ class page_stock_ledger_item extends Page {
 				$transaction->addCondition('created_at','>=',$_GET['from_date']);
 			if($_GET['to_date'])
 				$transaction->addCondition('created_at','<=',$_GET['to_date']);
-
 		}else
 			$transaction->addCondition('id',-1);
 	
 		$transaction->setOrder('created_at','asc');	
-		$openning_bal=$item_model->getQty($_GET['from_date']?:'1970-01-01');
+		$openning_bal = $item_model->getQty($_GET['from_date']?:'1970-01-01');
+		$openning_bal += $item_model->getOpeningQty($_GET['item'],$_GET['from_date']?:'1970-01-01');
+
 		$grid->setModel($transaction,array('item','narration','transaction_type','qty','created_at'));	
 
 		$grid->addColumn('text','DR');

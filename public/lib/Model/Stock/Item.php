@@ -186,8 +186,14 @@ class Model_Stock_Item extends Model_Table {
 	}
 
 
-	function getOpening(){
-		// todo
+	function getOpeningQty($item_id=0){
+		if(!$item_id)
+			return 0;
+		$opening_tra = $this->add('Model_Stock_Transaction');
+		$opening_tra->addCondition('item_id',$item_id);
+		$opening_tra->addCondition('transaction_type','Openning');
+		$opening_tra_qty = ($opening_tra->sum('qty')->getOne())?:0;
+		return $opening_tra_qty;	
 	}
 
 	function getDeadQty($qty,$as_on=null){

@@ -94,9 +94,9 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 			throw $this->exception('Please Call on unloaded Object');
 
 		$container_model = $this->add('Model_Stock_Container');
-		$container_model->loadGeneralContainer();
+		$container_model->loadGeneralContainer($this->api->current_branch->id);
 		$row_model = $this->add('Model_Stock_Row');
-		$row_model->loadGeneralRow();
+		$row_model->loadGeneralRow($this->api->current_branch->id);
 			if($row_model->loaded()){
 				$this->addCondition('container_id',$container_model->id);
 				$this->addCondition('row_id',$row_model->id);

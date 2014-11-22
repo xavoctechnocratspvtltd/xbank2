@@ -11,21 +11,25 @@ class Model_Stock_Member extends Model_Table {
 		
 		$this->addField('name')->mandatory(true);
 		$this->addField('address');
-		$this->addField('ph_no')->type('int')->mandatory(true);
+		$this->addField('ph_no')->mandatory(true);
 		$this->addField('type')->mandatory(true)->enum(array('Agent', 'Dealer', 'Party', 'Staff', 'Supplier'));	
 		$this->addField('is_active')->type('boolean')->defaultValue(true);
 		
+		$this->addHook('beforeSave',$this);
 		$this->hasMany('Model_Stock_Transaction','member_id');
 		$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave($m){
+		if(strlen($m['ph_no']) < 10)
+			throw $this->exception("Minimum 10 Digit Number","ValidityCheck")->setField('ph_no');
 	}
 
 	function createNew($name,$other_fields=array(),$form=null){
 
 		if($this->loaded())
-			throw $this->exception('Please call on loaded Object');
-		if(strlen($other_fields['ph_no']) != 10)
-			throw $this->exception("10 Digit Number Only","ValidityCheck")->setField('ph_no');
-
+			throw $this->exception('Please call on loaded Object');		
+		
 			$this['name']=$name;
 			$this['address']=$other_fields['address'];
 			$this['ph_no']=$other_fields['ph_no'];

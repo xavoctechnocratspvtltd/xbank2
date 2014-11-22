@@ -24,6 +24,7 @@ class Model_Stock_Row extends Model_Table {
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
+		//$container = $this->add('Model_Stock_Container');
 		
 		$this['name']=$name;
 		$this['container_id']=$other_fields['container_id'];

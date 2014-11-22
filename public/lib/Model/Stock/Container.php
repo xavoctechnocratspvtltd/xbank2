@@ -12,6 +12,8 @@ class Model_Stock_Container extends Model_Table {
 		
 		$this->hasMany('Stock_Row','container_id');
 		$this->hasMany('Stock_ContainerRowItemQty','container_id');
+		$this->hasMany('Stock_Container','from_container_id',null,'FromContainer');
+		$this->hasMany('Stock_Container','to_container_id',null,'ToContainer');
 		
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);

@@ -14,7 +14,7 @@ class View_StockMember_Issue extends View {
 		if($this->item)
 			$transaction->addCondition('item_id',$this->item);
 	
-		$transaction->addCondition('transaction_type',array('Issue','Submit'));
+		$transaction->addCondition('transaction_type',array('Issue','Submit','DeadSubmit'));
 		 
 		$grid=$this->add('Grid_AccountsBase');
 		$member_model=$this->add('Model_Stock_Member');

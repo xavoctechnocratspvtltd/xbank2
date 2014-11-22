@@ -12,7 +12,7 @@ class page_stock_ledger_deaditem extends Page{
 		// $form->addField('CheckBox','include_dead');
 		$form->addSubmit('GET');
 		$transaction=$this->add('Model_Stock_Transaction');
-		$transaction->addCondition('transaction_type',array('DeadSubmit'));
+		$transaction->addCondition('transaction_type',array('DeadSubmit','DeadSold'));
 		
 		$grid=$this->add('Grid_AccountsBase');
 

@@ -5,8 +5,9 @@ class page_stock_row extends Page {
 		parent::init();
 
 		$crud=$this->add('xCRUD',array('allow_edit'=>false));
+		$row = $this->add('Model_Stock_Row');
+		// $row->addCondition('container_id','<>',$container['id']);
 
-		$row=$this->add('Model_Stock_Row');
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false; // Always required to bypass the bellow code in editing crud mode
@@ -21,7 +22,10 @@ class page_stock_row extends Page {
 		$crud->setModel($row);		
 
 		if($crud->isEditing()){
-			$crud->form->getElement('container_id')->getModel()->add('Controller_Acl');
+			$m = $crud->form->getElement('container_id')->getModel();
+			$m->add('Controller_Acl');
+			$m->addCondition('name','<>','General');
+			$m->addCondition('name','<>','Dead');
 		}
 	
 		if($g=$crud->grid){

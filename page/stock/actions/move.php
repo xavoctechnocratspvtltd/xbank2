@@ -94,9 +94,9 @@ class page_stock_actions_move extends Page {
 			if($_GET['to_date'])
 				$transfer_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
- 
-		$crud->setModel($transfer_transaction,array('item','qty','rate','created_at','narration'),array('item','qty','rate','created_at','narration'));
 
+		$crud->setModel($transfer_transaction,array('item','qty','rate','created_at','narration'),array('item','qty','rate','created_at','narration','from_container','from_row','to_container','to_row'));
+		
 		if($form->isSubmitted()){
 			
 			$from_container_model = $this->add('Model_Stock_Container');

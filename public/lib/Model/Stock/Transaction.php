@@ -10,6 +10,8 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->hasOne('Stock_Item','item_id');
 		$m = $this->hasOne('Model_Stock_Member','member_id');
 		$m->defaultValue(0);
+		$this->hasOne('Model_Stock_Container','from_container_id')->defaultValue(0);
+		$this->hasOne('Model_Stock_Container','to_container_id')->defaultValue(0);
 
 		$this->addField('qty')->defaultValue(0);
 		$this->addField('rate')->defaultValue(0); 
@@ -20,9 +22,9 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->addField('submit_date');
 		$this->addField('transaction_type')->enum(array('Purchase','Issue','Consume','Submit','PurchaseReturn','DeadSubmit','Transfer','Move','Openning','Sold','DeadSold'));
 		$this->addField('to_branch_id')->defaultValue(0);
-		$this->addField('to_container')->defaultValue(0);
+		// $this->addField('to_container')->defaultValue(0);
 		$this->addField('to_row')->defaultValue(0);
-		$this->addField('from_container')->defaultValue(0);
+		// $this->addField('from_container')->defaultValue(0);
 		$this->addField('from_row')->defaultValue(0);
 
 		$this->addHook('beforeDelete',$this);
@@ -120,7 +122,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['item_id'] = $item->id;
 		$this['qty'] = $qty;
 		$this['rate'] = $rate;
-		$this['amount'] = $qty * $rate;
+		$this['amount'] = $rate;
 		$this['transaction_type'] = 'Purchase';
 		$this['narration'] = $narration;
 		$this['to_container'] = $container->id;
@@ -158,7 +160,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$tra['item_id']=$item->id;
 		$tra['qty']=$qty;
 		$tra['rate']=$rate;//$item_purchased['rate'];
-		$tra['amount']=$rate * $qty;
+		$tra['amount']=$qty;
 		$tra['transaction_type']='PurchaseReturn';
 		$tra['narration']=$narration;
 		$this['from_container'] = $container->id;
@@ -215,13 +217,13 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['qty']=$qty;
 		$this['narration']=$narration;
 		$this['transaction_type']='Transfer';
-		$this['rate']=$item->getAvgRate($this->api->now);
-		$this['amount']=$qty * $this['rate'];
+		$this['rate']=( $item->getAvgRate($this->api->now)  * $qty );
+		$this['amount']=$this['rate'];
 		$this['from_container'] = $container->id;
 		$this['from_row'] = $row->id;
 		$this['to_container'] = $to_container->id;
 		$this['to_row'] = $to_row->id;
-
+		
 		$this->save();
 	}
 
@@ -257,7 +259,7 @@ class Model_Stock_Transaction extends Model_Table {
 			$this['member_id']=$dealer->id;
 		$this['narration']=$narration;
 		$this['rate']=$item->getAvgRate($this->api->now);
-		$this['amount']=$this['qty'] * $this['rate'];
+		$this['amount']=$this['rate'];
 		$this['from_container'] = $from_container['id'];
 		$this['from_row'] = $from_row['id'];
 		$this->save();
@@ -297,7 +299,7 @@ class Model_Stock_Transaction extends Model_Table {
 			$this['member_id']=$dealer->id;
 		$this['narration']=$narration;
 		$this['rate']=$item->getAvgRate($this->api->now);
-		$this['amount']=$this['qty'] * $this['rate'];
+		$this['amount']=$this['rate'];
 		$this['from_container'] = $from_container['id'];
 		$this['from_row'] = $from_row['id'];
 		$this->save();
@@ -336,7 +338,7 @@ class Model_Stock_Transaction extends Model_Table {
 			$this['member_id']=$agent->id;
 		if($dealer->loaded())
 			$this['member_id']=$dealer->id;
-		$this['amount'] = $this['rate'] * $this['qty'];
+		$this['amount'] = $this['rate'];
 		$this['to_container'] = $container['id'];
 		$this['to_row'] = $row['id'];
 		$this->save();
@@ -370,7 +372,7 @@ class Model_Stock_Transaction extends Model_Table {
 		if($dealer->loaded())
 			$this['member_id']=$dealer->id;
 		$this['rate']=$item->getAvgRate($this->api->now);
-		$this['amount'] = $this['rate'] * $this['qty'];
+		$this['amount'] = $this['rate'];
 		$this['to_container'] = $container['id'];
 		$this['to_row'] = $row['id'];
 		$this->save();
@@ -394,7 +396,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['item_id'] = $item->id;
 		$this['qty'] = $qty;
 		$this['rate'] = $rate;
-		$this['amount'] = $qty * $rate;
+		$this['amount'] = $rate;
 		$this['transaction_type'] = 'Openning';
 		$this['narration'] = $narration;
 		$this['to_container'] = $container['id']; 
@@ -465,10 +467,10 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['narration']=$narration;
 		$this['transaction_type']='Move';
 		$this['rate']=$item->getAvgRate($this->api->now);
-		$this['amount']=$this['rate'] * $this['qty'];
-		$this['from_container'] = $from_container->id;
+		$this['amount']=$this['rate'];
+		$this['from_container_id'] = $from_container->id;
 		$this['from_row'] = $from_row->id;
-		$this['to_container'] = $to_container->id;
+		$this['to_container_id'] = $to_container->id;
 		$this['to_row'] = $to_row->id;
 		$this->save();
 

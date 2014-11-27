@@ -6,6 +6,7 @@ class page_accounts_Default extends Page {
 
 		$crud=$this->add('xCRUD');
 		$account_Default_model = $this->add('Model_Account_Default');
+		$account_Default_model->addCondition('scheme_name','<>','Share Capital');
 		$account_Default_model->add('Controller_Acl');
 		$account_Default_model->setOrder('id','desc');
 
@@ -26,12 +27,12 @@ class page_accounts_Default extends Page {
 
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
-			$k = 2;
-			for($k=2;$k<=4;$k++) {
-			    $f=$crud->form->addField('autocomplete/Basic','member_ID'.$k);
-			   	$f->setModel('Member');
-			   	$o->move($f->other_field,'before','Nominee');
-			}
+			// $k = 2;
+			// for($k=2;$k<=4;$k++) {
+			//     $f=$crud->form->addField('autocomplete/Basic','member_ID'.$k);
+			//    	$f->setModel('Member');
+			//    	$o->move($f->other_field,'before','Nominee');
+			// }
 
 		}
 
@@ -39,11 +40,18 @@ class page_accounts_Default extends Page {
 			$account_Default_model->hook('editing');
 		}
 
-		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','agent_id','ActiveStatus'),array('AccountNumber','member','scheme','agent','ActiveStatus'));
+		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','ActiveStatus'),array('AccountNumber','member','scheme','ActiveStatus'));
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(10);
 			$crud->grid->addOrder()->move('member','first')->now();
+		}
+
+		if($crud->isEditing()){
+			$m = $crud->form->getElement('scheme_id')->getModel();
+			$m->addCondition('SchemeType',ACCOUNT_TYPE_DEFAULT);
+			$m->addCondition('name','<>','Share Capital');
+			$m->addCondition('published',true);
 		}
 
 		if($crud->isEditing('add')){

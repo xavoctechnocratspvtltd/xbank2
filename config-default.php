@@ -104,6 +104,7 @@ define('TRA_LOAN_ACCOUNT_OPEN',                 'LoanAccountOpen');
 define('TRA_CC_ACCOUNT_OPEN',                   'CCAccountOpen');
 define('TRA_JV_ENTRY',                          'Journal Voucher Entry');
 define('TRA_DEFAULT_ACCOUNT_DEPOSIT_ENTRY',             'Default Account Deposit Enrty');
+define('TRA_SM_ACCOUNT_DEPOSIT_ENTRY',             'Default SM Deposit Enrty');
 define('TRA_NEW_MEMBER_REGISTRATIO_AMOUNT',     'NewMemberRegistrationAmount');
 define('TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT',	'PenaltyAccountAmountDeposit');
 define('TRA_FOR_CLOSE_ACCOUNT_AMOUNT_DEPOSIT',	'ForCloseAccountAmountDeposit');
@@ -192,6 +193,8 @@ $config['account_code']['MIS']='MIS';
 $config['account_code']['Recurring']='RD';
 $config['account_code']['Saving']='SB';
 $config['account_code']['Current']='CA';
+$config['account_code']['Default']='';
+$config['account_code']['SM']='SM';
 
 
 

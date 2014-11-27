@@ -55,7 +55,7 @@ class Model_Member extends Model_Table {
 			return "25";
 		});
 
-		$this->addExpression('member_name')->set('CONCAT(name,"- Member ID ",id)');
+		$this->addExpression('member_name')->set('CONCAT(name,"- Member ID ",id, " :: ",PermanentAddress)')->display(array('grid'=>'shorttext'));
 
 		$this->addExpression('search_string')->set("CONCAT(name,' ',FatherName,' ',PanNo)");
 

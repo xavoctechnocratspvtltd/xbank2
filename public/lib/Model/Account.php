@@ -130,12 +130,13 @@ class Model_Account extends Model_Table {
 
 		// throw new \Exception($this['account_type'], 1);
 		if(!$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !$this->allow_any_name AND !$this->loaded() ){
-			if(($this->ref('branch_id')->get('Code').$this['account_type']) != substr($this['AccountNumber'], 0,5) OR ($this->ref('branch_id')->get('Code').$this['account_type']) != substr($this['AccountNumber'], 0,6))
-				throw $this->exception('AccountNumber Format not accpeted '.($this->ref('branch_id')->get('Code').$this['account_type']))->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
+			$start_code = ($this->ref('branch_id')->get('Code').$this->api->getConfig('account_code/'.$this['account_type']));
+			if(strpos($this['AccountNumber'], $start_code) !==0)
+				throw $this->exception('AccountNumber Format not accpeted, Must start with '. $start_code.' or SM','ValidityCheck')->setField('AccountNumber')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
 
-		if(substr($this['AccountNumber'],0,3) !== $this->api->current_branch['Code'])
-			throw $this->exception('AccountNumber Format not accpeted, Must Have This account Code in Start','ValidityCheck')->addMoreInfo('acc',$this['AccountNumber'])->setField('AccountNumber');
+		// if(!$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 and substr($this['AccountNumber'],0,3) !== $this->api->current_branch['Code'])
+		// 	throw $this->exception('AccountNumber Format not accpeted, Must Have This account Code in Start','ValidityCheck')->addMoreInfo('acc',$this['AccountNumber'])->setField('AccountNumber');
 
 		// PandLGroup set default
 		if(!$this['Group'])
@@ -253,7 +254,7 @@ class Model_Account extends Model_Table {
 		
 		if(!$account_type) $account_type = $this['account_type'];
 		if(!$account_type) throw $this->exception('Could not Identify Account Type to generate Account Number', 'ValidityCheck')->setField('AccountNumber');
-                if(!$branch) $branch= $this->api->currentBranch;
+        if(!$branch) $branch= $this->api->currentBranch;
 
 		$ac_code = $this->api->getConfig('account_code/'.$account_type,false);
 		if(!$ac_code) throw $this->exception('Account type Code is not proper ')->addMoreInfo('Account account_type',$this['account_type']);

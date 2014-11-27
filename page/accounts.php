@@ -16,5 +16,7 @@ class page_accounts extends Page {
 			$acc_tab = $tabs->addTabURL('accounts_'.$accounts,$accounts_display);
 	
 		}
+
+		$tabs->addTabURL('accounts_SM','SM Accounts');
 	}
 }

@@ -1,5 +1,7 @@
 <?php
 
+// TODO :  Signature File in new account
+
 class page_accounts_SM extends Page {
 	function init(){
 		parent::init();

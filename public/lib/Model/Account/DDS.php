@@ -9,7 +9,7 @@ class Model_Account_DDS extends Model_Account{
 
 		$this->addCondition('SchemeType','DDS');
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','DDS');
-		$this->getElement('Amount')->caption('DDS amount (in multiples of Rs.300 like 300, 600, 900....3000 etc.)');
+		$this->getElement('Amount')->caption('DDS amount (in multiples of Rs.300 like 300, 600, 900....3000 etc.)')->type('number');
 		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_DDS);
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
@@ -25,8 +25,12 @@ class Model_Account_DDS extends Model_Account{
 		if($agent_id = $otherValues['agent_id'])
 			$this->addAgent($agent_id, $replace_existing=true);
 
-		if($otherValues['initial_opening_amount'])
-			$this->deposit($otherValues['initial_opening_amount'],null,null,$form);
+		if($otherValues['initial_opening_amount']){
+			$this->deposit($otherValues['initial_opening_amount'],null,$otherValues['debit_account']?:null,$form);
+			return;
+		}
+		throw new \Exception("Error Processing Request". print_r($otherValues,true), 1);
+		
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){

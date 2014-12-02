@@ -12,6 +12,18 @@ class page_accounts_DDS extends Page {
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
 			
+			if($form['Amount']<=0){
+				$form->displayError('Amount','Must be a valid Positive Number');
+			}
+
+			if($form['debit_account']){
+				$debit_account = $crud->add('Model_Account');
+				$debit_account->tryLoadBy('AccountNumber',$form['debit_account']);
+				
+				$form['debit_account'] = array(array($form['debit_account']=>$form['initial_opening_amount']));
+			}
+
+
 			$dds_account_model = $crud->add('Model_Account_DDS');			
 			try {
 				$crud->api->db->beginTransaction();
@@ -33,19 +45,61 @@ class page_accounts_DDS extends Page {
 			   	$o->move($f->other_field,'before','Nominee');
 			}
 
+			$crud->form->addField('line','initial_opening_amount');
+			$debit_account = $crud->form->addField('autocomplete/Basic','debit_account');
+			
+			$debit_account_model = $this->add('Model_Active_Account');
+		
+			$debit_account_model->addCondition(
+					$debit_account_model->dsql()->orExpr()
+						->where($debit_account_model->scheme_join->table_alias.'.name',BANK_ACCOUNTS_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.name',BANK_OD_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_SAVING)
+						->where($debit_account_model->scheme_join->table_alias.'.name',SUSPENCE_ACCOUNT_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.name',CASH_ACCOUNT_SCHEME)
+
+				);
+
+			$debit_account_model->add('Controller_Acl');
+
+			$debit_account->setModel($debit_account_model,'AccountNumber');
 		}
 
 		if($crud->isEditing('edit')){
 			$account_dds_model->hook('editing');
 		}
 
-		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
+		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
 		
-		if($crud->grid)
+		if($crud->grid){
 			$crud->grid->addPaginator(10);
 
+			$nominee_age_field = $crud->form->getElement('NomineeAge');			
+			$nominee_age_field->js(true)->univ()->bindConditionalShow(array(
+						''=>array(),
+						'1'=>array('MinorNomineeParentName'),
+						'2'=>array('MinorNomineeParentName'),
+						'3'=>array('MinorNomineeParentName'),
+						'4'=>array('MinorNomineeParentName'),
+						'5'=>array('MinorNomineeParentName'),
+						'6'=>array('MinorNomineeParentName'),
+						'7'=>array('MinorNomineeParentName'),
+						'8'=>array('MinorNomineeParentName'),
+						'9'=>array('MinorNomineeParentName'),
+						'10'=>array('MinorNomineeParentName'),
+						'11'=>array('MinorNomineeParentName'),
+						'12'=>array('MinorNomineeParentName'),
+						'13'=>array('MinorNomineeParentName'),
+						'14'=>array('MinorNomineeParentName'),
+						'15'=>array('MinorNomineeParentName'),
+						'16'=>array('MinorNomineeParentName'),
+						'17'=>array('MinorNomineeParentName'),
+						),'div .atk-form-row');
+
+		}
+
 		if($crud->isEditing('add')){
-			$crud->form->addField('line','initial_opening_amount');
+
 			
 			$o->move('initial_opening_amount','before','Amount')
 				// ->move('collector_saving_account','after','collector_id')

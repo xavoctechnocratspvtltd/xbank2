@@ -18,6 +18,9 @@
 // TODO : movetomany .. to be checked ...
 
 
+// TODO : Run query to convert all SM accounts account_type = SM
+
+
 class page_corrections extends Page {
 	public $total_taks=9;
 	public $title = "Correction";

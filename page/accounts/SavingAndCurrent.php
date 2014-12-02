@@ -39,10 +39,31 @@ class page_accounts_SavingAndCurrent extends Page {
 			$account_savingandcurrent_model->hook('editing');
 		}
 
-		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo_id','team_id'),array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt','mo','team'));
+		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id'),array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt','mo','team'));
 		
 		if($crud->isEditing()){
-			$crud->form->getElement('account_type')->setEmptyText('Please Select');
+
+			$nominee_age_field = $crud->form->getElement('NomineeAge');			
+			$nominee_age_field->js(true)->univ()->bindConditionalShow(array(
+						''=>array(),
+						'1'=>array('MinorNomineeParentName'),
+						'2'=>array('MinorNomineeParentName'),
+						'3'=>array('MinorNomineeParentName'),
+						'4'=>array('MinorNomineeParentName'),
+						'5'=>array('MinorNomineeParentName'),
+						'6'=>array('MinorNomineeParentName'),
+						'7'=>array('MinorNomineeParentName'),
+						'8'=>array('MinorNomineeParentName'),
+						'9'=>array('MinorNomineeParentName'),
+						'10'=>array('MinorNomineeParentName'),
+						'11'=>array('MinorNomineeParentName'),
+						'12'=>array('MinorNomineeParentName'),
+						'13'=>array('MinorNomineeParentName'),
+						'14'=>array('MinorNomineeParentName'),
+						'15'=>array('MinorNomineeParentName'),
+						'16'=>array('MinorNomineeParentName'),
+						'17'=>array('MinorNomineeParentName'),
+						),'div .atk-form-row');
 		}
 
 		if($crud->grid){
@@ -51,6 +72,7 @@ class page_accounts_SavingAndCurrent extends Page {
 		}
 
 		if($crud->isEditing('add')){
+			$crud->form->getElement('account_type')->setEmptyText('Please Select');
 			$o->now();
 		}
 

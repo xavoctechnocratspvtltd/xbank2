@@ -8,7 +8,7 @@ class Model_Stock_Container extends Model_Table {
 		$this->hasOne('Branch','branch_id');
 		$this->addCondition('branch_id',$this->api->current_branch->id);
 		
-		$this->addField('name')->mandatory(true);
+		$this->addField('name')->mandatory(true)->sortable(true);
 		
 		$this->hasMany('Stock_Row','container_id');
 		$this->hasMany('Stock_ContainerRowItemQty','container_id');

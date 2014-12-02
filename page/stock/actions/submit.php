@@ -59,7 +59,7 @@ class page_stock_actions_submit extends Page {
 				$submit_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
 
-		$crud->setModel($submit_transaction,array('branch','staff','agent','dealer','item','qty','submit_date','narration'));
+		$crud->setModel($submit_transaction,array('item','qty','amount','narration','created_at','member','transaction_type'));
 
 		if($form->isSubmitted()){
 			

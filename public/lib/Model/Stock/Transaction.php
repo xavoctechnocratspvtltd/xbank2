@@ -12,6 +12,8 @@ class Model_Stock_Transaction extends Model_Table {
 		$m->defaultValue(0);
 		$this->hasOne('Model_Stock_Container','from_container_id')->defaultValue(0);
 		$this->hasOne('Model_Stock_Container','to_container_id')->defaultValue(0);
+		$this->hasOne('Model_Stock_Row','to_row_id')->defaultValue(0);
+		$this->hasOne('Model_Stock_Row','from_row_id')->defaultValue(0);
 
 		$this->addField('qty')->defaultValue(0);
 		$this->addField('rate')->defaultValue(0); 
@@ -23,9 +25,9 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->addField('transaction_type')->enum(array('Purchase','Issue','Consume','Submit','PurchaseReturn','DeadSubmit','Transfer','Move','Openning','Sold','DeadSold'));
 		$this->addField('to_branch_id')->defaultValue(0);
 		// $this->addField('to_container')->defaultValue(0);
-		$this->addField('to_row')->defaultValue(0);
+		// $this->addField('to_row')->defaultValue(0);
 		// $this->addField('from_container')->defaultValue(0);
-		$this->addField('from_row')->defaultValue(0);
+		// $this->addField('from_row')->defaultValue(0);
 
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('afterInsert',$this);
@@ -219,10 +221,10 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['transaction_type']='Transfer';
 		$this['rate']=( $item->getAvgRate($this->api->now)  * $qty );
 		$this['amount']=$this['rate'];
-		$this['from_container'] = $container->id;
-		$this['from_row'] = $row->id;
-		$this['to_container'] = $to_container->id;
-		$this['to_row'] = $to_row->id;
+		$this['from_container_id'] = $container->id;
+		$this['from_row_id'] = $row->id;
+		$this['to_container_id'] = $to_container->id;
+		$this['to_row_id'] = $to_row->id;
 		
 		$this->save();
 	}
@@ -469,9 +471,9 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['rate']=$item->getAvgRate($this->api->now);
 		$this['amount']=$this['rate'];
 		$this['from_container_id'] = $from_container->id;
-		$this['from_row'] = $from_row->id;
+		$this['from_row_id'] = $from_row->id;
 		$this['to_container_id'] = $to_container->id;
-		$this['to_row'] = $to_row->id;
+		$this['to_row_id'] = $to_row->id;
 		$this->save();
 
 		$criq_model = $this->add('Model_Stock_ContainerRowItemQty');

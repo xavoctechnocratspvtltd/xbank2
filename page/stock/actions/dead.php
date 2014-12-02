@@ -59,7 +59,7 @@ class page_stock_actions_dead extends Page {
 				$dead_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
 
-		$crud->setModel($dead_transaction,array('branch','staff','agent','dealer','item','qty','created_at','narration'));
+		$crud->setModel($dead_transaction,array('item','qty','amount','narration','created_at','member','transaction_type'));
 
 		if($form->isSubmitted()){
 			

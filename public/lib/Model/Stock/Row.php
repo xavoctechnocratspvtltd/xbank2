@@ -10,9 +10,11 @@ class Model_Stock_Row extends Model_Table {
 
 		$this->hasOne('Stock_Container','container_id');
 		
-		$this->addField('name')->mandatory(true);
+		$this->addField('name')->mandatory(true)->sortable(true);
 		
 		$this->hasMany('Stock_ContainerRowItemQty','row_id');
+		$this->hasMany('Stock_Row','from_row_id',null,'FromRow');
+		$this->hasMany('Stock_Row','to_row_id',null,'ToRow');
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);

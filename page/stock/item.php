@@ -22,8 +22,8 @@ class page_stock_item extends Page {
 		$crud->setModel($item);		
 	
 		if($g=$crud->grid){
-			$g->addPaginator(50);
-
+			$g->addQuickSearch(array('name','category'));	
+			$g->addPaginator(20);
 		}
 	}
 }

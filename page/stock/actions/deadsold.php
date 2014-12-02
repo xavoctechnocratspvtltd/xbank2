@@ -52,7 +52,7 @@ class page_stock_actions_deadsold extends Page {
 				$sold_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
 
-		$crud->setModel($sold_transaction,array('branch','item','qty','rate','amount','created_at'));
+		$crud->setModel($sold_transaction,array('item','qty','amount','narration','created_at','member','transaction_type'));
 
 		if($form->isSubmitted()){
 

@@ -3,7 +3,7 @@
 class page_stock_actions_opening extends Page {
 	function init(){
 		parent::init();
-
+		
 		$search_btn=$this->add('Button')->set('Search');
 		$add_btn=$this->add('Button')->set('Add');
 
@@ -30,7 +30,7 @@ class page_stock_actions_opening extends Page {
 		$form->js(true)->hide();
 
 		// $crud=$this->add('crud');
-		$this->add('View_Info')->set('Opening Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
+		$v = $this->add('View_Info')->set('Opening Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false));
 		$openning_transaction=$this->add('Model_Stock_Transaction');
 		$openning_transaction->addCondition('transaction_type','Openning');

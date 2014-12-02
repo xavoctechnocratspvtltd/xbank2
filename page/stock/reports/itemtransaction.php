@@ -15,7 +15,13 @@ class page_stock_reports_itemtransaction extends Page{
 		$item_field->setModel($item);
 
 		$form->addSubmit('GET LIST');
-		$grid=$this->add('Grid_AccountsBase');
+		$v = $this->add('View');
+		$item_name = "All";
+		$transaction_name = "All";
+		$msg = "Item Wise Staff Report";
+		$msg_view = $v->add('View_Info')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
+
+		$grid=$v->add('Grid_AccountsBase');
 		$grid->addSno();
 		$transaction_model = $this->add('Model_Stock_Transaction');
 
@@ -23,8 +29,10 @@ class page_stock_reports_itemtransaction extends Page{
 			$transaction_model->addCondition('item_id',$_GET['item']);
 			$transaction_model->addCondition('branch_id',$this->api->currentBranch->id);
 			$transaction_model->addCondition('transaction_type','<>',array('Openning','move'));
-			if($_GET['transaction_type'])
+			if($_GET['transaction_type']){
 				$transaction_model->addCondition('transaction_type',$_GET['transaction_type']);
+				$transaction_name = $transaction_model['transaction_type'];	
+			}
 			$transaction_model->_dsql()->group('transaction_type');
 			$transaction_model->setOrder('transaction_type','desc');
 			
@@ -57,6 +65,10 @@ class page_stock_reports_itemtransaction extends Page{
 			$grid->addColumn('avgrate,money','avg_rate');
 			$grid->addColumn('totalamount,money','total_amount');
 
+			//Display MSG
+			$selected_item_model = $this->add('Model_Stock_Item')->load($_GET['item']);	
+			$item_name = $selected_item_model['name'];
+			$msg ="Item ( ".$item_name." ) Wise Transaction ( ".$transaction_name." ) Report From Date: ".$_GET['from_date']." To Date: ".$_GET['to_date'];
 		}else
 			$transaction_model->addCondition('id',-1);
 
@@ -84,9 +96,9 @@ class page_stock_reports_itemtransaction extends Page{
 			$grid->addOrder()->move('total_amount','after','avg_rate')->now();	
 		}
 		
-
+		$msg_view->set($msg);
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('item'=>$form['item'],'transaction_type'=>$form['transaction_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
+			$v->js()->reload(array('item'=>$form['item'],'transaction_type'=>$form['transaction_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
 		}
 	}
 }

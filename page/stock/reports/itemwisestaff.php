@@ -13,7 +13,12 @@ class page_stock_reports_itemwisestaff extends Page{
 		$form->addField('DatePicker','to_date');
 		$form->addSubmit('GET LIST');
 
-		$grid=$this->add('Grid_AccountsBase');
+		$v = $this->add('View');
+		$item_name = "All";
+		$msg = "Item Wise Staff Report";
+		$msg_view = $v->add('View_Info')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
+
+		$grid=$v->add('Grid_AccountsBase');
 		$grid->addSno();
 		
 		$member_model = $this->add('Model_Stock_Member');
@@ -103,6 +108,11 @@ class page_stock_reports_itemwisestaff extends Page{
 			$grid->addColumn('balance','balance');
 			$grid->addColumn('avgrate,money','avg_rate');
 			$grid->addColumn('amount,money','amount');
+
+			//Display MSG
+			$item_select_model = $this->add('Model_Stock_Item')->load($_GET['item']);
+			$item_name = $item_select_model['name'];
+			$msg ="Item ( ".$item_name." ) Wise Staff Report From Date: ".$_GET['from_date']." To Date: ".$_GET['to_date'];
 		}else{
 			$member_model->addCondition('id',-1);
 			$grid->setModel($member_model);
@@ -129,9 +139,9 @@ class page_stock_reports_itemwisestaff extends Page{
 		$grid->removeColumn('created_at');
 		$grid->removeColumn('transaction_type');
 
-
+		$msg_view->set($msg);
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('item'=>$form['item'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
+			$v->js()->reload(array('item'=>$form['item'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
 		}
 
 

@@ -17,11 +17,16 @@ class page_stock_reports_item extends Page{
 
 		$criq_model = $this->add('Model_Stock_ContainerRowItemQty');
 		$criq_model->addCondition('branch_id',$this->api->currentBranch->id);
-		$grid = $this->add('Grid_AccountsBase');
+		
+		$v = $this->add('View');
+		$item_name = "All";
+		$msg = "Item Wherehouse Report";
+		$msg_view = $v->add('View_Info')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
+		
+		$grid = $v->add('Grid_AccountsBase');
 		$grid->addSno();
 
 		if($_GET['filter']){
-
 			if($_GET['container'])
 				$criq_model->addCondition('container_id',$_GET['container']);
 			if($_GET['item'])
@@ -31,6 +36,7 @@ class page_stock_reports_item extends Page{
 		}else
 			$grid->setModel($criq_model);
 
+		$msg_view->set($msg);	
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('container'=>$form['container'],'item'=>$form['item'],'filter'=>1))->execute();
 		}

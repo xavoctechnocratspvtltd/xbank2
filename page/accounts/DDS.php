@@ -11,7 +11,11 @@ class page_accounts_DDS extends Page {
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
-			
+				
+			if(!$form['sig_image_id']){
+				$form->displayError('sig_image_id','Signature File is Must');
+			}
+
 			if($form['Amount']<=0){
 				$form->displayError('Amount','Must be a valid Positive Number');
 			}
@@ -69,7 +73,7 @@ class page_accounts_DDS extends Page {
 			$account_dds_model->hook('editing');
 		}
 
-		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
+		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(10);

@@ -11,6 +11,10 @@ class page_accounts_Recurring extends Page {
 		
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
+
+			if(!$form['sig_image_id'])
+				$form->displayError('sig_image_id','Signature File is must');
+
 			$new_account = $crud->add('Model_Account_Recurring');
 			try {
 				$crud->api->db->beginTransaction();
@@ -41,7 +45,7 @@ class page_accounts_Recurring extends Page {
 			$account_recurring_model->hook('editing');
 		}
 
-		$crud->setModel($account_recurring_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','collector_id','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','collector','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
+		$crud->setModel($account_recurring_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','collector_id','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','collector','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(50);

@@ -7,14 +7,14 @@ class Model_Stock_Item extends Model_Table {
  
 		$this->hasOne('Branch','branch_id');
 		$this->addCondition('branch_id',$this->api->current_branch->id);
-		$this->hasOne('Stock_Category','category_id');
+		$this->hasOne('Stock_Category','category_id')->sortable(true);
 		
-		$this->addField('name');
+		$this->addField('name')->sortable(true);
 		$this->addField('description')->type('text');
-		$this->addField('is_consumable')->type('boolean')->defaultValue(false);
-		$this->addField('is_issueable')->type('boolean')->defaultValue(false);
-		$this->addField('is_fixedassets')->type('boolean')->defaultValue(false);
-		$this->addField('is_active')->type('boolean')->defaultValue(true);
+		$this->addField('is_consumable')->type('boolean')->defaultValue(false)->sortable(true);
+		$this->addField('is_issueable')->type('boolean')->defaultValue(false)->sortable(true);
+		$this->addField('is_fixedassets')->type('boolean')->defaultValue(false)->sortable(true);
+		$this->addField('is_active')->type('boolean')->defaultValue(true)->sortable(true);
 		
 		$this->hasMany('Stock_Transaction','item_id');
 		$this->hasMany('Stock_ContainerRowItemQty','item_id');

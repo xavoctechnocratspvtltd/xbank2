@@ -52,8 +52,8 @@ class page_stock_actions_move extends Page {
 			// $to_row_model->addCondition('branch_id',$form['to_branch']);
 		$to_row_field->setModel($to_row_model);	
 		$to_row_field->js(true)->closest('div.atk-form-row')->appendTo($colright);	
-		$to_narration_field = $form->addField('text','to_narration','Narration');
-		$to_narration_field->js(true)->closest('div.atk-form-row')->appendTo($colright);
+		// $to_narration_field = $form->addField('text','to_narration','Narration');
+		// $to_narration_field->js(true)->closest('div.atk-form-row')->appendTo($colright);
 		
 		$form->addSubmit('Move');
 

@@ -71,7 +71,7 @@ class page_stock_actions_consume extends Page {
 				$issue_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
 
-		$crud->setModel($issue_transaction,array('branch','item','staff','qty','issue_date','narration','transaction_type'));
+		$crud->setModel($issue_transaction,array('item','qty','amount','narration','created_at','member','transaction_type'));
 
 		if($form->isSubmitted()){
 

@@ -29,8 +29,8 @@ class page_stock_row extends Page {
 		}
 	
 		if($g=$crud->grid){
-			$g->addPaginator(10);
-
+			$g->addQuickSearch(array('container','name'));	
+			$g->addPaginator(20);
 		}
 	}
 }

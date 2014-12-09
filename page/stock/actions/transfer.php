@@ -95,7 +95,7 @@ class page_stock_actions_transfer extends Page {
 				$transfer_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
 
-		$crud->setModel($transfer_transaction,array('branch','item','qty','rate','narration','created_at','to_branch_id'),array('branch','item','qty','rate','amount','narration','created_at','to_branch_id'));
+		$crud->setModel($transfer_transaction,array('branch','item','qty','rate','narration','created_at','to_branch_id'),array('branch','item','qty','rate','amount','narration','created_at','to_branch_id'));	
 
 		if($form->isSubmitted()){
 			$container_model = $this->add('Model_Stock_Container');

@@ -9,7 +9,7 @@ class Model_Stock_Category extends Model_Table {
 		$this->hasOne('Branch','branch_id');
 		$this->addCondition('branch_id',$this->api->currentBranch->id);
 			
-		$this->addField('name');
+		$this->addField('name')->sortable(true);
 		
 		$this->hasMany('Stock_Item','category_id');
 		$this->addHook('beforeDelete',$this);	

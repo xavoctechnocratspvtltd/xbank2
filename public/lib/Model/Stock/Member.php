@@ -9,11 +9,11 @@ class Model_Stock_Member extends Model_Table {
 		$this->hasOne('Branch','branch_id');
 		$this->addCondition('branch_id',$this->api->current_branch->id);
 		
-		$this->addField('name')->mandatory(true);
+		$this->addField('name')->mandatory(true)->sortable(true);
 		$this->addField('address');
 		$this->addField('ph_no')->mandatory(true);
-		$this->addField('type')->mandatory(true)->enum(array('Agent', 'Dealer', 'Party', 'Staff', 'Supplier'));	
-		$this->addField('is_active')->type('boolean')->defaultValue(true);
+		$this->addField('type')->mandatory(true)->enum(array('Agent', 'Dealer', 'Staff', 'Supplier'))->sortable(true);	
+		$this->addField('is_active')->type('boolean')->defaultValue(true)->sortable(true);
 		
 		$this->addHook('beforeSave',$this);
 		$this->hasMany('Model_Stock_Transaction','member_id');

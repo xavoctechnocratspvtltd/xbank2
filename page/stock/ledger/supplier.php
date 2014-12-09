@@ -26,24 +26,31 @@ class page_stock_ledger_supplier extends Page {
 		$transaction->addCondition('member_id',$_GET['supplier']);
 
 		$member_model = $this->add('Model_Stock_Member');
+		$v = $this->add('View');	
+		$msg = "Supplier Leadger";
+		$item_name = "All";
 		if($_GET['filter']){				
 			if($_GET['supplier']){
 				// throw $this->exception("Member_id".$this->member.$_GET['type']);
 				$transaction->addCondition('member_id',$_GET['supplier']);				
+				$member_model->load($_GET['supplier']);
 			}
 			if($_GET['item']){
-				$member_model->load($_GET['supplier']);
+				$item_model = $this->add('Model_Stock_Item')->load($_GET['item']);
+				$item_name = $item_model['name'];
 				$openning_bal=$member_model->getSupplierOpeningQty($member_model->id,$_GET['item'],$_GET['from_date']);
 			}
 			if($_GET['from_date'])
 				$transaction->addCondition('created_at','>=',$_GET['from_date']);
 			if($_GET['to_date'])
 				$transaction->addCondition('created_at','<=',$_GET['to_date']);
+
+			$msg = "Supplier ( ".$member_model['name']." ) Ledger on Item ( ".$item_name." ) From Date: ".$_GET['from_date']." To date: ".$_GET['to_date'];
 		}else
 			$transaction->addCondition('id',-1);
 		
-
-		$grid=$this->add('Grid_AccountsBase');
+		$v->add('View_Info')->set($msg)->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
+		$grid=$v->add('Grid_AccountsBase');
 		$grid->addSno();
 		$transaction->setOrder('created_at','asc');	
 		$grid->setModel($transaction,array('item','qty','created_at'));
@@ -85,7 +92,7 @@ class page_stock_ledger_supplier extends Page {
 		}	
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('item'=>$form['item'],'supplier'=>$form['supplier'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
+			$v->js()->reload(array('item'=>$form['item'],'supplier'=>$form['supplier'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
 		}
 
 	}

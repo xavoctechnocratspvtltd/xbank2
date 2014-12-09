@@ -15,19 +15,28 @@ class page_stock_reports_supplier extends Page {
 		$form->addField('DatePicker','to_date');
 
 		$form->addSubmit('GET LIST');
-		
-		$grid=$this->add('Grid_AccountsBase');
+
+		$v = $this->add('View');
+		$item_name = "All";
+		$msg = "Supplier Report";
+		$msg_view = $v->add('View_Info')->set($msg)->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
+		$grid=$v->add('Grid_AccountsBase');
 		$grid->addSno();
 		$tran_model = $this->add('Model_Stock_Transaction');
 
 
-		if($_GET['filter']){	
-			
+		if($_GET['filter']){				
 			$tran_model_j = $tran_model->join('stock_items','item_id');
-			if($_GET['supplier'])
+			if($_GET['supplier']){
+				$supplier_model = $this->add('Model_Stock_Supplier')->load($_GET['supplier']);
 				$tran_model->addCondition('member_id',$_GET['supplier']);
-			if($_GET['item'])
+			}
+
+			if($_GET['item']){
+				$item_model = $this->add('Model_Stock_Item')->load($_GET['item']);
+				$item_name = $item_model['name'];
 				$tran_model->addCondition('item_id',$_GET['item']);
+			}
 			$tran_model->_dsql()->group('item_id');
 			$tran_model->_dsql()->group('member_id');
 
@@ -88,10 +97,13 @@ class page_stock_reports_supplier extends Page {
 			$grid->addColumn('balance','balance');
 			$grid->addColumn('avgrate','avg_rate');
 			$grid->addColumn('amount','total_amount');
+
+			//Display Massage			
+			$msg = "Supplier ( ".$supplier_model['name']." ) Item ( ".$item_name." ) Report From Date: ".$_GET['from_date']." To Date: ".$_GET['to_date'];
 		}else			
 			$tran_model->addCondition('id',-1);
 
-			
+		$msg_view->set($msg);		
 		$grid->setModel($tran_model);
 
 		if($_GET['filter']){
@@ -120,7 +132,7 @@ class page_stock_reports_supplier extends Page {
 		$grid->removeColumn('from_row');
 		
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('supplier'=>$form['supplier'],'item'=>$form['item'],'from_date'=>$form['from_date']?:'1970-01-01','to_date'=>$form['to_date']?:$this->api->now,'filter'=>1))->execute();
+			$v->js()->reload(array('supplier'=>$form['supplier'],'item'=>$form['item'],'from_date'=>$form['from_date']?:'1970-01-01','to_date'=>$form['to_date']?:$this->api->now,'filter'=>1))->execute();
 		}
 	
 	}

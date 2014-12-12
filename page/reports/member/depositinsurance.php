@@ -1,6 +1,7 @@
 <?php
 class page_reports_member_depositinsurance extends Page {
 	public $title="Deposit Member Insurance Report";
+	
 	function init(){
 		parent::init();
 
@@ -26,9 +27,9 @@ class page_reports_member_depositinsurance extends Page {
 		if($_GET['filter']){
 
 			if($_GET['from_date'])
-				$accounts_model->addCondition('LoanInsurranceDate','>=',$_GET['from_date']);
+				$accounts_model->addCondition('created_at','>=',$_GET['from_date']);
 			if($_GET['to_date'])
-				$accounts_model->addCondition('LoanInsurranceDate','<=',$_GET['to_date']);
+				$accounts_model->addCondition('created_at','<=',$_GET['to_date']);
 			if($_GET['type'])
 				$accounts_model->addCondition('account_type',$_GET['type']);
 		}

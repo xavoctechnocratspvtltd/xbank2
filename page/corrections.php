@@ -219,7 +219,10 @@ class page_corrections extends Page {
 
 				array('dealers','loan_panelty_per_day','int'),
 				array('dealers','time_over_charge','int'),
-				array('dealers','dealer_monthly_date','int'),
+				array('dealers','dealer_monthly_date','string'),
+				array('dealers','properitor_name','string'),
+				array('dealers','properitor_phone_no','string'),
+				array('dealers','product','string'),
 				array('agents','account_id','int'),
 				array('accounts','`Group`','string'),
 				array('accounts','`account_type`','string'),

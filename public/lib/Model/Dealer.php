@@ -6,6 +6,10 @@ class Model_Dealer extends Model_Table {
 
 		$this->hasOne('DSA','dsa_id');
 		$this->addField('name');
+		$this->addField('properitor_name');
+		$this->addField('properitor_phone_no');
+		$this->addField('product');
+		
 		$this->addField('Address')->type('text');
 		$this->addField('loan_panelty_per_day')->hint('Amount in rupees (int) no special symbol');
 		$this->addField('time_over_charge')->hint('Amount in rupees (int) no special symbol');

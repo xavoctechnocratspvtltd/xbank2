@@ -36,6 +36,14 @@ class Grid_AccountsBase extends Grid{
             ">".$this->current_row[$field]."</a>";
 	}
 
+	function format_picture($field){
+		// $vp = $this->add('VirtualPage',array('name'=>'pic_'.$this->model->id));
+		// $vp->set(function($p){
+		// 	$p->add('View')->setElement('img')->setAttr('src',$_GET[$p->name.'_src']);
+		// });
+		$this->current_row_html[$field] = '<img src="'.$this->current_row[$field].'" width="100px" class="grid_picture"/>';
+	}
+
 	function recursiveRender(){
 		if($this->order) $this->order->now();
 		if($this->hasColumn('voucher_no')) $this->addFormatter('voucher_no','voucherNo');
@@ -75,6 +83,29 @@ class Grid_AccountsBase extends Grid{
 
 				$grid->current_row_balance = $amount * (($opening_side=='DR')?1:-1); //Assuming Cr to be negative in all software
 			}
+		});
+	}
+
+	function addOpeningBalance_TEST($amount,$column, $other_columns=array(),$opening_side){
+
+		if(isset($this->required_current_balance))
+			throw $this->exception('If Current balance in each row is required then please add this function before addCurrentBalanceInEachRow function','Logic');
+
+		$this->addHook('xyz',function($grid)use($amount,$column,$other_columns, $opening_side){
+			// if($grid->sno == 1){
+				$other_columns[$column] = $amount;
+				foreach ($grid->columns as $name => $other_data) {
+					if(!in_array($name, array_keys($other_columns)))
+						$other_columns[$name] = '';
+					else
+						$other_columns[$name] = $other_columns[$name];
+				}
+				$grid->insertBefore($other_columns);
+				$grid->opening_balance = $amount;
+				$grid->opening_side= $opening_side;
+
+				$grid->current_row_balance = $amount * (($opening_side=='DR')?1:-1); //Assuming Cr to be negative in all software
+			// }
 		});
 	}
 

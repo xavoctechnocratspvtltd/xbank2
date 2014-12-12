@@ -141,7 +141,7 @@ class page_reports_agent_tds extends Page {
 		$grid->setModel($model);
 
 		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
-		$grid->addPaginator(10);
+		$grid->addPaginator(1);
 
 		$js=array(
 			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

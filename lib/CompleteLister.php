@@ -233,6 +233,7 @@ class CompleteLister extends Lister
      */
     function renderRows()
     {
+        $this->hook('xyz');
         $this->odd_even = null;
         $this->total_rows = 0;
         $this->template->del($this->container_tag);

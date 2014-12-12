@@ -1,10 +1,10 @@
 <?php
 class page_reports_member_loaninsurance extends Page {
 	public $title="Loan Member Insurance Report";
+
 	function init(){
 		parent::init();
 		$till_date="";
-		
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
 		}
@@ -21,16 +21,24 @@ class page_reports_member_loaninsurance extends Page {
 		$accounts_model=$this->add('Model_Account_Loan');
 
 		if($_GET['filter']){
+			$this->api->stickyGET('filter');
 
-			if($_GET['from_date'])
-				$accounts_model->addCondition('LoanInsurranceDate','>=',$_GET['from_date']);
-			if($_GET['to_date'])
-				$accounts_model->addCondition('LoanInsurranceDate','<=',$_GET['to_date']);
-			if($_GET['type'])
+			if($_GET['from_date']){
+				$this->api->stickyGET('from_date');
+				$accounts_model->addCondition('created_at','>=',$_GET['from_date']);
+			}
+			if($_GET['to_date']){
+				$this->api->stickyGET('to_date');
+				$accounts_model->addCondition('created_at','<=',$_GET['to_date']);
+			}
+			if($_GET['type']){
+				$this->api->stickyGET('type');
 				$accounts_model->addCondition('account_type',$_GET['type']);
+			}
 
-		}
+		}else{
 			$accounts_model->addCondition('id',-1);
+		}
 
 		$grid->setModel($accounts_model);
 
@@ -38,15 +46,15 @@ class page_reports_member_loaninsurance extends Page {
 		$grid->addSno();
 		$grid->removeColumn('scheme');
 
-		$js=array(
-			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
-			$this->js()->_selector('#header')->toggle(),
-			$this->js()->_selector('#footer')->toggle(),
-			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
-			$this->js()->_selector('.atk-form')->toggle(),
-			);
+		// $js=array(
+		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+		// 	$this->js()->_selector('#header')->toggle(),
+		// 	$this->js()->_selector('#footer')->toggle(),
+		// 	$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+		// 	$this->js()->_selector('.atk-form')->toggle(),
+		// 	);
 
-		$grid->js('click',$js);
+		// $grid->js('click',$js);
 	
 
 

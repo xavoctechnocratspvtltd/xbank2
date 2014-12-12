@@ -17,7 +17,7 @@ class Model_DocumentSubmitted extends Model_Table {
 
 		$this->addField('Description');
 
-		$this->add('filestore/Field_Image','doc_image_id')->type('image');//->mandatory(true);
+		$this->add('filestore/Field_Image','doc_image_id')->type('image')->display(array('grid'=>'picture'));//->mandatory(true);
 		
 		$this->addField('submitted_on')->type('date')->defaultValue($this->api->today);
 

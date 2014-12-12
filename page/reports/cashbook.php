@@ -58,7 +58,7 @@ class page_reports_cashbook extends Page {
 		$grid->setModel($cash_transaction_model,array('voucher_no','created_at','Narration','account','amountDr','amountCr'));
 		$grid->addSno();
 
-		// $grid->addPaginator(100);
+		// $grid->addTotals(array('amountCr','amountDr'));
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0))->execute();

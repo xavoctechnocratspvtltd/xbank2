@@ -67,6 +67,7 @@ class page_accounts_DDS extends Page {
 			$debit_account_model->add('Controller_Acl');
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
+			$account_dds_model->getElement('member_id')->getModel()->addCondition('is_active',true);
 		}
 
 		if($crud->isEditing('edit')){

@@ -4,27 +4,19 @@ class page_reports_member_defaulter extends Page{
 	function init(){
 		parent::init();
 
-		$till_date="";
-		
-		if($_GET['to_date']){
-			$till_date=$_GET['to_date'];
-		}
-		
-		$grid=$this->add('Grid');
-		$grid->add('H3',null,'grid_buttons')->set('Member Defaulter List As On '. date('d-M-Y',strtotime($till_date))); 
-		$member=$this->add('Model_Member');
-		$member->addCondition('is_defaulter',true);
-		$grid->setModel($member);
+		$member_model=$this->add('Model_Member');
+		$member_model->setOrder('created_at','desc');
+		$member_model->addCondition('is_defaulter',true);
+
+		$grid=$this->add('Grid',null,null,array('view/mygrid'));
+		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
+		$grid->setModel($member_model,array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active'));
 		$grid->addPaginator(50);
+		$grid->addQuickSearch(array('id','name','PhoneNos'));
 
-		$js=array(
-			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
-			$this->js()->_selector('#header')->toggle(),
-			$this->js()->_selector('#footer')->toggle(),
-			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
-			$this->js()->_selector('.atk-form')->toggle(),
-			);
-
-		$grid->js('click',$js);
+		$grid->add('Controller_DocumentsManager',array('doc_type'=>'MemberDocuments'));
+		// $grid->addColumn('expander','details');
+		// $grid->addColumn('expander','accounts');
+		// $grid->addColumn('expander','guarantor_in');
 	}
 }

@@ -39,6 +39,7 @@ class page_accounts_Recurring extends Page {
 
 			// $c_a_f=$crud->form->addField('autocomplete/Basic','collector_saving_account');
 			// $c_a_f->setModel('Account_SavingAndCurrent');
+			$account_recurring_model->getElement('member_id')->getModel()->addCondition('is_active',true);
 		}
 
 		if($crud->isEditing('edit')){

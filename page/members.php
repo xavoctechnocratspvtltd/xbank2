@@ -60,7 +60,7 @@ class page_members extends Page {
 			$member_model->getElement('NomineeAge')->system(true);
 			$member_model->getElement('RelationWithNominee')->system(true);
 			$member_model->getElement('is_agent')->system(true);
-			$member_model->getElement('is_active')->system(true);
+			// $member_model->getElement('is_active')->system(true);
 			$member_model->getElement('is_defaulter')->system(true);
 		}
 

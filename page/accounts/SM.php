@@ -36,7 +36,7 @@ class page_accounts_SM extends Page {
 			//    	$f->setModel('Member');
 			//    	$o->move($f->other_field,'before','Nominee');
 			// }
-
+		    $account_Default_model->getElement('member_id')->getModel()->addCondition('is_active',true);
 		}
 
 		if($crud->isEditing('edit')){

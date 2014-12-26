@@ -6,56 +6,106 @@ class page_reports_member_depositinsurance extends Page {
 		parent::init();
 
 		$till_date="";
-		
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
 		}
-
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','type')->setValueList(array('RD'=>'RD','FD'=>'FD','MIS'=>'MIS',0=>'All'));
+		$form->addField('dropdown','type')->setValueList(array('Recurring'=>'Recurring','DDS'=>'DDS','MIS'=>'MIS','FD'=>'FD','0'=>'All'));
 		$form->addSubmit('GET List');
 
 
-		$grid=$this->add('Grid'); 
-		$grid->add('H3',null,'grid_buttons')->set('Deposit Insurance List As On '. date('d-M-Y',strtotime($till_date))); 
+		$grid=$this->add('Grid_AccountsBase'); 
+		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance List As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$accounts_model=$this->add('Model_Account');
-		$accounts_model->addCondition('Amount','<=',500);
-
-		if($_GET['filter']){
-
-			if($_GET['from_date'])
-				$accounts_model->addCondition('created_at','>=',$_GET['from_date']);
-			if($_GET['to_date'])
-				$accounts_model->addCondition('created_at','<=',$_GET['to_date']);
-			if($_GET['type'])
-				$accounts_model->addCondition('account_type',$_GET['type']);
-		}
-		else
-			$accounts_model->addCondition('id',-1);
-
-		$grid->setModel($accounts_model);
-
-		$grid->addPaginator(50);
-
-		$js=array(
-			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
-			$this->js()->_selector('#header')->toggle(),
-			$this->js()->_selector('#footer')->toggle(),
-			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
-			$this->js()->_selector('.atk-form')->toggle(),
+		$accounts_model->add('Controller_Acl');
+		$accounts_model->setOrder('SchemeType,created_at');
+		$accounts_model->addCondition(
+				$accounts_model->dsql()->orExpr()
+					->where('SchemeType',ACCOUNT_TYPE_RECURRING)
+					->where('SchemeType',ACCOUNT_TYPE_FIXED)
+					->where('SchemeType',ACCOUNT_TYPE_DDS)
 			);
 
-		$grid->js('click',$js);
+		$accounts_model->addCondition('DefaultAC',false);
+
+		if($_GET['filter']){
+			$this->api->stickyGET('filter');
+
+			if($_GET['from_date']){
+				$this->api->stickyGET('from_date');
+				$accounts_model->addCondition('created_at','>=',$_GET['from_date']);
+			}
+			if($_GET['to_date']){
+				$this->api->stickyGET('to_date');
+				$accounts_model->addCondition('created_at','<=',$_GET['to_date']);
+			}
+			if($_GET['type']){
+				$this->api->stickyGET('type');
+				$accounts_model->addCondition('account_type',$_GET['type']);
+			}
+
+		}else{
+			$accounts_model->addCondition('id',-1);
+		}
+
+		$accounts_model->addExpression('member_name')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('name');
+		})->sortable(true);
+
+		$accounts_model->addExpression('father_name')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('FatherName');
+		});
+
+		$accounts_model->addExpression('address')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('PermanentAddress');
+		});
+
+		$accounts_model->addExpression('age')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('DOB');
+		});
+
+
+		$accounts_model->addExpression('phone_nos')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
+		});
+
+		$grid->setModel($accounts_model,array('AccountNumber','scheme','member_name','father_name','address','phone_nos','age','Nominee','RelationWithNominee','Amount'));
+
+		$grid->addMethod('format_age',function($g,$f){
+			$age=array();
+			if($g->current_row[$f] !='0000-00-00 00:00:00'){
+				$age = $g->api->my_date_diff($g->api->today,$g->current_row[$f]?:$g->api->today);
+			}
+			$g->current_row[$f] = $g->current_row[$f]? $age['years']:"";
+		});
+
+		$grid->addFormatter('age','age');
+		$grid->addColumn('text','insurance_amount');
+
+		$grid->addPaginator(50);
+		$grid->addSno();
+		$grid->removeColumn('scheme');
+
+		// $js=array(
+		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+		// 	$this->js()->_selector('#header')->toggle(),
+		// 	$this->js()->_selector('#footer')->toggle(),
+		// 	$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+		// 	$this->js()->_selector('.atk-form')->toggle(),
+		// 	);
+
+		// $grid->js('click',$js);
+	
+
 
 		if($form->isSubmitted()){
-			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'type'=>$form['type'],'filter'=>1);
+			$send = array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'type'=>$form['type'],'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	
 	
-
 	}
 }

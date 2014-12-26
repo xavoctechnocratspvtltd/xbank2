@@ -50,6 +50,7 @@ class page_accounts_CC extends Page {
 			    $k++;
 			}
 
+			$account_cc_model->getElement('member_id')->getModel()->addCondition('is_active',true);
 		}
 
 		if($crud->isEditing('edit')){

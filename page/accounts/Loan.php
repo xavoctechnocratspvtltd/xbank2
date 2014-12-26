@@ -73,6 +73,8 @@ class page_accounts_Loan extends Page {
 					'*'=>array($this->api->normalizeName($documents['name'].' value'))
 					),'div .atk-form-row');
 			}
+
+			$account_loan_model->getElement('member_id')->getModel()->addCondition('is_active',true);
 		}
 
 

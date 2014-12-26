@@ -11,14 +11,19 @@ class page_reports_member_loaninsurance extends Page {
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','type')->setValueList(array('VL'=>'VL','PL'=>'PL','CC'=>'CC','0'=>'All'));
+		$form->addField('dropdown','type')->setValueList(array_merge(array('CC'=>'CC','0'=>'All'),array_combine(explode(',',LOAN_TYPES),explode(',',LOAN_TYPES))));
 		$form->addSubmit('GET List');
 
 
 		$grid=$this->add('Grid_AccountsBase'); 
 		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance List As On '. date('d-M-Y',strtotime($till_date))); 
 
-		$accounts_model=$this->add('Model_Account_Loan');
+		$accounts_model=$this->add('Model_Account');
+		$accounts_model->addCondition(
+				$accounts_model->dsql()->orExpr()
+					->where('SchemeType','Loan')
+					->where('SchemeType','CC')
+			);
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -40,7 +45,46 @@ class page_reports_member_loaninsurance extends Page {
 			$accounts_model->addCondition('id',-1);
 		}
 
-		$grid->setModel($accounts_model);
+		$accounts_model->addExpression('member_name')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('name');
+		});
+
+		$accounts_model->addExpression('father_name')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('FatherName');
+		});
+
+		$accounts_model->addExpression('address')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('PermanentAddress');
+		});
+
+		$accounts_model->addExpression('age')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('DOB');
+		});
+
+		$accounts_model->addExpression('nominee')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('Nominee');
+		});
+
+		$accounts_model->addExpression('relation_with_nominee')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('RelationWithNominee');
+		});
+
+		$accounts_model->addExpression('phone_nos')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
+		});
+
+		$grid->setModel($accounts_model,array('AccountNumber','scheme','member_name','father_name','address','phone_nos','age','nominee','relation_with_nominee','Amount'));
+
+		$grid->addMethod('format_age',function($g,$f){
+			$age=array();
+			if($g->current_row[$f] !='0000-00-00 00:00:00'){
+				$age = $g->api->my_date_diff($g->api->today,$g->current_row[$f]?:$g->api->today);
+			}
+			$g->current_row[$f] = $g->current_row[$f]? $age['years']:"";
+		});
+
+		$grid->addFormatter('age','age');
+		$grid->addColumn('text','insurance_amount');
 
 		$grid->addPaginator(50);
 		$grid->addSno();

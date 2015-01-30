@@ -48,10 +48,12 @@ class Model_Image extends Model_File {
     }
     function createThumbnails(){
         if($this->id)$this->load($this->id);// temporary
-        $this->createThumbnail('thumb_file_id',$this->default_thumb_height,$this->default_thumb_width);
+        $this->createThumbnail('thumb_file_id',$this->default_thumb_width,$this->default_thumb_height);
     }
     function imagickCrop($i,$width,$height){
         $geo = $i->getImageGeometry();
+
+        if($geo['width']<$width && $geo['height']<$height)return; // don't crop, image is too small
 
         // crop the image
         if(($geo['width']/$width) < ($geo['height']/$height))
@@ -120,6 +122,7 @@ class Model_Image extends Model_File {
             imagejpeg($myThumb, $thumb->getPath());
             imageDestroy($myThumb);
             imageDestroy($myImage);
+            $thumb["filesize"] = filesize($thumb->getPath());
         }else{
             // No Imagemagick support. Ignore resize
             $thumb->import($this->getPath(),'copy');

@@ -1,6 +1,6 @@
 <?php
 namespace filestore;
-class Model_File extends \Model_Table {
+class Model_File extends \SQL_Model {
     public $table='filestore_file';
 
     public $entity_filestore_type='filestore/Type';
@@ -24,19 +24,19 @@ class Model_File extends \Model_Table {
             ->mandatory(true)
             ;
         $this->addField('original_filename')
-            ->datatype('text')
+            ->type('text')
             ->caption('Original Name')
             ;
         $this->addField('filename')
-            ->datatype('string')
+            ->type('string')
             ->caption('Internal Name')
             ;
         $this->addField('filesize')
-            ->datatype('int')
+            ->type('int')
             ->defaultValue(0)
             ;
         $this->addField('deleted')
-            ->datatype('boolean')
+            ->type('boolean')
             ->defaultValue(false)
             ;
 
@@ -92,13 +92,20 @@ class Model_File extends \Model_Table {
         if($mime_type == null){
             $path = $this->get('filename')?$this->getPath():$this->import_source;
             if(!$path)throw $this->exception('Load file entry from filestore or import');
-
-            if(!function_exists('finfo_open'))throw $this->exception('You have to enable php_fileinfo extension of PHP.');
-            $finfo = finfo_open(FILEINFO_MIME_TYPE, $this->magic_file);	
+    
+        $ext = explode(".",$path);
+        $ext=$ext[count($ext)-1];
+        
+        $mime_type = "image/$ext";
+        
+        /*
+            if(!function_exists('finfo_open'))throw $this->exception('You have to enable php_fileinfo extension of PHP. '.$path)->addMoreInfo('Path',$path);
+            $finfo = finfo_open(FILEINFO_MIME_TYPE, $this->magic_file); 
             if($finfo===false)throw $this->exception("Can't find magic_file in finfo_open().")
                 ->addMoreInfo('Magic_file: ',isnull($this->magic_file)?'default':$this->magic_file);
             $mime_type = finfo_file($finfo, $path);
             finfo_close($finfo);
+            */
         }
         $c=$this->ref("filestore_type_id");
         $data = $c->getBy('mime_type',$mime_type);
@@ -107,7 +114,11 @@ class Model_File extends \Model_Table {
                 $c->update(array("mime_type" => $mime_type, "name" => $mime_type));
                 $data = $c->get();
             } else { 
-                throw $this->exception('This file type is not allowed for upload')
+                throw $this->exception(
+                    sprintf(
+                        $this->api->_('This file type is not allowed for upload (%s) or you are exceeding maxium size'),
+                        $mime_type
+                    ),'Exception_ForUser')
                     ->addMoreInfo('type',$mime_type);
             }
         }

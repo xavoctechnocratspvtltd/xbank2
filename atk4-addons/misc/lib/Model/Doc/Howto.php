@@ -1,30 +1,30 @@
 <?php
-class Model_Doc_Howto extends Model_Table {
+class Model_Doc_Howto extends SQL_Model {
 	public $entity_code='doc_howto';
 
 	function defineFields(){
 		parent::defineFields();
 
-		$this->newField('title')
+		$this->addField('title')
 			->mandatory(true)
 			;
 
-		$this->newField('keywords')
+		$this->addField('keywords')
 			;
 
-		$this->newField('inherit')
+		$this->addField('inherit')
 			;
 
-		$this->newField('descr')
-			->datatype('text')
+		$this->addField('descr')
+			->type('text')
 			;
 
-		$this->newField('example')
-			->datatype('text')
+		$this->addField('example')
+			->type('text')
 			;
 
-		$this->newField('approved')
-			->datatype('boolean')
+		$this->addField('approved')
+			->type('boolean')
 			;
 	}
 }

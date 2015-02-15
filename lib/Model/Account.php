@@ -7,7 +7,7 @@ class Model_Account extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Member','member_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Member','member_id')->mandatory(true)->display(array('form'=>'Member'));
 		$this->hasOne('Scheme','scheme_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
 		// $this->hasOne('Account','loan_from_account_id')->display(array('form'=>'autocomplete/Basic'));
 		// $this->hasOne('Account','account_to_debit_id')->display(array('form'=>'autocomplete/Basic'));

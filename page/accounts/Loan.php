@@ -114,6 +114,7 @@ class page_accounts_Loan extends Page {
 			if($member_selected = $_GET['o_'.$crud->form->getElement('member_id')->name]){
 				$loan_against_account_field->model->addCondition('member_id',$member_selected);
 				$loan_against_account_field->model->addCondition('ActiveStatus',true);
+				$loan_against_account_field->model->addCondition('LockingStatus',false);
 			}
 
 			

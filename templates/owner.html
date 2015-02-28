@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{page_title}xEpan :: {/}</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="keywords" content="{$keywords}" />
+		<meta http-equiv="description" content="{$description}" />
+		<meta name="generator" content="xEpan! Artificial Intelligence Enabled Drag and Drop Based Open source php CMS" />
+		<link rel="shortcut icon" href="templates/images/favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="templates/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" href="templates/css/epan.css">
+		<link rel="stylesheet" type="text/css" href="templates/css/compact.css" />
+		<!-- <base href='/' ></base> -->
+		{$js_include}
+		<!--[if IE 8]>
+			<link rel="stylesheet" type="text/css" href="templates/css/ie8.css"/>
+		<script type="text/javascript" src="templates/css/ie8.js"></script>
+		<![endif]-->
+		<script type="text/javascript">
+			$(function(){
+				edit_template={edit_template}false{/edit_template};
+				{$document_ready}
+			});
+			$(document).on('focusin', function(event) {
+			if ($(event.target).closest(".mce-window").length) {
+				event.stopImmediatePropagation();
+			}
+			});
+		</script>
+	</head>
+	<body style='{$style};' class='{$class} ' component_type='Body '>
+		{Layout}
+		{$Content}
+		{/}
+		<div class='navbar1 navbar-inverse navbar-fixed-bottom1' style='margin-top:50px'>
+			<div class='text-center' style="color:white"> powered by <a href='http://xavoc.com' target='_blank'>xavoc.com</a> :: xEpan is a non traditional system. It is very powerful &amp; Rapidly growing system. From "Where to start" to "Fine tune Ai", please feel free to use <a href='http://xepan.org?subpage=community' target='xepan_support'>support system</a></div>
+		</div>
+		<div id="atk-growl-holder" class="atk-growl"></div>
+	</body>
+	<style type="text/css">
+		{$extra_css}
+		{$template_css}
+	</style>
+	<script src="templates/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		var bootstrapButton = $.fn.button.noConflict() // return $.fn.button to previously assigned value
+			$.fn.bootstrapBtn = bootstrapButton            // give $().bootstrapBtn the Bootstrap functionality
+			$.support.transition = (function(){
+				var thisBody = document.body || document.documentElement,
+				thisStyle = thisBody.style,
+				support = thisStyle.transition !== undefined || thisStyle.WebkitTransition !== undefined || thisStyle.MozTransition !== undefined || thisStyle.MsTransition !== undefined || thisStyle.OTransition !== undefined;
+				return support;
+			})();
+	</script>
+</html>

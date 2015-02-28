@@ -14,8 +14,7 @@ class Controller_Grid_Format_inline extends \AbstractController {
 				$g->precacheTemplate();
 				foreach($g->getIterator() as $g->current_id=>$g->current_row){
 					$g->formatRow();
-                    
-                    $result=$g->rowRender($g->row_t);
+					$result=$g->rowRender($g->row_t);
 					if($g->api->jquery)$g->api->jquery->getJS($g);
 					throw new \Exception_StopRender($result);
 				}
@@ -32,7 +31,7 @@ class Controller_Grid_Format_inline extends \AbstractController {
         $g->current_row_html[$field]='<span class="grid_inline" style="display: block" id="'.($s=$g->name.'_'.$field.'_inline_'.
             $g->current_id).'" >'.
             '<i style="float: left" class="atk-icon atk-icons-red atk-icon-office-pencil"></i>'.
-            (($g->model->getElement($field)->type() == 'boolean')?$g->current_row[$field]?'<div align="center"><i class="icon-check">yes</i></div>':'':$g->current_row[$field]).
+            $g->current_row[$field].
             '&nbsp;</span>';
         $js=$g->js(true)->_selector('#'.$s)->click(
                 $g->js()->_enclose()->_selectorThis()->parent()->atk4_load($this->api->url(null,array($s=>true)))

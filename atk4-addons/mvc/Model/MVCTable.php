@@ -59,7 +59,7 @@ abstract class Model_MVCTable extends Model {
         if(!$this->table_alias)$this->table_alias=$this->entity_code;
         if(is_null($this->entity_code))throw new Exception_InitError('You should define entity code for '.get_class($this));
         $this->addField('id')
-            ->datatype('int')
+            ->type('int')
             ->system(true)
         ;
 
@@ -302,7 +302,7 @@ abstract class Model_MVCTable extends Model {
         if(!empty($this->order)){
             foreach($this->order as $field=>$desc){
                 if(isset($this->fields[$field]) && !$this->fields[$field]->calculated() && 
-                        !$this->fields[$field]->datatype()=='recurring' && !$this->fields[$field]->sortable())
+                        !$this->fields[$field]->type()=='recurring' && !$this->fields[$field]->sortable())
                     $dsql->order($this->fieldWithAlias($field),$desc);
                 else $dsql->order($field,$desc);
             }
@@ -315,7 +315,7 @@ abstract class Model_MVCTable extends Model {
      */
     public function view_dsql($instance=null) {
         foreach ($this->fields as $fieldname=>$field_definition) {
-            if (($field_definition->datatype() == 'reference') and (!$field_definition->readonly())) {
+            if (($field_definition->type() == 'reference') and (!$field_definition->readonly())) {
                 $this->fields[$fieldname]->readonly(true);
             }
         }
@@ -376,7 +376,7 @@ abstract class Model_MVCTable extends Model {
                 $definition = $this->fields[$field_name];
 
                 // select reference entities if readonly
-                if ($definition->datatype()=='reference') {
+                if ($definition->type()=='reference') {
                     $withid=$field_name.'_id';
                     if(!isset($this->fields[$withid])){
                         $withid=$field_name;
@@ -492,10 +492,6 @@ abstract class Model_MVCTable extends Model {
         $this->fields[$name] = new FieldDefinition($this);
         return $this->fields[$name]->name($name);//->readonly($this->isReadOnly());
     }
-    function newField($name){
-        // OBSOLETE: to be removed in 4.1. use addField();
-        return $this->addField($name);
-    }
     /**
      * Sets the SQL for calculated field
      * This SQL will be passed to resulting dsql
@@ -588,23 +584,24 @@ abstract class Model_MVCTable extends Model {
         if (isset($this->fields[$field_name])) {
             $def=$this->fields[$field_name];
             // boolean fields
-            if ($def->datatype()=='boolean'){
+            if ($def->type()=='boolean'){
                 $value=$this->booleanToDb($value);
             }
 
             // integer and numeric fields, MUST be processed last
-            if($def->datatype()=='reference_id' || $def->datatype()=='reference' || $def->datatype()=='int' ||
-            $def->datatype()=='real' || $def->datatype()=='money' || $def->datatype()=='date' ||
-            $def->datatype()=='datetime' || $def->datatype()=='list'){
+            if($def->type()=='reference_id' || $def->type()=='reference' ||
+                $def->type()=='int' || $def->type()=='real' ||
+                $def->type()=='money' || $def->type()=='date' ||
+                $def->type()=='datetime' || $def->type()=='list') {
                 if($value===''){
-                    if($def->datatype()=='reference')$value=null;
+                    if($def->type()=='reference')$value=null;
                     elseif($def->required())$value=0;
                     else $value=null;
                     
                 }
             }else{
                 // HTML code
-                if($def->datatype()!='image' && !$def->allow_html())
+                if($def->type()!='image' && !$def->allow_html())
                     $value=strip_tags($value);
             }
         }
@@ -768,7 +765,7 @@ abstract class Model_MVCTable extends Model {
         }
         $_field=$this->parseFieldName($field);
         if($this->fieldExists($_field)){
-            if($this->getField($_field)->datatype()=='boolean')$value=$this->booleanToDb($value);
+            if($this->getField($_field)->type()=='boolean')$value=$this->booleanToDb($value);
         }
         // strpos('.',$field) shows that field was passed w/o prefix. If there is prefix, we certainly need where condition
         // FIXME: may be there is better implementation of this
@@ -838,7 +835,7 @@ abstract class Model_MVCTable extends Model {
 
         $dsql=$this->dsql($instance);
         if(isset($this->fields[$field]) && !$this->fields[$field]->calculated() && 
-                !$this->fields[$field]->datatype()=='recurring' && !$this->fields[$field]->sortable())
+                !$this->fields[$field]->type()=='recurring' && !$this->fields[$field]->sortable())
             $dsql->order($this->fieldWithAlias($field),$desc);
         else $dsql->order($field,$desc);
 
@@ -922,14 +919,14 @@ abstract class Model_MVCTable extends Model {
                 foreach ($this->join_entities as $alias=>&$entity_item) {
                     // reference fields should be skipped as we don't update dictionaries automatically
                     if($this->fieldExists($entity_item['join_field'])&&
-                    $this->getField($entity_item['join_field'])->datatype()==='reference')continue;
+                    $this->getField($entity_item['join_field'])->type()==='reference')continue;
                     // joined entities fields are appended to query only if reference_type was 'master'
                     // because with reference_type='related' this entity ID is used for join
                     // for master references we add to THIS entity table
                     if(!$entity_item['readonly'] 
                     && $entity_item['reference_type']=='master' && isset($entity_item['updated']) && 
                     ($entity_item['updated']==true)) {
-                        $this->setFieldVal($entity_item['join_field'],$entity_id=$this->dsql('modify_'.$alias)->do_insert());
+                        $this->setFieldVal($entity_item['join_field'],$entity_id=$this->dsql('modify_'.$alias)->insert());
                         unset($this->dsql['modify_'.$alias]);
                         $entity_item['updated']=false;
                     }
@@ -943,7 +940,7 @@ abstract class Model_MVCTable extends Model {
 
             //$this->logVar($this->dsql('modify',false)->insert());
 
-            $res = $this->dsql('modify',false)->do_insert();
+            $res = $this->dsql('modify',false)->insert();
             unset($this->dsql['modify']); // clear object
 
             // now we should insert mandatory related entities
@@ -951,12 +948,12 @@ abstract class Model_MVCTable extends Model {
                 foreach($this->join_entities as $alias=>&$entity_item){
                     // reference fields should be skipped as we don't update dictionaries automatically
                     if($this->fieldExists($entity_item['join_field'])&&
-                    $this->getField($entity_item['join_field'])->datatype()==='reference')continue;
+                    $this->getField($entity_item['join_field'])->type()==='reference')continue;
                     if($entity_item['reference_type']=='related' and $entity_item['required']){
                         // this item should reference just added entity
                         $this->setFieldVal($entity_item['join_field'],
                             $id=$this->dsql('modify_'.$alias,false,$entity_item['entity_name'])
-                                ->set($entity_item['join_field'],$res)->do_insert());
+                                ->set($entity_item['join_field'],$res)->insert());
                         // remembering new record ID
                         $entity_item['id']=$id;
                         unset($this->dsql['modify_'.$alias]);
@@ -1074,7 +1071,7 @@ abstract class Model_MVCTable extends Model {
                 foreach ($this->join_entities as $alias=>&$entity_item) {
                     // reference fields should be skipped as we don't update dictionaries automatically
                     if($this->fieldExists($entity_item['join_field'])&&
-                    $this->getField($entity_item['join_field'])->datatype()=='reference')continue;
+                    $this->getField($entity_item['join_field'])->type()=='reference')continue;
                     // readonly entities should not be update
                     if($entity_item['readonly']===true)continue;
                     if($entity_item['reference_type']=='master'&&(isset($entity_item['updated']))&&($entity_item['updated']==true)) {
@@ -1084,16 +1081,16 @@ abstract class Model_MVCTable extends Model {
                         $joined_field_value = $this->api->db->dsql()->table($entity_item['table'])//($this->entity_code)
                             ->field($entity_item['join_field'])
                             ->where('id',$this->id);
-                        $joined_field_value = $joined_field_value->do_getOne();
+                        $joined_field_value = $joined_field_value->getOne();
                         if (empty($joined_field_value))
                             $this->setFieldVal($entity_item['join_field'],
-                                                $this->dsql('modify_'.$alias,false)->do_insert());
+                                                $this->dsql('modify_'.$alias,false)->insert());
                         else{
                             $this->dsql('modify_'.$alias,false)
                                 ->where('id',$joined_field_value)
                             ;
                             //$this->logVar($this->dsql('modify_'.$alias)->update(), $this->short_name);
-                            $this->dsql('modify_'.$alias,false)->do_update();
+                            $this->dsql('modify_'.$alias,false)->update();
                         }
                         $this->dsql['modify_'.$alias]=null;
                     }
@@ -1102,17 +1099,17 @@ abstract class Model_MVCTable extends Model {
                         $joined_field_value = $this->api->db->dsql()->table($entity_item['entity_name'])
                             ->field('id')
                             ->where($entity_item['join_field'],$this->id);
-                        $joined_field_value = $joined_field_value->do_getOne();
+                        $joined_field_value = $joined_field_value->getOne();
                         if (empty($joined_field_value)&&$entity_item['required'])
                             $this->setFieldVal($entity_item['join_field'],
-                                                $this->dsql('modify_'.$alias)->do_insert());
+                                                $this->dsql('modify_'.$alias)->insert());
                         else{
                             $this->dsql('modify_'.$alias,false,$entity_item['entity_name'])
                                 ->where('id',$joined_field_value)
                                 // FIXME: tricky set to avoid exception, http://adevel.com/fuse/mantis/view.php?id=2698
                                 ->set($entity_item['join_field'],$this->id)
                             ;
-                            $this->dsql('modify_'.$alias,false)->do_update();
+                            $this->dsql('modify_'.$alias,false)->update();
                         }
                         $this->dsql['modify_'.$alias]=null;
                     }
@@ -1126,7 +1123,7 @@ abstract class Model_MVCTable extends Model {
             $this->dsql('modify',false)->where('id',$id);
             //$this->logVar($this->dsql('modify',false)->update());
 
-            $this->dsql('modify',false)->do_update();
+            $this->dsql('modify',false)->update();
             unset($this->dsql['modify']); // clear object
 
             $this->afterUpdate($id);
@@ -1181,11 +1178,11 @@ abstract class Model_MVCTable extends Model {
                 if (isset($this->fields['deleted_dts']))
                     $dq->setDate('deleted_dts');
 
-                $dq->do_update();
+                $dq->update();
 
             }
             else
-                $this->dsql(null,false)->where('id',$id)->do_delete();
+                $this->dsql(null,false)->where('id',$id)->delete();
 
             $this->afterDelete($id);
             $this->api->db->commit();
@@ -1298,8 +1295,8 @@ abstract class Model_MVCTable extends Model {
         //if($this instanceof Model_Invoice)
         //  $this->logVar($q->select(),"$this->short_name:");
         //if($this instanceof Model_Invoice)
-        //  $this->logVar($q->do_getHash(),"$this->short_name:");
-        $this->data=$this->original_data=$q->do_getHash();
+        //  $this->logVar($q->getHash(),"$this->short_name:");
+        $this->data=$this->original_data=$q->getHash();
         if(!$this->data){
             $this->api->getLogger()->logLine("No data with id: ".$id." for: ".get_class($this).
                     " but got no data. Query: ".$q->select()."\n");
@@ -1346,7 +1343,7 @@ abstract class Model_MVCTable extends Model {
             //if(!isset($this->fields[$field]))throw new Exception_InitError('Field `'.$field.'` is not defined in '.$this);
             if(!array_key_exists($field,$this->data)&&method_exists($this->api,'getSysConfig') && $this->api->getSysConfig('debug_global')&&$this->api->getSysConfig('debug_warn_get'))
                 $this->api->getLogger()->logVar("Field $field does not exist in $this->short_name");
-            elseif ($this->fields[$field]->datatype()=='boolean'){
+            elseif ($this->fields[$field]->type()=='boolean'){
                 $res=$this->data[$field]=='Y'?true:false;
             }
             else $res = $this->data[$field];
@@ -1356,7 +1353,7 @@ abstract class Model_MVCTable extends Model {
             foreach ($field as $fieldname){
                 if(!array_key_exists($fieldname,$this->data)&&$this->api->getSysConfig('debug_global')&&$this->api->getSysConfig('debug_warn_get'))
                     $this->api->getLogger()->logVar("Field $fieldname does not exist in $this->short_name");
-                elseif ($this->fields[$field]->datatype()=='boolean'){
+                elseif ($this->fields[$field]->type()=='boolean'){
                     $res[$fieldname]=$this->data[$field]=='Y'?true:false;
                 }
                 else $res[$fieldname] = $this->data[$fieldname];
@@ -1408,7 +1405,7 @@ abstract class Model_MVCTable extends Model {
         //$q=$this->resetQuery('get_rows')->view_dsql('get_rows');
         $this->setQueryFields('get_rows',empty($fields)?false:$fields);
         //$this->logVar($q->select(),$this->short_name);
-        return $q->do_getAllHash();
+        return $q->get();
     }
     /**
      * Returns totals for specified rows
@@ -1449,18 +1446,18 @@ abstract class Model_MVCTable extends Model {
             ->dsql("getby_$instance");
         if(is_null($value)&&is_array($field)){
             foreach($field as $key=>$val){
-                if($case_insensitive&&$this->getField($field)->datatype()=='string')
+                if($case_insensitive&&$this->getField($field)->type()=='string')
                     $data->where('lcase('.$this->fieldWithAlias($key).')',strtolower($val));
                 else $data->where($this->fieldWithAlias($key),$val);
             }
         }
         else{
-            if($case_insensitive&&$this->getField($field)->datatype()=='string')
+            if($case_insensitive&&$this->getField($field)->type()=='string')
                 $data->where('lcase('.$this->fieldWithAlias($field).')',strtolower($value));
             else $data->where($this->fieldWithAlias($field),$value);
         }
         //$this->logVar($data->select());
-        $data=$data->do_getHash();
+        $data=$data->getHash();
         $this->resetQuery("getby_$instance");
         return $data;
     }
@@ -1476,8 +1473,8 @@ abstract class Model_MVCTable extends Model {
         // some audit fields might be defined in the model explicitely
         // as they play important role in system logics
         if(!isset($this->fields['created_dts']))
-            $this->newField('created_dts')
-                    ->datatype('datetime')
+            $this->addField('created_dts')
+                    ->type('datetime')
                     ->caption('Created')
                     ->readonly(true)
                     ->visible(false)
@@ -1485,16 +1482,16 @@ abstract class Model_MVCTable extends Model {
                     ->system(true)
             ;
         if(!isset($this->fields['upadted_dts']))
-            $this->newField('updated_dts')
-                    ->datatype('datetime')
+            $this->addField('updated_dts')
+                    ->type('datetime')
                     ->caption('Updated')
                     ->readonly(true)
                     ->visible(false)
                         ->editable(false)
             ;
         if(!isset($this->fields['deleted']))
-            $this->newField('deleted')
-                    ->datatype('boolean')
+            $this->addField('deleted')
+                    ->type('boolean')
                     ->caption('Deleted')
                     ->readonly(true)
                     ->visible(false)
@@ -1502,8 +1499,8 @@ abstract class Model_MVCTable extends Model {
             ;
 
         if(!isset($this->fields['deleted_dts']))
-            $this->newField('deleted_dts')
-                    ->datatype('datetime')
+            $this->addField('deleted_dts')
+                    ->type('datetime')
                     ->caption('Deleted')
                     ->readonly(true)
                     ->visible(false)
@@ -1604,7 +1601,7 @@ abstract class Model_MVCTable extends Model {
 	public function validateName($data){
 		if($this->isInstanceLoaded() && !$this->isChanged('name',$data['name']))return true;
 		// should not be duplicate names
-		if($this->dsql()->where('name',$data['name'])->field('count(*)')->do_getOne()>0)
+		if($this->dsql()->where('name',$data['name'])->field('count(*)')->getOne()>0)
 			throw new Exception_ValidityCheck('Duplicate '.$this->getFriendlyName().' name');
 		return true;
     }

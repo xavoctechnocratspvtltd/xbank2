@@ -28,7 +28,7 @@ class Form_Field_Basic extends \Form_Field_Hidden
     protected $id_field;
     protected $title_field;
 
-
+    public $send_other_fields=array();
 
     function init()
     {
@@ -43,7 +43,7 @@ class Form_Field_Basic extends \Form_Field_Hidden
             'css'=>'templates/css'
             ))
             ->setBasePath($this->api->pathfinder->base_location->base_path.'/'.$addon_location)
-            ->setBaseURL($this->api->pm->base_path.'/../'.$addon_location);
+            ->setBaseURL($this->api->pm->base_path.'/'.$addon_location);
         ;
 
         // $this->api->pathfinder->addLocation($addon_location, array(
@@ -104,14 +104,14 @@ class Form_Field_Basic extends \Form_Field_Hidden
 
     function addCondition($q)
     {
-        $this->model->addCondition($this->title_field, 'like', '%'.$q.'%'); // add condition
-        /*
+        // $this->model->addCondition($this->title_field, 'like', '%'.$q.'%'); // add condition
+        
         $this->model->addCondition(
             $this->model->dsql()->orExpr()
                 ->where($this->model->getElement( $this->title_field), 'like', '%'.$q.'%')
-                ->where($this->model->getElement( $this->id_field), 'like', $this->model->dsql()->getField('id','test'))
-        )->debug();
-        */
+                // ->where($this->model->getElement( $this->id_field), 'like', $this->model->dsql()->getField('id','test'))
+        );
+        
         $this->model->setOrder($this->title_field); // order ascending by title field
         if ($this->limit_rows) {
             $this->model->_dsql()->limit($this->limit_rows); // limit resultset
@@ -137,6 +137,10 @@ class Form_Field_Basic extends \Form_Field_Hidden
         $this->id_field = $id_field ?: $this->model->id_field;
         $this->title_field = $title_field ?: $this->model->title_field;
 
+        return $this->model;        
+    }
+
+    function recursiveRender(){
         if ($_GET[$this->name]) {
 
             if ($_GET['term']) {
@@ -153,10 +157,12 @@ class Form_Field_Basic extends \Form_Field_Hidden
             echo json_encode($data);
             exit;
         }
+        parent::recursiveRender();
     }
 
     function render()
     {
+
         $url = $this->api->url(null, array($this->name => 'ajax'));
         if ($this->value) { // on add new and inserting allow empty start value
             $this->model->tryLoad($this->value);
@@ -165,11 +171,32 @@ class Form_Field_Basic extends \Form_Field_Hidden
         }
 
         $this->other_field->js(true)
-            ->_load('autocomplete_univ')
+            ->_load('autocomplete_univ6')
             ->_css('autocomplete')
             ->univ()
-            ->myautocomplete($url, $this, $this->options, $this->id_field, $this->title_field);
+            ->myautocomplete($url, $this, $this->options, $this->id_field, $this->title_field, $this->send_other_fields);
 
         return parent::render();
+    }
+
+    function filter($array){
+
+        $scheme_join = $this->model->leftJoin('schemes','scheme_id');
+        $scheme_join->addField('schemeType','SchemeType');
+        $scheme_join->addField('schemeName','name');
+
+        $wq=$this->api->db->dsql()->orExpr();
+        $hq=$this->api->db->dsql()->orExpr();
+    
+        foreach ($array as $field => $value) {
+            
+            $wq->where($field,'like',$value);
+        }   
+        $this->model->addCondition($wq); 
+    }
+
+    function defaultTemplate(){
+
+        return parent::defaultTemplate();
     }
 }

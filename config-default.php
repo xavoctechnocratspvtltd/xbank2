@@ -3,6 +3,7 @@
 $config['atk']['base_path']='./atk4/';
 $config['dsn']='mysql://root:winserver@localhost/bhawani_xbank';
 
+$config['js']['versions']['jquery']='1.8.2.min';
 
 $config['url_postfix']='';
 $config['url_prefix']='?page=';
@@ -176,7 +177,7 @@ define('LOAN_TYPES','Two Wheeler Loan,Auto Loan,Personal Loan,Loan Against Depos
 
 /* Define Codes for various accounts*/
 $config['account_code']['Two Wheeler Loan']='VL';
-$config['account_code']['Auto Loan']='VL'; // CAN WE DO FVL ??? TO SEE
+$config['account_code']['Auto Loan']='FVL'; // CAN WE DO FVL ??? TO SEE
 $config['account_code']['Personal Loan']='PL';
 $config['account_code']['Loan Against Deposit']='SL';
 $config['account_code']['Home Loan']='HL';

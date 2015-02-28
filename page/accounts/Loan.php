@@ -88,7 +88,7 @@ class page_accounts_Loan extends Page {
 						->where($loan_from_account_model->scheme_join->table_alias.'.name',BANK_ACCOUNTS_SCHEME)
 						->where($loan_from_account_model->scheme_join->table_alias.'.name',BANK_OD_SCHEME)
 						->where($loan_from_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_SAVING)
-						->where($loan_from_account_model->scheme_join->table_alias.'.name',ACCOUNT_TYPE_CC)
+						->where($loan_from_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_CC)
 						->where($loan_from_account_model->scheme_join->table_alias.'.name',CASH_ACCOUNT_SCHEME)
 
 				);
@@ -114,6 +114,7 @@ class page_accounts_Loan extends Page {
 			if($member_selected = $_GET['o_'.$crud->form->getElement('member_id')->name]){
 				$loan_against_account_field->model->addCondition('member_id',$member_selected);
 				$loan_against_account_field->model->addCondition('ActiveStatus',true);
+				$loan_against_account_field->model->addCondition('LockingStatus',false);
 			}
 
 			

@@ -45,7 +45,8 @@ class page_accounts_Default extends Page {
 		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','ActiveStatus','sig_image_id'),array('AccountNumber','member','scheme','ActiveStatus'));
 		
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(100);
+			$crud->grid->addQuickSearch(array('AccountNumber'));
 			$crud->grid->addOrder()->move('member','first')->now();
 		}
 

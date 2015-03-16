@@ -83,7 +83,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$transaction_row_model->add('Controller_Acl');
 		$transaction_row_model->setOrder('created_at','desc');
 
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','amountCr','agent_name','agent_account_number'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','amountCr','agent_name','agent_account_number','created_at'));
 		$grid->addPaginator(50);
 		$grid->addSno();
 

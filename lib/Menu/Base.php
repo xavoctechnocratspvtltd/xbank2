@@ -51,7 +51,7 @@ class Menu_Base extends Menu {
 		$reports_sub_menu->addMenuItem('reports_member','Member Reports');
 		$reports_sub_menu->addMenuItem('reports_agent','Agent Reports');
 		$reports_sub_menu->addMenuItem('reports_deleardsa','Dealer/DSA Reports');
-		$reports_sub_menu->addMenuItem('reports_deposit','Deposit Reporst');
+		$reports_sub_menu->addMenuItem('reports_deposit','Deposit Reports');
 		$reports_sub_menu->addMenuItem('reports_loan','Loan & Recovery Reports');
 		$reports_sub_menu->addMenuItem('reports_genral','General Reports');
 		$reports_sub_menu->addMenuItem('reports_books','Books');

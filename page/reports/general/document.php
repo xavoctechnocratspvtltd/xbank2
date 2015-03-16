@@ -40,7 +40,7 @@ class page_reports_general_document extends Page {
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 
 		$account_join->addField('branch_id');
-		// $account_join->addField('AccountNumber');
+		$account_join->addField('DefaultAC');
 		// $dealer_join->addField('dealer_name','name');
 
 
@@ -110,8 +110,10 @@ class page_reports_general_document extends Page {
 
 		}
 
+		
+		$document_submitted_model->addCondition('DefaultAC',false);
 		$document_submitted_model->setOrder('submitted_on desc,id desc,accounts desc');
-		// $document_submitted_model->add('Controller_Acl');
+		$document_submitted_model->add('Controller_Acl');
 
 		$grid->setModel($document_submitted_model);
 		$grid->addPaginator(50);

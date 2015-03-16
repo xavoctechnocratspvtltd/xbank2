@@ -1,7 +1,9 @@
 <?php
 
 class page_reports_loan_emiduelist extends Page {
+
 	public $title="EMI Due List (Recovery List)";
+
 	function init(){
 		parent::init();
 
@@ -9,18 +11,17 @@ class page_reports_loan_emiduelist extends Page {
 		$grid=$this->add('Grid_AccountsBase'); 
 		$till_date = $this->api->today;
 
-		if($_GET['to_date']){
-			$till_date=$_GET['to_date'];
+		if($_GET['till_date']){
+			$till_date=$_GET['till_date'];
 		}
 		$grid->add('H3',null,'grid_buttons')->set('Loan EMI Due List As On '. date('d-M-Y',strtotime($till_date)));
 
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
 
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
+		$form->addField('DatePicker','till_date');
 		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
-		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','other'=>'Other'));
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
 		foreach ($document as $junk) {
@@ -43,19 +44,17 @@ class page_reports_loan_emiduelist extends Page {
 		// $account_model->addCondition('MaturedStatus',false); //???
 
 		$grid_column_array = array('AccountNumber','created_at','maturity_date','DueDate','scheme','member_name','FatherName','PermanentAddress','PhoneNos','dealer','guarantor_name','guarantor_phno','last_premium','paid_premium_count','due_premium_count','emi_amount','due_panelty','other_charges','total');
-		$account_model->addExpression('paid_premium_count')->set(function($m,$q){
+		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
 						->addCondition('PaidOn','<>',null)
-						->addCondition('DueDate','>=',$_GET['from_date']?:'1970-01-01')
-						->addCondition('DueDate','<',$_GET['to_date']?$m->api->nextDate($_GET['to_date']):$m->api->nextDate($m->api->today))
+						->addCondition('DueDate','<',$m->api->nextDate($till_date))
 						->count();
 		})->sortable(true);
 
-		$account_model->addExpression('due_premium_count')->set(function($m,$q){
+		$account_model->addExpression('due_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
 						->addCondition('PaidOn',null)
-						->addCondition('DueDate','>=',$_GET['from_date']?:'1970-01-01')
-						->addCondition('DueDate','<',$_GET['to_date']?$m->api->nextDate($_GET['to_date']):$m->api->nextDate($m->api->today))
+						->addCondition('DueDate','<',$m->api->nextDate($till_date))
 						->count();
 		});
 
@@ -67,8 +66,8 @@ class page_reports_loan_emiduelist extends Page {
 			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('Amount');
 		});
 
-		$account_model->addExpression('due_panelty')->set(function($m,$q){
-			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$_GET['to_date']?:$m->api->today)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+		$account_model->addExpression('due_panelty')->set(function($m,$q)use($till_date){
+			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$till_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
 		});
 
 		$account_model->addExpression('other_charges')->set(function($m,$q){
@@ -106,37 +105,33 @@ class page_reports_loan_emiduelist extends Page {
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('dealer');
 			$this->api->stickyGET('report_type');
-			$this->api->stickyGET('from_date');
-			$this->api->stickyGET('to_date');
+			$this->api->stickyGET('till_date');
 			$this->api->stickyGET('loan_type');
 			$this->api->stickyGET('report_type');
 
+			$account_model->addCondition('DueDate','<=',$till_date);
+
 			if($_GET['dealer'])
 				$account_model->addCondition('dealer_id',$_GET['dealer']);
-
-			if($_GET['from_date'])
-				$account_model->addCondition('DueDate','>',$_GET['from_date']);
-			if($_GET['to_date'])
-				$account_model->addCondition('DueDate','<=',$_GET['to_date']);
 
 			switch ($_GET['report_type']) {
 				case 'duelist':
 					$account_model->addCondition('due_premium_count','>',0);
 					$account_model->addCondition('due_premium_count','<=',2);
-					$account_model->addCondition('last_premium','>=',$_GET['to_date']);
+					$account_model->addCondition('last_premium','>=',$till_date);
 					break;
 				case 'hardlist':
 					$account_model->addCondition('due_premium_count','>',2);
 					$account_model->addCondition('due_premium_count','<=',5);
-					$account_model->addCondition('last_premium','>=',$_GET['to_date']);
+					$account_model->addCondition('last_premium','>=',$till_date);
 					break;
 				case 'npa':
 					$account_model->addCondition('due_premium_count','>',5);
-					$account_model->addCondition('last_premium','>=',$_GET['to_date']);
+					$account_model->addCondition('last_premium','>=',$till_date);
 					break;
 
 				case 'time_collapse':
-					$account_model->addCondition('last_premium','<',$_GET['to_date']);
+					$account_model->addCondition('last_premium','<',$till_date);
 					break;
 				
 				default:
@@ -213,7 +208,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		if($form->isSubmitted()){
 
-			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
+			$send = array('dealer'=>$form['dealer'],'till_date'=>$form['till_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

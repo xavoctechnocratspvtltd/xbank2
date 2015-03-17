@@ -8,10 +8,6 @@ class page_reports_agent_tds extends Page {
 	function init(){
 		parent::init();
 
-		$till_date="";
-		if($_GET['to_date']){
-			$till_date=$_GET['to_date'];
-		}
 		$form = $this->add('Form');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
@@ -137,6 +133,7 @@ class page_reports_agent_tds extends Page {
 		}else
 			$model->addCondition('id',-1);
 
+		$model->setLimit(1);
 		$model->_dsql()->having('total_commission','>',0);
 		$grid->setModel($model);
 

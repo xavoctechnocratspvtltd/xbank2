@@ -24,6 +24,8 @@ class page_reports_loan_emireceivedlist extends Page {
 		$grid->add('H3',null,'grid_buttons')->set('Loan EMI Received List As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$transaction_row_model=$this->add('Model_TransactionRow');
+		$transaction_row_model->getElement('amountCr')->caption('Amount');
+		$transaction_row_model->getElement('created_at')->caption('Received Date');
 		
 		$transaction_join = $transaction_row_model->join('transactions','transaction_id');
 		$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
@@ -83,7 +85,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model,array('AccountNumber','created_at','member_name','FatherName','amountCr','dealer_name'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','FatherName','amountCr','Narration','created_at','dealer_name'));
 
 		$grid->addPaginator(50);
 		$grid->addSno();

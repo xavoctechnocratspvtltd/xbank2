@@ -17,7 +17,7 @@ class Model_Account_Loan extends Model_Account{
 		$this->getElement('doc_image_id')->mandatory(false);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
-			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".NumberOfPremiums MONTH)";
+			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +(".$m->add('Model_Scheme')->addCondition('id',$q->getField('scheme_id'))->fieldQuery("NumberOfPremiums")->render().") MONTH)";
 		});
 
 		$this->addExpression('dealer_monthly_date')->set(function ($m,$q){

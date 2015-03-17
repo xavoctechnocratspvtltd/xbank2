@@ -153,6 +153,22 @@ class page_reports_loan_emiduelist extends Page {
 					break;
 			}
 
+			$grid->addMethod('format_total',function($g,$f){
+
+				$g->current_row_html[$f]= ($g->model['due_premium_count'] * $g->model['emi_amount']) +$g->model['due_panelty']+$g->model['other_charges'];
+
+			});
+
+			$grid->addMethod('format_emidue',function($g,$f){
+
+				$g->current_row_html[$f]=$g->model['due_premium_count']*$g->model['emi_amount'];
+
+			});
+
+			$grid->addColumn('total','total');
+			$grid->addColumn('emidue','emi_dueamount');
+
+
 			foreach ($document as $junk) {
 				$doc_id = $document->id;
 				if($_GET['doc_'.$document->id]){
@@ -167,31 +183,17 @@ class page_reports_loan_emiduelist extends Page {
 		}else
 			$account_model->addCondition('id',-1);
 
+		$account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
 		$grid->setModel($account_model,$grid_column_array);
 		// $grid->addColumn('text','openning_date');
 
-		$grid->addMethod('format_total',function($g,$f){
-
-			$g->current_row_html[$f]=$g->model['emi_amount']+$g->model['due_panelty']+$g->model['other_charges'];
-
-		});
-
-		$grid->addMethod('format_emidue',function($g,$f){
-
-			$g->current_row_html[$f]=$g->model['due_premium_count']*$g->model['emi_amount'];
-
-		});
-
-		$grid->addColumn('total','total');
-		$grid->addColumn('emidue','emi_dueamount');
-
+		
 		// $grid->add('Order')
 		// 		->move('total','after','other_charges')
 		// 		->now();
-		$grid->addPaginator(5);
+		$grid->addPaginator(50);
 		$grid->addSno();
-		$grid->addOrder()->move('total','last')->now();
 		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount'));
 		$grid->removeColumn('last_premium');
 

@@ -6,7 +6,7 @@
 // some of the values here, which are going to have affect
 // on your project
 // error_reporting(E_ALL);
-$session_var='web';
+$session_var='xbank2';
 if(isset($_GET['page'])){
 	$page=$_GET['page'];
 	$page=str_replace("/", "_", $page);

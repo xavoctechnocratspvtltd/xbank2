@@ -27,7 +27,7 @@ class page_reports_loan_approval extends Page {
 			$letter->template->trySet('interest_rate',$account_model->ref('scheme_id')->get('Interest'));
 			$letter->template->trySet('premium_amount',$account_model->ref('Premium')->tryLoadAny()->get('Amount'));
 			$letter->template->trySet('number_of_premium',$account_model->ref('Premium')->count());
-			$letter->template->trySet('date_of_submission',($account_model->ref('dealer_id')->get('dealer_monthly_date')?$account_model->ref('dealer_id')->get('dealer_monthly_date'):date('d',strtotime($account_model['created_at']))));
+			$letter->template->trySet('date_of_submission',(date('d',strtotime($account_model->ref('Premium')->tryLoadAny()->get('created_at')))));
 		}
 
 		$js=array(

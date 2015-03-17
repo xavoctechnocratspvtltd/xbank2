@@ -41,7 +41,7 @@ class Model_PendingAccount extends Model_Account {
 		$otherValues['loan_from_account'] = $extra_info['loan_from_account'];
                 unset($otherValues['id']);
 
-		$new_account->createNewAccount($this['member_id'],$this['scheme_id'],$this->ref('branch_id'), $new_account->getNewAccountNumber($this['account_type'],$this->ref('branch_id')) ,$otherValues,$form=null, $on_date = $this['created_at'] );
+		$new_account->createNewAccount($this['member_id'],$this['scheme_id'],$this->ref('branch_id'), $new_account->getNewAccountNumber($this['account_type'],$this->ref('branch_id')) ,$otherValues,$form=null, $on_date = null );
 
 		$this['is_approved'] = true;
 		$this->save();

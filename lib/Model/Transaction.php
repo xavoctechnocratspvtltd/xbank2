@@ -22,7 +22,7 @@ class Model_Transaction extends Model_Table {
 
 		$this->hasOne('TransactionType','transaction_type_id');
 		$this->hasOne('Staff','staff_id');
-		$this->hasOne('Account','reference_account_id');
+		$this->hasOne('Account','reference_id');
 		$this->hasOne('Branch','branch_id');
 		$this->addField('voucher_no_original')->type('int'); //TODO bigint
 		$this->addField('voucher_no')->type('int'); //TODO bigint -- Actual Display Voucher
@@ -56,7 +56,7 @@ class Model_Transaction extends Model_Table {
 
 		// Transaction TYpe Save if not available
 		$this['transaction_type_id'] = $transaction_type_model->id;
-		$this['reference_account_id'] = isset($options['reference_account_id'])?:0;
+		$this['reference_id'] = isset($options['reference_id'])?:0;
 		$this['branch_id'] = $branch->id;
 		$this['voucher_no'] = $branch->newVoucherNumber($branch,$transaction_date);
 		$this['Narration'] = $Narration;

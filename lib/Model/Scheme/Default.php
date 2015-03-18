@@ -95,7 +95,7 @@ class Model_Scheme_Default extends Model_Scheme {
 //                    echo $depAmt;
 
             $transaction = $this->add('Model_Transaction');
-            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated", $only_transaction=null, array('reference_account_id'=>$accounts->id));
+            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated", $only_transaction=null, array('reference_id'=>$accounts->id));
             
             $transaction->addDebitAccount($b->Code . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
             $transaction->addCreditAccount($accounts, round($depAmt,COMMISSION_ROUND_TO));

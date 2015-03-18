@@ -93,7 +93,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 			return; //no need to save a new transaction of zero interest
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_SAVINGS, null, $till_date, "Interest posting in Saving Account",null,array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_SAVINGS, null, $till_date, "Interest posting in Saving Account",null,array('reference_id'=>$this->id));
 
 		$transaction->addCreditAccount($this,$current_interest);
 		$transaction->addDebitAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $current_interest);
@@ -123,7 +123,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 	function applyMinBalanceCharge($on_date=null){
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_MINIMUM_BALANCE_CHARGES, $this->ref('branch_id'), $on_date, 'Min Balance Charge REceived on '. $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_MINIMUM_BALANCE_CHARGES, $this->ref('branch_id'), $on_date, 'Min Balance Charge REceived on '. $this['AccountNumber'], null, array('reference_id'=>$this->id));
 		
 		$charge = $this->getMinimumBalanceCharge();
 

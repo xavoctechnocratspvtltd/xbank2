@@ -57,7 +57,7 @@ class Model_Premium extends Model_Table {
 		$account = $this->ref('account_id');
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Commission ".$account['AccountNumber'], null, array('reference_account_id'=>$account->id));
+		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Commission ".$account['AccountNumber'], null, array('reference_id'=>$account->id));
 		
 		$transaction->addDebitAccount($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'] , $commission);
 		

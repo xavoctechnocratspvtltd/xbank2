@@ -159,6 +159,7 @@ class page_corrections extends Page {
 				array('transaction','accounts_id','account_id'),
 				array('transaction_row','accounts_id','account_id'),
 				array('premiums','accounts_id','account_id'),
+				array('transactions','reference_account_id','reference_id'),
 			);
 
 		$this->api->markProgress('Rename_Fields',0,'...',count($renameFields));
@@ -356,7 +357,6 @@ class page_corrections extends Page {
     					'to'=>'account_guarantors',
     					'field'=>'remove' /*remove*/
     				),
-
     		);
 
     	foreach ($to_move as $move) {

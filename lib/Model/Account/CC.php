@@ -38,7 +38,7 @@ class Model_Account_CC extends Model_Account{
 		$processing_fee = $this->ref('scheme_id')->get('ProcessingFees') * $this['Amount'] / 100;
 		$transaction = $this->add('Model_Transaction');
 		
-		$transaction->createNewTransaction(TRA_CC_ACCOUNT_OPEN, null, $on_date, "CC Account Opened",null,array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_CC_ACCOUNT_OPEN, null, $on_date, "CC Account Opened",null,array('reference_id'=>$this->id));
 		$transaction->addDebitAccount($this,$processing_fee);
 	
 		$credit_account = $this->ref('branch_id')->get('Code') . SP . PROCESSING_FEE_RECEIVED . SP. $this->ref('scheme_id')->get('name');		
@@ -113,7 +113,7 @@ class Model_Account_CC extends Model_Account{
 		if($current_interest == 0 ) return; //no need to save a new transaction of zero interest
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_CC_ACCOUNT, $branch, $on_date, "Interest posting in CC Account",null,array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_CC_ACCOUNT, $branch, $on_date, "Interest posting in CC Account",null,array('reference_id'=>$this->id));
 
 		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . $this['scheme_name'], $current_interest);
 		$transaction->addDebitAccount($this,$current_interest);

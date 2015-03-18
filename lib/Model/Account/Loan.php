@@ -88,7 +88,7 @@ class Model_Account_Loan extends Model_Account{
 		}
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$on_date, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$on_date, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_id'=>$this->id));
 		
 		$loan_from_other_account = $this->add('Model_Account')->load($from_account);
 
@@ -274,7 +274,7 @@ class Model_Account_Loan extends Model_Account{
 	    // $interest = interest value for one premium
 
 	    $transaction = $this->add('Model_Transaction');
-	    $transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_LOAN,$this->ref('branch_id'),$on_date, "Interest posting in Loan Account ".$this['AccountNumber'],null, array('reference_account_id'=>$this->id));
+	    $transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_LOAN,$this->ref('branch_id'),$on_date, "Interest posting in Loan Account ".$this['AccountNumber'],null, array('reference_id'=>$this->id));
 	    
 	    $transaction->addDebitAccount($this, $interest);
 	    $transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . SP. $this['scheme_name'], $interest);
@@ -287,7 +287,7 @@ class Model_Account_Loan extends Model_Account{
 		if(!$this->hasElement('due_panelty')) throw $this->exception('The Account must be called via scheme daily function');
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penalty deposited on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penalty deposited on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_id'=>$this->id));
 
 		$amount = $this['due_panelty'];
 		

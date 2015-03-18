@@ -36,7 +36,7 @@ class page_reports_deposit_commission extends Page {
 		$member_join->addField('agent_name','name');
 
 
-		$referance_account_join = $transaction_join->join('accounts','reference_account_id');
+		$referance_account_join = $transaction_join->join('accounts','reference_id');
 		$referance_account_join->addField('AccountNumber');
 		$referance_account_join->addField('Amount');
 		$referance_account_scheme_join = $referance_account_join->join('schemes','scheme_id');

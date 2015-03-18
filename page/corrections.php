@@ -37,14 +37,15 @@ class page_corrections extends Page {
 			return;
 		}
 
-		if($jmp=$_GET['jump_to']){
-			$this->$jmp();
-			return;
-		}
 
 		try{
 			$this->api->db->beginTransaction();
 
+			if($jmp=$_GET['jump_to']){
+				$this->$jmp();
+				$this->api->db->commit();
+				return;
+			}
 
 			$this->query('SET FOREIGN_KEY_CHECKS = 0');
 

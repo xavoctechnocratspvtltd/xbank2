@@ -146,8 +146,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $interest;
 
-	    $debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . $this['scheme_name'];
-		$creditAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . $this['scheme_name'];
+	    $debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
+		$creditAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . SP. $this['scheme_name'];
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_PROVISION_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, "FD Interest Provision in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
@@ -192,7 +192,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date	, "Yearly/Maturity Interest posting to ". $this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
-		$debitAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . $this['scheme_name'];
+		$debitAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . SP. $this['scheme_name'];
 		
 		$transaction->addDebitAccount($debitAccount, $this['CurrentInterest']);
 		$transaction->addCreditAccount($this, $this['CurrentInterest']);

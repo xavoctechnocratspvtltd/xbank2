@@ -8,6 +8,7 @@ class Model_Agent extends Model_Table {
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','sponsor_id');
 		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'));;
+		$this->hasOne('Cadre','cadre_id');
 		// $this->hasOne('Tree','tree_id');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);

@@ -2,6 +2,8 @@
 
 class page_closing extends Page {
 	function page_index(){
+		set_time_limit(0);
+		
 		if($_GET['do']){
 			$this->api->forget('progress_data');
 			try{

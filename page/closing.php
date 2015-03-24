@@ -2,6 +2,7 @@
 
 class page_closing extends Page {
 	function page_index(){
+		ini_set('memory_limit', '2048M');
 		set_time_limit(0);
 		
 		if($_GET['do']){
@@ -10,8 +11,7 @@ class page_closing extends Page {
 				$this->api->db->dsql()->owner->beginTransaction();
 				foreach ($b=$this->add('Model_Branch')->addCondition('PerformClosings',true) as $branch_array) 
 					$b->performClosing($this->api->today);
-				$this->api->db->dsql()->owner->rollBack();
-				// $this->api->db->dsql()->owner->commit();
+				$this->api->db->dsql()->owner->commit();
 			}catch(Exception $e){
 				$this->api->db->dsql()->owner->rollBack();
 				throw $e;

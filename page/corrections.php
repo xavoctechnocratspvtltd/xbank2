@@ -9,28 +9,20 @@
 // DONE: penalty not implemented if applied on last emi ... LOAN SCHEME 82 line
 // DONE: Take every date transaction for each CC account aftre 31 march and update Interest in CurrentInterest Field
 
-// TODOS: refence_account_id to reference_id name change
+// DONE: refence_account_id to reference_id name change
 // TODOS: PandLGroup correction as per default accounts
 // TODOS: Default Accounts Query should be faster
 // TODOS: Transaction_id to be indexed in transaction_row Table
 // FD Schemes from Month to days
 // TODO : Recurring in function setAccountType ???
-// TODO : movetomany .. to be checked ...
+// DONE : movetomany .. to be checked ... -> To do it manually for accounts as well as guarenters ..
 
 
 // TODO : Run query to convert all SM accounts account_type = SM
 
 
-
-
-// .. before run
-// make dynamic on on Model_AccountGuarantor, Model_AgentGuarantor, Model_Comment, DSA, Model_DSAGuarantor, Model_Dealer, Model_Document
-// Model_DocumentSubmitted, Model_JointMember, Model_Log, Model_Mo, Model_Stock_Category, Model_Stock_Container, Model_Stock_ContainerRowItemQty, Model_Stock_Item,
-// Model_Stock_Member, 
-
-
 class page_corrections extends Page {
-	public $total_taks=9;
+	public $total_taks=11;
 	public $title = "Correction";
 	function init(){
 		parent::init();
@@ -100,7 +92,9 @@ class page_corrections extends Page {
 
 			$this->api->markProgress('Corrections',9,'Creating Default Accounts',$this->total_taks);
 			$this->checkAndCreateDefaultAccounts();
-			$this->api->markProgress('Corrections',10,'Done',$this->total_taks);
+			
+			$this->api->markProgress('Corrections',10,'Closing Dates Correcting',$this->total_taks);
+			$this->closingDateCorrections();
 
 			$this->query('SET FOREIGN_KEY_CHECKS = 1');
 			$this->api->db->commit();
@@ -249,6 +243,7 @@ class page_corrections extends Page {
 				array('accounts','`related_account_id`','int'),
 				array('accounts','`doc_image_id`','int'),
 				array('schemes','`type`','string'),
+				array('agents','`cadre_id`','int'),
 			);
 		$this->api->markProgress('New_Field',0,'...',count($new_fields));
 		$i=1;
@@ -510,6 +505,17 @@ class page_corrections extends Page {
 		}
    	}
 
+   	function closingDateCorrections(){
+   		foreach($closings = $this->add('Model_Closing') as $cls){
+   			$cls['daily'] = $this->api->previousDate($cls['daily']);
+   			$cls['weekly'] = $this->api->previousDate($cls['weekly']);
+   			$cls['monthly'] = $this->api->previousDate($cls['monthly']);
+   			$cls['halfyearly'] = $this->api->previousDate($cls['halfyearly']);
+   			$cls['yearly'] = $this->api->previousDate($cls['yearly']);
+   			$cls->save();
+   		}
+   	}
+
     function ccInterestTillNow($on_date=false){
 
     	// IMPORTANT: This Interest is posted MONTHLY (END OF MONTH)
@@ -566,16 +572,16 @@ class page_corrections extends Page {
 			schemes.SchemeType,
 
 
-                        IF (
-                                schemes.SchemeType = 'Loan',
-                        IF(accounts.LoanAgainstAccount_id is not null,
-                        'Loan Against Deposit',
-                        IF (
-                                LOCATE('pl ', schemes. NAME),
-                                'Personal Loan',
-                                'Two Wheeler Loan'
-                        )
-                        ),
+        IF (
+            schemes.SchemeType = 'Loan',
+        	IF(accounts.LoanAgainstAccount_id is not null,
+        		'Loan Against Deposit',
+       			IF (
+                	LOCATE('pl ', schemes. NAME),
+                	'Personal Loan',
+                	'Two Wheeler Loan'
+       			)
+        ),
 
 
 		IF (

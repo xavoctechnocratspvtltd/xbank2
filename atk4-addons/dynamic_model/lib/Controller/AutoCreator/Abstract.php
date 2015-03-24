@@ -59,6 +59,10 @@ abstract class Controller_AutoCreator_Abstract extends \AbstractController
     function init() {
         parent::init();
 
+        if(!$this->api->getConfig('autocreator',true)){
+            return;
+        } 
+
         // check owner object
         $model = $this->owner;
         if (! $model instanceof \SQL_Model) {

@@ -21,11 +21,22 @@
 // TODO : Run query to convert all SM accounts account_type = SM
 
 
+
+
+// .. before run
+// make dynamic on on Model_AccountGuarantor, Model_AgentGuarantor, Model_Comment, DSA, Model_DSAGuarantor, Model_Dealer, Model_Document
+// Model_DocumentSubmitted, Model_JointMember, Model_Log, Model_Mo, Model_Stock_Category, Model_Stock_Container, Model_Stock_ContainerRowItemQty, Model_Stock_Item,
+// Model_Stock_Member, 
+
+
 class page_corrections extends Page {
 	public $total_taks=9;
 	public $title = "Correction";
 	function init(){
 		parent::init();
+		ini_set('memory_limit', '2048M');
+		set_time_limit(0);
+		error_reporting(E_ALL);
 		$this->add('progressview/View_Progress',array('interval'=>500));
 	}
 
@@ -183,6 +194,7 @@ class page_corrections extends Page {
 				array('members','ParentAddress'),
 			);
 		$this->api->markProgress('Remove_Fields',0,'...',count($remove_fields));
+		
 		$i=1;
 		foreach ($remove_fields as $dtl) {
 			$this->removeField($dtl[0],$dtl[1]);
@@ -405,12 +417,19 @@ class page_corrections extends Page {
 					)");
     	
     	$this->addField('transaction_row','transaction_id','int');
+
+    	try{
+	    	$this->query('CREATE INDEX voucher_no_original ON transactions (voucher_no_original) USING BTREE');
+    	}catch(Exception $e){
+    		
+    	}
+
     	// join transactionrow with transaction on vaoucherno and branchid and fill transaction's id in trnsaction_id  
     	$this->query('UPDATE 
 			transaction_row tr join transactions t on t.voucher_no_original=tr.voucher_no and t.branch_id = tr.branch_id
 			SET
 			tr.transaction_id = t.id');
-
+    	
     	// Remove unwanted columns
     	// TODOS: 
     	
@@ -617,7 +636,7 @@ class page_corrections extends Page {
 			UPDATE 
 				transactions
 				SET
-				reference_account_id = 
+				reference_id = 
 				SUBSTR(
 				Narration ,
 				LOCATE('(',Narration)+1

@@ -64,7 +64,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 	function createInitialTransaction($on_date, $form){
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_FIXED_ACCOUNT_DEPOSIT, $this->ref('branch_id'), $on_date, "Initial Fixed Amount Deposit in ".$this['AccountNumber'], $only_transaction=null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_FIXED_ACCOUNT_DEPOSIT, $this->ref('branch_id'), $on_date, "Initial Fixed Amount Deposit in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
 		if($form['debit_account']){
 			$debit_account = $form['debit_account'];
@@ -84,7 +84,7 @@ class Model_Account_FixedAndMis extends Model_Account{
         $commissionAmount = $commissionAmount * $this["Amount"] / 100.00;
 
         $transaction = $this->add('Model_Transaction');
-        $transaction->createNewTransaction(TRA_ACCOUNT_OPEN_AGENT_COMMISSION, $this->ref('branch_id'), $this['created_at'], "Agent Account openning commision for ".$this['AccountNumber'], $only_transaction=null, array('reference_account_id'=>$this->id));
+        $transaction->createNewTransaction(TRA_ACCOUNT_OPEN_AGENT_COMMISSION, $this->ref('branch_id'), $this['created_at'], "Agent Account openning commision for ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
         
         $transaction->addDebitAccount($this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionAmount);
 
@@ -146,11 +146,11 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $interest;
 
-	    $debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . $this['scheme_name'];
-		$creditAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . $this['scheme_name'];
+	    $debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
+		$creditAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . SP. $this['scheme_name'];
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_PROVISION_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, "FD Interest Provision in ".$this['AccountNumber'], $only_transaction=null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_PROVISION_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, "FD Interest Provision in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
 		$transaction->addDebitAccount($debitAccount, $interest);
 		$transaction->addCreditAccount($creditAccount, $interest);
@@ -166,7 +166,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		if(!$on_date) $on_date = $this->api->today;
 		
 		if($maturity_to_account = $this->ifMaturitytoAnotherAccount()){
-			$this->withdrawl($this['CurrentBalanceCr'],$narration='Maturity Amount Transfered to '. $maturity_to_account['AccountNumber'],$accounts_to_credit=array(array($maturity_to_account['AccountNumber']=>$this['CurrentBalanceCr'])),$form=null,$on_date,$in_branch=null,$reference_account_id=$this->id);
+			$this->withdrawl($this['CurrentBalanceCr'],$narration='Maturity Amount Transfered to '. $maturity_to_account['AccountNumber'],$accounts_to_credit=array(array($maturity_to_account['AccountNumber']=>$this['CurrentBalanceCr'])),$form=null,$on_date,$in_branch=null,$reference_id=$this->id);
 		}
 
 		if($this->isAutoRenewed()){
@@ -190,9 +190,9 @@ class Model_Account_FixedAndMis extends Model_Account{
 	function revertProvision($on_date){
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date	, "Yearly/Maturity Interest posting to ". $this['AccountNumber'], $only_transaction=null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date	, "Yearly/Maturity Interest posting to ". $this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
-		$debitAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . $this['scheme_name'];
+		$debitAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . SP. $this['scheme_name'];
 		
 		$transaction->addDebitAccount($debitAccount, $this['CurrentInterest']);
 		$transaction->addCreditAccount($this, $this['CurrentInterest']);
@@ -228,7 +228,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$creditAccount = $this->ref('intrest_to_account_id');
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, "FD monthly Interest Deposited in ".$this['AccountNumber'], $only_transaction=null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, "FD monthly Interest Deposited in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
 		$transaction->addDebitAccount($this, $interest);
 		$transaction->addCreditAccount($creditAccount, $interest);

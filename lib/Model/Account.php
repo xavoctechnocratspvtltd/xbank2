@@ -378,7 +378,7 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null,$reference_account_id=null){
+	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null,$reference_id=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Withdrawing amount');
 		if(!isset($this->transaction_withdraw_type)) throw $this->exception('transaction_withdraw_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_withdraw_narration)) throw $this->exception('default_transaction_withdraw_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
@@ -391,7 +391,7 @@ class Model_Account extends Model_Table {
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_withdraw_type,$in_branch,$on_date,$narration,null,array('reference_account_id'=>$reference_account_id));
+		$transaction->createNewTransaction($this->transaction_withdraw_type,$in_branch,$on_date,$narration,null,array('reference_id'=>$reference_id));
 		
 		$transaction->addDebitAccount($this,$amount);			
 
@@ -429,8 +429,8 @@ class Model_Account extends Model_Table {
 
 		$narration.= " - ".$staff_model['name'];
 		$transaction = $this->add('Model_Transaction');
-		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_CONVEYANCE_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_account_id'=>$staff));
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_CONVEYANCE_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_id'=>$staff));
 		
 		$transaction->addDebitAccount($account_dr,$amount);
 		$transaction->addCreditAccount($account_cr,$amount);			
@@ -460,8 +460,8 @@ class Model_Account extends Model_Table {
 		$account_dr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'FUEL EXPENSES');
 		$transaction = $this->add('Model_Transaction');
-		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_FUEL_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_account_id'=>$staff));
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_FUEL_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_id'=>$staff));
 		
 		$transaction->addDebitAccount($account_dr,$amount);
 		$transaction->addCreditAccount($account_cr,$amount);			
@@ -484,7 +484,7 @@ class Model_Account extends Model_Table {
 		$account_dr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'LEGAL EXPENSES PAID');
 		$transaction = $this->add('Model_Transaction');
-		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
 		if(!$narration) $narration = 'Legal Charges Paid in '. $account_cr['AccountNumber'];
 
 		$transaction->createNewTransaction(TRA_LEGAL_CHARGE_PAID,$in_branch,$transaction_date,$narration);
@@ -513,7 +513,7 @@ class Model_Account extends Model_Table {
 		$transaction = $this->add('Model_Transaction');
 		if(!$narration) $narration = 'Legal Charges Debited in '. $account_cr['AccountNumber'];
 		
-		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
 		$transaction->createNewTransaction(TRA_LEGAL_CHARGE_RECEIVED,$in_branch,$transaction_date,$narration);
 		
 		$transaction->addDebitAccount($account_dr,$amount);
@@ -536,7 +536,7 @@ class Model_Account extends Model_Table {
 		$account_dr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'Visit Charge');
 		$transaction = $this->add('Model_Transaction');
-		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
 		$transaction->createNewTransaction(TRA_VISIT_CHARGE,$in_branch,$transaction_date,$narration);
 		
 		$transaction->addDebitAccount($account_dr,$amount);
@@ -560,7 +560,7 @@ class Model_Account extends Model_Table {
 		$account_cr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'For Closed');
 		$transaction = $this->add('Model_Transaction');
-		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_account_id'=>$this->id));
+		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
 		if(!$narration) $narration = 'For Close Charges Debited in '. $account_cr['AccountNumber'];
 
 		$transaction->createNewTransaction(TRA_FORCLOSE_CHARGE,$in_branch,$transaction_date,$narration);

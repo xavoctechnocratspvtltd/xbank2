@@ -74,7 +74,7 @@ class Model_Account_DDS extends Model_Account{
  //        $agentAccount = $this->ref('agent_id')->ref('agent_id')->get('AccountNumber');
 
  //        $transaction = $this->add('Model_Transaction');
-	// 	$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,null,$on_date,"DDS Premium Commission",null,array('reference_account_id'=>$this->id));
+	// 	$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,null,$on_date,"DDS Premium Commission",null,array('reference_id'=>$this->id));
 
  //        $comm_acc = $this->ref('branch_id')->get('Code') . SP . COMMISSION_PAID_ON . $this->ref('scheme_id')->get('name');
 	// 	$transaction->addDebitAccount($comm_acc,$amount);
@@ -113,7 +113,7 @@ class Model_Account_DDS extends Model_Account{
 		if(!$interest) return;
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_DDS,null,$on_date,"Interst posting in DDS Account " . $this['AccountNumber'],null, array('reference_account_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_DDS,null,$on_date,"Interst posting in DDS Account " . $this['AccountNumber'],null, array('reference_id'=>$this->id));
 		
 		$transaction->addDebitAccount($this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $interest);
 		$transaction->addCreditAccount($this, $interest);
@@ -165,7 +165,7 @@ class Model_Account_DDS extends Model_Account{
             $amount = $old * $percent / 100;
 
             $transaction = $this->add('Model_Transaction');
-            $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_account_id'=>$this->id));
+            $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
             
             $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $amount);
             $transaction->addCreditAccount($agentAccount ,($amount - ($amount * TDS_PERCENTAGE / 100)));

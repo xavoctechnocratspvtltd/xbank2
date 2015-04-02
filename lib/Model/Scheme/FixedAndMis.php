@@ -29,7 +29,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$this->getElement('NumberOfPremiums')->destroy();
 		
 		$this->getElement('balance_sheet_id')->caption('Head');
-		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD (in Days )');
+		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD (in Days)');
 		$this->getElement('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->getElement('InterestToAnotherAccount')->caption('Interest To Account (check if interest to be posted to other account)');
 

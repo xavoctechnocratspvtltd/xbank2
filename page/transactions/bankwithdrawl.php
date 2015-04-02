@@ -50,7 +50,7 @@ class page_transactions_bankwithdrawl extends Page {
 
 					// IMPORTANT ... deposit is not by mistake. its CONTRA ENTRY .. so to keep
 					// Debit and Credit Ok as required USED DEPOSIT insted WITHDRAWL.
-			    	$account_model->deposit($form['amount'],$narration,array(array($accounts_to_debit=>$form['amount'])),$form=null,$on_date=null,$in_branch=null,$reference_account_id=null);
+			    	$account_model->deposit($form['amount'],$narration,array(array($accounts_to_debit=>$form['amount'])),$form=null,$on_date=null,$in_branch=null,$reference_id=null);
 			    $this->api->db->commit();
 			} catch (Exception $e) {
 			   	$this->api->db->rollBack();

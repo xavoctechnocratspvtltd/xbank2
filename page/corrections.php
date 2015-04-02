@@ -9,23 +9,33 @@
 // DONE: penalty not implemented if applied on last emi ... LOAN SCHEME 82 line
 // DONE: Take every date transaction for each CC account aftre 31 march and update Interest in CurrentInterest Field
 
-// TODOS: refence_account_id to reference_id name change
+// DONE: refence_account_id to reference_id name change
 // TODOS: PandLGroup correction as per default accounts
 // TODOS: Default Accounts Query should be faster
 // TODOS: Transaction_id to be indexed in transaction_row Table
 // FD Schemes from Month to days
 // TODO : Recurring in function setAccountType ???
-// TODO : movetomany .. to be checked ...
+// DONE : movetomany .. to be checked ... -> To do it manually for accounts as well as guarenters ..
 
 
-// TODO : Run query to convert all SM accounts account_type = SM
+// DONE : Run query to convert all SM accounts account_type = SM
+
+
+// mannual words : FD Schemes from month to days
+// all accountand agent guarenters
+// commission structure
+// agents cadre
+
 
 
 class page_corrections extends Page {
-	public $total_taks=9;
+	public $total_taks=11;
 	public $title = "Correction";
 	function init(){
 		parent::init();
+		ini_set('memory_limit', '2048M');
+		set_time_limit(0);
+		error_reporting(E_ALL);
 		$this->add('progressview/View_Progress',array('interval'=>500));
 	}
 
@@ -37,16 +47,18 @@ class page_corrections extends Page {
 			return;
 		}
 
-		if($jmp=$_GET['jump_to']){
-			$this->$jmp();
-			return;
-		}
 
 		try{
 			$this->api->db->beginTransaction();
-
-
 			$this->query('SET FOREIGN_KEY_CHECKS = 0');
+
+			if($jmp=$_GET['jump_to']){
+				$this->$jmp();
+				$this->query('SET FOREIGN_KEY_CHECKS = 1');
+				$this->api->db->commit();
+				return;
+			}
+
 
 			$this->api->markProgress('Corrections',"",'Renaming tables',$this->total_taks);
 			$this->renameTables();
@@ -88,7 +100,9 @@ class page_corrections extends Page {
 
 			$this->api->markProgress('Corrections',9,'Creating Default Accounts',$this->total_taks);
 			$this->checkAndCreateDefaultAccounts();
-			$this->api->markProgress('Corrections',10,'Done',$this->total_taks);
+			
+			$this->api->markProgress('Corrections',10,'Closing Dates Correcting',$this->total_taks);
+			$this->closingDateCorrections();
 
 			$this->query('SET FOREIGN_KEY_CHECKS = 1');
 			$this->api->db->commit();
@@ -159,6 +173,7 @@ class page_corrections extends Page {
 				array('transaction','accounts_id','account_id'),
 				array('transaction_row','accounts_id','account_id'),
 				array('premiums','accounts_id','account_id'),
+				array('transactions','reference_account_id','reference_id'),
 			);
 
 		$this->api->markProgress('Rename_Fields',0,'...',count($renameFields));
@@ -181,6 +196,7 @@ class page_corrections extends Page {
 				array('members','ParentAddress'),
 			);
 		$this->api->markProgress('Remove_Fields',0,'...',count($remove_fields));
+		
 		$i=1;
 		foreach ($remove_fields as $dtl) {
 			$this->removeField($dtl[0],$dtl[1]);
@@ -235,6 +251,7 @@ class page_corrections extends Page {
 				array('accounts','`related_account_id`','int'),
 				array('accounts','`doc_image_id`','int'),
 				array('schemes','`type`','string'),
+				array('agents','`cadre_id`','int'),
 			);
 		$this->api->markProgress('New_Field',0,'...',count($new_fields));
 		$i=1;
@@ -356,7 +373,6 @@ class page_corrections extends Page {
     					'to'=>'account_guarantors',
     					'field'=>'remove' /*remove*/
     				),
-
     		);
 
     	foreach ($to_move as $move) {
@@ -404,12 +420,19 @@ class page_corrections extends Page {
 					)");
     	
     	$this->addField('transaction_row','transaction_id','int');
+
+    	try{
+	    	$this->query('CREATE INDEX voucher_no_original ON transactions (voucher_no_original) USING BTREE');
+    	}catch(Exception $e){
+    		
+    	}
+
     	// join transactionrow with transaction on vaoucherno and branchid and fill transaction's id in trnsaction_id  
     	$this->query('UPDATE 
 			transaction_row tr join transactions t on t.voucher_no_original=tr.voucher_no and t.branch_id = tr.branch_id
 			SET
 			tr.transaction_id = t.id');
-
+    	
     	// Remove unwanted columns
     	// TODOS: 
     	
@@ -490,6 +513,17 @@ class page_corrections extends Page {
 		}
    	}
 
+   	function closingDateCorrections(){
+   		foreach($closings = $this->add('Model_Closing') as $cls){
+   			$cls['daily'] = $this->api->previousDate($cls['daily']);
+   			$cls['weekly'] = $this->api->previousDate($cls['weekly']);
+   			$cls['monthly'] = $this->api->previousDate($cls['monthly']);
+   			$cls['halfyearly'] = $this->api->previousDate($cls['halfyearly']);
+   			$cls['yearly'] = $this->api->previousDate($cls['yearly']);
+   			$cls->save();
+   		}
+   	}
+
     function ccInterestTillNow($on_date=false){
 
     	// IMPORTANT: This Interest is posted MONTHLY (END OF MONTH)
@@ -546,16 +580,16 @@ class page_corrections extends Page {
 			schemes.SchemeType,
 
 
-                        IF (
-                                schemes.SchemeType = 'Loan',
-                        IF(accounts.LoanAgainstAccount_id is not null,
-                        'Loan Against Deposit',
-                        IF (
-                                LOCATE('pl ', schemes. NAME),
-                                'Personal Loan',
-                                'Two Wheeler Loan'
-                        )
-                        ),
+        IF (
+            schemes.SchemeType = 'Loan',
+        	IF(accounts.LoanAgainstAccount_id is not null,
+        		'Loan Against Deposit',
+       			IF (
+                	LOCATE('pl ', schemes. NAME),
+                	'Personal Loan',
+                	'Two Wheeler Loan'
+       			)
+        ),
 
 
 		IF (
@@ -603,6 +637,10 @@ class page_corrections extends Page {
 
     	$this->query($q);
 
+    	// share capital
+    	$q="UPDATE accounts SET account_type='SM' WHERE AccountNumber like 'SM%'";
+    	$this->query($q);
+
     }
 
     function page_memberidToReferenceAndMisc(){
@@ -616,7 +654,7 @@ class page_corrections extends Page {
 			UPDATE 
 				transactions
 				SET
-				reference_account_id = 
+				reference_id = 
 				SUBSTR(
 				Narration ,
 				LOCATE('(',Narration)+1

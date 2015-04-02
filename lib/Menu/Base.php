@@ -71,6 +71,7 @@ class Menu_Base extends Menu {
 
 		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');
 		$mad_sub_menus->addMenuItem('members','Members');
+		$mad_sub_menus->addMenuItem('agentscadre','Agents Cadres');
 		$mad_sub_menus->addMenuItem('agents','Agents');
 		$mad_sub_menus->addMenuItem('dealers','Dealers');
 		$mad_sub_menus->addMenuItem('dsa','DSA');

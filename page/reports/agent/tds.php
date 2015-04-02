@@ -22,7 +22,7 @@ class page_reports_agent_tds extends Page {
 
 		$model = $this->add('Model_Agent');
 		$account_join_2 = $model->join('accounts.agent_id');
-		$transactions_join_2 = $account_join_2->join('transactions.reference_account_id');
+		$transactions_join_2 = $account_join_2->join('transactions.reference_id');
 		
 		$account_join_2->addField('account_type');
 		$transactions_join_2->addField('transaction_date','created_at');
@@ -30,7 +30,7 @@ class page_reports_agent_tds extends Page {
 
 		$tr_m = $model->add('Model_TransactionRow',array('table_alias'=>'xtc'));
 		$tr = $tr_m->join('transactions','transaction_id');
-		$releted_account = $tr->join('accounts','reference_account_id');
+		$releted_account = $tr->join('accounts','reference_id');
 		$releted_account->addField('account_type');
 
 
@@ -40,7 +40,7 @@ class page_reports_agent_tds extends Page {
 			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'tc'));
 			$tr = $tr_m->join('transactions','transaction_id');
 
-			$releted_account = $tr->join('accounts','reference_account_id');
+			$releted_account = $tr->join('accounts','reference_id');
 			$releted_account->addField('agent_id');
 			$releted_account->addField('account_type');
 
@@ -92,7 +92,7 @@ class page_reports_agent_tds extends Page {
 			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'tc'));
 			$tr = $tr_m->join('transactions','transaction_id');
 
-			$releted_account = $tr->join('accounts','reference_account_id');
+			$releted_account = $tr->join('accounts','reference_id');
 			$releted_account->addField('agent_id');
 			$releted_account->addField('account_type');
 

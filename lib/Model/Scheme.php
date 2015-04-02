@@ -60,7 +60,7 @@ class Model_Scheme extends Model_Table {
 
 	function defaultEditing(){
 		$this->getElement('name')->display(array('form'=>'Readonly'));
-		// $this->getElement('type')->system(true);
+		$this->getElement('type')->system(true);
 		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(true);
 		if($this->hasElement('MinLimit')) $this->getElement('MinLimit')->system(true);
 		if($this->hasElement('MaxLimit')) $this->getElement('MaxLimit')->system(true);
@@ -80,7 +80,7 @@ class Model_Scheme extends Model_Table {
 		if($this->hasElement('DepriciationPercentBeforeSep')) $this->getElement('DepriciationPercentBeforeSep')->system(true);
 		if($this->hasElement('DepriciationPercentAfterSep')) $this->getElement('DepriciationPercentAfterSep')->system(true);
 		if($this->hasElement('ProcessingFeesinPercent')) $this->getElement('ProcessingFeesinPercent')->system(true);
-		// if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
+		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
 		
 		// TEMPALLOW
 		// $this->getElement('type')->system(false)->defaultValue('DDS');

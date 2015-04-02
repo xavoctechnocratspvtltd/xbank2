@@ -12,11 +12,11 @@ class page_schemes_FixedAndMis extends Page{
 			if($crud->isEditing('edit')) return false;
 			$FixedAndMis_scheme_model = $crud->add('Model_Scheme_FixedAndMis');
 			try {
-				$this->api->db->beginTransaction();
-			    $FixedAndMis_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_FIXED, ACCOUNT_TYPE_FIXED, $is_loanType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
-			    $this->api->db->commit();
+				$crud->api->db->beginTransaction();
+			    $FixedAndMis_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_FIXED, ACCOUNT_TYPE_FIXED, $loanType_if_loan=$form['type'], $other_values=$form->getAllFields(),$form,$form->api->now);
+			    $crud->api->db->commit();
 			} catch (Exception $e) {
-			   	$this->api->db->rollBack();
+			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
 			return true;

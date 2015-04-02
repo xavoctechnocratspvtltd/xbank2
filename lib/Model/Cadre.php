@@ -20,6 +20,27 @@ class Model_Cadre extends SQL_Model {
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
+
+	function getNextCadre(){
+		return $this->ref('nextcadre_id');
+	}
+
+	function cumulativePercantage($to_down_cadre){
+		$percentage = 0;
+		$found = false;
+		while($to_down_cadre['nextcadre_id']){
+			$percentage += $to_down_cadre->getNextCadre()->get('percentage_share');
+			if($to_down_cadre['nextcadre_id'] == $this->id ) {
+				$found = true;
+				break;
+			}
+		}
+		
+		if(!$found) return 0; // b y coming up I am not found .. may be you are trying below cadre
+
+		return $percentage;
+	}
+
 }
 
 class Model_NextCadre extends Model_Cadre{}

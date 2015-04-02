@@ -34,6 +34,10 @@ class Model_Premium extends Model_Table {
 		$this->giveAgentCommission($on_date);
 	}
 
+	function account(){
+		return $this->ref('account_id');
+	}
+
 	function giveAgentCommission($on_date = null){
 		if(!$on_date) $on_date = $this->api->now;
 
@@ -50,8 +54,10 @@ class Model_Premium extends Model_Table {
 			$all_paid_noncommissioned_preimums->saveAndUnload();			
 		}
 
+		$commissionForThisAgent = $this->agent()->cadre()->get('percentage_share') * $commission / 100.00;
+
 		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?10:20;
-		$tds = $commission * $tds_percentage / 100;
+		$tds = $commissionForThisAgent * $tds_percentage / 100;
 
 
 		$account = $this->ref('account_id');
@@ -59,12 +65,14 @@ class Model_Premium extends Model_Table {
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Commission ".$account['AccountNumber'], null, array('reference_id'=>$account->id));
 		
-		$transaction->addDebitAccount($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'] , $commission);
+		$transaction->addDebitAccount($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'] , $commissionForThisAgent);
 		
-		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commission -$tds);
+		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commissionForThisAgent -$tds);
 		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
 		
 		$transaction->execute();
+
+		$this->account()->propogateAgentCommission($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'], $total_commission_amount = $commission, $on_date);
 
 	}
 

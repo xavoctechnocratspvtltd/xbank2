@@ -379,6 +379,14 @@ class Model_Account extends Model_Table {
 
 	}
 
+	function agent(){
+		return $this->ref('agent_id');
+	}
+
+	function scheme(){
+		return $this->ref('scheme_id');
+	}
+
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null,$reference_id=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Withdrawing amount');
 		if(!isset($this->transaction_withdraw_type)) throw $this->exception('transaction_withdraw_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
@@ -410,6 +418,38 @@ class Model_Account extends Model_Table {
 
 		return $transaction->id;
 
+	}
+
+	function propogateAgentCommission($debit_account, $total_commission_amount, $on_date=null){
+		
+		if(!$on_date) $on_date= $this->api->today;
+		
+		$agent = $this->agent();
+		while($sponsor = $agent->sponsor()){
+			$percentage = $sponsor->cumulativePercantage($agent->cadre());
+			
+			$commissionForThisAgent = $total_commission_amount * $percentage / 100;
+
+			$transaction = $this->add('Model_Transaction');
+	        $transaction->createNewTransaction(TRA_ACCOUNT_OPEN_AGENT_COMMISSION, $this->ref('branch_id'), $on_date, "Agent Account openning commision for ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+	        
+	        $transaction->addDebitAccount($debit_account, $commissionForThisAgent);
+
+	        $agent_saving_account = $agent->ref('account_id');
+	        $tds_account = $this->add('Model_Account')->loadBy('AccountNumber',$this['branch_code'].SP.BRANCH_TDS_ACCOUNT);
+
+	        $tds_amount = (strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * 10 /100 : $commissionForThisAgent * 20 /100;
+			
+			$saving_amount = $commissionForThisAgent - $tds_amount;
+
+	        $transaction->addCreditAccount($agent_saving_account, $saving_amount);
+	        $transaction->addCreditAccount($tds_account, $tds_amount);
+	        
+	        $transaction->execute();
+
+	        $agent = $sponsor;
+
+		}
 	}
 
 

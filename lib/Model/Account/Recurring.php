@@ -117,6 +117,7 @@ class Model_Account_Recurring extends Model_Account{
             $prem['account_id'] = $this->id;
             $prem['Amount'] = $this['Amount'];
             $prem['DueDate'] = $lastPremiumPaidDate; // First Preiume on the day of account open
+            $prem['AgentCommissionPercentage'] = $this->api->getComission($this->scheme()->get('AccountOpenningCommission'), PREMIUM_COMMISSION, $i);
             $date_obj->add(new DateInterval($toAdd));
             $lastPremiumPaidDate = $date_obj->format('Y-m-d');
             $prem->saveAndUnload();

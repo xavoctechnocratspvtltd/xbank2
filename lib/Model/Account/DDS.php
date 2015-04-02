@@ -151,7 +151,8 @@ class Model_Account_DDS extends Model_Account{
 //------------CALCULATING COMMISSION FOR DDS----------------
         $DA = $this['Amount']; // DA => Monthly DDS Amount
 
-        //  VVV--  Set in monthly closing scheme file monthly_credited_amount
+        //  Below fields are not in account but expresions
+        // VVV--  Set in monthly closing scheme file monthly_credited_amount
         $x = $this['monthly_credited_amount']; // x => Amount Submitted in the current month
         $tA = $this['CurrentBalanceCr'] - $x; // tA => Total amount till date given excluding x ???? Interest Given Included ????
 
@@ -162,16 +163,22 @@ class Model_Account_DDS extends Model_Account{
 
             $percent = explode(",", $this['AccountOpenningCommission']);
             $percent = (isset($percent[$z])) ? $percent[$z] : $percent[count($percent) - 1];
+
             $amount = $old * $percent / 100;
+            
+            $commissionForThisAgent = $this->agent()->cadre()->get('percentage_share') * $amount / 100.00;
+
 
             $transaction = $this->add('Model_Transaction');
             $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
             
-            $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $amount);
-            $transaction->addCreditAccount($agentAccount ,($amount - ($amount * TDS_PERCENTAGE / 100)));
-            $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($amount * TDS_PERCENTAGE / 100)));
+            $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
+            $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - ($commissionForThisAgent * TDS_PERCENTAGE / 100)));
+            $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($commissionForThisAgent * TDS_PERCENTAGE / 100)));
             
             $transaction->execute();
+
+            $this->propogateAgentCommission($this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $total_commission_amount = $amount, $on_date);
 
             $x = $x - $old;
             $tA = $tA + $old;

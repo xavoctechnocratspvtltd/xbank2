@@ -31,6 +31,8 @@ class Model_Agent extends Model_Table {
 			return $m->refSQL('member_id')->fieldQuery('member_name');
 		});
 
+		$this->addExpression('code')->set($this->dsql()->concat($this->refSQL('account_id')->fieldQuery('branch_code'), ' ' , $this->getElement('id') ));
+
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('beforeSave',$this);
 
@@ -48,15 +50,19 @@ class Model_Agent extends Model_Table {
 		
 	}
 
-
 	function beforeSave(){
-		if($this->sponsor()->isAtLowestCader()){
+		if($this->sponsor() and $this->sponsor()->isAtLowestCader()){
 			throw $this->exception('Sponsor is Advisor . Cannot Add','ValidityCheck')->setField('sponsor_id');
 		}
 	}
 
-	function sponor(){
-		return $this->ref('sponsor_id');
+	function account(){
+		return $this->ref('account_id');
+	}
+
+	function sponsor(){
+		if($this->ref('sponsor_id')->loaded()) return $this->ref('sponsor_id');
+		return false;
 	}
 
 	function cadre(){
@@ -65,6 +71,10 @@ class Model_Agent extends Model_Table {
 
 	function isAtLowestCader(){
 		return ($this->cadre()->get('name') == 'Advisor');
+	}
+
+	function isHighestCadre(){
+		return $this->cadre()->getNextCadre()->get('id') == '';
 	}
 
 	// function beforeDelete(){

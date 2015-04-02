@@ -58,7 +58,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 		$this->createInitialTransaction($created_at, $form);
 		if($form['agent_id'])
-			$this->giveAgentCommission();
+			$this->giveAgentCommission($created_at);
 	}
 
 	function createInitialTransaction($on_date, $form){
@@ -78,27 +78,34 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$transaction->execute();
 	}
 
-	function giveAgentCommission(){
+	function giveAgentCommission($on_date=null){
 		// TODO :: To give commission .... 
+		if(!$on_date) $on_date= $this->api->today;
+
 		$commissionAmount = $this->api->getComission($this->ref('scheme_id')->get('AccountOpenningCommission'), OPENNING_COMMISSION);
         $commissionAmount = $commissionAmount * $this["Amount"] / 100.00;
 
+        $commissionForThisAgent = $this->agent()->cadre()->get('percentage_share') * $commissionAmount / 100.00;
+
         $transaction = $this->add('Model_Transaction');
-        $transaction->createNewTransaction(TRA_ACCOUNT_OPEN_AGENT_COMMISSION, $this->ref('branch_id'), $this['created_at'], "Agent Account openning commision for ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+        $transaction->createNewTransaction(TRA_ACCOUNT_OPEN_AGENT_COMMISSION, $this->ref('branch_id'), $on_date, "Agent Account openning commision for ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
         
-        $transaction->addDebitAccount($this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionAmount);
+        $transaction->addDebitAccount($this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
 
         $agent_saving_account = $this->ref('agent_id')->ref('account_id');
         $tds_account = $this->add('Model_Account')->loadBy('AccountNumber',$this['branch_code'].SP.BRANCH_TDS_ACCOUNT);
 
-        $tds_amount = (strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionAmount * 10 /100 : $commissionAmount * 20 /100;
+        $tds_amount = (strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * 10 /100 : $commissionForThisAgent * 20 /100;
 		
-		$saving_amount = $commissionAmount - $tds_amount;        
+		$saving_amount = $commissionForThisAgent - $tds_amount;        
 
         $transaction->addCreditAccount($agent_saving_account, $saving_amount);
         $transaction->addCreditAccount($tds_account, $tds_amount);
         
         $transaction->execute();
+
+        $this->propogateAgentCommission($debit_acocunt = $this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $total_commission_amount = $commissionAmount, $on_date);
+
 
 	}
 

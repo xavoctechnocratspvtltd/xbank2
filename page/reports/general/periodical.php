@@ -84,7 +84,7 @@ class page_reports_general_periodical extends Page {
 		$grid->addColumn('text','account_type');
 		$grid->addColumn('text','count');
 		$grid->addColumn('text','amount');
-		$grid->addColumn('Button','accounts');
+		// $grid->addColumn('Button','accounts');
 
 		$grid->addPaginator(50);
 

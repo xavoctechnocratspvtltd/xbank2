@@ -10,7 +10,7 @@ class Model_Cadre extends SQL_Model {
 		$this->addField('percentage_share')->type('int');
 		$this->addField('total_crpb');
 		$this->addField('req_under');
-		// $this->addField('nextcadre_id');
+		// $this->addField('nextcadre_id')->type('int');
 		$this->hasOne('NextCadre','nextcadre_id');
 
 		$this->hasMany('Agent','cadre_id');

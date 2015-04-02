@@ -18,7 +18,14 @@
 // DONE : movetomany .. to be checked ... -> To do it manually for accounts as well as guarenters ..
 
 
-// TODO : Run query to convert all SM accounts account_type = SM
+// DONE : Run query to convert all SM accounts account_type = SM
+
+
+// mannual words : FD Schemes from month to days
+// all accountand agent guarenters
+// commission structure
+// agents cadre
+
 
 
 class page_corrections extends Page {
@@ -43,14 +50,15 @@ class page_corrections extends Page {
 
 		try{
 			$this->api->db->beginTransaction();
+			$this->query('SET FOREIGN_KEY_CHECKS = 0');
 
 			if($jmp=$_GET['jump_to']){
 				$this->$jmp();
+				$this->query('SET FOREIGN_KEY_CHECKS = 1');
 				$this->api->db->commit();
 				return;
 			}
 
-			$this->query('SET FOREIGN_KEY_CHECKS = 0');
 
 			$this->api->markProgress('Corrections',"",'Renaming tables',$this->total_taks);
 			$this->renameTables();
@@ -627,6 +635,10 @@ class page_corrections extends Page {
 		a.account_type = Temp.should_be
     	";
 
+    	$this->query($q);
+
+    	// share capital
+    	$q="UPDATE accounts SET account_type='SM' WHERE AccountNumber like 'SM%'";
     	$this->query($q);
 
     }

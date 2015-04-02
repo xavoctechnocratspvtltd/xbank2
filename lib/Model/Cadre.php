@@ -10,12 +10,15 @@ class Model_Cadre extends SQL_Model {
 		$this->addField('percentage_share')->type('int');
 		$this->addField('total_crpb');
 		$this->addField('req_under');
+		// $this->addField('nextcadre_id');
 		$this->hasOne('NextCadre','nextcadre_id');
 
 		$this->hasMany('Agent','cadre_id');
 		$this->hasMany('PrevCadre','cadre_id');
 
-		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->setOrder(array('percentage_share desc','total_crpb desc'));
+
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }
 

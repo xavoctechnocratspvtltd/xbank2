@@ -22,7 +22,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('type');
 		$this->addField('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->addField('Commission');
-		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active')->system(true);
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('ProcessingFees')->caption('Processing Fees');
@@ -45,7 +45,7 @@ class Model_Scheme extends Model_Table {
 		
 		$this->addField('AgentSponsorCommission');
 		$this->addField('CollectorCommissionRate');
-		$this->addField('ReducingOrFlatRate')->caption('Interest Type')->enum(array('Flat','Reducing'));
+		$this->addField('ReducingOrFlatRate')->caption('Interest Type')->enum(array('Flat','Reducing'))->defaultValue('Flat');
 
 		$this->hasMany('Account','scheme_id');
 
@@ -59,8 +59,8 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function defaultEditing(){
-		$this->getElement('name')->system(true);
-		$this->getElement('type')->system(true);
+		$this->getElement('name')->display(array('form'=>'Readonly'));
+		// $this->getElement('type')->system(true);
 		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(true);
 		if($this->hasElement('MinLimit')) $this->getElement('MinLimit')->system(true);
 		if($this->hasElement('MaxLimit')) $this->getElement('MaxLimit')->system(true);
@@ -80,7 +80,7 @@ class Model_Scheme extends Model_Table {
 		if($this->hasElement('DepriciationPercentBeforeSep')) $this->getElement('DepriciationPercentBeforeSep')->system(true);
 		if($this->hasElement('DepriciationPercentAfterSep')) $this->getElement('DepriciationPercentAfterSep')->system(true);
 		if($this->hasElement('ProcessingFeesinPercent')) $this->getElement('ProcessingFeesinPercent')->system(true);
-		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
+		// if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
 		
 		// TEMPALLOW
 		// $this->getElement('type')->system(false)->defaultValue('DDS');

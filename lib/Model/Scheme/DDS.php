@@ -19,7 +19,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$this->getElement('CreateDefaultAccount')->destroy();
 		$this->getElement('InterestToAnotherAccountPercent')->destroy();
 		$this->getElement('AgentSponsorCommission')->destroy();
-		$this->getElement('CollectorCommissionRate')->destroy();
+		// $this->getElement('CollectorCommissionRate')->destroy(); // Collector Commission now added in new application
 		$this->getElement('published')->destroy();
 		$this->getElement('ReducingOrFlatRate')->destroy();
 		$this->getElement('NumberOfPremiums')->destroy();

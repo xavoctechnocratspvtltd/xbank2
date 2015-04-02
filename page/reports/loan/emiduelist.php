@@ -12,7 +12,7 @@ class page_reports_loan_emiduelist extends Page {
 		$till_date = $this->api->today;
 
 		if($_GET['till_date']){
-			$till_date=$_GET['till_date'];
+			$till_date=$this->api->stickyGET('till_date');
 		}
 		$grid->add('H3',null,'grid_buttons')->set('Loan EMI Due List As On '. date('d-M-Y',strtotime($till_date)));
 

@@ -31,15 +31,17 @@ class page_schemes_Loan extends Page{
 
 		if($crud->isEditing('edit')){
 			$scheme_Loan_model->hook('editing');
-			$scheme_Loan_model->getElement('type')->system(true);
+			// $scheme_Loan_model->getElement('type')->system(true);
 		}
 
-		$crud->setModel($scheme_Loan_model,array('type','name','MinLimit','MaxLimit','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet_id','balance_sheet','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
+		$crud->setModel($scheme_Loan_model,array('ReducingOrFlatRate','type','name','MinLimit','MaxLimit','Interest','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet_id','balance_sheet','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
 
 		
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(50);
 			$crud->grid->addQuickSearch(array('name'));
+			$crud->grid->addFormatter('type','grid/inline');
+			$crud->grid->addFormatter('ReducingOrFlatRate','grid/inline');
 		}
 
 		if($crud->isEditing('add')){

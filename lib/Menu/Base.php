@@ -12,7 +12,7 @@ class Menu_Base extends Menu {
 
 		$mad = $this->addMenuItem('#','M.A.D.');
 		$stock = 	$this->addMenuItem('stock_main','Stock');
-		$stock = 	$this->addMenuItem('staff_main','Staff Management');
+		// $stock = 	$this->addMenuItem('staff_main','Staff Management');
 		$account = $this->addMenuItem('accounts','Accounts');
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$reports = 	$this->addMenuItem('reports','Reports');
@@ -60,7 +60,7 @@ class Menu_Base extends Menu {
 		
 
 		$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
-		$admin_sub_menus->addMenuItem('staffs','Staff');
+		// $admin_sub_menus->addMenuItem('staffs','Staff');
 		$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
 		$admin_sub_menus->addMenuItem('branches','Branches');
 		$admin_sub_menus->addMenuItem('mos','Mos');

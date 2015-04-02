@@ -18,7 +18,7 @@ class Model_Cadre extends SQL_Model {
 
 		$this->setOrder(array('percentage_share desc','total_crpb desc'));
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 }
 

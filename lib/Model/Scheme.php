@@ -26,6 +26,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('ProcessingFees')->caption('Processing Fees');
+		$this->addField('ProcessingFeesinPercent')->type('boolean')->defaultValue(false);
 		$this->addField('PostingMode');
 		$this->addField('PremiumMode')->setValueList(array(RECURRING_MODE_YEARLY=>'Yearly',RECURRING_MODE_HALFYEARLY=>'Half Yearly',RECURRING_MODE_QUATERLY=>'Quarterly',RECURRING_MODE_MONTHLY=>'Monthly',RECURRING_MODE_WEEKLY=>'Weekly',RECURRING_MODE_DAILY=>'Daily'));
 		$this->addField('CreateDefaultAccount');
@@ -37,7 +38,6 @@ class Model_Scheme extends Model_Table {
 		$this->addField('isDepriciable')->type('boolean')->defaultValue(false);
 		$this->addField('DepriciationPercentBeforeSep')->caption('Depriciation % before September');
 		$this->addField('DepriciationPercentAfterSep')->caption('Depriciation % after September');
-		$this->addField('ProcessingFeesinPercent')->type('boolean')->defaultValue(false);
 		$this->addField('published')->type('boolean')->defaultValue(true);
 		
 		$this->addField('SchemePoints')->caption('Scheme Points')->system(true);
@@ -59,7 +59,6 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function defaultEditing(){
-		$this->getElement('type')->system(true);
 		$this->getElement('name')->system(true);
 		if($this->hasElement('MinLimit')) $this->getElement('MinLimit')->system(true);
 		if($this->hasElement('MaxLimit')) $this->getElement('MaxLimit')->system(true);
@@ -73,13 +72,16 @@ class Model_Scheme extends Model_Table {
 		if($this->hasElement('SchemeType')) $this->getElement('SchemeType')->system(true);
 		if($this->hasElement('InterestToAnotherAccount')) $this->getElement('InterestToAnotherAccount')->system(true);
 		if($this->hasElement('NumberOfPremiums')) $this->getElement('NumberOfPremiums')->system(true);
-		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(true);
 		if($this->hasElement('InterestToAnotherAccountPercent')) $this->getElement('InterestToAnotherAccountPercent')->system(true);
 		if($this->hasElement('isDepriciable')) $this->getElement('isDepriciable')->system(true);
 		if($this->hasElement('DepriciationPercentBeforeSep')) $this->getElement('DepriciationPercentBeforeSep')->system(true);
 		if($this->hasElement('DepriciationPercentAfterSep')) $this->getElement('DepriciationPercentAfterSep')->system(true);
 		if($this->hasElement('ProcessingFeesinPercent')) $this->getElement('ProcessingFeesinPercent')->system(true);
 		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
+		
+		// TEMPALLOW
+		$this->getElement('type')->system(false);
+		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(false);
 	}
 
 	function defaultBeforeSave(){

@@ -12,6 +12,7 @@ class Model_Account_CC extends Model_Account{
 		$this->addCondition('SchemeType','CC');
 
 		$this->getElement('agent_id')->destroy();
+		$this->getElement('collector_id')->destroy();
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','CC');
 		$this->getElement('Amount')->caption('CC Limit');
 		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_CC);

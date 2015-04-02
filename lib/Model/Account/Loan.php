@@ -11,6 +11,7 @@ class Model_Account_Loan extends Model_Account{
 		$this->addCondition('SchemeType','Loan');
 
 		$this->getElement('agent_id')->destroy();
+		$this->getElement('collector_id')->destroy();
 		$this->getElement('Amount')->caption('Loan Amount');
 		$this->getElement('CurrentInterest')->caption('Panelty');
 		$this->getElement('account_type')->enum(explode(",",LOAN_TYPES))->mandatory(true);

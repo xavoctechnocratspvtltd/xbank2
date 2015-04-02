@@ -19,6 +19,7 @@ class Model_Agent extends Model_Table {
 		$this->addField('Rank')->type('int')->system(true);
 		$this->addField('BusinessCreditPoints')->type('int')->system(true);
 		$this->addField('CumulativeBusinessCreditPoints')->type('int')->system(true);
+		$this->addField('current_individual_crpb')->type('int');
 		// $this->addField('Rank_1_Count')->type('int');
 		// $this->addField('Rank_2_Count')->type('int');
 		// $this->addField('Rank_3_Count')->type('int');
@@ -31,14 +32,39 @@ class Model_Agent extends Model_Table {
 		});
 
 		$this->addHook('beforeDelete',$this);
-		// $this->addHook('beforeSave',$this);
+		$this->addHook('beforeSave',$this);
+
+		$this->addHook('editing',array($this,'defaultEditing'));
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function defaultEditing(){
+		$this->getElement('member_id')->system(true);
 	}
 
 	function beforeDelete(){
 		throw new Exception("Agent Delete Hook ????", 1);
 		
+	}
+
+
+	function beforeSave(){
+		if($this->sponsor()->isAtLowestCader()){
+			throw $this->exception('Sponsor is Advisor . Cannot Add','ValidityCheck')->setField('sponsor_id');
+		}
+	}
+
+	function sponor(){
+		return $this->ref('sponsor_id');
+	}
+
+	function cadre(){
+		return $this->ref('cadre_id');
+	}
+
+	function isAtLowestCader(){
+		return ($this->cadre()->get('name') == 'Advisor');
 	}
 
 	// function beforeDelete(){

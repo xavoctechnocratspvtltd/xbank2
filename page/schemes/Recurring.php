@@ -30,11 +30,11 @@ class page_schemes_Recurring extends Page{
 			$scheme_Recurring_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_Recurring_model,array('name','MinLimit','MaxLimit','Interest','PremiumMode','AccountOpenningCommission','NumberOfPremiums','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemePoints','SchemeGroup','CollectorCommissionRate'));
+		$crud->setModel($scheme_Recurring_model,array('name','MinLimit','MaxLimit','Interest','PremiumMode','AccountOpenningCommission','NumberOfPremiums','ActiveStatus','balance_sheet','MaturityPeriod','SchemePoints','SchemeGroup','CollectorCommissionRate'));
 
 		
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(50);
 		}
 
 		if($crud->isEditing('add')){

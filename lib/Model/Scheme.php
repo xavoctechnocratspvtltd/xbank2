@@ -60,12 +60,15 @@ class Model_Scheme extends Model_Table {
 
 	function defaultEditing(){
 		$this->getElement('name')->system(true);
+		$this->getElement('type')->system(true);
+		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(true);
 		if($this->hasElement('MinLimit')) $this->getElement('MinLimit')->system(true);
 		if($this->hasElement('MaxLimit')) $this->getElement('MaxLimit')->system(true);
 		if($this->hasElement('Interest')) $this->getElement('Interest')->system(true);
 		if($this->hasElement('InterestMode')) $this->getElement('InterestMode')->system(true);
 		if($this->hasElement('InterestRateMode')) $this->getElement('InterestRateMode')->system(true);
 		if($this->hasElement('AccountOpenningCommission')) $this->getElement('AccountOpenningCommission')->system(true);
+		if($this->hasElement('CollectorCommissionRate')) $this->getElement('CollectorCommissionRate')->system(true);
 		if($this->hasElement('Commission')) $this->getElement('Commission')->system(true);
 		if($this->hasElement('ProcessingFees')) $this->getElement('ProcessingFees')->system(true);
 		if($this->hasElement('PremiumMode')) $this->getElement('PremiumMode')->system(true);
@@ -80,8 +83,8 @@ class Model_Scheme extends Model_Table {
 		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
 		
 		// TEMPALLOW
-		$this->getElement('type')->system(false);
-		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(false);
+		// $this->getElement('type')->system(false)->defaultValue('DDS');
+		// if($this->hasElement('AccountOpenningCommission')) $this->getElement('AccountOpenningCommission')->system(false);
 	}
 
 	function defaultBeforeSave(){

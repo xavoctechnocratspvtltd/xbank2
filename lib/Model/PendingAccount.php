@@ -5,6 +5,7 @@ class Model_PendingAccount extends Model_Account {
 	function init(){
 		parent::init();
 		$this->addField('is_approved')->type('boolean')->defaultValue(false);
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function approve(){

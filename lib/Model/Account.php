@@ -30,7 +30,7 @@ class Model_Account extends Model_Table {
 		$this->addField('account_type');
 		$this->addField('AccountNumber')->display(array('form'=>'Readonly'));//->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Displ. Name');
-		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true);
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true)->sortable(true);
 
 		$this->addField('ModeOfOperation')->setValueList(array('Self'=>'Self','Joint'=>'Joint'))->defaultValue('Self')->caption('Operation Mode');
 		
@@ -377,6 +377,22 @@ class Model_Account extends Model_Table {
 
 		return $transaction->id;
 
+	}
+
+	function creditedAmount($from_date,$to_date){
+		$sum = $this->ref('TransactionRow')
+				->addCondition('created_at','>=', $from_date)
+				->addCondition('created_at','<', $this->api->nextDate($to_date))
+				->sum('amountCr')->getOne();
+		return $sum;
+	}
+
+	function debitedAmount($from_date,$to_date){
+		$sum = $this->ref('TransactionRow')
+				->addCondition('created_at','>=', $from_date)
+				->addCondition('created_at','<', $this->api->nextDate($to_date))
+				->sum('amountDr')->getOne();
+		return $sum;
 	}
 
 	function agent(){

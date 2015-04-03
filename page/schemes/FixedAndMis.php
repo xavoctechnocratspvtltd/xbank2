@@ -4,7 +4,7 @@ class page_schemes_FixedAndMis extends Page{
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Scheme'));
 		$scheme_FixedAndMis_model =$this->add('Model_Scheme_FixedAndMis');
 		$scheme_FixedAndMis_model->setOrder('id','desc');
 		
@@ -30,13 +30,12 @@ class page_schemes_FixedAndMis extends Page{
 			$scheme_FixedAndMis_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_FixedAndMis_model,array('type','name','CRPB','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','InterestToAnotherAccount','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemeGroup'));
+		$crud->setModel($scheme_FixedAndMis_model,array('type','name','Interest','InterestToAnotherAccount','AccountOpenningCommission','CRPB','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','balance_sheet','MinLimit','MaxLimit','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemeGroup','total_accounts','total_active_accounts'));
 
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(50);
 			$crud->grid->addQuickSearch(array('name'));
-			$crud->grid->addFormatter('CRPB','grid/inline');
 		}
 
 		if($crud->isEditing('add')){

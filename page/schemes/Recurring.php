@@ -4,7 +4,7 @@ class page_schemes_Recurring extends Page{
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Scheme'));
 		$scheme_Recurring_model =$this->add('Model_Scheme_Recurring');
 		
 		$crud->addHook('myupdate',function($crud,$form){
@@ -30,12 +30,11 @@ class page_schemes_Recurring extends Page{
 			$scheme_Recurring_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_Recurring_model,array('name','CRPB','MinLimit','MaxLimit','Interest','PremiumMode','AccountOpenningCommission','NumberOfPremiums','ActiveStatus','balance_sheet','MaturityPeriod','SchemeGroup','CollectorCommissionRate'));
+		$crud->setModel($scheme_Recurring_model,array('name','Interest','PremiumMode','NumberOfPremiums','MaturityPeriod','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','ActiveStatus','balance_sheet','balance_sheet_id','SchemeGroup','total_accounts','total_active_accounts'));
 
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(50);
-			$crud->grid->addFormatter('CRPB','grid/inline');
 		}
 
 		if($crud->isEditing('add')){

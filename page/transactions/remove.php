@@ -16,6 +16,10 @@ class page_transactions_remove extends Page {
 			$transaction->addCondition('branch_id',$p->api->stickyGET('branch_id'));
 			$transaction->tryLoadAny();
 
+			if(!$transaction->loaded()){
+				$p->add('View_Error')->set('Could Not Load Such Transaction');
+				return;
+			}
 
 			$v = $p->add('View_Voucher');
 			$v->setModel($transaction);

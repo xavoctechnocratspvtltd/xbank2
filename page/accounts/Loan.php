@@ -194,7 +194,7 @@ class page_accounts_Loan extends Page {
 
 	function page_accounts(){
 		
-		$crud=$this->add('xCRUD',array('allow_add'=>false,'allow_edit'=>false));
+		$crud=$this->add('xCRUD',array('allow_add'=>false,'allow_edit'=>false,'grid_class'=>'Grid_Account'));
 
 		$account_loan_model = $this->add('Model_Account_Loan');
 
@@ -274,7 +274,6 @@ class page_accounts_Loan extends Page {
 		if(!$crud->isEditing()){
 			$crud->grid->addClass('account_grid');
 			$crud->grid->js('reload')->reload();
-			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','comment');
 			// $crud->grid->addColumn('expander','edit_document');
 			$crud->grid->addColumn('expander','edit_guarantor');

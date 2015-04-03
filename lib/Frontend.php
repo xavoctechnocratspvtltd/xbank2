@@ -89,6 +89,15 @@ class Frontend extends ApiFrontend {
         return date('Y-m-t',strtotime($date));
     }
 
+    function isMonthLastDate($date=null){
+        if(!$date) $date = $this->api->now;
+
+        $date = date('Y-m-d',strtotime($date));
+
+        return strtotime($date) == strtotime($this->monthLastDate());
+
+    }
+
     function nextMonth($date=null){
         if(!$date) $date=$this->api->today;
 

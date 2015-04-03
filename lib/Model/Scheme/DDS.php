@@ -8,6 +8,25 @@ class Model_Scheme_DDS extends Model_Scheme {
 	function init(){
 		parent::init();
 
+
+		$this->getElement('type')->group('a~2~Basic Details')->mandatory(true);
+		$this->getElement('name')->group('a~8~Basic Details');
+		$this->getElement('ActiveStatus')->group('a~2~Basic Details');
+		
+		// $this->getElement('NumberOfPremiums')->group('b~3~Product Details');
+		$this->getElement('Interest')->group('b~6~Product Details')->mandatory(true);
+		$this->getElement('MaturityPeriod')->group('b~6~Product Details')->mandatory(true)->type('int');
+		// $this->getElement('PremiumMode')->group('b~3~Product Details')->mandatory(true)->type('Number');
+		
+		$this->getElement('balance_sheet_id')->group('c~3~Accounts Details')->mandatory(true);
+		$this->getElement('SchemeGroup')->group('c~3~Accounts Details')->mandatory(true);
+		$this->getElement('MinLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(0);
+		$this->getElement('MaxLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(-1);
+
+		$this->getElement('CRPB')->group('d~12~Commission')->mandatory(true);
+		$this->getElement('AccountOpenningCommission')->group('d~12~Commission')->mandatory(true);
+		$this->getElement('CollectorCommissionRate')->group('d~12~Commission')->mandatory(true);
+
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
@@ -29,7 +48,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$this->getElement('DepriciationPercentAfterSep')->destroy();
 		
 		$this->getElement('balance_sheet_id')->caption('Head');
-		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD, MIS, RD, DDS (in months)');
+		$this->getElement('MaturityPeriod')->caption('Maturity (Months)');
 
 		
 
@@ -55,6 +74,56 @@ class Model_Scheme_DDS extends Model_Scheme {
 		if(!$branch) $branch = $this->api->current_branch;
 		if(!$on_date) $on_date = $this->api->today;
 
+
+		$accounts_to_work_on = $this->add('Model_Active_Account_DDS');
+
+        // Compulsory Transactions
+        $tr_row_join = $accounts_to_work_on->join('transaction_row.account_id');
+        $tr_join = $tr_row_join->join('transactions','transaction_id');
+        $tr_type_join = $tr_join->join('transaction_types','transaction_type_id');
+        
+        // Those accounts that do not have agent are not required to work on
+        $agent_join = $accounts_to_work_on->join('agents','agent_id');
+        $agent_account_join = $agent_join->join('accounts','account_id');
+
+        $accounts_to_work_on->scheme_join->addField('AccountOpenningCommission');
+        $agent_account_join->addField('agent_AccountNumber','AccountNumber');
+        $tr_type_join->addField('transaction_type','name');
+        $tr_join->addField('transaction_date','created_at');
+
+        // $accounts_to_work_on->addCondition('transaction_type','<>','InterestPostingsInDDSAccounts');
+        $accounts_to_work_on->addCondition('transaction_date','>=',$this->api->previousMonth($on_date));
+        $accounts_to_work_on->addCondition('transaction_date','<',$this->api->nextDate($on_date));
+        $accounts_to_work_on->addCondition('branch_id',$branch->id);
+        $accounts_to_work_on->addCondition('MaturedStatus',false);
+
+        $accounts_to_work_on->addExpression('opening_date')->set('DAY(created_at)');
+
+        $days_to_look =array(date('d',strtotime($on_date)));
+        
+        // Also include DDS openned on dates of months that are not available in this month
+        if($this->api->isMonthLastDate($on_date)){
+        	for($i=1;$i<= (31- $days_to_look[0]) ;$i++){
+        		$days_to_look[] = $days_to_look[0] + $i;
+        	} 
+        }
+
+        $accounts_to_work_on->addCondition('opening_date',$days_to_look);
+
+        if($test_account) $accounts_to_work_on->addCondition('id',$test_account->id);
+
+        
+        $accounts_to_work_on->addExpression('monthly_credited_amount')->set('SUM('.$tr_row_join->table_alias.'.amountCr)');
+        $accounts_to_work_on->_dsql()->group($tr_row_join->table_alias.'.account_id');
+
+        foreach ($accounts_to_work_on as $acc_array) {
+        	$accounts_to_work_on->postAgentCommissionEntry($on_date);
+        	$accounts_to_work_on->giveCollectionCharges($on_date);
+        }
+
+
+
+
 		$matured_dds_accounts = $this->add('Model_Account_DDS');
 		// $matured_dds_accounts->scheme_join->addField('MaturityPeriod');
 		$matured_dds_accounts->addCondition('ActiveStatus',true);
@@ -76,38 +145,6 @@ class Model_Scheme_DDS extends Model_Scheme {
 	function monthly($branch=null,$on_date=null,$test_account=null){
 		if(!$branch) $branch = $this->api->current_branch;
 		if(!$on_date) $on_date = $this->api->today;
-
-        $accounts_to_work_on = $this->add('Model_Active_Account_DDS');
-
-        // Compulsory Transactions
-        $tr_row_join = $accounts_to_work_on->join('transaction_row.account_id');
-        $tr_join = $tr_row_join->join('transactions','transaction_id');
-        $tr_type_join = $tr_join->join('transaction_types','transaction_type_id');
-        
-        // Those accounts that do not have agent are not required to work on
-        $agent_join = $accounts_to_work_on->join('agents','agent_id');
-        $agent_account_join = $agent_join->join('accounts','account_id');
-
-        $accounts_to_work_on->scheme_join->addField('AccountOpenningCommission');
-        $agent_account_join->addField('agent_AccountNumber','AccountNumber');
-        $tr_type_join->addField('transaction_type','name');
-        $tr_join->addField('transaction_date','created_at');
-
-        // $accounts_to_work_on->addCondition('transaction_type','<>','InterestPostingsInDDSAccounts');
-        $accounts_to_work_on->addCondition('transaction_date','>=',$this->api->monthFirstDate($on_date));
-        $accounts_to_work_on->addCondition('transaction_date','<',$this->api->nextDate($on_date));
-        $accounts_to_work_on->addCondition('branch_id',$branch->id);
-        $accounts_to_work_on->addCondition('MaturedStatus',false);
-
-        if($test_account) $accounts_to_work_on->addCondition('id',$test_account->id);
-
-        
-        $accounts_to_work_on->addExpression('monthly_credited_amount')->set('SUM('.$tr_row_join->table_alias.'.amountCr)');
-        $accounts_to_work_on->_dsql()->group($tr_row_join->table_alias.'.account_id');
-
-        foreach ($accounts_to_work_on as $acc_array) {
-        	$accounts_to_work_on->postAgentCommissionEntry($on_date);
-        }
 
 	}
 

@@ -4,7 +4,7 @@ class page_schemes_DDS extends Page{
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Scheme'));
 		$scheme_dds_model =$this->add('Model_Scheme_DDS');
 		
 		$crud->addHook('myupdate',function($crud,$form){
@@ -30,7 +30,7 @@ class page_schemes_DDS extends Page{
 			$scheme_dds_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_dds_model,array('type','name','CRPB','MinLimit','MaxLimit','Interest','AccountOpenningCommission','CollectorCommissionRate','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemeGroup'));
+		$crud->setModel($scheme_dds_model,array('name','Interest','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemeGroup','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate'));
 
 		
 		if($crud->grid){

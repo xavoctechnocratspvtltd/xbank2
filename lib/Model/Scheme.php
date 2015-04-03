@@ -12,20 +12,20 @@ class Model_Scheme extends Model_Table {
 		// if(!$this->schemeType) throw $this->exception('Scheme Type must be defined in Scheme Class');
 
 		// $this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
-		$this->hasOne('BalanceSheet','balance_sheet_id');
-		$this->addField('name')->caption('Scheme Name')->mandatory(true);
+		$this->hasOne('BalanceSheet','balance_sheet_id')->sortable(true);
+		$this->addField('name')->caption('Scheme Name')->mandatory(true)->sortable(true);
 		$this->addField('MinLimit')->caption('Minimum Balance/Amount')->type('int')->mandatory(true);
 		$this->addField('MaxLimit')->caption('Maximum Limit');
-		$this->addField('Interest')->caption('Interest (In %)')->type('money');
+		$this->addField('Interest')->caption('Interest (In %)')->type('money')->sortable(true);
 		$this->addField('InterestMode');
 		$this->addField('InterestRateMode');
-		$this->addField('type');
-		$this->addField('AccountOpenningCommission')->caption('Account Commissions(in %)');
+		$this->addField('type')->sortable(true);
+		$this->addField('AccountOpenningCommission')->caption('Commissions(%)');
 		$this->addField('Commission');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->caption('Is Active');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
-		$this->addField('ProcessingFees')->caption('Processing Fees');
+		$this->addField('ProcessingFees')->caption('Processing Fees')->sortable(true);
 		$this->addField('ProcessingFeesinPercent')->type('boolean')->defaultValue(false);
 		$this->addField('PostingMode');
 		$this->addField('PremiumMode')->setValueList(array(RECURRING_MODE_YEARLY=>'Yearly',RECURRING_MODE_HALFYEARLY=>'Half Yearly',RECURRING_MODE_QUATERLY=>'Quarterly',RECURRING_MODE_MONTHLY=>'Monthly',RECURRING_MODE_WEEKLY=>'Weekly',RECURRING_MODE_DAILY=>'Daily'));
@@ -33,9 +33,9 @@ class Model_Scheme extends Model_Table {
 		$this->addField('SchemeType')->enum(explode(',',ACCOUNT_TYPES))->defaultValue($this->schemeType);
 		$this->addField('InterestToAnotherAccount')->type('boolean');
 		$this->addField('NumberOfPremiums')->mandatory(true)->type('int')->caption('Number Of Premiums');
-		$this->addField('MaturityPeriod')->type('int');
+		$this->addField('MaturityPeriod')->type('int')->sortable(true);
 		$this->addField('InterestToAnotherAccountPercent');
-		$this->addField('isDepriciable')->type('boolean')->defaultValue(false);
+		$this->addField('isDepriciable')->type('boolean')->defaultValue(false)->sortable(true);
 		$this->addField('DepriciationPercentBeforeSep')->caption('Depriciation % before September');
 		$this->addField('DepriciationPercentAfterSep')->caption('Depriciation % after September');
 		$this->addField('published')->type('boolean')->defaultValue(true);
@@ -51,10 +51,20 @@ class Model_Scheme extends Model_Table {
 
 		$this->hasMany('Account','scheme_id');
 
+		$this->addExpression('total_accounts')->set($this->refSQL('Account')->count())->caption('Accounts')->sortable(true);
+		$this->addExpression('total_active_accounts')->set($this->refSQL('Account')->addCondition('ActiveStatus',true)->count())->caption('Active Accounts')->sortable(true);
+
+
 		$this->addHook('editing',array($this,'defaultEditing'));
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
 		$this->addHook('afterInsert',array($this,'defaultAfterInsert'));
 		$this->addHook('beforeDelete',array($this,'defaultBeforeDelete'));
+
+		$this->add('Controller_Validator');
+		$this->is(array(
+							'name|to_trim|unique'
+						)
+				);
 
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
@@ -64,8 +74,6 @@ class Model_Scheme extends Model_Table {
 		$this->getElement('name')->display(array('form'=>'Readonly'));
 		$this->getElement('type')->system(true);
 		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(true);
-		if($this->hasElement('MinLimit')) $this->getElement('MinLimit')->system(true);
-		if($this->hasElement('MaxLimit')) $this->getElement('MaxLimit')->system(true);
 		if($this->hasElement('Interest')) $this->getElement('Interest')->system(true);
 		if($this->hasElement('InterestMode')) $this->getElement('InterestMode')->system(true);
 		if($this->hasElement('InterestRateMode')) $this->getElement('InterestRateMode')->system(true);
@@ -85,23 +93,16 @@ class Model_Scheme extends Model_Table {
 		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
 		if($this->hasElement('CRPB')) $this->getElement('CRPB')->system(true);
 		
+		// if($this->hasElement('MinLimit')) $this->getElement('MinLimit')->system(true);
+		// if($this->hasElement('MaxLimit')) $this->getElement('MaxLimit')->system(true);
+		
 		// TEMPALLOW
 		// $this->getElement('type')->system(false)->defaultValue('DDS');
 		// if($this->hasElement('AccountOpenningCommission')) $this->getElement('AccountOpenningCommission')->system(false);
 	}
 
 	function defaultBeforeSave(){
-		if(!$this['balance_sheet_id'])
-			throw $this->exception('Head / Balance Sheet Id is must to define','ValidityCheck')->setField('balance_sheet_id');
 		
-		if($this->hasElement('ReducingOrFlatRate') and !$this['ReducingOrFlatRate'])
-			throw $this->exception('Please Specify Interest Type', 'ValidityCheck')->setField('ReducingOrFlatRate');
-
-		if($this->hasElement('PremiumMode') and !$this['PremiumMode'])
-			throw $this->exception('Please Specify Premium Mode', 'ValidityCheck')->setField('PremiumMode');
-
-		if($this->hasElement('type') and !$this['type'])
-			throw $this->exception('Please Specify Type', 'ValidityCheck')->setField('type');
 
 	}
 

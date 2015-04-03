@@ -4,7 +4,7 @@ class page_schemes_SavingAndCurrent extends Page{
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Scheme'));
 		$scheme_SavingAndCurrent_model =$this->add('Model_Scheme_SavingAndCurrent');
 		
 		$crud->addHook('myupdate',function($crud,$form){
@@ -30,7 +30,7 @@ class page_schemes_SavingAndCurrent extends Page{
 			$scheme_SavingAndCurrent_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_SavingAndCurrent_model,array('type','name','MinLimit','MaxLimit','Interest','ActiveStatus','balance_sheet_id','SchemePoints','SchemeGroup','isDepriciable','DepriciationPercentBeforeSep','DepriciationPercentAfterSep'));
+		$crud->setModel($scheme_SavingAndCurrent_model,array('type','name','MinLimit','MaxLimit','Interest','ActiveStatus','balance_sheet_id','SchemePoints','SchemeGroup','isDepriciable','DepriciationPercentBeforeSep','DepriciationPercentAfterSep','total_accounts','total_active_accounts'));
 
 		
 		if($crud->grid){

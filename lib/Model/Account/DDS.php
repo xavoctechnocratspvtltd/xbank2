@@ -48,7 +48,7 @@ class Model_Account_DDS extends Model_Account{
 			throw $this->exception('Exceeding Amount, only required '. $required_amount, 'ValidityCheck')->setField('amount');
 
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$in_branch);
-		// AGENT COMMISSION SET TO MONTHLY
+		// AGENT COMMISSION SET TO DAILY ON DAY WHEN ACCOUNT HAS COMPLETED 30 DAYS
 		// if($this->ref('agent_id')->loaded()){
 		// 	$this->giveAgentCommission($on_amount = $amount, $transaction_date);
 		// }
@@ -148,43 +148,64 @@ class Model_Account_DDS extends Model_Account{
         $tds_percentage = $this->ref('agent_id')->ref('member_id')->hasPanNo()? 10 : 20 ;
 //            $amount = $ac->amountCr;
 
-        $this->interestGiven();
+        $int_amt = $this->interestGiven($this->api->previousMonth($on_date),$this->api->nextDate($on_date));
 
-//------------CALCULATING COMMISSION FOR DDS----------------
-        $DA = $this['Amount']; // DA => Monthly DDS Amount
+        $months_diff = $this->api->my_date_diff($this->api->nextDate($on_date),$this['created_at']);
+		$months_diff = $months_diff['months_total'];
+		$percent = $this->api->getComission($this->scheme()->get('AccountOpenningCommission'), PREMIUM_COMMISSION, $months_diff);
 
-        //  Below fields are not in account but expresions
-        // VVV--  Set in monthly closing scheme file monthly_credited_amount
-        $x = $this['monthly_credited_amount']; // x => Amount Submitted in the current month
-        $tA = $this['CurrentBalanceCr'] - $x; // tA => Total amount till date given excluding x ???? Interest Given Included ????
+		$monthly_submitted_amount = $this->creditedAmount($this->api->previousMonth($on_date),$on_date);
 
-        while($x > 0){
-            $y = $DA- ($tA - ((int)($tA / $DA)) * $DA);
-            $z = $tA / $DA;
-            $old = ($x / $DA > 1 ? $y : $x);
+		$monthly_submitted_amount = $monthly_submitted_amount - $int_amt;
 
-            $percent = explode(",", $this['AccountOpenningCommission']);
-            $percent = (isset($percent[$z])) ? $percent[$z] : $percent[count($percent) - 1];
+        $amount = $monthly_submitted_amount * $percent / 100;
+        
+        $commissionForThisAgent = $this->agent()->cadre()->get('percentage_share') * $amount / 100.00;
 
-            $amount = $old * $percent / 100;
-            
-            $commissionForThisAgent = $this->agent()->cadre()->get('percentage_share') * $amount / 100.00;
+        $transaction = $this->add('Model_Transaction');
+        $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
+        
+        $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
+        $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - ($commissionForThisAgent * TDS_PERCENTAGE / 100)));
+        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($commissionForThisAgent * TDS_PERCENTAGE / 100)));
+        
+        $transaction->execute();
+
+        $this->propogateAgentCommission($this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $total_commission_amount = $amount, $on_date);
+	}
+
+	function giveCollectionCharges($on_date=null){
+
+		if(!$on_date) $on_date = $this->api->today;
 
 
-            $transaction = $this->add('Model_Transaction');
-            $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
-            
-            $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
-            $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - ($commissionForThisAgent * TDS_PERCENTAGE / 100)));
-            $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($commissionForThisAgent * TDS_PERCENTAGE / 100)));
-            
-            $transaction->execute();
+		$agentAccount = $this->agent()->account();
+        $branch_code =$this->ref('branch_id')->get('Code');
 
-            $this->propogateAgentCommission($this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $total_commission_amount = $amount, $on_date);
+        $tds_percentage = $this->ref('agent_id')->ref('member_id')->hasPanNo()? 10 : 20 ;
+//            $amount = $ac->amountCr;
 
-            $x = $x - $old;
-            $tA = $tA + $old;
-        }
+        $int_amt = $this->interestGiven($this->api->previousMonth($on_date),$this->api->nextDate($on_date));
 
+        $months_diff = $this->api->my_date_diff($this->api->nextDate($on_date),$this['created_at']);
+		$months_diff = $months_diff['months_total'];
+		$percent = $this->api->getComission($this->scheme()->get('CollectorCommissionRate'), PREMIUM_COMMISSION, $months_diff);
+
+		$monthly_submitted_amount = $this->creditedAmount($this->api->previousMonth($on_date),$on_date);
+
+		$monthly_submitted_amount = $monthly_submitted_amount - $int_amt;
+
+        $amount = $monthly_submitted_amount * $percent / 100;
+        
+        $commissionForThisAgent = $amount;
+
+        $transaction = $this->add('Model_Transaction');
+        $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Collection Charge ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
+        
+        $transaction->addDebitAccount($branch_code. SP . COLLECTION_CHARGE_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
+        $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - ($commissionForThisAgent * TDS_PERCENTAGE / 100)));
+        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($commissionForThisAgent * TDS_PERCENTAGE / 100)));
+        
+        $transaction->execute();
 	}
 }

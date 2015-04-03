@@ -8,6 +8,27 @@ class Model_Scheme_Default extends Model_Scheme {
 	function init(){
 		parent::init();
 
+		$this->getElement('type')->group('a~2~Basic Details')->mandatory(true);
+		$this->getElement('name')->group('a~8~Basic Details');
+		$this->getElement('ActiveStatus')->group('a~2~Basic Details');
+		
+		$this->getElement('Interest')->group('b~4~Product Details')->mandatory(true);
+		$this->getElement('InterestToAnotherAccount')->group('b~4~Product Details')->mandatory(true);
+		$this->getElement('MaturityPeriod')->group('b~4~Product Details')->mandatory(true)->type('Number');
+		// $this->getElement('ProcessingFees')->group('b~2~Product Details')->mandatory(true)->type('Number');
+		// $this->getElement('ProcessingFeesinPercent')->group('b~2~Product Details');
+		
+		$this->getElement('AccountOpenningCommission')->group('d~6~Commission')->mandatory(true);
+		$this->getElement('CRPB')->group('d~6~Commission')->mandatory(true);
+		
+
+		$this->getElement('balance_sheet_id')->group('c~3~Accounts Details')->mandatory(true);
+		$this->getElement('SchemeGroup')->group('c~3~Accounts Details')->mandatory(true);
+		$this->getElement('MinLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(0);
+		$this->getElement('MaxLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(-1);
+
+
+
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();

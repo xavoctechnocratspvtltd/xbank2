@@ -18,11 +18,11 @@ class Controller_FormBeautifier extends AbstractController{
 		parent::init();
 
 
-		if(!($this->owner instanceof View_CRUD) and !($this->owner instanceof Form)){
+		if(!($this->owner instanceof CRUD) and !($this->owner instanceof Form)){
 			throw $this->exception('Must be added on CRUD or Form')->addMoreInfo('Current Owner',$this->owner);
 		}
 
-		if($this->owner instanceof View_CRUD and $this->owner->isEditing()){
+		if($this->owner instanceof CRUD and $this->owner->isEditing()){
 			$this->form = $this->owner->form;
 		}
 

@@ -8,6 +8,24 @@ class Model_Scheme_Recurring extends Model_Scheme {
 	function init(){
 		parent::init();
 
+		$this->getElement('type')->group('a~2~Basic Details')->mandatory(true);
+		$this->getElement('name')->group('a~8~Basic Details');
+		$this->getElement('ActiveStatus')->group('a~2~Basic Details');
+		
+		$this->getElement('NumberOfPremiums')->group('b~3~Product Details');
+		$this->getElement('Interest')->group('b~3~Product Details')->mandatory(true);
+		$this->getElement('MaturityPeriod')->group('b~3~Product Details')->mandatory(true)->type('Number');
+		$this->getElement('PremiumMode')->group('b~3~Product Details')->mandatory(true)->type('Number');
+		
+		$this->getElement('balance_sheet_id')->group('c~3~Accounts Details')->mandatory(true);
+		$this->getElement('SchemeGroup')->group('c~3~Accounts Details')->mandatory(true);
+		$this->getElement('MinLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(0);
+		$this->getElement('MaxLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(-1);
+
+		$this->getElement('CRPB')->group('d~12~Commission')->mandatory(true);
+		$this->getElement('AccountOpenningCommission')->group('d~12~bl')->mandatory(true);
+		$this->getElement('CollectorCommissionRate')->group('d~12~bl')->mandatory(true);
+
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
@@ -28,7 +46,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$this->getElement('DepriciationPercentAfterSep')->destroy();
 		
 		$this->getElement('balance_sheet_id')->caption('Head');
-		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD, MIS, RD, DDS (in months)');
+		$this->getElement('MaturityPeriod')->caption('Maturity (Months)');
 
 		$this->addCondition('SchemeType',$this->schemeType);
 

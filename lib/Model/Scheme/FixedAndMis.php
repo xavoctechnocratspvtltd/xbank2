@@ -8,6 +8,27 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 	function init(){
 		parent::init();
 		
+		$this->getElement('type')->group('a~2~Basic Details')->mandatory(true);
+		$this->getElement('name')->group('a~8~Basic Details');
+		$this->getElement('ActiveStatus')->group('a~2~Basic Details');
+		
+		$this->getElement('Interest')->group('b~4~Product Details')->mandatory(true);
+		$this->getElement('InterestToAnotherAccount')->group('b~4~Product Details')->mandatory(true);
+		$this->getElement('MaturityPeriod')->group('b~4~Product Details')->mandatory(true)->type('Number');
+		// $this->getElement('ProcessingFees')->group('b~2~Product Details')->mandatory(true)->type('Number');
+		// $this->getElement('ProcessingFeesinPercent')->group('b~2~Product Details');
+		
+		$this->getElement('AccountOpenningCommission')->group('d~6~Commission')->mandatory(true);
+		$this->getElement('CRPB')->group('d~6~Commission')->mandatory(true);
+		
+
+		$this->getElement('balance_sheet_id')->group('c~3~Accounts Details')->mandatory(true);
+		$this->getElement('SchemeGroup')->group('c~3~Accounts Details')->mandatory(true);
+		$this->getElement('MinLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(0);
+		$this->getElement('MaxLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(-1);
+
+
+
 		$this->getElement('type')->setValueList(array('FD'=>'FD','MIS'=>'MIS'));
 
 		$this->getElement('ProcessingFeesinPercent')->destroy();
@@ -29,14 +50,23 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$this->getElement('NumberOfPremiums')->destroy();
 		
 		$this->getElement('balance_sheet_id')->caption('Head');
-		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD (in Days)');
-		$this->getElement('AccountOpenningCommission')->caption('Account Commissions(in %)');
+		$this->getElement('MaturityPeriod')->caption('Maturity (in Days)');
+		$this->getElement('AccountOpenningCommission')->caption('Commission')->type('Number');
 		$this->getElement('InterestToAnotherAccount')->caption('Interest To Account (check if interest to be posted to other account)');
 
 		$this->getElement('balance_sheet_id')->caption('Head')->getModel()->addCondition('name','Deposits - Liabilities');
 		$this->addCondition('SchemeType',$this->schemeType);
 
+		$this->addHook('beforeSave',$this);
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+
+	function beforeSave(){
+		if(($this['type']=='MIS' and !$this['InterestToAnotherAccount']) and ($this['type']=='FD' and $this['InterestToAnotherAccount'])){
+			throw $this->exception('Type and Interest to another account is not matching well','ValidityCheck')->setField('type');
+		}
 	}
 
 	function getDefaultAccounts(){

@@ -4,7 +4,7 @@ class page_schemes_CC extends Page{
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Scheme'));
 		$scheme_cc_model =$this->add('Model_Scheme_CC');
 		
 		$crud->addHook('myupdate',function($crud,$form){
@@ -30,7 +30,7 @@ class page_schemes_CC extends Page{
 			$scheme_cc_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_cc_model,array('name','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ActiveStatus','balance_sheet_id','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
+		$crud->setModel($scheme_cc_model,array('name','ActiveStatus','Interest','balance_sheet_id','balance_sheet','ProcessingFees','ProcessingFeesinPercent','SchemePoints','SchemeGroup','MinLimit','MaxLimit','total_accounts','total_active_accounts'));
 
 		
 		if($crud->grid){

@@ -5,7 +5,7 @@ class Model_Log extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Staff','staff_id');
+		$this->hasOne('Staff','staff_id')->defaultValue($this->api->auth->model->id);
 		$this->hasOne('Account','account_id');
 		$this->hasOne('Member','member_id');
 		$this->hasOne('Agent','agent_id');
@@ -14,9 +14,11 @@ class Model_Log extends Model_Table {
 		$this->hasOne('Scheme','scheme_id');
 		$this->hasOne('Transaction','transaction_id');
 		$this->hasOne('TransactionRow','transaction_row_id');
-		$this->hasOne('SubmittedDocument','documentsubmitted_id');
+		// $this->hasOne('SubmittedDocument','documentsubmitted_id');
 
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
+
+		$this->addField('name')->type('text');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

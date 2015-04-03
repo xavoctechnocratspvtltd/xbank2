@@ -9,7 +9,7 @@ class page_staffs extends Page {
 
 		$staff_model = $this->add('Model_Staff');
 		$staff_model->addCondition('branch_id',$this->api->current_branch->id);
-
+		$staff_model->add('Controller_LogEdit');
 		$staff_crud = $this->add('CRUD');
 		$staff_crud->setModel($staff_model);
 

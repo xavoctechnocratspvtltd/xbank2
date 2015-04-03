@@ -823,4 +823,12 @@ class Model_Account extends Model_Table {
         }   
         $this->addCondition($wq); 
     }
+
+    function isRecurring(){
+    	return $this['account_type'] == ACCOUNT_TYPE_RECURRING;
+    }
+
+    function isLoan(){
+    	return in_array($this['account_type'],explode(",",LOAN_TYPES));
+    }
 }

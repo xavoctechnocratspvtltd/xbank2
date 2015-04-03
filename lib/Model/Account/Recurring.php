@@ -257,5 +257,9 @@ class Model_Account_Recurring extends Model_Account{
 		$this->save();
 	}
 
+	function premiums(){
+		return $this->add('Model_Premium')->addCondition('account_id',$this->id);
+	}
+
 
 }

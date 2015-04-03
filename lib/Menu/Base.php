@@ -129,6 +129,7 @@ class Menu_Base extends Menu {
 
 		$operations_sub_menus = $operations_sub_menus_popover->add('Menu_Vertical');
 		$operations_sub_menus->addMenuItem('operations_edit','Edit Accounts');
+		$operations_sub_menus->addMenuItem('transactions_remove','Remove Transaction');
 		$operations->js('click',$operations_sub_menus_popover->showJS());
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');

@@ -42,12 +42,12 @@ class page_accounts_Default extends Page {
 			$account_Default_model->hook('editing');
 		}
 
-		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','ActiveStatus','sig_image_id'),array('AccountNumber','member','scheme','ActiveStatus'));
+		$crud->setModel($account_Default_model,array('AccountNumber','scheme_id','ActiveStatus','sig_image_id'),array('AccountNumber','scheme','ActiveStatus'));
 		
 		if($crud->grid){
 			$crud->grid->addPaginator(100);
 			$crud->grid->addQuickSearch(array('AccountNumber'));
-			$crud->grid->addOrder()->move('member','first')->now();
+			// $crud->grid->addOrder()->move('member','first')->now();
 		}
 
 		if($crud->isEditing('add')){

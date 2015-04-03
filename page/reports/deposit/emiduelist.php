@@ -2,6 +2,7 @@
 
 class page_reports_deposit_emiduelist extends Page {
 	public $title="Deposit EMI Due List";
+
 	function init(){
 		parent::init();
 
@@ -15,8 +16,9 @@ class page_reports_deposit_emiduelist extends Page {
 		$form->addField('dropdown','type')->setValueList(array('RD'=>'RD','DDS'=>'DDS'))->setEmptyText('Please Select');
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid');
+		$grid=$this->add('Grid_AccountsBase');
 		$grid->add('H3',null,'grid_buttons')->set('Deposit Emi Due List From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
+		
 		$account_model=$this->add('Model_Active_Account_Recurring');
 		$member_join=$account_model->join('members','member_id');
 		$member_join->addField('member_name','name');
@@ -62,6 +64,13 @@ class page_reports_deposit_emiduelist extends Page {
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.name');
 		});
 
+		$account_model->addExpression('agent')->set($account_model->refSQL('agent_id')->fieldQuery('name'));
+		$account_model->addExpression('agent_code')->set($account_model->refSQL('agent_id')->fieldQuery('AgentCode'));
+		$account_model->addExpression('agent_phone')->set($this->add('Model_Member')->addCondition('id',$account_model->refSQL('agent_id')->fieldQuery('member_id'))->fieldQuery('PhoneNos'));
+
+		$account_agent = $account_model->refSQL('agent_id');
+
+
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			// ALREADY IMPLEMENTED IN EXPRESSIONS
@@ -100,7 +109,8 @@ class page_reports_deposit_emiduelist extends Page {
 			$account_model->addCondition('id',-1);
 
 		$account_model->add('Controller_Acl');
-		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','paid_premium_count','due_premium_count','premium_amount','guarantor_name','last_premium'));
+		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','paid_premium_count','due_premium_count','premium_amount','guarantor_name','last_premium','agent','agent_code','agent_phone'));
+		$grid->addSno();
 
 		$grid->addMethod('format_balance',function($g,$f){
 			$bal = $g->model->getOpeningBalance($on_date=$_GET['to_date']?:$g->api->today,$side='both',$forPandL=false);

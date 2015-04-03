@@ -30,11 +30,12 @@ class page_schemes_DDS extends Page{
 			$scheme_dds_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_dds_model,array('name','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemePoints','SchemeGroup'));
+		$crud->setModel($scheme_dds_model,array('type','name','CRPB','MinLimit','MaxLimit','Interest','AccountOpenningCommission','CollectorCommissionRate','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemeGroup'));
 
 		
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(50);
+			$crud->grid->addFormatter('CRPB','grid/inline');
 		}
 
 		if($crud->isEditing('add')){

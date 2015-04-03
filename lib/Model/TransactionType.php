@@ -11,4 +11,9 @@ class Model_TransactionType extends Model_Table {
 		$this->addField('Default_Narration');
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
+
+	function loadType($type){
+		$this->addCondition('name',$type);
+		$this->tryLoadAny();
+	}
 }

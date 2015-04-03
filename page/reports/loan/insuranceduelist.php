@@ -31,8 +31,10 @@ class page_reports_loan_insuranceduelist extends Page {
 		$accounts_model->addExpression('insurance_date')->set('(DAY(LoanInsurranceDate))');
 
 		if($_GET['filter']){
-
+			$this->api->stickyGET('filter');
+			
 			if($_GET['from_date']){
+				$this->api->stickyGET('from_date');
 				$accounts_model->addCondition('insurance_month','>=',(int) date('m',strtotime($_GET['from_date'])));
 				$accounts_model->addCondition('insurance_date','>=',(int)date('d',strtotime($_GET['from_date'])));
 				$accounts_model->addCondition('maturity_date','>=',$this->api->nextDate($_GET['from_date']));
@@ -40,11 +42,13 @@ class page_reports_loan_insuranceduelist extends Page {
 			}
 
 			if($_GET['to_date']){
+				$this->api->stickyGET('to_date');
 				$accounts_model->addCondition('insurance_month','<=',(int)date('m',strtotime($_GET['to_date'])));
 				$accounts_model->addCondition('insurance_date','<=',(int)date('d',strtotime($_GET['to_date'])));
 			}
 			
 			if($_GET['dealer'])
+				$this->api->stickyGET('dealer');
 				$accounts_model->addCondition('dealer_id',$_GET['dealer']);
 
 		}else
@@ -66,6 +70,19 @@ class page_reports_loan_insuranceduelist extends Page {
 		});
 
 		$grid->addFormatter('LoanInsurranceDate','onlyDateMonth');
+
+		$grid->addMethod('format_balance_on_date',function($g,$f){
+			$bal = $g->model->getOpeningBalance($_GET['to_date']);
+			if($bal['cr'] > $bal['dr'])
+				$amt = ($bal['cr'] - $bal['dr']) . ' Cr';
+			else
+				$amt = ($bal['dr'] - $bal['cr']) . ' Dr';
+
+			$g->current_row[$f] = $amt;
+
+		});
+
+		$grid->addColumn('balance_on_date','amount');
 
 		$grid->addPaginator(50);
 		$grid->addSno();

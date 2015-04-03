@@ -19,7 +19,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$this->getElement('CreateDefaultAccount')->destroy();
 		$this->getElement('InterestToAnotherAccountPercent')->destroy();
 		$this->getElement('AgentSponsorCommission')->destroy();
-		$this->getElement('CollectorCommissionRate')->destroy();
+		// $this->getElement('CollectorCommissionRate')->destroy(); // Collector Commission now added in new application
 		$this->getElement('published')->destroy();
 		$this->getElement('ReducingOrFlatRate')->destroy();
 		$this->getElement('NumberOfPremiums')->destroy();
@@ -42,6 +42,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		return array(
 			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On DDS','PAndLGroup'=>'Commission Paid On Deposit'),
 			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On DDS','PAndLGroup'=>'Interest Paid On Deposit'),
+			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Collection Charges Paid On",'Group'=>'Collection Charges Paid On DDS','PAndLGroup'=>'Collection Charges Paid On Deposit')
 			// "Indirect Expenses"=>"Collection Charges Paid On",
 			// "Provision"=>array('intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On'),
 			// "Provision"=>array('intermediate_text'=>"Interest Payable On",'Group'=>'Interest Payable On'),

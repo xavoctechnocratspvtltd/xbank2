@@ -10,6 +10,7 @@ class Model_Account_Default extends Model_Account{
 
 		$this->addCondition('SchemeType','Default');
 		$this->getElement('account_type')->defaultValue('Default');
+		$this->getElement('member_id')->mandatory(false);
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 

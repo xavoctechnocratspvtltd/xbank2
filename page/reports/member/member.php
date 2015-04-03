@@ -8,7 +8,7 @@ class page_reports_member_member extends Page {
 		$member_model=$this->add('Model_Member');
 		$member_model->setOrder('created_at','desc');
 
-		$grid=$this->add('Grid',null,null,array('view/mygrid'));
+		$grid=$this->add('Grid');
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
 		$grid->setModel($member_model,array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
 		$grid->addPaginator(50);
@@ -78,10 +78,9 @@ class page_reports_member_member extends Page {
 
 
 	function page_guarantor_in(){
-		$this->api->stickyGET('members_id');
-
 
 		$this->api->stickyGET('members_id');
+
 		$account_model=$this->add('Model_Account');
 		$account_model->join('account_guarantors.account_id')->addField('guarantor_member_id','member_id');
 		$account_model->addCondition('guarantor_member_id',$_GET['members_id']);

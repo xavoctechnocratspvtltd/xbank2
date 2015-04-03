@@ -22,7 +22,7 @@ class Model_Transaction extends Model_Table {
 
 		$this->hasOne('TransactionType','transaction_type_id');
 		$this->hasOne('Staff','staff_id');
-		$this->hasOne('Account','reference_account_id');
+		$this->hasOne('Account','reference_id');
 		$this->hasOne('Branch','branch_id');
 		$this->addField('voucher_no_original')->type('int'); //TODO bigint
 		$this->addField('voucher_no')->type('int'); //TODO bigint -- Actual Display Voucher
@@ -33,6 +33,7 @@ class Model_Transaction extends Model_Table {
 		$this->hasMany('TransactionRow','transaction_id');
 		
 		$this->addHook('beforeSave',$this);
+		$this->addHook('beforeDelete',$this);
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -40,6 +41,11 @@ class Model_Transaction extends Model_Table {
 	function beforeSave(){
 		$this['staff_id'] = $this->api->auth->model->id;
 		$this['updated_at'] = $this->api->now;
+	}
+
+	function beforeDelete(){
+		if($this->ref('TransactionRow')->count()->getOne() > 0 )
+			throw $this->exception('TRansaction Contains Rows .. Cannot Delete');
 	}
 
 	function createNewTransaction($transaction_type, $branch=null, $transaction_date=null, $Narration=null, $only_transaction=null,$options=array()){
@@ -56,7 +62,7 @@ class Model_Transaction extends Model_Table {
 
 		// Transaction TYpe Save if not available
 		$this['transaction_type_id'] = $transaction_type_model->id;
-		$this['reference_account_id'] = isset($options['reference_account_id'])?:0;
+		$this['reference_id'] = isset($options['reference_id'])?:0;
 		$this['branch_id'] = $branch->id;
 		$this['voucher_no'] = $branch->newVoucherNumber($branch,$transaction_date);
 		$this['Narration'] = $Narration;
@@ -279,11 +285,11 @@ class Model_Transaction extends Model_Table {
 		return true;
 	}
 
-	function delete($forced=false,$revert_accounts_balances=true){
+	function forceDelete(){
 		foreach ($tr=$this->ref('TransactionRow') as $tr_array) {
-			$tr->delete($revert_accounts_balances);
+			$tr->forceDelete();
 		}
-		parent::delete();
+		$this->delete();
 	}
 
 	function filterBy($SchemeType, $from_date=null,$to_date=null,$branch=null){
@@ -309,6 +315,10 @@ class Model_Transaction extends Model_Table {
 		if($branch != 'all')
 			$this->addCondition('branch_id',$branch);
 
+	}
+
+	function referenceAccount(){
+		return $this->ref('reference_id');
 	}
 
 	// function __destruct(){

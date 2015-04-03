@@ -14,13 +14,15 @@ class Model_Premium extends Model_Table {
 		$this->addField('PaidOn')->type('datetime')->defaultValue(null);
 		$this->addField('AgentCommissionSend')->type('boolean')->defaultValue(false);
 		$this->addField('AgentCommissionPercentage')->type('money');
+		$this->addField('AgentCollectionChargesPercentage')->type('money');
+		$this->addField('AgentCollectionChargesSend')->type('boolean')->defaultValue(false);
 		$this->addField('PaneltyCharged')->type('money')->defaultValue(0);
 		$this->addField('PaneltyPosted')->type('money')->defaultValue(0);
 		$this->addField('DueDate')->type('date');
 
 		$this->addExpression('panelty_to_post')->set('PaneltyCharged - PaneltyPosted');
 
-		//$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function payNowForRecurring($on_date=null){
@@ -30,8 +32,13 @@ class Model_Premium extends Model_Table {
 		$this->saveAs('Model_Premium');
 
 		$this->reAdjustPaidValue($on_date);
-
 		$this->giveAgentCommission($on_date);
+		$this->giveCollectionCharges($on_date);
+
+	}
+
+	function account(){
+		return $this->ref('account_id');
 	}
 
 	function giveAgentCommission($on_date = null){
@@ -50,18 +57,58 @@ class Model_Premium extends Model_Table {
 			$all_paid_noncommissioned_preimums->saveAndUnload();			
 		}
 
+		$commissionForThisAgent = $this->account()->agent()->cadre()->get('percentage_share') * $commission / 100.00;
+
+		if(!$commissionForThisAgent) return;
+
 		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?10:20;
-		$tds = $commission * $tds_percentage / 100;
+		$tds = $commissionForThisAgent * $tds_percentage / 100;
 
 
 		$account = $this->ref('account_id');
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Commission ".$account['AccountNumber'], null, array('reference_account_id'=>$account->id));
+		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Commission ".$account['AccountNumber'], null, array('reference_id'=>$account->id));
 		
-		$transaction->addDebitAccount($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'] , $commission);
+		$transaction->addDebitAccount($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'] , $commissionForThisAgent);
 		
-		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commission -$tds);
+		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commissionForThisAgent -$tds);
+		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
+		
+		$transaction->execute();
+
+		$this->account()->propogateAgentCommission($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'], $total_commission_amount = $commission, $on_date);
+		
+	}
+
+	function giveCollectionCharges($on_date=null){
+		if(!$on_date) $on_date = $this->api->today;
+
+		$all_paid_noncollected_preimums = $this->ref('account_id')->ref('Premium');
+		$all_paid_noncollected_preimums->addCondition('AgentCollectionChargesSend',0);
+		$all_paid_noncollected_preimums->addCondition('Paid','<>',0);
+		$all_paid_noncollected_preimums->addCondition('PaidOn','<>',null);
+
+		$commission = 0;
+		$account = $this->account();
+
+		foreach($all_paid_noncollected_preimums as $junk){
+			$commission = $commission + ($all_paid_noncollected_preimums['Amount'] * $all_paid_noncollected_preimums['AgentCollectionChargesPercentage'] / 100.00);
+			$all_paid_noncollected_preimums['AgentCollectionChargesSend'] = true;
+			$all_paid_noncollected_preimums->saveAndUnload();			
+		}
+
+		$commissionForThisAgent = $commission;
+
+		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?10:20;
+		$tds = $commissionForThisAgent * $tds_percentage / 100;
+
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Collection ".$account['AccountNumber'], null, array('reference_id'=>$account->id));
+		
+		$transaction->addDebitAccount($account['branch_code'] . SP . COLLECTION_CHARGE_PAID_ON . SP. $account['scheme_name'] , $commissionForThisAgent);
+		
+		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commissionForThisAgent -$tds);
 		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
 		
 		$transaction->execute();

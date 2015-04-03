@@ -6,7 +6,7 @@ class Model_DocumentSubmitted extends Model_Table {
 
 		$this->hasOne('Document','documents_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','accounts_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Member','member_id')->display(array('form'=>'Member'));
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		//NEW ADDED
 		$this->hasOne('Dealer','dealer_id')->display(array('form'=>'autocomplete/Basic'));

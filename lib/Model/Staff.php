@@ -24,8 +24,14 @@ class Model_Staff extends Model_Table {
 
 		$this->hasMany('Transaction','staff_id');
 
-		$this->addField('AccessLevel')->setValueList(array('100'=>'Super Admin','80'=>'CEO','60'=>'Branch Admin','40'=>'Power Staff', '20'=>'Staff','10'=>'Guest'));
+		$this->addField('AccessLevel')->setValueList(array('100'=>'Super Admin','80'=>'CEO','60'=>'Branch Admin','40'=>'Power Staff', '20'=>'Staff','10'=>'Guest'))->mandatory(true)->DefaultValue(20);
+		$this->addHook('beforeDelete',$this);
+
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeDelete(){
+		
 	}
 
 	function createNewStaff($name,$password,$AccessLevel,$branch_id=null){

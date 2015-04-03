@@ -24,7 +24,10 @@ class page_transactions_conveyance extends Page {
 		$form = $this->add('Form');
 		$form->addField('autocomplete/Basic',array('name'=>'staff'))->validateNotNull()->setModel('Staff');
 			$form->addField('Number','amount')->validateNotNull();
-		$form->addField('autocomplete/Basic','amount_from_account')->setModel($account_from_account_model,'AccountNumber');
+		$amtfrmac = $form->addField('autocomplete/Basic','amount_from_account');
+		$amtfrmac->setModel($account_from_account_model,'AccountNumber');
+		$amtfrmac->set($this->api->current_branch->getCashAccount()->get('id'));
+		
 		$form->addField('Text','narration');
 		$form->addSubmit('Conveynace');
 

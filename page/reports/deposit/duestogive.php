@@ -2,6 +2,7 @@
 
 class page_reports_deposit_duestogive extends Page {
 	public $title="Dues To Give";
+	
 	function init(){
 		parent::init();
 
@@ -31,6 +32,7 @@ class page_reports_deposit_duestogive extends Page {
 		$member_join=$agent_join->join('members','member_id');
 		$member_join->addField('agent_name','name');
 		$member_join->addField('agent_phoneno','PhoneNos');
+		
 		$account->addExpression('due_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".NumberOfPremiums MONTH)";
 		});

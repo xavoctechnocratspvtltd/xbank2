@@ -12,11 +12,11 @@ class page_schemes_FixedAndMis extends Page{
 			if($crud->isEditing('edit')) return false;
 			$FixedAndMis_scheme_model = $crud->add('Model_Scheme_FixedAndMis');
 			try {
-				$this->api->db->beginTransaction();
-			    $FixedAndMis_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_FIXED, ACCOUNT_TYPE_FIXED, $is_loanType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
-			    $this->api->db->commit();
+				$crud->api->db->beginTransaction();
+			    $FixedAndMis_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_FIXED, ACCOUNT_TYPE_FIXED, $loanType_if_loan=$form['type'], $other_values=$form->getAllFields(),$form,$form->api->now);
+			    $crud->api->db->commit();
 			} catch (Exception $e) {
-			   	$this->api->db->rollBack();
+			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
 			return true;
@@ -30,11 +30,13 @@ class page_schemes_FixedAndMis extends Page{
 			$scheme_FixedAndMis_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_FixedAndMis_model,array('type','name','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','InterestToAnotherAccount','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemePoints','SchemeGroup'));
+		$crud->setModel($scheme_FixedAndMis_model,array('type','name','CRPB','MinLimit','MaxLimit','Interest','AccountOpenningCommission','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','InterestToAnotherAccount','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemeGroup'));
 
 		
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(50);
+			$crud->grid->addQuickSearch(array('name'));
+			$crud->grid->addFormatter('CRPB','grid/inline');
 		}
 
 		if($crud->isEditing('add')){

@@ -12,7 +12,7 @@ class Menu_Base extends Menu {
 
 		$mad = $this->addMenuItem('#','M.A.D.');
 		$stock = 	$this->addMenuItem('stock_main','Stock');
-		$stock = 	$this->addMenuItem('staff_main','Staff Management');
+		// $stock = 	$this->addMenuItem('staff_main','Staff Management');
 		$account = $this->addMenuItem('accounts','Accounts');
 		$transaction = 	$this->addMenuItem('transactions','Transactions');
 		$reports = 	$this->addMenuItem('reports','Reports');
@@ -51,7 +51,7 @@ class Menu_Base extends Menu {
 		$reports_sub_menu->addMenuItem('reports_member','Member Reports');
 		$reports_sub_menu->addMenuItem('reports_agent','Agent Reports');
 		$reports_sub_menu->addMenuItem('reports_deleardsa','Dealer/DSA Reports');
-		$reports_sub_menu->addMenuItem('reports_deposit','Deposit Reporst');
+		$reports_sub_menu->addMenuItem('reports_deposit','Deposit Reports');
 		$reports_sub_menu->addMenuItem('reports_loan','Loan & Recovery Reports');
 		$reports_sub_menu->addMenuItem('reports_genral','General Reports');
 		$reports_sub_menu->addMenuItem('reports_books','Books');
@@ -60,7 +60,7 @@ class Menu_Base extends Menu {
 		
 
 		$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
-		$admin_sub_menus->addMenuItem('staffs','Staff');
+		// $admin_sub_menus->addMenuItem('staffs','Staff');
 		$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
 		$admin_sub_menus->addMenuItem('branches','Branches');
 		$admin_sub_menus->addMenuItem('mos','Mos');
@@ -71,6 +71,7 @@ class Menu_Base extends Menu {
 
 		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');
 		$mad_sub_menus->addMenuItem('members','Members');
+		$mad_sub_menus->addMenuItem('agentscadre','Agents Cadres');
 		$mad_sub_menus->addMenuItem('agents','Agents');
 		$mad_sub_menus->addMenuItem('dealers','Dealers');
 		$mad_sub_menus->addMenuItem('dsa','DSA');
@@ -128,6 +129,7 @@ class Menu_Base extends Menu {
 
 		$operations_sub_menus = $operations_sub_menus_popover->add('Menu_Vertical');
 		$operations_sub_menus->addMenuItem('operations_edit','Edit Accounts');
+		$operations_sub_menus->addMenuItem('transactions_remove','Remove Transaction');
 		$operations->js('click',$operations_sub_menus_popover->showJS());
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');

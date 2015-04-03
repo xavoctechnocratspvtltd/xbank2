@@ -58,7 +58,7 @@ class View extends AbstractView
             }
             return $this;
         }
-        $this->template->appendHTML('attributes', ' '.$attribute.'="'.$value.'"');
+        $this->template->appendHTML('attributes', ' '.$attribute."='".$value."'");
         return $this;
     }
 

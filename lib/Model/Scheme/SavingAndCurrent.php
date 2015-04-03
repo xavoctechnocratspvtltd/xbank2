@@ -61,7 +61,7 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 
 		$sbca_account->addExpression( 'balance' )->set( '((OpeningBalanceCr + CurrentBalanceCr) - (OpeningBalanceDr + CurrentBalanceDr) )' );
 
-		$sbca_account->addCondition( 'balance', '<', $sbca_account->dsql()->expr( 'min_limit' ) );
+		$sbca_account->_dsql()->having( 'balance', '<', 'min_limit');
 
 		if ( $test_account ) $sbca_account->addCondition( 'id', $test_account->id );
 

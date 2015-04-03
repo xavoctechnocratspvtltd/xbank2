@@ -30,7 +30,11 @@ class Paginator_Basic extends CompleteLister {
 
     function init(){
         parent::init();
-        if(!$this->skip_var)$this->skip_var=$this->name.'_skip';
+        
+        if (!$this->skip_var) {
+            $this->skip_var = $this->name . '_skip';
+        }
+        $this->skip_var = $this->_shorten($this->skip_var);
     }
 
     /** Set number of items displayed per page */
@@ -106,9 +110,6 @@ class Paginator_Basic extends CompleteLister {
         $this->cur_page=floor($this->skip / $this->ipp) +1;
         $this->total_pages = ceil($this->found_rows / $this->ipp);
 
-        // no need for paginator if there is only one page
-        if($this->total_pages<=1)return $this->destroy();
-
         if($this->cur_page>$this->total_pages || ($this->cur_page==1 && $this->skip!=0)){
             $this->cur_page=1;
             if($this->memorize){
@@ -124,6 +125,9 @@ class Paginator_Basic extends CompleteLister {
                 $this->source->setLimit($this->ipp,$this->skip);
             }
         }
+
+        // no need for paginator if there is only one page
+        if($this->total_pages<=1)return $this->destroy();
 
         if($this->cur_page>1){
             $this->add('View',null,'prev')

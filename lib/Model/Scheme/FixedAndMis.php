@@ -8,7 +8,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 	function init(){
 		parent::init();
 		
-		$this->getElement('type')->enum(array('FD','MIS'));
+		$this->getElement('type')->setValueList(array('FD'=>'FD','MIS'=>'MIS'));
 
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
@@ -29,7 +29,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$this->getElement('NumberOfPremiums')->destroy();
 		
 		$this->getElement('balance_sheet_id')->caption('Head');
-		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD (in Days )');
+		$this->getElement('MaturityPeriod')->caption('Period of Maturity for FD (in Days)');
 		$this->getElement('AccountOpenningCommission')->caption('Account Commissions(in %)');
 		$this->getElement('InterestToAnotherAccount')->caption('Interest To Account (check if interest to be posted to other account)');
 
@@ -43,6 +43,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		return array(
 				array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On FD and MIS','PAndLGroup'=>'Commission Paid On Deposit'),
 				array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On FD and MIS','PAndLGroup'=>'Interest Paid On Deposit'),
+				// array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Collection Charges Paid On",'Group'=>'Collection Charges Paid On FD and MIS','PAndLGroup'=>'Collection Charges Paid On Deposit'),
 				array('under_scheme'=>"Provision",'intermediate_text'=>"Interest Provision On",'Group'=>'Interest Provision On FD and MIS','PAndLGroup'=>'Interest Payable On Deposit'),
 				array('under_scheme'=>"Provision",'intermediate_text'=>"Commission Payable On",'Group'=>'Commission Payable On FD and MIS','PAndLGroup'=>'Commission Payable Paid On Deposit'),
 			);

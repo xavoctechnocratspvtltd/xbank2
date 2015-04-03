@@ -19,7 +19,7 @@ class page_reports_deposit_fdinterestprovision extends Page {
 		$transaction_row_model=$this->add('Model_TransactionRow');
 		$transaction_join = $transaction_row_model->join('transactions','transaction_id');
 		$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
-		$ref_account_join = $transaction_row_model->join('accounts','reference_account_id');
+		$ref_account_join = $transaction_row_model->join('accounts','reference_id');
 		$ref_account_scheme_join = $ref_account_join->join('schemes','scheme_id');
 
 		$transaction_type_join->addField('transaction_name','name');

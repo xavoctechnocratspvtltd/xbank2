@@ -9,16 +9,24 @@ class page_agents extends Page{
 		$crud = $this->add('CRUD');
 		$agent=$this->add('Model_Agent');
 		$agent->setOrder('id','desc');
-		$crud->setModel($agent);
+
+		if($crud->isEditing('edit')){
+			$agent->hook('editing');
+		}
+
+
+		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus'),array('code','member','sponsor','account','cadre','ActiveStatus'));
 
 		if($crud and !$crud->isEditing()){
 			$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));
+			
 			$agent_guarantor_crud = $crud->addRef('AgentGuarantor');
-			if($agent_guarantor_crud and $agent_guarantor_crud->grid){
+			if($agent_guarantor_crud and !$agent_guarantor_crud->isEditing()){
 				$agent_guarantor_crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentGuarantor'));
 			}
 
 			$crud->grid->addPaginator(50);
+			$crud->grid->addQuickSearch(array('member','account','code'));
 		}
 
 

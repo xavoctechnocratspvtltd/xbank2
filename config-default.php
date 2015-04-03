@@ -13,6 +13,8 @@ define('FILE_WRITE_MODE', 0666);
 define('DIR_READ_MODE', 0755);
 define('DIR_WRITE_MODE', 0777);
 
+$config['autocreator']=false;
+
 /*
 |--------------------------------------------------------------------------
 | File Stream Modes
@@ -80,6 +82,7 @@ define('PENALTY_DUE_TO_LATE_PAYMENT_ON',		'Penalty Due To Late Payment On');
 define('FOR_CLOSE_ACCOUNT_ON',		'For Close Account On');
 define('INTEREST_PAID_ON',				'Interest Paid On');
 define('COMMISSION_PAID_ON',				'Commission Paid On');
+define('COLLECTION_CHARGE_PAID_ON',				'Collection Charges Paid On');
 define('ADMISSION_FEE_ACCOUNT',			'Admission Fee');
 define('CASH_ACCOUNT',					'Cash Account');
 define('INTEREST_PROVISION_ON',                         'Interest Provision On');
@@ -99,6 +102,7 @@ define('TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT',         'DDSAccountAmountDeposit');
 define('TRA_DDS_ACCOUNT_AMOUNT_WITHDRAWL',         'DDSAccountAmountWithdrawl');
 define('TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT',	'LoanAccountAmountDeposit');
 define('TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT',	'AgentsPremiumCommissionDepositInSavingAccount');
+define('TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT',	'AgentsPremiumCollectionChargeDepositInSavingAccount');
 define('TRA_FIXED_ACCOUNT_DEPOSIT',             'FixedAccountInitialDeposit');
 define('TRA_FD_ACCOUNT_AMOUNT_WITHDRAWL',	'FixedDepositAccountAmountWithdrawl');
 define('TRA_LOAN_ACCOUNT_OPEN',                 'LoanAccountOpen');

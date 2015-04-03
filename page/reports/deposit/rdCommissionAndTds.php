@@ -27,7 +27,7 @@ class page_reports_deposit_rdCommissionAndTds extends Page{
 
 		$transactions->addCondition('transaction_type_name',TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT);
 
-		$reference_account_join = $transactions->join('accounts','reference_account_id');
+		$reference_account_join = $transactions->join('accounts','reference_id');
 		$referecen_account_scheme_join = $reference_account_join->join('schemes','scheme_id');
 		$referecen_account_scheme_join->addField('account_scheme','name');
 
@@ -38,7 +38,7 @@ class page_reports_deposit_rdCommissionAndTds extends Page{
 		
 
 		$grid= $this->add('Grid');
-		$grid->setModel($transactions,array('reference_account','commission_amount','account_scheme'));
+		$grid->setModel($transactions,array('reference','commission_amount','account_scheme'));
 
 	}
 }

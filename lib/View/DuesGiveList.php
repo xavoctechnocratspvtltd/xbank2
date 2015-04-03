@@ -16,8 +16,8 @@ class View_DuesGiveList extends View{
 
 		$dds_maturity_accounts = $dds_view->add('Model_Active_Account_DDS');
 		$dds_maturity_accounts->addCondition('ActiveStatus',true);
-		$dds_maturity_accounts->addCondition('maturity_date','>=',$this->from_date);
-		$dds_maturity_accounts->addCondition('maturity_date','<',$this->to_date);
+		$dds_maturity_accounts->_dsql()->having('maturity_date','>=',$this->from_date);
+		$dds_maturity_accounts->_dsql()->having('maturity_date','<',$this->to_date);
 		$dds_maturity_accounts->addCondition('DefaultAC',false);
 
 		$dds_maturity_accounts->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
@@ -43,8 +43,8 @@ class View_DuesGiveList extends View{
 
 		$recurring_maturity_accounts = $recurring_view->add('Model_Active_Account_Recurring');
 		$recurring_maturity_accounts->addCondition('ActiveStatus',true);
-		$recurring_maturity_accounts->addCondition('maturity_date','>=',$this->from_date);
-		$recurring_maturity_accounts->addCondition('maturity_date','<',$this->to_date);
+		$recurring_maturity_accounts->_dsql()->having('maturity_date','>=',$this->from_date);
+		$recurring_maturity_accounts->_dsql()->having('maturity_date','<',$this->to_date);
 		$recurring_maturity_accounts->addCondition('DefaultAC',false);
 
 		$recurring_maturity_accounts->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
@@ -72,8 +72,8 @@ class View_DuesGiveList extends View{
 
 		$fd_mis_maturity_accounts = $fd_mis_view->add('Model_Active_Account_FixedAndMis');
 		$fd_mis_maturity_accounts->addCondition('ActiveStatus',true);
-		$fd_mis_maturity_accounts->addCondition('maturity_date','>=',$this->from_date);
-		$fd_mis_maturity_accounts->addCondition('maturity_date','<',$this->to_date);
+		$fd_mis_maturity_accounts->_dsql()->having('maturity_date','>=',$this->from_date);
+		$fd_mis_maturity_accounts->_dsql()->having('maturity_date','<',$this->to_date);
 		$fd_mis_maturity_accounts->addCondition('DefaultAC',false);
 
 		$fd_mis_maturity_accounts->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');

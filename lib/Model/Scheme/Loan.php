@@ -14,6 +14,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
+		// $this->getElement('ReducingOrFlatRate')->destroy();
 		$this->getElement('AccountOpenningCommission')->destroy();
 		$this->getElement('Commission')->destroy();
 		$this->getElement('PostingMode')->destroy();

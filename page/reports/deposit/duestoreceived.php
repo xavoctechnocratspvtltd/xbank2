@@ -73,7 +73,7 @@ class page_reports_deposit_duestoreceived extends Page {
 				$premiums->addCondition('DueDate','<',$_GET['to_date']);
 		}else
 			$premiums->addCondition('id',-1);
-		$grid->setModel($premiums,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','DueDate','Amount','agent_name','agent_phoneno','account_type','ActiveStatus'));
+		$grid->setModel($premiums,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','DueDate','Amount','agent_name','agent_phoneno','account_type'));
 		$grid->addPaginator(50);
 		$grid->addSno();
 		// $grid->addColumn('expander','accounts');

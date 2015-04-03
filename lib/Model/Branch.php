@@ -92,6 +92,13 @@ class Model_Branch extends Model_Table {
 		
 	}
 
+	function getCashAccount(){
+		return $this->add('Model_Account')
+			->addCondition('scheme_name',CASH_ACCOUNT_SCHEME)
+			->addCondition('branch_id',$this->id)
+			->loadAny();
+	}
+
 	function newVoucherNumber($branch=null, $transaction_date=null){
 		$cross_check=false;
 

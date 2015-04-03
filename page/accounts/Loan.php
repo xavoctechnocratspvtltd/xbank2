@@ -21,8 +21,9 @@ class page_accounts_Loan extends Page {
 
 			$member_check_for_sm = $crud->add('Model_Member');
 			$member_check_for_sm->load($form['member_id']);
-			if($member_check_for_sm->ref('Account')->addCondition('AccountNumber','like','%sm%')->count()->getOne() <= 0 )
+			if($member_check_for_sm->ref('Account')->addCondition('AccountNumber','like','%sm%')->count()->getOne() <= 0 ){
 				$form->displayError('member_id','Not an SM');
+			}
 			
 			if($crud->form->get('account_type') == 'Loan Against Deposit'){
 				
@@ -172,28 +173,29 @@ class page_accounts_Loan extends Page {
 			// $crud->form->getElement('member_id')->getModel()->addOkConditions();
 
 
-			$crud->form->add('Order')
+			// $crud->form->add('Order')
 						// ->move('LoanAgSecurity','after','LoanInsurranceDate')
-						->move($loan_from_account_field->other_field,'after','LoanInsurranceDate')
+						$o->move($loan_from_account_field->other_field,'after','LoanInsurranceDate')
 						->now();
 			$o->now();
 		}
 
 
-		if($crud->grid){
+		if(!$crud->isEditing()){
 			$crud->grid->addClass('pending_grid');
 			$crud->grid->js('reload')->reload();
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','edit_pendingDocument');
 			$crud->grid->addColumn('expander','edit_guarantor');
 			$crud->grid->addColumn('expander','action');
+			$crud->grid->addQuickSearch(array('name'));
 		}
 	}
 
 	function page_accounts(){
-
 		
 		$crud=$this->add('xCRUD',array('allow_add'=>false,'allow_edit'=>false));
+
 		$account_loan_model = $this->add('Model_Account_Loan');
 
 		$account_loan_model->add('Controller_Acl');
@@ -269,7 +271,7 @@ class page_accounts_Loan extends Page {
 		}
 
 
-		if($crud->grid){
+		if(!$crud->isEditing()){
 			$crud->grid->addClass('account_grid');
 			$crud->grid->js('reload')->reload();
 			$crud->grid->addPaginator(10);
@@ -277,7 +279,8 @@ class page_accounts_Loan extends Page {
 			// $crud->grid->addColumn('expander','edit_document');
 			$crud->grid->addColumn('expander','edit_guarantor');
 			$crud->grid->addColumn('expander','edit');
-			$crud->grid->addColumn('button','edit');
+			// $crud->grid->addColumn('button','edit');
+			$crud->grid->addQuickSearch(array('AccountNumber'));
 		}
 
 	}

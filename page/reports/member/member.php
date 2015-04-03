@@ -78,10 +78,9 @@ class page_reports_member_member extends Page {
 
 
 	function page_guarantor_in(){
-		$this->api->stickyGET('members_id');
-
 
 		$this->api->stickyGET('members_id');
+
 		$account_model=$this->add('Model_Account');
 		$account_model->join('account_guarantors.account_id')->addField('guarantor_member_id','member_id');
 		$account_model->addCondition('guarantor_member_id',$_GET['members_id']);

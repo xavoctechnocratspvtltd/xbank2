@@ -14,13 +14,14 @@ class Model_Premium extends Model_Table {
 		$this->addField('PaidOn')->type('datetime')->defaultValue(null);
 		$this->addField('AgentCommissionSend')->type('boolean')->defaultValue(false);
 		$this->addField('AgentCommissionPercentage')->type('money');
+		$this->addField('AgentCollectionChargesPercentage')->type('money');
 		$this->addField('PaneltyCharged')->type('money')->defaultValue(0);
 		$this->addField('PaneltyPosted')->type('money')->defaultValue(0);
 		$this->addField('DueDate')->type('date');
 
 		$this->addExpression('panelty_to_post')->set('PaneltyCharged - PaneltyPosted');
 
-		//$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function payNowForRecurring($on_date=null){
@@ -73,6 +74,9 @@ class Model_Premium extends Model_Table {
 		$transaction->execute();
 
 		$this->account()->propogateAgentCommission($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'], $total_commission_amount = $commission, $on_date);
+		
+		// Give Collection Charges Now
+
 
 	}
 

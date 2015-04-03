@@ -43,6 +43,8 @@ class Model_Scheme extends Model_Table {
 		$this->addField('SchemePoints')->caption('Scheme Points')->system(true);
 		$this->addField('SchemeGroup')->defaultValue($this->schemeType);//->system(true);
 		
+		$this->addField('CRPB')->type('int');//->system(true);
+		
 		$this->addField('AgentSponsorCommission');
 		$this->addField('CollectorCommissionRate');
 		$this->addField('ReducingOrFlatRate')->caption('Interest Type')->enum(array('Flat','Reducing'))->defaultValue('Flat');
@@ -81,6 +83,7 @@ class Model_Scheme extends Model_Table {
 		if($this->hasElement('DepriciationPercentAfterSep')) $this->getElement('DepriciationPercentAfterSep')->system(true);
 		if($this->hasElement('ProcessingFeesinPercent')) $this->getElement('ProcessingFeesinPercent')->system(true);
 		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
+		if($this->hasElement('CRPB')) $this->getElement('CRPB')->system(true);
 		
 		// TEMPALLOW
 		// $this->getElement('type')->system(false)->defaultValue('DDS');

@@ -380,11 +380,15 @@ class Model_Account extends Model_Table {
 	}
 
 	function agent(){
-		return $this->ref('agent_id');
+		$agent = $this->ref('agent_id');
+		if($agent->loaded()) return $agent;
+		return false;
 	}
 
 	function scheme(){
-		return $this->ref('scheme_id');
+		$scheme = $this->ref('scheme_id');
+		if($scheme->loaded()) return $scheme;
+		return false;
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null,$reference_id=null){

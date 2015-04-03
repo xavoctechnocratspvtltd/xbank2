@@ -22,8 +22,10 @@ class Model_Account_DDS extends Model_Account{
 		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber();
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 
-		if($agent_id = $otherValues['agent_id'])
+		if($agent_id = $otherValues['agent_id']){
 			$this->addAgent($agent_id, $replace_existing=true);
+			$this->agent()->addCRPB($this->scheme()->get('CRPB'), $this['Amount'] * 30);
+		}
 
 		if($otherValues['initial_opening_amount']){
 			$this->deposit($otherValues['initial_opening_amount'],null,$otherValues['debit_account']?:null,$form);

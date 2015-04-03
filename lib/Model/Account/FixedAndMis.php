@@ -57,8 +57,10 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 		$this->createInitialTransaction($created_at, $form);
-		if($form['agent_id'])
+		if($form['agent_id']){
 			$this->giveAgentCommission($created_at);
+			$this->agent()->addCRPB($this->scheme()->get('CRPB'),$this['Amount']);
+		}
 	}
 
 	function createInitialTransaction($on_date, $form){

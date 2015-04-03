@@ -69,6 +69,11 @@ class Model_Agent extends Model_Table {
 		return $this->ref('cadre_id');
 	}
 
+	function addCRPB($crpb, $amount){
+		$this['current_individual_crpb'] =  $this['current_individual_crpb'] + ($crpb  * $amount  / 100.00);
+		$this->save();
+	}
+
 	function isAtLowestCader(){
 		return ($this->cadre()->get('name') == 'Advisor');
 	}

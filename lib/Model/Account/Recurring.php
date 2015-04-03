@@ -27,6 +27,10 @@ class Model_Account_Recurring extends Model_Account{
 		
 		$this->createPremiums();
 		
+		if($form['agent_id']){
+			$this->agent()->addCRPB($this->scheme()->get('CRPB'),$this['Amount']);
+		}
+		
 		if(isset($otherValues['initial_opening_amount']) and $otherValues['initial_opening_amount'])
 			$this->deposit($otherValues['initial_opening_amount'],null,null,null, $on_date);
 	}
@@ -118,6 +122,7 @@ class Model_Account_Recurring extends Model_Account{
             $prem['Amount'] = $this['Amount'];
             $prem['DueDate'] = $lastPremiumPaidDate; // First Preiume on the day of account open
             $prem['AgentCommissionPercentage'] = $this->api->getComission($this->scheme()->get('AccountOpenningCommission'), PREMIUM_COMMISSION, $i);
+            $prem['AgentCollectionChargesPercentage'] = $this->api->getComission($this->scheme()->get('CollectorCommissionRate'), PREMIUM_COMMISSION, $i);
             $date_obj->add(new DateInterval($toAdd));
             $lastPremiumPaidDate = $date_obj->format('Y-m-d');
             $prem->saveAndUnload();
@@ -251,5 +256,6 @@ class Model_Account_Recurring extends Model_Account{
 		$this['MaturedStatus'] = true;
 		$this->save();
 	}
+
 
 }

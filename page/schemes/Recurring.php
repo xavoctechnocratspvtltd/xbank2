@@ -13,7 +13,7 @@ class page_schemes_Recurring extends Page{
 			$Recurring_scheme_model = $crud->add('Model_Scheme_Recurring');
 			try {
 				$form->api->db->beginTransaction();
-			    $Recurring_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_CC, ACCOUNT_TYPE_CC, $is_RecurringType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
+			    	$Recurring_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_RECURRING, ACCOUNT_TYPE_RECURRING, $is_RecurringType=ACCOUNT_TYPE_RECURRING, $other_values=$form->getAllFields(),$form,$form->api->now);
 			    $form->api->db->commit();
 			} catch (Exception $e) {
 			   	$form->api->db->rollBack();

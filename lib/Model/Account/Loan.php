@@ -28,17 +28,32 @@ class Model_Account_Loan extends Model_Account{
 		$this->addHook('beforeSave',$this);
 		$this->addHook('editing',$this);
 
+		$this->add('Controller_Validator');
+		$this->is(array(
+							'AccountNumber|to_trim|unique'
+						)
+				);
+
+		$this->is('account_type','if','Loan Against Deposit','[LoanAgainstAccount_id]!');
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function editing(){
 		$this->getELement('LoanInsurranceDate')->system(true);
-		$this->getELement('LoanAgainstAccount_id')->system(true);
+		// $this->getELement('LoanAgainstAccount_id')->system(true);
 	}
 
 	function beforeSave(){
 		if(!$this['account_type'])
 			throw $this->exception('Please Specify Account Type', 'ValidityCheck')->setField('account_type');
+
+		if($this->loaded() and $this['account_type'] == 'Loan Against Deposit' and $this->dirty['LoanAgainstAccount_id']){
+			$old_locked_account = $this->newInstance()->load($this->id);
+			$old_locked_account->ref('LoanAgainstAccount_id')->unlock();
+			$this->ref('LoanAgainstAccount_id')->lock();
+		}
+
 	}
 
 	function createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){

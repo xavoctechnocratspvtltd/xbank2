@@ -1,4 +1,5 @@
 <?php
+
 class Model_Account extends Model_Table {
 	var $table= "accounts";
 	public $scheme_join=null;
@@ -16,7 +17,7 @@ class Model_Account extends Model_Table {
 		$this->hasOne('Account','MaturityToAccount_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','collector_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue('0');
+		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue('0')->sortable(true);
 		$this->hasOne('Dealer','dealer_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
 
 		$this->hasOne('Branch','branch_id')->mandatory(true)->defaultValue(@$this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
@@ -729,6 +730,13 @@ class Model_Account extends Model_Table {
 		if(!$this->loaded()) throw $this->exception('Load an Account before lock it', 'ValidityCheck')->setField('LoanAgainstAccount');
 		if($this->isLocked()) throw $this->exception('Account is already Loacked', 'ValidityCheck')->setField('LoanAgainstAccount');
 		$this['LockingStatus'] = true;
+		$this->save();
+	}
+
+	function unlock(){
+		if(!$this->loaded()) throw $this->exception('Load an Account before lock it', 'ValidityCheck')->setField('LoanAgainstAccount');
+		if(!$this->isLocked()) throw $this->exception('Account is Not Loacked', 'ValidityCheck')->setField('LoanAgainstAccount');
+		$this['LockingStatus'] = false;
 		$this->save();
 	}
 

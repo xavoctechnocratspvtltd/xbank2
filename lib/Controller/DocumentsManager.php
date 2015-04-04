@@ -18,7 +18,7 @@ class Controller_DocumentsManager extends AbstractController{
 		if(!$grid)
 			throw $this->exception('Add DocumentsManager on CRUD or grid only');
 
-		$grid->addColumn('Expander','documents_manager',array('page'=>'documents_manager&what='.$this->doc_type,'descr'=>'Documents Manager'));
+		$grid->addColumn('Expander','documents_manager',array('page'=>'documents_manager&what='.$this->doc_type,'descr'=>'Documents','icon'=>'docs','icon_only'=>true));
 
 
 	}

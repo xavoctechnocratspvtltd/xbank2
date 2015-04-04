@@ -20,8 +20,20 @@ class Model_Branch extends Model_Table {
 		$this->hasMany('Stock_Container','branch_id');
 
 		$this->addHook('afterInsert',$this);
+		$this->addHook('beforeDelete',$this);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeDelete(){
+		if($this->ref('Staff')->count()->getOne() > 0)
+				throw $this->exception('Branch Contains Staff, Cannot delete');
+
+		if($this->ref('Member')->count()->getOne() > 0)
+			throw $this->exception('Branch Contains Member, Cannot Delete');
+
+		if($this->ref('Account')->count()->getOne() > 0)
+			throw $this->exception('Branch Contains Accounts, cannot delete');
 	}
 
 	function afterInsert($branch,$id){
@@ -149,27 +161,16 @@ class Model_Branch extends Model_Table {
 		return $max_voucher + 1 ;
 	}
 
-	function delete($forced=false){
-		if(!$forced){
-			if($this->ref('Staff')->count()->getOne() > 0)
-				throw $this->exception('Branch Contains Staff, Cannot delete');
-
-			if($this->ref('Member')->count()->getOne() > 0)
-				throw $this->exception('Branch Contains Member, Cannot Delete');
-
-			if($this->ref('Account')->count()->getOne() > 0)
-				throw $this->exception('Branch Contains Accounts, cannot delete');
-		}
-
+	function deleteForced(){
 		foreach ($m=$this->ref('Member') as $m_array) {
-			$m->delete($forced);
+			$m->deleteForced();
 		}
 		foreach ($s=$this->ref('Staff') as $s_array) {
-			$s->delete($forced);
+			$s->deleteForced();
 		}
 
 		foreach ($a=$this->ref('Account') as $a_array) {
-			$a->delete($forced);
+			$a->deleteForced();
 		}
 		parent::delete();
 	}

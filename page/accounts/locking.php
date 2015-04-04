@@ -12,7 +12,7 @@ class page_accounts_locking extends Page {
 
 		$grid=$this->add('Grid');
 		$accounts=$this->add('Model_Account');
-		if($_GET['account'])
+		if($this->api->stickyGET('account'))
 			$accounts->addCondition('id',$_GET['account']);
 		else
 			$accounts->addCondition('id',-1);
@@ -22,9 +22,25 @@ class page_accounts_locking extends Page {
 			$accounts->swapLockingStatus();
 			$grid->js()->reload()->execute();
 		}
-		$grid->setModel($accounts,array('AccountNumber','branch','staff','member','LockingStatus'));
+
+		if($_GET['swap_active_status']){
+			$accounts->load($_GET['swap_active_status']);
+			$accounts->swapActiveStatus();
+			$grid->js()->reload()->execute();
+		}
+
+
+		if($_GET['swap_matured_status']){
+			$accounts->load($_GET['swap_matured_status']);
+			$accounts->swapMaturedStatus();
+			$grid->js()->reload()->execute();
+		}
+
+		$grid->setModel($accounts,array('AccountNumber','branch','staff','member','LockingStatus','ActiveStatus','MaturedStatus'));
 		$grid->addPaginator(10);
 		$grid->addColumn('button','swap_locking_status');
+		$grid->addColumn('button','swap_active_status');
+		$grid->addColumn('button','swap_matured_status');
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('account'=>$form['account_number']))->execute();

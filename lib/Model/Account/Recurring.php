@@ -3,13 +3,16 @@ class Model_Account_Recurring extends Model_Account{
 	
 	public $transaction_deposit_type = TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT;	
 	public $default_transaction_deposit_narration = "Recurring Amount Deposit in {{AccountNumber}}";	
+	
+	public $transaction_withdraw_type = TRA_RECURRING_ACCOUNT_AMOUNT_WITHDRAWL;	
+	public $default_transaction_withdraw_narration = "Amount withdrawl from {{SchemeType}} Account {{AccountNumber}}";	
 
 	function init(){
 		parent::init();
 
 		$this->addCondition('SchemeType','Recurring');
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','Recurring');
-		$this->getElement('Amount')->caption('RECURRING amount (premium)');
+		$this->getElement('Amount')->caption('Premium');
 		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_RECURRING);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
@@ -47,7 +50,7 @@ class Model_Account_Recurring extends Model_Account{
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
-		if( ! $this->isMatured() OR $this->isActive())
+		if( !$this->isMatured() OR $this->isActive())
 			throw $this->exception('Account is wither not matured or is active, cannot withdraw', 'ValidityCheck')->setField('account');
 
 		if($amount != ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']))

@@ -4,12 +4,15 @@ class Model_Account_DDS extends Model_Account{
 	public $transaction_deposit_type = TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT;	
 	public $default_transaction_deposit_narration = "DDS Amount Deposit in {{AccountNumber}}";	
 
+	public $transaction_withdraw_type = TRA_DDS_ACCOUNT_AMOUNT_WITHDRAWL;	
+	public $default_transaction_withdraw_narration = "Amount withdrawl from {{SchemeType}} Account {{AccountNumber}}";
+
 	function init(){
 		parent::init();
 
 		$this->addCondition('SchemeType','DDS');
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType','DDS');
-		$this->getElement('Amount')->caption('DDS amount (in multiples of Rs.300 like 300, 600, 900....3000 etc.)')->type('number');
+		$this->getElement('Amount')->caption('Daily Deposit Amount')->type('number');
 		$this->getElement('account_type')->defaultValue(ACCOUNT_TYPE_DDS);
 		$this->addExpression('maturity_date')->set(function($m,$q){
 			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
@@ -55,7 +58,7 @@ class Model_Account_DDS extends Model_Account{
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
-		if(!$this->isMatured() OR !$this->isActive())
+		if(!$this->isMatured() OR $this->isActive())
 			throw $this->exception('Account must be matured or deactivated to withdraw','ValidityCheck')->setField('account');
 
 		if($amount != ($amount_to_withdraw = ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr'])))

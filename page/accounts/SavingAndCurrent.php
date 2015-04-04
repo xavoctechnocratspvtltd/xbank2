@@ -4,7 +4,7 @@ class page_accounts_SavingAndCurrent extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account'));
 		$account_savingandcurrent_model = $this->add('Model_Account_SavingAndCurrent');
 		$account_savingandcurrent_model->add('Controller_Acl');
 		$account_savingandcurrent_model->setOrder('id','desc');
@@ -19,7 +19,7 @@ class page_accounts_SavingAndCurrent extends Page {
 
 			try {
 				$crud->api->db->beginTransaction();
-			    $sbca_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			    	$sbca_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
 			    $crud->api->db->commit();
 			} catch (Exception $e) {
 			   	$crud->api->db->rollBack();
@@ -45,7 +45,7 @@ class page_accounts_SavingAndCurrent extends Page {
 			$account_savingandcurrent_model->hook('editing');
 		}
 
-		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id'),array('account_type','AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt','mo','team'));
+		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id'),array('AccountNumber','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt','mo','team'));
 		
 		if($crud->isEditing()){
 

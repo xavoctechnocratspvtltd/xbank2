@@ -6,6 +6,7 @@ class page_reports_BSAndPANL extends Page {
 	function page_index(){
 
 		$container = $this->add('View');
+		$msg="BalanceSheet :: All";
 
 		$fy = $this->api->getFinancialYear();
 

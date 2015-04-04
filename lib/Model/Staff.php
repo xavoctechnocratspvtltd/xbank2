@@ -34,6 +34,14 @@ class Model_Staff extends Model_Table {
 		
 	}
 
+	function isSuper(){
+		return $this['AccessLevel']==100;
+	}
+
+	function isCEO(){
+		return $this['AccessLevel'] == 80;
+	}
+
 	function createNewStaff($name,$password,$AccessLevel,$branch_id=null){
 		if(!$branch_id) $branch_id = $this->api->current_branch->id;
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Staff');

@@ -71,7 +71,7 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function defaultEditing(){
-		$this->getElement('name')->display(array('form'=>'Readonly'));
+		// $this->getElement('name')->display(array('form'=>'Readonly'));
 		$this->getElement('type')->system(true);
 		if($this->hasElement('MaturityPeriod')) $this->getElement('MaturityPeriod')->system(true);
 		if($this->hasElement('Interest')) $this->getElement('Interest')->system(true);
@@ -102,7 +102,30 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function defaultBeforeSave(){
-		
+		// Name change handel
+		if($this->loaded()){
+			if($this->dirty['name']){
+				$old_name = $this->newInstance()->load($this->id)->get('name');
+
+				$existing_check = $this->newInstance();
+				$existing_check->addCondition('name',$this['name']);
+				$existing_check->addCondition('id','<>',$this->id);
+				$existing_check->tryLoadAny();
+
+				if($existing_check->loaded())
+					throw $this->exception('Scheme Name Already Used','ValidityCheck')->setField('name');
+
+				$all_branches = $this->add('Model_Branch');
+				foreach ($all_branches as $branch_array) {
+					foreach ($this->getDefaultAccounts() as $details) {
+						$account = $this->add('Model_Account');
+						$account->loadBy('AccountNumber',$all_branches['Code'].SP.$details['intermediate_text'].SP.$old_name);
+						$account['AccountNumber'] = $all_branches['Code'].SP.$details['intermediate_text'].SP.$this['name'];
+						$account->saveAndUnload();
+					}
+				}
+			}
+		}
 
 	}
 
@@ -110,18 +133,17 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function getDefaultAccounts(){
-		throw $this->exception('RE Declare The function in Specific Scheme Models');
+		throw $this->exception('Re Declare The function in Specific Scheme Models');
 	}
 
 	// Overrides by Child Classes to add values and called as parent::...
-	function createNewScheme($name,$balance_sheet_id, $scheme_type, $scheme_group, $loanType_if_loan, $other_values=array(),$form=null,$on_date=null){
+	function createNewScheme($name,$balance_sheet_id, $scheme_type, $scheme_group, $acc_type, $other_values=array(),$form=null,$on_date=null){
 		
 		$this['name'] = $name;
 		$this['balance_sheet_id'] = $balance_sheet_id;
 		$this['SchemeType'] = $scheme_type;
 		$this['SchemeGroup'] = $scheme_group;
-		$this['type'] = $loanType_if_loan;
-
+		$this['type'] = $acc_type;
 
 		unset($other_values['name']);
 		unset($other_values['balance_sheet_id']);
@@ -453,6 +475,10 @@ class Model_Scheme extends Model_Table {
 		}
 		return $return_array;
 
+	}
+
+	function accounts(){
+		return $this->add('Model_Account')->addCondition('scheme_id',$this->id);
 	}
 
 	function daily(){

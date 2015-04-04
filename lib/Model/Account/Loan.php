@@ -48,6 +48,10 @@ class Model_Account_Loan extends Model_Account{
 		if(!$this['account_type'])
 			throw $this->exception('Please Specify Account Type', 'ValidityCheck')->setField('account_type');
 
+		if($this['account_type'] == 'Loan Against Deposit' AND !$this['LoanAgainstAccount_id']){
+			throw $this->exception('For Secured Loans Another Account is must','ValidityCheck')->setField('LoanAgainstAccount_id');
+		}
+
 		if($this->loaded() and $this['account_type'] == 'Loan Against Deposit' and $this->dirty['LoanAgainstAccount_id']){
 			$old_locked_account = $this->newInstance()->load($this->id);
 			$old_locked_account->ref('LoanAgainstAccount_id')->unlock();

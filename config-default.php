@@ -132,7 +132,7 @@ define('TRA_BANK_WITHDRAWL',  'BANK WITHDRAWL');
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')
 
 // define('ACCOUNT_TYPES',                         "DDS");
-define('ACCOUNT_TYPES',                         "Loan,CC,FixedAndMis,Default,SavingAndCurrent,Recurring,DDS");
+define('ACCOUNT_TYPES',                         "Loan,CC,Default,FixedAndMis,SavingAndCurrent,Recurring,DDS");
 define('ACCOUNT_TYPE_DEFAULT',                  "Default");
 define('ACCOUNT_TYPE_BANK',                     "SavingAndCurrent");
 define('ACCOUNT_TYPE_SAVING',                     "SavingAndCurrent");

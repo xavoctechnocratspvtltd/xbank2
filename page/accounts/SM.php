@@ -6,7 +6,7 @@ class page_accounts_SM extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account'));
 		$account_Default_model = $this->add('Model_Account_SM');
 		
 		$account_Default_model->add('Controller_Acl');
@@ -46,7 +46,6 @@ class page_accounts_SM extends Page {
 		$crud->setModel($account_Default_model,array('AccountNumber1','Amount','member_id','scheme_id','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','ActiveStatus','sig_image_id'),array('AccountNumber','member','scheme','ActiveStatus'));
 		
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
 			$crud->grid->addOrder()->move('member','first')->now();
 		}
 

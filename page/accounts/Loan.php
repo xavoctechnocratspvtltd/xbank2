@@ -243,7 +243,7 @@ class page_accounts_Loan extends Page {
 
 
 
-		if($crud->isEditing('edit')){ 
+		if($crud->isEditing('edit')){
 			$account_loan_model->hook('editing');
 		}
 		

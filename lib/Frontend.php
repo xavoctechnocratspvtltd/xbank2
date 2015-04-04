@@ -44,6 +44,8 @@ class Frontend extends ApiFrontend {
             $auth->setModel('Staff','username','password');
             $auth->check();
 
+            $this->currentStaff = $this->current_staff = $auth->model;
+
             $this->currentBranch = $this->current_branch = $this->auth->model->ref('branch_id');
             $this->title = ' :: [' . $this->api->current_branch['name'].']';
         }

@@ -64,7 +64,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 
 
 	function beforeSave(){
-		if(($this['type']=='MIS' and !$this['InterestToAnotherAccount']) and ($this['type']=='FD' and $this['InterestToAnotherAccount'])){
+		if(($this['type']=='MIS' and !$this['InterestToAnotherAccount']) OR ($this['type']=='FD' and $this['InterestToAnotherAccount'])){
 			throw $this->exception('Type and Interest to another account is not matching well','ValidityCheck')->setField('type');
 		}
 	}

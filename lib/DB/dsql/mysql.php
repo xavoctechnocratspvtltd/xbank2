@@ -23,7 +23,7 @@ class DB_dsql_mysql extends DB_dsql {
     function init(){
         parent::init();
         $this->sql_templates['update']="update [table] [join] set [set] [where]  [group] [having] [order] [limit]";
-        $this->sql_templates['update']="update [table] [join] set [set] [where] ";
+        $this->sql_templates['update']="update [table] set [set] [where] ";
     }
     function calcFoundRows(){
         return $this->option('SQL_CALC_FOUND_ROWS');

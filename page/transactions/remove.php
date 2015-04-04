@@ -30,19 +30,22 @@ class page_transactions_remove extends Page {
 				// echo $transaction->referenceAccount()->get('AccountNumber');
 			}
 
-			$btn = $p->add('Button')->set("DELETE TRANSACTION");
+			if($p->api->auth->model->isSuper()){
 
-			if($btn->isClicked()){
-				try{
-					$p->api->db->beginTransaction();
-						$transaction->forceDelete();
-				    $p->api->db->commit();
-				} catch (Exception $e) {
-				   	$p->api->db->rollBack();
-				   	throw $e;
+				$btn = $p->add('Button')->set("DELETE TRANSACTION");
+				if($btn->isClicked()){
+					try{
+						$p->api->db->beginTransaction();
+							$transaction->forceDelete();
+					    $p->api->db->commit();
+					} catch (Exception $e) {
+					   	$p->api->db->rollBack();
+					   	throw $e;
+					}
+
+					$p->js()->univ()->closeDialog()->execute();
 				}
 
-				$p->js()->univ()->closeDialog()->execute();
 			}
 
 		});

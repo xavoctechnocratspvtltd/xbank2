@@ -31,7 +31,7 @@ class Model_Account extends Model_Table {
 		$this->addField('account_type');
 		$this->addField('AccountNumber')->display(array('form'=>'Readonly'));//->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Displ. Name');
-		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->system(true)->sortable(true);
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->sortable(true);
 
 		$this->addField('ModeOfOperation')->setValueList(array('Self'=>'Self','Joint'=>'Joint'))->defaultValue('Self')->caption('Operation Mode');
 		
@@ -402,6 +402,12 @@ class Model_Account extends Model_Table {
 		return false;
 	}
 
+	function collectionAgent(){
+		$agent = $this->ref('collector_id');
+		if($agent->loaded()) return $agent;
+		return false;
+	}
+
 	function scheme(){
 		$scheme = $this->ref('scheme_id');
 		if($scheme->loaded()) return $scheme;
@@ -741,7 +747,7 @@ class Model_Account extends Model_Table {
 	}
 
 	function isLocked(){
-		return $this['LockingStatus']?true:false;
+		return $this['LockingStatus']==1?true:false;
 	}
 
 	function prepareDelete($revert_accounts_balances=true){
@@ -824,6 +830,16 @@ class Model_Account extends Model_Table {
 
 	function swapLockingStatus(){
 		$this['LockingStatus']=!$this['LockingStatus'];
+		$this->save();
+	}
+
+	function swapActiveStatus(){
+		$this['ActiveStatus']=!$this['ActiveStatus'];
+		$this->save();
+	}
+
+	function swapMaturedStatus(){
+		$this['MaturedStatus']=!$this['MaturedStatus'];
 		$this->save();
 	}
 

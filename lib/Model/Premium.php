@@ -44,6 +44,8 @@ class Model_Premium extends Model_Table {
 	function giveAgentCommission($on_date = null){
 		if(!$on_date) $on_date = $this->api->now;
 
+		if(!$this->account()->agent()) return ;
+
 		$all_paid_noncommissioned_preimums = $this->ref('account_id')->ref('Premium');
 		$all_paid_noncommissioned_preimums->addCondition('Paid','<>',0);
 		$all_paid_noncommissioned_preimums->addCondition('PaidOn','<>',null);
@@ -91,6 +93,8 @@ class Model_Premium extends Model_Table {
 
 		$commission = 0;
 		$account = $this->account();
+
+		if(!$account->collectionAgent()) return;
 
 		foreach($all_paid_noncollected_preimums as $junk){
 			$commission = $commission + ($all_paid_noncollected_preimums['Amount'] * $all_paid_noncollected_preimums['AgentCollectionChargesPercentage'] / 100.00);

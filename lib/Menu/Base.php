@@ -7,7 +7,9 @@ class Menu_Base extends Menu {
 		$this->addMenuItem('utility_setdate',array('('.$this->api->current_branch['Code']. ') ' .date('d M Y',strtotime($this->api->today)),'swatch'=>(strtotime($this->api->today) != strtotime(date('Y-m-d')) ? 'red':null )));
 
 		$this->addMenuItem('index','Dashboard');
-		$admin = $this->addMenuItem('index','Super Admin');
+		
+		if($this->api->currentStaff->isSuper())
+			$admin = $this->addMenuItem('index','Super Admin');
 
 
 		$mad = $this->addMenuItem('#','M.A.D.');
@@ -22,13 +24,14 @@ class Menu_Base extends Menu {
 		// $general = 	$this->addMenuItem('reports_general','General');
 		// $member_reports = 	$this->addMenuItem('reports_member','Member Reports');
 		// $deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
-		$operations = 	$this->addMenuItem('operations','Operations');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
 
 		$this->addMenuItem('logout','Logout');
 
 		// Popovers
-		$admin_sub_menus_popover=$this->add('View_Popover');
+		if($this->api->currentStaff->isSuper())
+			$admin_sub_menus_popover=$this->add('View_Popover');
+
 		$mad_sub_menus_popover = $this->add('View_Popover');
 		$account_sub_menu_popover = $this->add('View_Popover');
 
@@ -39,7 +42,6 @@ class Menu_Base extends Menu {
 		$loan_reports_sub_menus_popover = $this->add('View_Popover');
 		$deposit_reports_sub_menus_popover = $this->add('View_Popover');
 		$agent_reports_sub_menus_popover = $this->add('View_Popover');
-		$operations_sub_menus_popover = $this->add('View_Popover');
 		$utilities_sub_menus_popover = $this->add('View_Popover');
 		$member_sub_menus_popover = $this->add('View_Popover');
 		$general_sub_menus_popover = $this->add('View_Popover');
@@ -58,20 +60,23 @@ class Menu_Base extends Menu {
 		$reports_sub_menu->addMenuItem('reports_search','Search Accounts');
 		$reports->js('click',$reports_sub_menu_popover->showJS());
 		
-
-		$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
-		// $admin_sub_menus->addMenuItem('staffs','Staff');
-		$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
-		$admin_sub_menus->addMenuItem('branches','Branches');
-		$admin_sub_menus->addMenuItem('mos','Mos');
-		$admin_sub_menus->addMenuItem('team','Teams');
-		$admin_sub_menus->addMenuItem('balancesheet','Top Heads');
-		$admin_sub_menus->addMenuItem('accounts_locking','Lock & Unlock Accounts');
-		$admin->js('click',$admin_sub_menus_popover->showJS());
+		if($this->api->currentStaff->isSuper()){
+			$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
+			$admin_sub_menus->addMenuItem('staffs','Staff');
+			$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
+			$admin_sub_menus->addMenuItem('branches','Branches');
+			$admin_sub_menus->addMenuItem('mos','Mos');
+			$admin_sub_menus->addMenuItem('team','Teams');
+			$admin_sub_menus->addMenuItem('balancesheet','Top Heads');
+			$admin_sub_menus->addMenuItem('accounts_locking','Lock & Unlock Accounts');
+			$admin_sub_menus->addMenuItem('agentscadre','Agents Cadres');
+			$admin_sub_menus->addMenuItem('operations_edit','Edit Accounts');
+			$admin_sub_menus->addMenuItem('transactions_remove','Remove Transaction');
+			$admin->js('click',$admin_sub_menus_popover->showJS());
+		}
 
 		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');
 		$mad_sub_menus->addMenuItem('members','Members');
-		$mad_sub_menus->addMenuItem('agentscadre','Agents Cadres');
 		$mad_sub_menus->addMenuItem('agents','Agents');
 		$mad_sub_menus->addMenuItem('dealers','Dealers');
 		$mad_sub_menus->addMenuItem('dsa','DSA');
@@ -127,10 +132,6 @@ class Menu_Base extends Menu {
 
 
 
-		$operations_sub_menus = $operations_sub_menus_popover->add('Menu_Vertical');
-		$operations_sub_menus->addMenuItem('operations_edit','Edit Accounts');
-		$operations_sub_menus->addMenuItem('transactions_remove','Remove Transaction');
-		$operations->js('click',$operations_sub_menus_popover->showJS());
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');
 		$utilities_sub_menus->addMenuItem('documents','Documents Management');

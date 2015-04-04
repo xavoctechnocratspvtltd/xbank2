@@ -4,8 +4,19 @@ class Grid_Scheme extends Grid{
 
 	public $head=null;
 
+	public $vp;
+
+	function init(){
+		parent::init();
+		// $this->vp = $this->add('VirtualPage')->set(function($p){
+		// 	$p->add('Grid_Account')->setModel($p->add('Model_Scheme')->load($_GET['scheme_id'])->accounts());
+		// });
+	}
+
 	function setModel($model,$fields=null){
 		parent::setModel($model,$fields);
+
+		$this->model->setOrder('created_at','desc');
 		
 		if($this->hasColumn('PremiumMode'))
 			$this->addFormatter('PremiumMode','PremiumMode');
@@ -48,6 +59,8 @@ class Grid_Scheme extends Grid{
 		$this->current_row['limits']= 'Min ' .$this->model['MinLimit'] . ' /- ' . ($this->model['MaxLimit'] !=-1? ' to ' . $this->model['MaxLimit'] .' /-': '');
 		$this->current_row_html['Interest'] = $this->model['Interest'] . '% <small><small class="atk-text-dimmed">'. $this->model['ReducingOrFlatRate'] .'</small></span>';
 		$this->current_row_html['ProcessingFees']= $this->current_row['ProcessingFees'] . ' '. ($this->model['ProcessingFeesinPercent']? ' %': ' /-');
+
+		// $this->current_row_html['total_active_accounts'] = '<a onclick="javascript: $.univ().frameURL(\'Scheme Accounts\',\''.$this->api->url($this->vp->getURL(),array('scheme_id'=>$this->model->id)).'\')">'. $this->current_row['total_active_accounts'] .'</a>';
 
 		parent::formatRow();
 	}

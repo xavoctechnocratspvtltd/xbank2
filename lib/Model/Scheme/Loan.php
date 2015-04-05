@@ -97,7 +97,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 		$loan_accounts->addCondition('branch_id',$branch->id);
 
-        $loan_accounts->addCondition('DueDate','like',$on_date.' %');
+        $loan_accounts->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
 		if($test_account) $loan_accounts->addCondition('id',$test_account->id);
 
 		foreach ($loan_accounts as $acc_array) {

@@ -117,7 +117,7 @@ class Model_Transaction extends Model_Table {
 
 		if(!$this->create_called) throw $this->exception('Create Account Function Must Be Called First');
 		
-		// $this->senitizeTransaction();
+		$this->senitizeTransaction();
 		
 		if(($msg=$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id'])) !== true)
 			throw $this->exception('Transaction is Not Valid')->addMoreInfo('message',$msg);
@@ -134,6 +134,10 @@ class Model_Transaction extends Model_Table {
 	function senitizeTransaction(){
 		$dr_sum=0;
 		$cr_sum=0;
+		
+		$cr_original_sum=0;
+		$dr_original_sum=0;
+
 		$cr_delta=0;
 		$dr_delta=0;
 		
@@ -141,27 +145,37 @@ class Model_Transaction extends Model_Table {
 			$original_amount = $dtl['amount'];
 			$dtl['amount'] = round($dtl['amount'],3);
 			$cr_delta += $original_amount - $dtl['amount'];
+			$cr_original_sum += $original_amount;
 			$cr_sum += $dtl['amount'];
+			// echo $AccountNumber . ' ' . $dtl['amount'] . '<br/>';
 		}
 		
 		foreach ($this->cr_accounts as $AccountNumber => $dtl) {
 			$original_amount = $dtl['amount'];
 			$dtl['amount'] = round($dtl['amount'],3);
 			$dr_delta += $original_amount - $dtl['amount'];
+			$dr_original_sum += $original_amount;
 			$dr_sum += $dtl['amount'];
+			// echo $AccountNumber . ' ' . $dtl['amount'] . '<br/>';
 		}
 
-		$delta = $cr_delta - $dr_delta;
-		echo $delta;
+		$delta = $dr_sum - $cr_sum;
 
-		if($delta < 0){
-			$this->dr_accounts[count($this->dr_accounts)-1]['amount'] -= $delta;
+		// echo $delta . " delta <br/>";
+
+		if($delta > 0 and $delta < 1){
+			foreach ($this->dr_accounts as $AccountNumber => &$dtl) {
+				$this->dr_accounts[$AccountNumber]['amount'] = $this->dr_accounts[$AccountNumber]['amount'] - $delta;
+				break;
+			}
 		}
 
-		if($delta > 0){
-			$this->cr_accounts[count($this->dr_accounts)-1]['amount'] -= $delta;
+		if($delta < 0 and $delta > -1){
+			foreach ($this->cr_accounts as $AccountNumber => &$dtl) {
+				$this->cr_accounts[$AccountNumber]['amount'] = $this->cr_accounts[$AccountNumber]['amount'] - $delta;
+				break;
+			}
 		}
-
 	}
 
 	function executeSingleBranch(){
@@ -181,6 +195,7 @@ class Model_Transaction extends Model_Table {
 		// Foreach Cr add new Transactionrow (Cr Wala)
 		foreach ($this->cr_accounts as $accountNumber => $dtl) {
 			if($dtl['amount'] ==0) continue;
+			// if(!$dtl['account'] instanceof Model_Account) echo $accountNumber .' --= problem';
 			$dtl['account']->creditWithTransaction($dtl['amount'],$this->id,$this->only_transaction);
 			$total_credit_amount += $dtl['amount'];
 		}

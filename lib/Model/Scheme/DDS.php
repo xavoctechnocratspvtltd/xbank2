@@ -100,7 +100,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 
         $accounts_to_work_on->addExpression('opening_date')->set('DAY(dds_acc.created_at)');
 
-        $days_to_look =array(date('d',strtotime($on_date)));
+        $days_to_look =array(date('d',strtotime($this->api->nextDate($on_date))));
         
         // Also include DDS openned on dates of months that are not available in this month
         if($this->api->isMonthLastDate($on_date)){
@@ -120,10 +120,9 @@ class Model_Scheme_DDS extends Model_Scheme {
         foreach ($accounts_to_work_on as $acc_array) {
         	$accounts_to_work_on->postAgentCommissionEntry($on_date);
         	$accounts_to_work_on->giveCollectionCharges($on_date);
+        	$accounts_to_work_on->markMatured($on_date);
+        	$accounts_to_work_on->deActivate($on_date);
         }
-
-
-
 
 		$matured_dds_accounts = $this->add('Model_Account_DDS');
 		// $matured_dds_accounts->scheme_join->addField('MaturityPeriod');

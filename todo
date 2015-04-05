@@ -1,0 +1,8 @@
+DDS next date mature check
+DDS int amount exclude for collection and commission
+
+80% limit in SL (DDS/RD amount to be checked against is = Amount submitted till date)
+
+Loan provision 365 days .. should be in RD as per Devendra sir.. check why this code is here .
+
+store main used submit ka voucher banana hai ...  

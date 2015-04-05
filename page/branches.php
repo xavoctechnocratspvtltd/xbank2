@@ -10,6 +10,7 @@ class page_branches extends Page {
 		$branch_crud = $this->add('CRUD');
 		
 		$branch_model = $this->add('Model_Branch');
+		$branch_model->addExpression('last_closing')->set($branch_model->refSQL('Closing')->setLimit(1)->fieldQuery('daily'));
 		
 		if($branch_crud->isEditing('edit')){
 			$branch_model->getElement('Code')->system(true);

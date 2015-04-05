@@ -181,8 +181,11 @@ class Model_Account_DDS extends Model_Account{
 
 		if(!$on_date) $on_date = $this->api->today;
 
-
+		// echo $this['AccountNumber']. ' '. $this->agent()->get('name') .' ' .  $this->agent()->account()->get('AccountNumber') . '<br/>';
 		$agentAccount = $this->agent()->account();
+		
+		if(!$agentAccount) return;
+
         $branch_code =$this->ref('branch_id')->get('Code');
 
         $tds_percentage = $this->ref('agent_id')->ref('member_id')->hasPanNo()? 10 : 20 ;

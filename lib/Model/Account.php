@@ -732,6 +732,13 @@ class Model_Account extends Model_Table {
 		return $this['ActiveStatus']?:0;
 	}
 
+	function deActivate(){
+		if($this->isActive()){
+			$this['ActiveStatus']=false;
+			$this->save();
+		}
+	}
+
 	function lock(){
 		if(!$this->loaded()) throw $this->exception('Load an Account before lock it', 'ValidityCheck')->setField('LoanAgainstAccount');
 		if($this->isLocked()) throw $this->exception('Account is already Loacked', 'ValidityCheck')->setField('LoanAgainstAccount');

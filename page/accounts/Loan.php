@@ -32,8 +32,8 @@ class page_accounts_Loan extends Page {
 				$amount_allowed = $account['Amount']*80/100;
 				$loan_amount=$form['Amount'];
 
-				if($loan_amount > $amount_allowed)
-					$form->displayError('Amount',"Amount is grater than 80% of  FD Amount");
+				// if($loan_amount > $amount_allowed)
+				// 	$form->displayError('Amount',"Amount is grater than 80% of  FD Amount");
 			}
 
 			if($crud->isEditing('edit')) {

@@ -15,13 +15,16 @@ class Model_Dealer extends Model_Table {
 		$this->addField('time_over_charge')->hint('Amount in rupees (int) no special symbol');
 		$this->addField('dealer_monthly_date')->hint('only date like 15 or 10 or 20');
 
+		$this->hasMany('Account','dealer_id');
+
 		$this->addHook('beforeDelete',$this);
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function beforeDelete(){
-		throw new Exception("Hook ... ????", 1);
+		if($this->ref('Account')->count()->getone() > 0)
+			throw $this->exception('Dealer is used in Accounts');
 		
 	}
 }

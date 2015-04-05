@@ -38,7 +38,9 @@ class Controller_FormBeautifier extends AbstractController{
 
 		foreach ($this->form->elements as $field) {
 			if(!$field instanceof Form_Field) continue;
-			if($this->setColumnCell($field)) $this->moveField($field);
+			if($this->setColumnCell($field)){
+				$this->moveField($field);
+			}
 		}
 		$this->order->now();
 	}
@@ -110,6 +112,14 @@ class Controller_FormBeautifier extends AbstractController{
 		}
 		if($field instanceof Form_Field_DatePicker){
 			$field->js(true)->parent()->parent()->parent()->parent()->appendTo($this->running_cell);
+			return;
+		}
+
+		if($field instanceof autocomplete\Form_Field_Basic){
+			// $field->other_field->js(true)->parent()->parent()->css('border','2px solid red');
+			// $field->other_field->js(true)->parent()->parent()->appendTo($this->running_cell);
+			$field->js(true)->parent()->parent()->appendTo($this->running_cell);
+			$field->other_field->append_to = $this->running_cell;
 			return;
 		}
 

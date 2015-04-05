@@ -4,7 +4,7 @@ class page_accounts_Recurring extends Page {
 	function init(){
 		parent::init();
 		
-		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account'));
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_recurring_model = $this->add('Model_Account_Recurring');
 		$account_recurring_model->add('Controller_Acl');
 		$account_recurring_model->setOrder('id','desc');
@@ -89,7 +89,5 @@ class page_accounts_Recurring extends Page {
 						->now();
 			$o->now();
 		}
-
-
 	}
 }

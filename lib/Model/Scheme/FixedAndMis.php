@@ -96,6 +96,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$active_fd_accounts->addCondition('MaturedStatus',false);
 		$active_fd_accounts->addCondition('created_at','<',$on_date);
 		$active_fd_accounts->addCondition('branch_id',$branch->id);
+		$active_fd_accounts->addCondition('DefaultAC',false);
 
 		if($test_account) $active_fd_accounts->addCondition('id',$test_account->id);
 		

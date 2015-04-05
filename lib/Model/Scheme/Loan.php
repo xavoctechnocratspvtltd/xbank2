@@ -79,7 +79,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 	function daily($branch= null,$on_date=null,$test_account=null){
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
-                
+
 		$this->putPaneltiesOnAllUnpaidLoanPremiums($branch,$on_date,$test_account);
 		
 		$loan_accounts  = $this->add('Model_Active_Account_Loan');
@@ -163,7 +163,8 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 		$premiums->_dsql()->set('PaneltyCharged',$this->api->db->dsql()->expr('PaneltyCharged +'. $dealer_join->table_alias.'.loan_panelty_per_day'));
 //		if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
-                $premiums->_dsql()->update();
+        $premiums->_dsql()->sql_templates['update']="update [table] [join] set [set] [where]  [group] [having] [order] [limit]";
+        $premiums->_dsql()->update();
 	}
 
 

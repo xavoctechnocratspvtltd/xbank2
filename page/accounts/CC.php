@@ -3,7 +3,7 @@
 class page_accounts_CC extends Page {
 	function page_index(){
 
-		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account'));
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_cc_model =$this->add('Model_Account_CC');
 		$account_cc_model->add('Controller_Acl');		
 		$account_cc_model->setOrder('created_at','desc');

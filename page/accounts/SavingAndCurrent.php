@@ -4,7 +4,7 @@ class page_accounts_SavingAndCurrent extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account'));
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_savingandcurrent_model = $this->add('Model_Account_SavingAndCurrent');
 		$account_savingandcurrent_model->add('Controller_Acl');
 		$account_savingandcurrent_model->setOrder('id','desc');

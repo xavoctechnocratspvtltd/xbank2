@@ -75,7 +75,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		if(!$on_date) $on_date = $this->api->today;
 
 
-		$accounts_to_work_on = $this->add('Model_Active_Account_DDS');
+		$accounts_to_work_on = $this->add('Model_Active_Account_DDS',array('table_alias'=>'dds_acc'));
 
         // Compulsory Transactions
         $tr_row_join = $accounts_to_work_on->join('transaction_row.account_id');
@@ -96,8 +96,9 @@ class Model_Scheme_DDS extends Model_Scheme {
         $accounts_to_work_on->addCondition('transaction_date','<',$this->api->nextDate($on_date));
         $accounts_to_work_on->addCondition('branch_id',$branch->id);
         $accounts_to_work_on->addCondition('MaturedStatus',false);
+        $accounts_to_work_on->addCondition('DefaultAC',false);
 
-        $accounts_to_work_on->addExpression('opening_date')->set('DAY(created_at)');
+        $accounts_to_work_on->addExpression('opening_date')->set('DAY(dds_acc.created_at)');
 
         $days_to_look =array(date('d',strtotime($on_date)));
         

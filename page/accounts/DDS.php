@@ -4,7 +4,7 @@ class page_accounts_DDS extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account'));
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_dds_model = $this->add('Model_Account_DDS');
 		$account_dds_model->setOrder('created_at','Desc');
 		$account_dds_model->add('Controller_Acl');

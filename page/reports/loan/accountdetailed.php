@@ -20,7 +20,7 @@ class page_reports_loan_accountdetailed extends Page {
 		// $accounts_model->setOrder('id','desc');
 
 
-		if($_GET['accounts_no']){
+		if($this->api->stickyGET('accounts_no')){
 			$accounts_model->load($_GET['accounts_no']);
 		}else{
 

@@ -9,7 +9,7 @@ class page_accounts_Loan extends Page {
 	}
 
 	function page_pendingAccounts(){
-		$crud=$this->add('xCRUD',array('allow_del'=>false));
+		$crud=$this->add('xCRUD',array('allow_del'=>false,'add_form_beautifier'=>false));
 		$account_loan_model = $this->add('Model_Account_Loan',array('table'=>'accounts_pending'));
 		$account_loan_model->addField('is_approved')->type('boolean')->defaultValue(false);
 		$account_loan_model->addCondition('is_approved',0); // Status asked as Pending
@@ -190,6 +190,8 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addColumn('expander','action');
 			$crud->grid->addQuickSearch(array('name'));
 		}
+
+		$crud->add('Controller_FormBeautifier');
 	}
 
 	function page_accounts(){

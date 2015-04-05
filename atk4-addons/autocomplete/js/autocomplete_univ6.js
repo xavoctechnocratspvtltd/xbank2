@@ -9,9 +9,9 @@ $.each({
         var q = this.jquery;
 
 
-        console.log('hi');
-        console.log(send_other_fields);
-        console.log(data);
+        // console.log('hi');
+        // console.log(send_other_fields);
+        // console.log(data);
 
         this.jquery.autocomplete($.extend({
             source: function(request, response) {
@@ -19,7 +19,7 @@ $.each({
                 $.each(send_other_fields, function(index, val) {
                     other_fields_to_send['o_' + val.replace('#', '')] = $(val).val();
                 });
-                console.log(other_fields_to_send);
+                // console.log(other_fields_to_send);
                 $.getJSON(data,
                     $.extend(other_fields_to_send, {
                         term: request.term

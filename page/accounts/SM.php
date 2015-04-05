@@ -6,7 +6,7 @@ class page_accounts_SM extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account'));
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_Default_model = $this->add('Model_Account_SM');
 		
 		$account_Default_model->add('Controller_Acl');

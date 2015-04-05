@@ -12,10 +12,10 @@ class Model_Premium extends Model_Table {
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('PaidOn')->type('datetime')->defaultValue(null);
-		$this->addField('AgentCommissionSend')->type('boolean')->defaultValue(false);
-		$this->addField('AgentCommissionPercentage')->type('money');
-		$this->addField('AgentCollectionChargesPercentage')->type('money');
-		$this->addField('AgentCollectionChargesSend')->type('boolean')->defaultValue(false);
+		$this->addField('AgentCommissionSend')->type('boolean')->defaultValue(false)->caption('Comm Send');
+		$this->addField('AgentCommissionPercentage')->type('money')->caption('Comm %');
+		$this->addField('AgentCollectionChargesPercentage')->type('money')->caption('Collection Charge');
+		$this->addField('AgentCollectionChargesSend')->type('boolean')->defaultValue(false)->caption('Coll. Charg. Send');
 		$this->addField('PaneltyCharged')->type('money')->defaultValue(0);
 		$this->addField('PaneltyPosted')->type('money')->defaultValue(0);
 		$this->addField('DueDate')->type('date');

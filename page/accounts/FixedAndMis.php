@@ -4,7 +4,7 @@ class page_Accounts_FixedAndMis extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account'));
+		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_fixedandmis_model = $this->add('Model_Account_FixedAndMis');
 		$account_fixedandmis_model->add('Controller_Acl');
 		$account_fixedandmis_model->setOrder('id','desc');
@@ -83,7 +83,6 @@ class page_Accounts_FixedAndMis extends Page {
 			$debit_account_model->add('Controller_Acl');
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
-
 			$account_fixedandmis_model->getElement('member_id')->getModel()->addCondition('is_active',true);
 
 
@@ -165,12 +164,13 @@ class page_Accounts_FixedAndMis extends Page {
 						'Joint'=>array('member_ID_1','member_ID_2','member_ID_3','member_ID_4'),
 						),'div .atk-form-row');
 
+			$o->move($debit_account,'last');
 			$o->now();
 		}
 
-		if($crud->grid){
-			$crud->grid->addPaginator(10);
-			$crud->grid->addQuickSearch(array('AccountNumber','agent'));
+		if(!$crud->isEditing()){
+			// $crud->grid->addPaginator(50);
+			// $crud->grid->addQuickSearch(array('AccountNumber','agent'));
 		}
 	}
 }

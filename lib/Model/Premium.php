@@ -59,7 +59,7 @@ class Model_Premium extends Model_Table {
 			$all_paid_noncommissioned_preimums->saveAndUnload();			
 		}
 
-		$commissionForThisAgent = $this->account()->agent()->cadre()->get('percentage_share') * $commission / 100.00;
+		$commissionForThisAgent = $this->account()->agent()->cadre()->selfEfectivePercentage() * $commission / 100.00;
 
 		if(!$commissionForThisAgent) return;
 

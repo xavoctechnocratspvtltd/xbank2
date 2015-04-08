@@ -87,7 +87,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$commissionAmount = $this->api->getComission($this->ref('scheme_id')->get('AccountOpenningCommission'), OPENNING_COMMISSION);
         $commissionAmount = $commissionAmount * $this["Amount"] / 100.00;
 
-        $commissionForThisAgent = $this->agent()->cadre()->get('percentage_share') * $commissionAmount / 100.00;
+
+        $commissionForThisAgent = $this->agent()->cadre()->selfEfectivePercentage() * $commissionAmount / 100.00;
 
         $transaction = $this->add('Model_Transaction');
         $transaction->createNewTransaction(TRA_ACCOUNT_OPEN_AGENT_COMMISSION, $this->ref('branch_id'), $on_date, "Agent Account openning commision for ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));

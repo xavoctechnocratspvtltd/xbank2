@@ -114,6 +114,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('Comment','account_id');
 
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
+		$this->addHook('beforeDelete',array($this,'defaultBeforeDelete'));
 		$this->addHook('editing',array($this,'editing_default'));
 
 
@@ -145,6 +146,11 @@ class Model_Account extends Model_Table {
 			$this['Group'] = $this->add('Model_Scheme')->load($this['scheme_id'])->get('SchemeGroup');
 		if(!$this['PAndLGroup'])
 			$this['PAndLGroup'] = $this['Group'];
+	}
+
+	function defaultBeforeDelete(){
+		if($this->ref('TransactionRow')->count()->getOne() > 0)
+			throw $this->exception('Account Contains Transactions, Cannot Delete');
 	}
 
 	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){
@@ -210,7 +216,7 @@ class Model_Account extends Model_Table {
 
 		$pending_account['member_id'] = $member_id;
 		$pending_account['scheme_id'] = $scheme_id;
-		$pending_account['AccountNumber'] = 'new_account';
+		$pending_account['AccountNumber'] = 'new_account '.$this->currentBranch->id.date('YmdHis').rand(1000,9999);
 		$pending_account['branch_id'] = $branch->id;
 		$pending_account['created_at'] = $created_at;
 		$pending_account['LastCurrentInterestUpdatedAt']=isset($otherValues['LastCurrentInterestUpdatedAt'])? :$created_at;
@@ -456,8 +462,8 @@ class Model_Account extends Model_Table {
 		
 		$agent = $this->agent();
 		while($sponsor = $agent->sponsor()){
-			$percentage = $sponsor->cumulativePercantage($agent->cadre());
 			
+			$percentage = $sponsor->cadre()->cumulativePercantage($agent->cadre());
 			$commissionForThisAgent = $total_commission_amount * $percentage / 100;
 
 			$transaction = $this->add('Model_Transaction');
@@ -465,7 +471,7 @@ class Model_Account extends Model_Table {
 	        
 	        $transaction->addDebitAccount($debit_account, $commissionForThisAgent);
 
-	        $agent_saving_account = $agent->ref('account_id');
+	        $agent_saving_account = $sponsor->ref('account_id');
 	        $tds_account = $this->add('Model_Account')->loadBy('AccountNumber',$this['branch_code'].SP.BRANCH_TDS_ACCOUNT);
 
 	        $tds_amount = (strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * 10 /100 : $commissionForThisAgent * 20 /100;
@@ -479,7 +485,8 @@ class Model_Account extends Model_Table {
 
 	        $agent = $sponsor;
 
-		}
+		}		
+
 	}
 
 
@@ -744,7 +751,7 @@ class Model_Account extends Model_Table {
 
 	function lock(){
 		if(!$this->loaded()) throw $this->exception('Load an Account before lock it', 'ValidityCheck')->setField('LoanAgainstAccount');
-		if($this->isLocked()) throw $this->exception('Account is already Loacked', 'ValidityCheck')->setField('LoanAgainstAccount');
+		if($this->isLocked()) throw $this->exception('Account is already Locked', 'ValidityCheck')->setField('LoanAgainstAccount');
 		$this['LockingStatus'] = true;
 		$this->save();
 	}
@@ -885,4 +892,8 @@ class Model_Account extends Model_Table {
     function isDDS(){
     	return $this['account_type'] == ACCOUNT_TYPE_DDS;
     }
+	function isBank(){
+    	return $this['SchemeType'] == BANK_ACCOUNTS_SCHEME;
+    }
+
 }

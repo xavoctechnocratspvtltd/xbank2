@@ -86,7 +86,7 @@ class Model_Transaction extends Model_Table {
 			$account = $this->add('Model_Account')->loadBy('AccountNumber',$account);
 		}
 
-		$amount = round($amount,2);
+		$amount = round($amount,3);
 		
 		if($account['branch_id'] != $this['branch_id']){
 			$this->all_debit_accounts_are_mine = false;
@@ -101,7 +101,7 @@ class Model_Transaction extends Model_Table {
 			$account = $this->add('Model_Account')->loadBy('AccountNumber',$account);
 		}
 
-		$amount = round($amount,2);
+		$amount = round($amount,3);
 		
 		if($account['branch_id'] != $this['branch_id']){
 			$this->all_credit_accounts_are_mine = false;

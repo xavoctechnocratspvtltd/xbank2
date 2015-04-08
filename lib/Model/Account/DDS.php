@@ -163,7 +163,7 @@ class Model_Account_DDS extends Model_Account{
 
         $amount = $monthly_submitted_amount * $percent / 100;
         
-        $commissionForThisAgent = $this->agent()->cadre()->get('percentage_share') * $amount / 100.00;
+        $commissionForThisAgent = $this->agent()->cadre()->selfEfectivePercentage() * $amount / 100.00;
 
         $transaction = $this->add('Model_Transaction');
         $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));

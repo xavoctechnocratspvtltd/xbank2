@@ -15,7 +15,7 @@ class page_agents extends Page{
 		}
 
 
-		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus'),array('code','member','sponsor','account','cadre','ActiveStatus'));
+		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus'),array('code','member','sponsor','account','cadre','current_individual_crpb','ActiveStatus'));
 
 		if($crud and !$crud->isEditing()){
 			$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));

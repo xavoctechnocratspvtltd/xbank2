@@ -8,7 +8,7 @@ class Model_Cadre extends SQL_Model {
 
 		$this->addField('name');
 		$this->addField('percentage_share')->type('int');
-		$this->addField('total_crpb');
+		$this->addField('total_crpb')->type('int');
 		$this->addField('req_under');
 		// $this->addField('nextcadre_id')->type('int');
 		$this->hasOne('NextCadre','nextcadre_id');
@@ -16,13 +16,33 @@ class Model_Cadre extends SQL_Model {
 		$this->hasMany('Agent','cadre_id');
 		$this->hasMany('PrevCadre','cadre_id');
 
-		$this->setOrder(array('percentage_share desc','total_crpb desc'));
+		$this->setOrder('total_crpb asc');
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function getNextCadre(){
 		return $this->ref('nextcadre_id');
+	}
+
+	function getPrevCadre(){
+		$t=$this->add('Model_Cadre')->tryLoadBy('nextcadre_id',$this->id);
+		if($t->loaded()) return $t;
+
+		return false;
+	}
+
+	function selfEfectivePercentage(){
+
+		$per = $this['percentage_share'];
+		$acc = $this;
+		while($pc = $acc->getPrevCadre()){
+			$per += $pc['percentage_share'];
+			$acc= $pc;
+		}
+
+		return $per;
+
 	}
 
 	function cumulativePercantage($to_down_cadre){
@@ -34,11 +54,16 @@ class Model_Cadre extends SQL_Model {
 				$found = true;
 				break;
 			}
+			$to_down_cadre = $to_down_cadre->getNextCadre();
 		}
 		
 		if(!$found) return 0; // b y coming up I am not found .. may be you are trying below cadre
 
 		return $percentage;
+	}
+
+	function loadLowestCader(){
+		$this->loadBy('name','Advisor');
 	}
 
 }

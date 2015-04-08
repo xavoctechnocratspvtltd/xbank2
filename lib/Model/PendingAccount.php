@@ -33,7 +33,7 @@ class Model_PendingAccount extends Model_Account {
 
 		$op_bal = $op_bal['dr']-$op_bal['cr'];
 
-		if(($op_bal - $this['Amount']) <= 0 ){
+		if( $account_model->isBank() AND (($op_bal - $this['Amount']) <= 0 ) ){
 			$this->api->js()->univ()->errorMessage('Not Sufficient Balance as on Date, Current Balance is ' . $op_bal . ' /-')->execute();
 		}		
 

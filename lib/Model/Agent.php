@@ -19,7 +19,7 @@ class Model_Agent extends Model_Table {
 		$this->addField('Rank')->type('int')->system(true);
 		$this->addField('BusinessCreditPoints')->type('int')->system(true);
 		$this->addField('CumulativeBusinessCreditPoints')->type('int')->system(true);
-		$this->addField('current_individual_crpb')->type('int');
+		$this->addField('current_individual_crpb')->type('int')->caption('CRPB');
 		// $this->addField('Rank_1_Count')->type('int');
 		// $this->addField('Rank_2_Count')->type('int');
 		// $this->addField('Rank_3_Count')->type('int');

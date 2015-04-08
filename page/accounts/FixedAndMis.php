@@ -66,6 +66,7 @@ class page_Accounts_FixedAndMis extends Page {
 			   	$f->setModel('Member');
 			   	// $o->move($f->other_field,'last');
 			}
+			
 			$debit_account = $crud->form->addField('autocomplete/Basic','debit_account');
 			
 			$debit_account_model = $this->add('Model_Active_Account');
@@ -80,7 +81,7 @@ class page_Accounts_FixedAndMis extends Page {
 
 				);
 
-			$debit_account_model->add('Controller_Acl');
+			// $debit_account_model->add('Controller_Acl');
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
 			$account_fixedandmis_model->getElement('member_id')->getModel()->addCondition('is_active',true);
@@ -164,7 +165,7 @@ class page_Accounts_FixedAndMis extends Page {
 						'Joint'=>array('member_ID_1','member_ID_2','member_ID_3','member_ID_4'),
 						),'div .atk-form-row');
 
-			$o->move($debit_account,'last');
+			// $o->move($debit_account,'last');
 			$o->now();
 		}
 

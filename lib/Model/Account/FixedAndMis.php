@@ -31,10 +31,10 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 
 		$balance = $this->getOpeningBalance($this->api->nextDate($on_date));
-		$balance = $balance['CR'] - $balance['DR'];
+		$balance = round($balance['CR'] - $balance['DR'],0);
 		$min_limit= 0; // No minimum limit for FD .. Let all money be withdrawn
 
-		if($amount > ($balance)){
+		if(round($amount,0) > (round($balance,0))){
 			throw $this->exception('Cannot withdraw amount less then '. $balance ,'ValidityCheck')->setField('amount');
 		}
 		

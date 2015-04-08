@@ -33,7 +33,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=array(),$form=null,$on_date=null,$in_branch=null){
 		$balance = $this->getOpeningBalance($this->api->nextDate($on_date));
-		$balance = $balance['CR'] - $balance['DR'];
+		$balance = round($balance['CR'] - $balance['DR'],0);
 		$min_limit= $this->ref('scheme_id')->get('MinLimit');
 
 		if($amount > ($balance)){

@@ -86,6 +86,6 @@ class Model_Scheme_CC extends Model_Scheme {
 	}
 
 	function yearly($branch=null,$on_date=null,$test_account=null){
-		throw $this->exception('Renewal Chrges to be done');
+		throw $this->exception('Renewal Charges to be done');
 	}
 }

@@ -53,7 +53,7 @@ class Model_Account_Recurring extends Model_Account{
 		if( !$this->isMatured() OR $this->isActive())
 			throw $this->exception('Account is wither not matured or is active, cannot withdraw', 'ValidityCheck')->setField('account');
 
-		if($amount != ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']))
+		if($amount != round(($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']),0))
 			throw $this->exception('CAnnot withdraw partial amount : '. ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']), 'ValidityCheck')->setField('amount');
 
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);

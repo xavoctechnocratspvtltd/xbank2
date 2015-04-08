@@ -29,11 +29,16 @@ class page_accounts_Loan extends Page {
 				
 				$account=$crud->add('Model_Account');
 				$account->load($form['LoanAgainstAccount_id']);
-				$amount_allowed = $account['Amount']*80/100;
+				$amount_on = $account['Amount'];
+				if($account->isDDS() or $account->isRecurring()){
+					$amount_on = $account->creditedAmount();
+				}
+
+				$amount_allowed = $amount_on*80/100;
 				$loan_amount=$form['Amount'];
 
-				// if($loan_amount > $amount_allowed)
-				// 	$form->displayError('Amount',"Amount is grater than 80% of  FD Amount");
+				if($loan_amount > $amount_allowed)
+					$form->displayError('Amount',"Amount is grater than 80% of  FD Amount");
 			}
 
 			if($crud->isEditing('edit')) {

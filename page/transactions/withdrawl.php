@@ -92,7 +92,7 @@ class page_transactions_withdrawl extends Page {
 
 				try {
 					$this->api->db->beginTransaction();
-				    $account_model->withdrawl($form['amount'],$form['narration'],$form['account_to_credit']?array(array($form['account_to_credit']=>$form['amount'])):array(),$form);
+				    	$account_model->withdrawl($form['amount'],$form['narration'],$form['account_to_credit']?array(array($form['account_to_credit']=>$form['amount'])):array(),$form);
 				    $this->api->db->commit();
 				} catch (Exception $e) {
 				   	$this->api->db->rollBack();

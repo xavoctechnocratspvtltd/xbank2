@@ -60,7 +60,7 @@ class Model_Account_CC extends Model_Account{
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$transaction_in_branch=null){
 		if(!$transaction_in_branch) $transaction_in_branch = $this->api->current_branch;
 		$ccbalance = $this['Amount'] /* This is CC LIMIT actually in Amount*/ - ($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']);
-		if ($ccbalance < $amount)
+		if (round($ccbalance,0) < round($amount,0))
 			throw $this->exception('Cannot withdraw more than '. $ccbalance,'ValidityCheck')->setField('amount');
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($on_date);

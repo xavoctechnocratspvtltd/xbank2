@@ -61,7 +61,7 @@ class Model_Account_DDS extends Model_Account{
 		if(!$this->isMatured() OR $this->isActive())
 			throw $this->exception('Account must be matured or deactivated to withdraw','ValidityCheck')->setField('account');
 
-		if($amount != ($amount_to_withdraw = ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr'])))
+		if($amount != ($amount_to_withdraw = round(($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']),0)))
 			throw $this->exception('You have to withdraw '.$amount_to_withdraw .' /-','ValidityCheck')->setField('amount');
 
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);

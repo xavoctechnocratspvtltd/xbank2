@@ -380,11 +380,14 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function creditedAmount($from_date,$to_date){
-		$sum = $this->ref('TransactionRow')
-				->addCondition('created_at','>=', $from_date)
-				->addCondition('created_at','<', $this->api->nextDate($to_date))
-				->sum('amountCr')->getOne();
+	function creditedAmount($from_date=null,$to_date=null){
+		$sum = $this->ref('TransactionRow');
+		if($from_date)
+			$sum->addCondition('created_at','>=', $from_date);
+		if($to_date)
+			$sum->addCondition('created_at','<', $this->api->nextDate($to_date));
+
+		$sum = $sum->sum('amountCr')->getOne();
 		return $sum;
 	}
 
@@ -877,5 +880,9 @@ class Model_Account extends Model_Table {
 
     function isLoan(){
     	return in_array($this['account_type'],explode(",",LOAN_TYPES));
+    }
+
+    function isDDS(){
+    	return $this['account_type'] == ACCOUNT_TYPE_DDS;
     }
 }

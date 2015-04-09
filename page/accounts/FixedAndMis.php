@@ -3,6 +3,7 @@
 class page_Accounts_FixedAndMis extends Page {
 	function init(){
 		parent::init();
+		$this->add('Controller_Acl');
 
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_fixedandmis_model = $this->add('Model_Account_FixedAndMis');
@@ -173,5 +174,7 @@ class page_Accounts_FixedAndMis extends Page {
 			// $crud->grid->addPaginator(50);
 			// $crud->grid->addQuickSearch(array('AccountNumber','agent'));
 		}
+
+		$crud->add('Controller_Acl');
 	}
 }

@@ -10,7 +10,7 @@ class Model_Staff extends Model_Table {
 
 		$this->addField('name')->mandatory(true);
 		$this->addField('username')->mandatory(true);
-		$this->addField('password');
+		$this->addField('password')->display(array('grid'=>'password'));
 		$this->addField('father_name')->mandatory(true);
 		$this->addField('pf_amount');
 		$this->addField('basic_pay');
@@ -21,10 +21,20 @@ class Model_Staff extends Model_Table {
 		$this->addField('mobile_no');
 		$this->addField('landline_no');
 		$this->addField('DOB');
-
-		$this->hasMany('Transaction','staff_id');
-
 		$this->addField('AccessLevel')->setValueList(array('100'=>'Super Admin','80'=>'CEO','60'=>'Branch Admin','40'=>'Power Staff', '20'=>'Staff','10'=>'Guest'))->mandatory(true)->DefaultValue(20);
+
+
+		$this->hasMany('Account','staff_id');
+		$this->hasMany('Transaction','staff_id');
+		$this->hasMany('Acl','staff_id');
+
+		$this->add('Controller_Validator');
+		$this->is(array(
+							'username|to_trim|unique'
+						)
+				);
+
+
 		$this->addHook('beforeDelete',$this);
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
@@ -40,6 +50,10 @@ class Model_Staff extends Model_Table {
 
 	function isCEO(){
 		return $this['AccessLevel'] == 80;
+	}
+
+	function acl(){
+		return $this->ref('Acl');
 	}
 
 	function createNewStaff($name,$password,$AccessLevel,$branch_id=null){

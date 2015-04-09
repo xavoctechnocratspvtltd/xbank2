@@ -6,6 +6,8 @@ class page_accounts_SM extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl');
+
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_Default_model = $this->add('Model_Account_SM');
 		
@@ -88,6 +90,6 @@ class page_accounts_SM extends Page {
 			// $o->move('initial_opening_amount','before','Amount')
 			// ->now();
 		}
-
+		$crud->add('Controller_Acl');
 	}
 }

@@ -1,8 +1,15 @@
 <?php
 
 class page_staff_main extends Page {
+	public $title = 'Staff Management';
+
 	function init(){
 		parent::init();
+		$this->add('Controller_Acl');
+
+		if($_GET['acl']){
+			$this->js()->univ()->frameURL('ACL',$this->api->url('staff_acl',array('staff_id'=>$_GET['acl'])))->execute();
+		}
 		
 		$crud=$this->add('xCRUD');
 		$staff_model = $this->add('Model_Staff');
@@ -28,12 +35,16 @@ class page_staff_main extends Page {
 			$staff_model->hook('editing');
 		}
 
-		$crud->setModel($staff_model);
+		$staff_model->addExpression('accounts')->set($staff_model->refSQL('Account')->count());
+		$staff_model->addExpression('transactions')->set($staff_model->refSQL('Transaction')->count());
+
+		$crud->setModel($staff_model,array('branch','name','username','password','AccessLevel','accounts','transactions'));
 		
-		if($crud->grid){
+		if(!$crud->isEditing()){
 			$crud->grid->addPaginator(50);
 			$crud->grid->addQuickSearch(array('name'));
-			
+			if($this->api->currentStaff->isSUper())
+				$crud->grid->addColumn('Button','acl');
 		}
 
 		if($form=$crud->form){
@@ -50,6 +61,6 @@ class page_staff_main extends Page {
 		// 	$o->now();
 		// }
 
-
+		$crud->add('Controller_Acl');
 	}
 }

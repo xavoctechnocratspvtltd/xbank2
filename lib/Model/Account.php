@@ -216,7 +216,7 @@ class Model_Account extends Model_Table {
 
 		$pending_account['member_id'] = $member_id;
 		$pending_account['scheme_id'] = $scheme_id;
-		$pending_account['AccountNumber'] = 'new_account '.$this->currentBranch->id.date('YmdHis').rand(1000,9999);
+		$pending_account['AccountNumber'] = 'new_account '.$this->api->currentBranch->id.date('YmdHis').rand(1000,9999);
 		$pending_account['branch_id'] = $branch->id;
 		$pending_account['created_at'] = $created_at;
 		$pending_account['LastCurrentInterestUpdatedAt']=isset($otherValues['LastCurrentInterestUpdatedAt'])? :$created_at;
@@ -366,7 +366,7 @@ class Model_Account extends Model_Table {
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_deposit_type,$in_branch,$transaction_date,$narration);
+		$transaction->createNewTransaction($this->transaction_deposit_type,$in_branch,$transaction_date,$narration,null,array('reference_id'=>$this->id));
 		
 		$transaction->addCreditAccount($this,$amount);			
 
@@ -439,8 +439,10 @@ class Model_Account extends Model_Table {
 		if(!$accounts_to_credit OR !is_array($accounts_to_credit)) $accounts_to_credit = array();
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
+		if(!$amount) throw $this->exception('Amount not accepted','ValidityCheck')->setField('amount');
+
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_withdraw_type,$in_branch,$on_date,$narration,null,array('reference_id'=>$reference_id));
+		$transaction->createNewTransaction($this->transaction_withdraw_type,$in_branch,$on_date,$narration,null,array('reference_id'=>$this->id));
 		
 		$transaction->addDebitAccount($this,$amount);			
 

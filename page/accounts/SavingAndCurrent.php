@@ -4,6 +4,8 @@ class page_accounts_SavingAndCurrent extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl');
+
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_savingandcurrent_model = $this->add('Model_Account_SavingAndCurrent');
 		$account_savingandcurrent_model->add('Controller_Acl');
@@ -81,6 +83,8 @@ class page_accounts_SavingAndCurrent extends Page {
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
 			$o->now();
 		}
+
+		$crud->add('Controller_Acl');
 
 	}
 }

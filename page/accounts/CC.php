@@ -3,9 +3,11 @@
 class page_accounts_CC extends Page {
 	function page_index(){
 
+		$this->add('Controller_Acl');
+
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_cc_model =$this->add('Model_Account_CC');
-		$account_cc_model->add('Controller_Acl');		
+			
 		$account_cc_model->setOrder('created_at','desc');
 
 		$crud->addHook('myupdate',function($crud,$form){
@@ -70,6 +72,8 @@ class page_accounts_CC extends Page {
 		if($crud->isEditing('add')){
 			$o->now();
 		}
+
+		$crud->add('Controller_Acl');
 
 	}
 

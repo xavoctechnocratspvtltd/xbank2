@@ -7,6 +7,8 @@ class page_transactions_visitcharge extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl');
+
 		$account_from_account_model = $this->add('Model_Active_Account',array('table_alias'=>'acc'));
 		$account_from_account_model->addCondition('SchemeType','<>',ACCOUNT_TYPE_RECURRING);
 		$account_from_account_model->addCondition('SchemeType','<>',ACCOUNT_TYPE_DDS);

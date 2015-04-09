@@ -9,6 +9,7 @@ class page_transactions_jv extends Page {
 		parent::init();
 		$this->rename('a');
 
+		$this->add('Controller_Acl');
 		// Only self branch accounts
 
 		$form = $this->add('Form');

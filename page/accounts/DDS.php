@@ -4,10 +4,11 @@ class page_accounts_DDS extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl');
+		
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_dds_model = $this->add('Model_Account_DDS');
 		$account_dds_model->setOrder('created_at','Desc');
-		$account_dds_model->add('Controller_Acl');
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
@@ -111,6 +112,8 @@ class page_accounts_DDS extends Page {
 				// ->move('collector_saving_account','after','collector_id')
 				->now();
 		}
+
+		$crud->add('Controller_Acl');
 
 	}
 }

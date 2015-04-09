@@ -31,6 +31,9 @@ class Model_Transaction extends Model_Table {
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
 
 		$this->hasMany('TransactionRow','transaction_id');
+
+		$this->addExpression('cr_sum')->set($this->refSQL('TransactionRow')->sum('amountCr'));
+		$this->addExpression('dr_sum')->set($this->refSQL('TransactionRow')->sum('amountDr'));
 		
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);
@@ -48,6 +51,10 @@ class Model_Transaction extends Model_Table {
 	function beforeDelete(){
 		if($this->ref('TransactionRow')->count()->getOne() > 0 )
 			throw $this->exception('TRansaction Contains Rows .. Cannot Delete');
+	}
+
+	function rows(){
+		return $this->ref('TransactionRow');
 	}
 
 	function createNewTransaction($transaction_type, $branch=null, $transaction_date=null, $Narration=null, $only_transaction=null,$options=array()){

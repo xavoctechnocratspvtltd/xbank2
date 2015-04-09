@@ -3,11 +3,11 @@
 class page_accounts_Default extends Page {
 	function init(){
 		parent::init();
+		$this->add('Controller_Acl');
 
 		$crud=$this->add('xCRUD');
 		$account_Default_model = $this->add('Model_Account_Default');
 		$account_Default_model->addCondition('scheme_name','<>','Share Capital');
-		$account_Default_model->add('Controller_Acl');
 		$account_Default_model->setOrder('id','desc');
 
 		$crud->addHook('myupdate',function($crud,$form){
@@ -61,6 +61,7 @@ class page_accounts_Default extends Page {
 			// $o->move('initial_opening_amount','before','Amount')
 			// ->now();
 		}
+		$crud->add('Controller_Acl');
 
 	}
 }

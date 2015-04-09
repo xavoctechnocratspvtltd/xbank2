@@ -5,7 +5,8 @@ class page_transactions_withdrawl extends Page {
 	
 	function init(){
 		parent::init();
-
+		$this->add('Controller_Acl');
+		
 		// Deactivate Account Remove
 		$account_model=$this->add('Model_Account',array('table_alias'=>'acc'));
 		

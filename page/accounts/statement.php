@@ -5,6 +5,7 @@ class page_accounts_statement extends Page {
 
 	function init(){
 		parent::init();
+		$this->add('Controller_Acl');
 
 		$form=$this->add('Form');
 		$account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();

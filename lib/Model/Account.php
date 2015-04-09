@@ -412,8 +412,12 @@ class Model_Account extends Model_Table {
 	}
 
 	function collectionAgent(){
+		if(!$this['collector_id'])
+			return $this->agent();
+
 		$agent = $this->ref('collector_id');
 		if($agent->loaded()) return $agent;
+		
 		return false;
 	}
 

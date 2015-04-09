@@ -1,6 +1,6 @@
 <?php
 
-class Model_Cadre extends SQL_Model {
+class Model_Cadre extends Model_Table {
 	public $table = "cadres";
 
 	function init(){

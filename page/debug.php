@@ -1,6 +1,6 @@
 <?php
 
-class page_test extends Page {
+class page_debug extends Page {
 	function init(){
 		parent::init();
 		

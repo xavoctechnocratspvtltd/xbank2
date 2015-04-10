@@ -82,7 +82,8 @@ class page_transactions_remove extends Page {
 		// ================  EDIT VOUCHER =====================
 
 		$edit_voucher_vp = $this->add('VirtualPage')->set(function($p){
-			
+			$p->add('View_Error')->set('Not Working');
+			return;
 			$f_year = $p->api->getFinancialYear($p->api->today);	
 			$start_date = $f_year['start_date'];
 			$end_date = $f_year['end_date'];

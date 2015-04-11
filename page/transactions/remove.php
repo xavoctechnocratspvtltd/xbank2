@@ -36,12 +36,6 @@ class page_transactions_remove extends Page {
 			$v = $p->add('View_Voucher');
 			$v->setModel($transaction);
 
-			if($transaction->referenceAccount()->isRecurring()){
-				$p->add('CRUD')->setModel($transaction->referenceAccount()->premiums());
-			}else{
-				// echo $transaction->referenceAccount()->get('AccountNumber');
-			}
-
 			if($p->api->auth->model->isSuper()){
 
 				$form = $p->add('Form');
@@ -56,6 +50,16 @@ class page_transactions_remove extends Page {
 					try{
 						$p->api->db->beginTransaction();
 							$transaction->forceDelete();
+
+							if($rfa = $transaction->referenceAccount() OR $transaction['transaction_type'] == TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT){
+								if($rfa) 
+									$rfa->markDirty();
+								else{
+									$result=array();
+									$acn = preg_match_all("/Recurring Amount Deposit in (.*)/", $transaction['Narration'],$result);
+									$this->add('Model_Account')->loadBy('AccountNumber',$result[1][0])->markDirty();									
+								}
+							}
 					    $p->api->db->commit();
 					} catch (Exception $e) {
 					   	$p->api->db->rollBack();
@@ -160,6 +164,29 @@ class page_transactions_remove extends Page {
 		if($form->isSubmitted()){
 
 			$this->js()->univ()->frameURL('TRANSACTION',$this->api->url($edit_voucher_vp->getURL(),array('branch_id'=>$form['branch'],'voucher_no'=>$form['voucher_no'])))->execute();
+		}
+
+
+		// DIRTY ACCOUNTS 
+
+		$this->add('HR');
+		$this->add('H3')->set('Dirty Accounts');
+		
+		$dirty_accounts = $this->add('Model_Account');
+		$dirty_accounts->addCondition('is_dirty',true);
+
+		$crud = $this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
+		$crud->setModel($dirty_accounts);
+
+		if(!$crud->isEditing()){
+
+			$crud->add('VirtualPage')->addColumn('premiums',null,null,$crud->grid)->set(function($p){
+				$p->add('View')->set('Hi');
+			});
+
+
+
+			$crud->grid->addPaginator(100);
 		}
 
 	}

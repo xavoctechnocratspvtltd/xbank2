@@ -36,9 +36,17 @@ class Frontend extends ApiFrontend {
         
         $footer=$l->addFooter();
         $header=$l->addHeader();
+        $this->today = date('Y-m-d',strtotime($this->recall('current_date',date('Y-m-d'))));
+        $this->now = date('Y-m-d H:i:s',strtotime($this->recall('current_date',date('Y-m-d H:i:s'))));
+        $this->jui->addStaticStylesheet('hindi');
 
-        if($this->page !='corrections'){
-
+        if(strpos($this->page,'dsa_') !==false){
+            $auth = $this->add('BasicAuth');
+            $auth->allowPage(array('corrections'));
+            $auth->setModel('DSA','username','password');
+            $auth->check();
+            // $header_menu1=$header->add('Menu_Dsa')->addClass('mymenu');
+        }else{
             $auth = $this->add('BasicAuth');
             $auth->allowPage(array('corrections'));
             $auth->setModel('Staff','username','password');
@@ -48,16 +56,13 @@ class Frontend extends ApiFrontend {
 
             $this->currentBranch = $this->current_branch = $this->auth->model->ref('branch_id');
             $this->title = ' :: [' . $this->api->current_branch['name'].']';
+            $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
         }
 
-        $this->jui->addStaticStylesheet('hindi');
 
         // $header_menu1->addMenuItem('index',array('Home','icon'=>'home','swatch'=>'yellow'));
 
-        $this->today = date('Y-m-d',strtotime($this->recall('current_date',date('Y-m-d'))));
-        $this->now = date('Y-m-d H:i:s',strtotime($this->recall('current_date',date('Y-m-d H:i:s'))));
         
-        $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
 
     }
 

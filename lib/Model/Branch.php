@@ -11,6 +11,7 @@ class Model_Branch extends Model_Table {
 		$this->addField('PerformClosings')->type('boolean')->defaultValue(true)->display(array('grid'=>'grid/inline'));
 		$this->addField('SendSMS')->type('boolean')->defaultValue(true);
 		$this->addField('published')->type('boolean')->defaultValue(true);
+		$this->addField('next_voucher_no');//->type('boolean')->defaultValue(true);
 
 		$this->hasMany('Staff','branch_id');
 		$this->hasMany('Member','branch_id');
@@ -22,7 +23,7 @@ class Model_Branch extends Model_Table {
 		$this->addHook('afterInsert',$this);
 		$this->addHook('beforeDelete',$this);
 
-		//$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function beforeDelete(){
@@ -126,6 +127,11 @@ class Model_Branch extends Model_Table {
 			$cross_check=true;
 		}
 
+		if(isset($this->api->next_voucher_no)){
+			$this->api->next_voucher_no++;
+			return $this->api->next_voucher_no;
+		}
+
 
 		$transaction_model = $this->add('Model_Transaction');
 		$transaction_model->addCondition('branch_id',$branch->id);
@@ -157,7 +163,7 @@ class Model_Branch extends Model_Table {
 			}
 			
 		}
-
+		$this->api->next_voucher_no = $max_voucher +1;
 		return $max_voucher + 1 ;
 	}
 

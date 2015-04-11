@@ -48,7 +48,7 @@ class Model_Premium extends Model_Table {
 
 		$all_paid_noncommissioned_preimums = $this->ref('account_id')->ref('Premium');
 		$all_paid_noncommissioned_preimums->addCondition('Paid','<>',0);
-		$all_paid_noncommissioned_preimums->addCondition('PaidOn','<>',null);
+		$all_paid_noncommissioned_preimums->addCondition('PaidOn',$on_date);
 		$all_paid_noncommissioned_preimums->addCondition('AgentCommissionSend',0);
 
 		$commission = 0;
@@ -89,7 +89,7 @@ class Model_Premium extends Model_Table {
 		$all_paid_noncollected_preimums = $this->ref('account_id')->ref('Premium');
 		$all_paid_noncollected_preimums->addCondition('AgentCollectionChargesSend',0);
 		$all_paid_noncollected_preimums->addCondition('Paid','<>',0);
-		$all_paid_noncollected_preimums->addCondition('PaidOn','<>',null);
+		$all_paid_noncollected_preimums->addCondition('PaidOn',$on_date);
 
 		$commission = 0;
 		$account = $this->account();

@@ -62,7 +62,7 @@ class Menu_Base extends Menu {
 		
 		if($this->api->currentStaff->isSuper()){
 			$admin_sub_menus = $admin_sub_menus_popover->add('Menu_Vertical');
-			$admin_sub_menus->addMenuItem('staffs','Staff');
+			$admin_sub_menus->addMenuItem('staff_main','Staff');
 			$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
 			$admin_sub_menus->addMenuItem('branches','Branches');
 			$admin_sub_menus->addMenuItem('mos','Mos');
@@ -71,7 +71,7 @@ class Menu_Base extends Menu {
 			$admin_sub_menus->addMenuItem('accounts_locking','Lock & Unlock Accounts');
 			$admin_sub_menus->addMenuItem('agentscadre','Agents Cadres');
 			$admin_sub_menus->addMenuItem('operations_edit','Edit Accounts');
-			$admin_sub_menus->addMenuItem('transactions_remove','Remove Transaction');
+			$admin_sub_menus->addMenuItem('transactions_remove','Edit/Delete Transaction');
 			$admin->js('click',$admin_sub_menus_popover->showJS());
 		}
 

@@ -26,9 +26,9 @@ class Model_TransactionRow extends Model_Table {
 
 	function forceDelete(){
 		if($this['amountCr'])
-			$this->ref('account_id')->debitOnly($this['amountCr']);
+			$this->ref('account_id')->creditOnly(-1 * $this['amountCr']);
 		if($this['amountDr'])
-			$this->ref('account_id')->creditOnly($this['amountDr']);
+			$this->ref('account_id')->debitOnly( -1 * $this['amountDr']);
 
 		$this->delete();
 	}

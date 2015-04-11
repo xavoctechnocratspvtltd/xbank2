@@ -6,6 +6,7 @@ class page_stock_main extends Page {
 	
 	function init(){
 		parent::init();
+		$this->add('Controller_Acl',array('default_view'=>false));
 
 		$tabs=$this->add('Tabs');
 		$tab1=$tabs->addTabURL('stock_master','Master');

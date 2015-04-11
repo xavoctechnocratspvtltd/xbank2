@@ -6,6 +6,8 @@ class page_transactions_bankdeposit extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl');
+
 		$bank_account_model = $this->add('Model_Active_Account');
 
 		$bank_account_model->addCondition($this->api->db->dsql()->orExpr()

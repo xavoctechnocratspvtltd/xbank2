@@ -6,6 +6,8 @@ class page_agents extends Page{
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl');
+
 		$crud = $this->add('CRUD');
 		$agent=$this->add('Model_Agent');
 		$agent->setOrder('id','desc');
@@ -17,12 +19,13 @@ class page_agents extends Page{
 
 		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus'),array('code','member','sponsor','account','cadre','current_individual_crpb','ActiveStatus'));
 
-		if($crud and !$crud->isEditing()){
+		if($crud and !$crud->isEditing('add') and ! $crud->isEditing('edit')){
 			$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));
 			
 			$agent_guarantor_crud = $crud->addRef('AgentGuarantor');
-			if($agent_guarantor_crud and !$agent_guarantor_crud->isEditing()){
+			if($agent_guarantor_crud and !$agent_guarantor_crud->isEditing('add') and !$agent_guarantor_crud->isEditing('edit')){
 				$agent_guarantor_crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentGuarantor'));
+				$agent_guarantor_crud->add('Controller_Acl');
 			}
 
 			$crud->grid->addPaginator(50);
@@ -40,7 +43,8 @@ class page_agents extends Page{
 				$account_of_member_field->model->addCondition('ActiveStatus',true);
 			}
 
-	}
+		}
 
-}
+		$crud->add('Controller_Acl');
+	}
 }

@@ -5,6 +5,8 @@ class page_transactions_deposit extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl');
+
 		$form = $this->add('Form');
 		$account_model=$this->add('Model_Active_Account');
 

@@ -7,10 +7,11 @@ class page_members extends Page {
 	function page_index(){
 		// parent::init();
 
+		$this->add('Controller_Acl');
+
 		$crud = $this->add('xCRUD');
 
 		$member_model = $this->add('Model_Member');
-		$member_model->add('Controller_Acl');
 		$member_model->setOrder('id','desc');
 		
 
@@ -150,6 +151,8 @@ class page_members extends Page {
 			// 	),'div .atk-form-row');
 			$o->now();
 		}
+
+		$crud->add('Controller_Acl');
 	}
 
 

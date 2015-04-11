@@ -9,12 +9,13 @@ class page_accounts_Loan extends Page {
 	}
 
 	function page_pendingAccounts(){
+		$this->add('Controller_Acl');
+
 		$crud=$this->add('xCRUD',array('allow_del'=>false,'add_form_beautifier'=>false));
 		$account_loan_model = $this->add('Model_Account_Loan',array('table'=>'accounts_pending'));
 		$account_loan_model->addField('is_approved')->type('boolean')->defaultValue(false);
 		$account_loan_model->addCondition('is_approved',0); // Status asked as Pending
 
-		$account_loan_model->add('Controller_Acl');
 		$account_loan_model->setOrder('id','desc');
 		
 		$crud->addHook('myupdate',function($crud,$form){
@@ -197,10 +198,11 @@ class page_accounts_Loan extends Page {
 		}
 
 		$crud->add('Controller_FormBeautifier');
+		$crud->add('Controller_Acl');
 	}
 
 	function page_accounts(){
-		
+		$this->add('Controller_Acl');
 		$crud=$this->add('xCRUD',array('allow_add'=>false,'grid_class'=>'Grid_Account'));
 
 		$account_loan_model = $this->add('Model_Account_Loan');
@@ -289,9 +291,12 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addQuickSearch(array('AccountNumber'));
 		}
 
+		$crud->add('Controller_Acl');
+
 	}
 
 	function page_pendingAccounts_edit_guarantor(){
+		$this->add('Controller_Acl');
 		$this->api->stickyGET('accounts_pending_id');
 		$pending_account = $this->add('Model_PendingAccount');
 		$pending_account->load($_GET['accounts_pending_id']);
@@ -344,6 +349,7 @@ class page_accounts_Loan extends Page {
 	}
 
 	function page_pendingAccounts_edit_pendingDocument(){
+		$this->add('Controller_Acl');
 		$this->api->stickyGET('accounts_pending_id');
 		$pending_account = $this->add('Model_PendingAccount');
 		$pending_account->load($_GET['accounts_pending_id']);
@@ -392,6 +398,7 @@ class page_accounts_Loan extends Page {
 	}
 
 	function page_pendingAccounts_action(){
+		$this->add('Controller_Acl');
 		$this->api->stickyGET('accounts_pending_id');
 		$pending_account = $this->add('Model_PendingAccount');
 		$pending_account->load($_GET['accounts_pending_id']);

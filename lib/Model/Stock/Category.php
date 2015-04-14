@@ -37,6 +37,7 @@ class Model_Stock_Category extends Model_Table {
 
 	function beforeDelete($model){
 		if($this->ref('Stock_Item')->count()->getOne() > 0)
-			throw $this->exception('Category ( '.$model['name'].' ) cannot be deleted, it contains Item(s)');
+			$this->api->js()->univ()->errorMessage('Category ('.$model['name'].') Contains Item(s), Cannot Delete')->execute();
 	}
+	
 }

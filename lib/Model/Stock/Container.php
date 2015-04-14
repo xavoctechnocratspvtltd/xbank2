@@ -47,7 +47,7 @@ class Model_Stock_Container extends Model_Table {
 
 
 	function beforeDelete(){
-		if($this['name']=='General' or $this['name']=='Dead'){
+		if($this['name']=='General' or $this['name']=='Dead' or $this['name'] =='UsedDefault'){
 			$this->api->js()->univ()->errorMessage('System Generated, Cannot Delete')->execute();
 		}
 
@@ -93,6 +93,21 @@ class Model_Stock_Container extends Model_Table {
 			throw $this->exception('Unable To determine Container, Please Specify');
 		return $this->ref('Stock_Row');
 	}	
+
+	function loadUsedDefaultContainer($branch_id=null){
+		$this->_dsql()->del('where');
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+
+		$this->addCondition('branch_id',$branch_id);
+		$this->addCondition('name','UsedDefault');
+		$this->tryLoadAny();
+		if($this->loaded()){
+			return $this;	
+		}
+			return false;	
+				
+	}
 
 	function loadGeneralContainer($branch_id=null){
 		

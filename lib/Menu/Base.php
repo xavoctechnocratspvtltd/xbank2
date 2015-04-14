@@ -72,6 +72,7 @@ class Menu_Base extends Menu {
 			$admin_sub_menus->addMenuItem('agentscadre','Agents Cadres');
 			$admin_sub_menus->addMenuItem('operations_edit','Edit Accounts');
 			$admin_sub_menus->addMenuItem('transactions_remove','Edit/Delete Transaction');
+			$admin_sub_menus->addMenuItem('utility_premimumtable','Premimum Table');
 			$admin->js('click',$admin_sub_menus_popover->showJS());
 		}
 

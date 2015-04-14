@@ -19,6 +19,7 @@ class Model_Staff extends Model_Table {
 		$this->addField('present_address');
 		$this->addField('parmanent_address');
 		$this->addField('mobile_no');
+		$this->addField('is_active')->type('boolean')->defaultValue(true);
 		$this->addField('landline_no');
 		$this->addField('DOB');
 		$this->addField('AccessLevel')->setValueList(array('100'=>'Super Admin','80'=>'CEO','60'=>'Branch Admin','40'=>'Power Staff', '20'=>'Staff','10'=>'Guest'))->mandatory(true)->DefaultValue(20);

@@ -4,13 +4,16 @@ class View_StockMember_Consume extends View {
 	function init(){
 		parent::init();
 		
-		
+		$this->api->StickyGet('item');
+
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');
 		$transaction_j_item->addField('is_consumable');
 		$transaction->addCondition('is_consumable',true);
 		$transaction->addCondition('transaction_type','Consume');
-		  
+		if($_GET['item'])
+			$transaction->addCondition('item_id',$_GET['item']);
+
 		$grid=$this->add('Grid_AccountsBase');
 		$member_model=$this->add('Model_Stock_Member');
 		
@@ -54,7 +57,7 @@ class View_StockMember_Consume extends View {
 				$grid->current_row[$no_fill] ='';
 		});
 
-		// $grid->addOpeningBalance(0,'DR',array('narration'=>'Openning Balance'),'DR');
+		$grid->addOpeningBalance(0,'DR',array('narration'=>'Openning Balance'),'DR');
 		$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
 
 	}

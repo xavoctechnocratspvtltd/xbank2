@@ -127,6 +127,22 @@ class Model_Stock_Container extends Model_Table {
 				
 	}
 
+	function loadGeneralAndUsed($branch_id=null){	
+		$this->_dsql()->del('where');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+			
+		$this->addCondition('branch_id',$branch_id);
+		$this->addCondition('name',array('General','UsedDefault'));
+		$this->tryLoadAny();
+		if(!$this->loaded()){
+			return false;	
+		}
+		return $this;	
+				
+	}
+
 	function loadDeadContainer($branch_id=null){
 		$this->_dsql()->del('where');
 

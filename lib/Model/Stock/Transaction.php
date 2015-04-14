@@ -189,7 +189,7 @@ class Model_Stock_Transaction extends Model_Table {
 
 	}
 
-	function transfer($from_branch_id,$container,$row,$item,$qty,$narration,$to_branch,$as_on=null){
+	function transfer($from_branch_id,$container,$row,$item,$qty,$narration,$to_branch,$is_used_submit=false,$as_on=null){
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
@@ -209,9 +209,16 @@ class Model_Stock_Transaction extends Model_Table {
 			throw $this->exception('This Is not availeble in such Qty', 'ValidityCheck')->setField('qty');
 		
 		$to_container = $this->add('Model_Stock_Container');
-		$to_container->loadGeneralContainer($to_branch->id);
 		$to_row = $this->add('Model_Stock_Row');
-		$to_row->loadGeneralRow($to_branch->id);
+		
+		if($is_used_submit){
+			$to_container->loadUsedDefaultContainer($to_branch->id);
+			$to_row->loadUsedDefaultRow($to_branch->id);
+		}else {
+			$to_container->loadGeneralContainer($to_branch->id);
+			$to_row->loadGeneralRow($to_branch->id);
+		}
+		
 
 		$this['item_id']=$item->id;
 		$this['branch_id']=$this->api->currentBranch->id;

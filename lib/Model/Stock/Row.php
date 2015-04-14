@@ -103,6 +103,24 @@ class Model_Stock_Row extends Model_Table {
 		return $this;
 	}
 
+	function loadGeneralAndUsed($branch_id=null){
+		$this->_dsql()->del('where');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+
+		$this->addCondition('branch_id',$branch_id);
+
+		$cntr_model = $this->add('Model_Stock_Container');
+		$cntr_model->loadGeneralAndUsed();
+		$cnt_array =array();
+		foreach ($cntr_model as $cnt) {
+			$cnt_array[$cnt->id]=$cnt->id;
+		}
+
+		$this->addCondition('container_id',$cnt_array);
+		return $this;
+	}
 	function loadDeadRow($branch_id=null){
 		$this->_dsql()->del('where');
 

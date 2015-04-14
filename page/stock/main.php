@@ -66,6 +66,31 @@ class page_stock_main extends Page {
 					}
 				}
 		}	
-	
+		
+		foreach ($branch as $junk) {
+			$container = $this->add('Model_Stock_Container');
+			$row = $this->add('Model_Stock_Row');
+			$container->_dsql()->del('where');
+			$row->_dsql()->del('where');
+			
+			$container->addCondition('branch_id',$junk['id']);
+			$container->addCondition('name','UsedDefault');
+			$container->tryLoadAny();
+				if(!$container->loaded()){
+					$container['name'] = "UsedDefault";
+					$container['branch_id'] = $junk['id'];
+					$container->save();
+
+					$row->addCondition('branch_id',$junk['id']);
+					$row->addCondition('name','UsedDefault');
+					$row->tryLoadAny();
+					if(!$row->loaded()){
+						$row['name']="UsedDefault";
+						$row['branch_id']=$junk['id'];
+						$row['container_id']=$container['id'];
+						$row->save();
+					}
+				}
+		}
 	}
 }

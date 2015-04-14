@@ -149,7 +149,9 @@ class page_stock_reports_stock extends Page {
 		$grid->addMethod('format_amount',function($g,$f){
 			$g->current_row_html[$f]=$g->model->amount($_GET['to_date']?:$g->api->now);
 		});
+		
 		$grid->setModel($item_model);
+
 		$grid->addColumn('openning','openning');
 		$grid->addColumn('purchase','purchase');
 		$grid->addColumn('purchasereturn','purchase_return');

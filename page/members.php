@@ -100,7 +100,7 @@ class page_members extends Page {
 				$g->js()->reload()->execute();
 			}
 
-			$g->addQuickSearch(array('name','CurrentAddress','PermanentAddress','FatherName','PhoneNos','PanNo'));
+			$g->addQuickSearch(array('id','branch','name','created_at','is_active','CurrentAddress','PermanentAddress','FatherName','PhoneNos','PanNo'));
 			// $g->addQuickSearch(array('search_string'));
 			$g->addMethod('format_removeEdit',function($grid,$field){
 				if($grid->model['name'] == $grid->model->ref('branch_id')->get('Code').SP.'Default')

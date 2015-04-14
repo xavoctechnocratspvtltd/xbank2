@@ -22,6 +22,7 @@ class page_transactions_remove extends Page {
 			$end_date = $f_year['end_date'];
 
 			$transaction = $p->add('Model_Transaction');
+			$transaction->addCondition('id',$p->api->stickyGET('voucher_uuid'));
 			$transaction->addCondition('voucher_no',$p->api->stickyGET('voucher_no'));
 			$transaction->addCondition('created_at','>=',$start_date);
 			$transaction->addCondition('created_at','<',$p->api->nextDate($end_date));
@@ -69,10 +70,11 @@ class page_transactions_remove extends Page {
 		$form = $remove_col->add('Form');
 		$form->addField('autocomplete/Basic','branch')->validateNotNull()->setModel('Branch');
 		$form->addField('line','voucher_no')->validateNotNull();
+		$form->addField('line','voucher_uuid')->validateNotNull();
 		$form->addSubmit('Get Voucher');
 
 		if($form->isSubmitted()){
-			$this->js()->univ()->frameURL('TRANSACTION',$this->api->url($delete_voucher_vp->getURL(),array('branch_id'=>$form['branch'],'voucher_no'=>$form['voucher_no'])))->execute();
+			$this->js()->univ()->frameURL('TRANSACTION',$this->api->url($delete_voucher_vp->getURL(),array('branch_id'=>$form['branch'],'voucher_no'=>$form['voucher_no'],'voucher_uuid'=>$form['voucher_uuid'])))->execute();
 		}
 
 		// ================  EDIT VOUCHER =====================

@@ -541,7 +541,14 @@ class Model_Account extends Model_Table {
 		$account_cr = $this->add('Model_Account')
 										->load($amount_from_account);
 		$account_dr = $this->add('Model_Account')
-										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'CONVEYANCE EXPENSES');
+										->tryLoadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'Conveyance Expenses');
+
+		if(!$account_dr->loaded()){
+			$scheme = $this->add('Model_Scheme');
+			$scheme->loadBy('name','indirect expenses');
+			$account_dr->createNewAccount($in_branch->getDefaultMember()->get('id'),$scheme->id,$in_branch,$in_branch['Code'].SP.'Conveyance Expenses',array('DefaultAC'=>true,'Group'=>'Conveyance Expenses','PAndLGroup'=>'Conveyance Expenses'));
+		}
+
 		$staff_model=$this->add('Model_Staff')->load($staff);
 		if(!$narration)
 			$narration = "Conveyance Amount paid to ";

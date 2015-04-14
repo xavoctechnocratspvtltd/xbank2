@@ -79,7 +79,7 @@ class page_members extends Page {
 		}
 
 
-		$crud->setModel($member_model,array());
+		$crud->setModel($member_model);
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'MemberDocuments'));
 
 

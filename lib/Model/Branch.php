@@ -117,6 +117,8 @@ class Model_Branch extends Model_Table {
 
 		if(!$branch) $branch = $this;
 
+		$next_voucher_no = 'next_voucher_no_'. $branch->id;
+
 		$f_year = $this->api->getFinancialYear($transaction_date);	
 		$start_date = $f_year['start_date'];
 		
@@ -127,16 +129,16 @@ class Model_Branch extends Model_Table {
 			$cross_check=true;
 		}
 
-		if(isset($this->api->next_voucher_no)){
-			if(($fraction = ($this->api->next_voucher_no - ((int)$this->api->next_voucher_no))) > 0){		
+		if(isset($this->api->$next_voucher_no)){
+			if(($fraction = ($this->api->$next_voucher_no - ((int)$this->api->$next_voucher_no))) > 0){		
 				$fraction = (string) $fraction;
 				$fraction = str_replace("0.", "", $fraction);
 				$fraction++;
-				$this->api->next_voucher_no = ((int) ($this->api->next_voucher_no)) .'.'. $fraction;
-				return $this->api->next_voucher_no;
+				$this->api->$next_voucher_no = ((int) ($this->api->$next_voucher_no)) .'.'. $fraction;
+				return $this->api->$next_voucher_no;
 			}
-			$this->api->next_voucher_no++;
-			return $this->api->next_voucher_no;
+			$this->api->$next_voucher_no = $this->api->$next_voucher_no + 1;
+			return $this->api->$next_voucher_no;
 		}
 
 
@@ -168,13 +170,13 @@ class Model_Branch extends Model_Table {
 				$cross_check_2->addCondition('created_at','<',$this->api->nextDate($f_year['end_date'])); // ! important next date
 				$max_voucher_check = $cross_check_2->count()->getOne();
 				if($max_voucher_check > 0) {
-					$this->api->next_voucher_no = ($max_voucher . ".". $max_voucher_check);
-					return $this->api->next_voucher_no;
+					$this->api->$next_voucher_no = ($max_voucher . ".". $max_voucher_check);
+					return $this->api->$next_voucher_no;
 				}
 			}
 		}
 
-		$this->api->next_voucher_no = $max_voucher +1;
+		$this->api->$next_voucher_no = $max_voucher + 1;
 		return $max_voucher + 1 ;
 	}
 

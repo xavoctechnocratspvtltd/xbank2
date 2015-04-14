@@ -4,7 +4,7 @@ class page_stock_containerrowitemqty extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD');
+		$crud=$this->add('xCRUD',array('allow_del'=>false,'allow_edit'=>false));
 
 		$criq=$this->add('Model_Stock_ContainerRowItemQty');
 
@@ -21,7 +21,7 @@ class page_stock_containerrowitemqty extends Page {
 		$crud->setModel($criq);		
 	
 		if($g=$crud->grid){
-			$g->addPaginator(10);
+			$g->addPaginator(50);
 
 		}
 

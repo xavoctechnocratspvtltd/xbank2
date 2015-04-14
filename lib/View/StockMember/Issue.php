@@ -14,7 +14,7 @@ class View_StockMember_Issue extends View {
 		if($this->item)
 			$transaction->addCondition('item_id',$this->item);
 	
-		$transaction->addCondition('transaction_type',array('Issue','Submit','DeadSubmit'));
+		$transaction->addCondition('transaction_type',array('Issue','Submit','DeadSubmit','UsedSubmit'));
 		 
 		$grid=$this->add('Grid_AccountsBase');
 		$member_model=$this->add('Model_Stock_Member');
@@ -44,7 +44,7 @@ class View_StockMember_Issue extends View {
 		$grid->addSno();
 
 		$grid->addHook('formatRow',function($grid){
-			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit'))){
+			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit','UsedSubmit'))){
 				$fill='DR';
 				$no_fill='CR';
 			}else{
@@ -64,17 +64,16 @@ class View_StockMember_Issue extends View {
 		
 		if($this->item){
 			$grid->addOpeningBalance($openning_bal,'CR',array('item'=>'Openning Balance'),'CR');
-			$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
 		}
-		else{
-			$grid->addMethod('format_balance',function($grid,$field){
-				$m_temp = $grid->add('Model_Stock_Member');
+		$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
+		// else{
+		// 	$grid->addMethod('format_balance',function($grid,$field){
+		// 		$m_temp = $grid->add('Model_Stock_Member');
 
-				$grid->current_row[$field]= $m_temp->getOpeningQty($grid->model['member_id'],$grid->model['item_id'],$grid->api->nextDate($grid->model['created_at']));
-			});
-			$grid->addColumn('balance','balance');
-			
-		}	
+		// 		$grid->current_row[$field]= $m_temp->getOpeningQty($grid->model['member_id'],$grid->model['item_id'],$grid->api->nextDate($grid->model['created_at']));
+		// 	});
+		// 	$grid->addColumn('balance','balance');
+		// }	
 
 	}
 }

@@ -6,10 +6,10 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Branch','branch_id');
-		$this->hasOne('Stock_Container','container_id')->defaultValue('Null');
-		$this->hasOne('Stock_Row','row_id')->defaultValue('Null');
-		$this->hasOne('Stock_Item','item_id')->defaultValue('Null');
+		$this->hasOne('Branch','branch_id')->sortable(true);
+		$this->hasOne('Stock_Container','container_id')->defaultValue('Null')->sortable(true);
+		$this->hasOne('Stock_Row','row_id')->defaultValue('Null')->sortable(true);
+		$this->hasOne('Stock_Item','item_id')->defaultValue('Null')->sortable(true);
 
 		$this->addField('qty'); 
 		
@@ -88,6 +88,40 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 				}
 			}
 	}
+
+	function addStockInUsedDefault($item,$qty,$branch_id=null){
+		if($this->loaded())
+			throw $this->exception('Please Call on unloaded Object');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+
+		$container_model = $this->add('Model_Stock_Container');
+		$container_model->loadUsedDefaultContainer($branch_id);
+		
+		$row_model = $this->add('Model_Stock_Row');
+		$row_model->loadUsedDefaultRow($branch_id);
+			if($row_model->loaded()){
+				$this->addCondition('container_id',$container_model->id);
+				$this->addCondition('row_id',$row_model->id);
+				$this->addCondition('item_id',$item->id);
+				$this->tryLoadAny();
+				if($this->loaded()){
+					$this['qty']=$this['qty'] + $qty;
+					$this['branch_id'] = $branch_id;
+					$this['container_id'] = $container_model->id;
+					$this->update();	
+				}else{
+					$this['item_id']=$item->id;
+					$this['qty']=$qty;
+					$this['container_id'] = $container_model->id;
+					$this['branch_id'] = $branch_id;
+					$this->save();
+				}
+			}
+	}
+
+
 
 	function destroyStockFromGeneral($item,$qty){
 		if($this->loaded())

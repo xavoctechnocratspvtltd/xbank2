@@ -48,7 +48,7 @@ class page_stock_actions_consume extends Page {
 		$form->js(true)->hide();
 
 		$this->add('View_Info')->set('Consume Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false));
 		$issue_transaction=$this->add('Model_Stock_Transaction');
 		$issue_transaction->addCondition('transaction_type','Consume');
 		$issue_transaction->setOrder('created_at','desc');

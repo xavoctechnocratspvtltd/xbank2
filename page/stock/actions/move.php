@@ -74,7 +74,7 @@ class page_stock_actions_move extends Page {
 		$form->js(true)->hide();
 
 		$this->add('View_Info')->set(' Move ( Inner Branch ) Stock Transaction')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_delete'=>false));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 		$transfer_transaction=$this->add('Model_Stock_Transaction');
 		$transfer_transaction->addCondition('transaction_type','Move');
 		$transfer_transaction->setOrder('created_at','desc');

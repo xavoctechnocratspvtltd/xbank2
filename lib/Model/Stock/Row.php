@@ -52,12 +52,11 @@ class Model_Stock_Row extends Model_Table {
 
 	function beforeDelete($model){
 
-		if( ($this['name']=='General' AND $this['container']=='General') or ($this['name']=='Dead' AND $this['container']=='Dead'))
-			throw $this->exception('You can not Delete this Row, It is system Generated');
+		if( ($this['name']=='General' AND $this['container']=='General') or ($this['name']=='Dead' AND $this['container']=='Dead') or ($this['name'] == 'UsedDefault' AND $this['container'] == 'UsedDefault'))
+			$this->api->js()->univ()->errorMessage('System Generated, Cannot Delete')->execute();
 
 		if($this->ref('Stock_ContainerRowItemQty')->count()->getOne() > 0)
-			throw $this->exception("Row ( ".$model['name']." ) cannot be Delete");
-
+			$this->api->js()->univ()->errorMessage("Row ( ".$model['name']." )Contains Item, Cannot Delete/or First Delete It's Item's")->execute();
 	}
 
 	function remove(){
@@ -119,6 +118,20 @@ class Model_Stock_Row extends Model_Table {
 		return $this;
 	}
 
+	function loadUsedDefaultRow($branch_id=null){
+		$this->_dsql()->del('where');
+
+		if(!$branch_id)
+			$branch_id = $this->api->current_branch->id;
+
+		$cntr_model = $this->add('Model_Stock_Container');
+		$cntr_model->loadDeadContainer($branch_id);
+		$this->addCondition('branch_id',$branch_id);
+		$this->addCondition('container_id',$cntr_model->id);
+		$this->addCondition('name','UsedDefault');
+		$this->tryLoadAny();
+		return $this;
+	}
 	function loadRow($row,$container_id){
 						
 		$row_model = $this->add('Model_Stock_Row');

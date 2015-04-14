@@ -62,7 +62,7 @@ class page_accounts_CC extends Page {
 		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'),array('AccountNumber','AccountDisplayName','member','scheme','Amount','agent','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'CCAccount'));
 		
-		if($crud->grid){
+		if(!$crud->isEditing()){
 			$crud->grid->addPaginator(50);
 			$crud->grid->addQuickSearch(array('AccountNumber','AccountDisplayName','member','scheme'));
 			$crud->grid->addColumn('expander','edit_document');
@@ -70,6 +70,7 @@ class page_accounts_CC extends Page {
 		}
 
 		if($crud->isEditing('add')){
+			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
 			$o->now();
 		}
 

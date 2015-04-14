@@ -5,6 +5,7 @@ class page_accounts_statement extends Page {
 
 	function init(){
 		parent::init();
+		
 		$this->add('Controller_Acl');
 
 		$form=$this->add('Form');
@@ -60,7 +61,7 @@ class page_accounts_statement extends Page {
 			$transactions->addCondition('id',-1);
 		}
 
-		$transactions->add('Controller_Acl');
+		// $transactions->add('Controller_Acl');
 		$transactions->setOrder('created_at');
 		$grid->setModel($transactions,array('voucher_no','created_at','Narration','amountDr','amountCr'));
 		// $grid->addPaginator(10);

@@ -11,6 +11,9 @@ class Model_Account_SM extends Model_Account_Default{
 		$this->addCondition('SchemeType','Default');
 		$this->addCondition('scheme_name','Share Capital');
 		$this->getElement('account_type')->defaultValue('SM');
+
+		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
+		
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 

@@ -28,6 +28,7 @@ class Model_Account_Loan extends Model_Account{
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('editing',$this);
+		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
 
 		$this->add('Controller_Validator');
 		$this->is(array(
@@ -232,7 +233,7 @@ class Model_Account_Loan extends Model_Account{
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date,$in_branch);
 
 		$this->payPremiums($amount,$on_date);
-		$this->closeIfPaidCompletely();
+		// $this->closeIfPaidCompletely();
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null){
@@ -261,15 +262,6 @@ class Model_Account_Loan extends Model_Account{
 		        $prem['Paid'] = true;
 		        $prem->saveAndUnload();
 		    }
-		}
-	}
-
-	function closeIfPaidCompletely(){
-		if (($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']) == 0) {
-		    $this['ActiveStatus'] = false;
-		    $this['affectsBalanceSheet'] = true;
-		    $this['MaturedStatus'] = true;
-		    $this->save();
 		}
 	}
 

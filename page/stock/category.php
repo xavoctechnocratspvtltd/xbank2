@@ -4,6 +4,7 @@ class page_stock_category extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',array('default_view'=>false));
 		$crud=$this->add('xCRUD',array('allow_edit'=>false));
 
 		$category=$this->add('Model_Stock_Category');
@@ -24,6 +25,8 @@ class page_stock_category extends Page {
 			$g->addQuickSearch(array('name'));		
 			$g->addPaginator(20);
 		}
+
+		$crud->add('Controller_Acl');
 
 	}
 }

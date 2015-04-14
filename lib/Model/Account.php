@@ -190,13 +190,28 @@ class Model_Account extends Model_Table {
 		$this['CurrentBalanceDr']=$this['CurrentBalanceDr']+$amount;
 		$this->save();
 		$this->hook('afterAccountDebited',array($amount));
+		$this->closeIfPaidCompletely();		
 	}
 
 	function creditOnly($amount){
 		$this->hook('beforeAccountCredited',array($amount));
 		$this['CurrentBalanceCr']=$this['CurrentBalanceCr']+$amount;
 		$this->save();
-		$this->hook('afterAccountCredited',array($amount));
+		$this->hook('afterAccountCredited',array($this,$amount));
+		$this->closeIfPaidCompletely();		
+	}
+
+	function closeIfPaidCompletely(){
+
+		if($this->isFD() || $this->isMIS() || $this->isDDS() || $this->isLoan() || $this->isRecurring()){
+			
+			if (($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']) == 0) {
+			    $this['ActiveStatus'] = false;
+			    $this['affectsBalanceSheet'] = true;
+			    $this['MaturedStatus'] = true;
+			    $this->save();
+			}
+		}
 	}
 
 	function createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
@@ -362,7 +377,7 @@ class Model_Account extends Model_Table {
 		if(!isset($this->transaction_deposit_type)) throw $this->exception('transaction_deposit_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_deposit_narration)) throw $this->exception('default_transaction_deposit_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 
-		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace('{{SchemeType}}', $this['SchemeType'], $this->default_transaction_deposit_narration));
+		if(!trim($narration)) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace('{{SchemeType}}', $this['SchemeType'], $this->default_transaction_deposit_narration));
 		if(!$transaction_date) $transaction_date = $this->api->now;
 		if(!$accounts_to_debit) $accounts_to_debit = array();
 		if(!$in_branch) $in_branch = $this->api->current_branch;
@@ -446,7 +461,7 @@ class Model_Account extends Model_Table {
 
 		if(!$this['sig_image_id']) throw $this->exception('No Signature Found, Cannot Withdraw','ValidityCheck')->setField('account');
 
-		if(!$narration) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace("{{SchemeType}}", $this['SchemeType'], $this->default_transaction_withdraw_narration));
+		if(!trim($narration)) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace("{{SchemeType}}", $this['SchemeType'], $this->default_transaction_withdraw_narration));
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$accounts_to_credit OR !is_array($accounts_to_credit)) $accounts_to_credit = array();
 		if(!$in_branch) $in_branch = $this->api->current_branch;
@@ -910,6 +925,15 @@ class Model_Account extends Model_Table {
     function isDDS(){
     	return $this['account_type'] == ACCOUNT_TYPE_DDS;
     }
+
+    function isFD(){
+    	return $this['account_type'] == ACCOUNT_TYPE_FIXED && $this['account_type']=='FD';
+    }
+
+    function isMIS(){
+    	return $this['account_type'] == ACCOUNT_TYPE_FIXED && $this['account_type']=='MIS';
+    }
+
 	function isBank(){
     	return $this['SchemeType'] == BANK_ACCOUNTS_SCHEME;
     }

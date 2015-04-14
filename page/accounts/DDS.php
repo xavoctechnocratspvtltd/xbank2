@@ -107,6 +107,7 @@ class page_accounts_DDS extends Page {
 
 		if($crud->isEditing('add')){
 
+			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
 			
 			$o->move('initial_opening_amount','before','Amount')
 				// ->move('collector_saving_account','after','collector_id')

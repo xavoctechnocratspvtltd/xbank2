@@ -95,7 +95,7 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus = $transactions_sub_menus_popover->add('Menu_Vertical');
 		$transactions_sub_menus->addMenuItem('transactions_deposit','Deposit');
 		$transactions_sub_menus->addMenuItem('transactions_withdrawl','WithDrawl');
-		$transactions_sub_menus->addMenuItem('transactions_jv','Journal');
+		$transactions_sub_menus->addMenuItem('transactions_jv','Journal (Transfer)');
 		$transactions_sub_menus->addMenuItem('transactions_forclose','ForClose');
 		$transactions_sub_menus->addMenuItem('transactions_conveyance','Conveyance');
 		$transactions_sub_menus->addMenuItem('transactions_fuel','Fuel');
@@ -104,6 +104,7 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_visitcharge','Visit Charge');
 		$transactions_sub_menus->addMenuItem('transactions_bankdeposit','Cash Bank Deposit');
 		$transactions_sub_menus->addMenuItem('transactions_bankwithdrawl','Cash Bank Withdrawl');
+		$transactions_sub_menus->addMenuItem('transactions_premature','Pre Mature Payments');
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
 		// $books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');

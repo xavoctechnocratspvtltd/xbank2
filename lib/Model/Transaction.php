@@ -25,7 +25,7 @@ class Model_Transaction extends Model_Table {
 		$this->hasOne('Account','reference_id');
 		$this->hasOne('Branch','branch_id');
 		$this->addField('voucher_no_original')->type('int'); //TODO bigint
-		$this->addField('voucher_no')->type('int'); //TODO bigint -- Actual Display Voucher
+		$this->addField('voucher_no'); //Double as back date vouchers are now .1 .2 etc
 		$this->addField('Narration')->type('text');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);

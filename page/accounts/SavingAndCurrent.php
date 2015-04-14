@@ -74,12 +74,13 @@ class page_accounts_SavingAndCurrent extends Page {
 						),'div .atk-form-row');
 		}
 
-		if($crud->grid){
+		if(!$crud->isEditing()){
 			$crud->grid->addPaginator(50);
 			$crud->grid->addQuickSearch(array('AccountNumber','member_id','agent','scheme_id','agent_id','amount','mo_id','team_id'));
 		}
 
 		if($crud->isEditing('add')){
+			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
 			$o->now();
 		}

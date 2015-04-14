@@ -342,7 +342,10 @@ class Model_Transaction extends Model_Table {
 	}
 
 	function referenceAccount(){
-		return $this->ref('reference_id');
+		$temp = $this->ref('reference_id');
+		if($temp->loaded()) return $temp;
+
+		return false;
 	}
 
 	// function __destruct(){

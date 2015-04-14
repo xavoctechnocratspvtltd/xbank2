@@ -61,6 +61,8 @@ class Model_Account extends Model_Table {
 		$this->addField('Group');
 		$this->addField('PAndLGroup')->system(true);
 		
+		$this->addField('is_dirty')->type('boolean')->system(true)->defaultValue(false);
+		
 		$this->addField('extra_info')->type('text')->system(true); // Put json style extra info in this field
 
 		$this->scheme_join = $this->leftJoin('schemes','scheme_id');
@@ -425,6 +427,16 @@ class Model_Account extends Model_Table {
 		$scheme = $this->ref('scheme_id');
 		if($scheme->loaded()) return $scheme;
 		return false;
+	}
+
+	function clean(){
+		$this['is_dirty']=false;
+		$this->save();
+	}
+
+	function markDirty(){
+		$this['is_dirty']=true;
+		$this->save();	
 	}
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$in_branch=null,$reference_id=null){

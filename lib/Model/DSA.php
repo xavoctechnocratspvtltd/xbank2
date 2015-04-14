@@ -9,6 +9,8 @@ class Model_DSA extends Model_Table {
 		
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->addField('name');
+		$this->addField('username');
+		$this->addField('password');
 
 
 		$this->hasMany('DocumentSubmitted','dsa_id');

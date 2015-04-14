@@ -153,6 +153,14 @@ class Model_Account extends Model_Table {
 	function defaultBeforeDelete(){
 		if($this->ref('TransactionRow')->count()->getOne() > 0)
 			throw $this->exception('Account Contains Transactions, Cannot Delete');
+
+		$this->ref('Premium')->deleteAll();
+		$this->ref('JointMember')->deleteAll();
+		$this->ref('Premium')->deleteAll();
+		$this->ref('DocumentSubmitted')->deleteAll();
+		$this->ref('AccountGuarantor')->deleteAll();
+		$this->ref('Comment')->deleteAll();
+
 	}
 
 	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){

@@ -28,7 +28,7 @@ class Grid_AccountsBase extends Grid{
 	function format_voucherNo($field){
 		$url = $this->api->url('voucher_print');
 		$transaction_id = ($this->model instanceof Model_TransactionRow)? $this->model['transaction_id']: $this->model->id;
-		$this->current_row_html[$field] = "<a href='#voucher' class='voucher' onclick='$(this).univ().frameURL(\"Transaction Voucher\",\"" .
+		$this->current_row_html[$field] = "<a href='#voucher' class='voucher' onclick='$(this).univ().frameURL(\"Transaction Voucher ". $this->model['voucher_no'] ."\",\"" .
                     $url->set(array(
                         $field => $this->current_id,
                         'transaction_id'=>$transaction_id,

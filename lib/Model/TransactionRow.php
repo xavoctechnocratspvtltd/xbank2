@@ -24,6 +24,10 @@ class Model_TransactionRow extends Model_Table {
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
+	function account(){
+		return $this->ref('account_id');
+	}
+
 	function forceDelete(){
 		if($this['amountCr'])
 			$this->ref('account_id')->creditOnly(-1 * $this['amountCr']);

@@ -23,7 +23,8 @@ class page_reports_daybook extends Page {
 			$day_transaction_model->addCondition('created_at','>=',$_GET['date_selected']);
 			$day_transaction_model->addCondition('created_at','<',$this->api->nextDate($_GET['date_selected']));
 		}else{
-			$day_transaction_model->addCondition('created_at',$this->api->today);
+			$day_transaction_model->addCondition('created_at','>=',$this->api->today);
+			$day_transaction_model->addCondition('created_at','<',$this->api->nextDate($this->api->today));
 
 		}
  

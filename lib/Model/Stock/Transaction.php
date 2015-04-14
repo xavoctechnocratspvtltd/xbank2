@@ -22,7 +22,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->addField('created_at')->type('date')->defaultValue($this->api->today);
 		$this->addField('issue_date');
 		$this->addField('submit_date');
-		$this->addField('transaction_type')->enum(array('Purchase','Issue','Consume','Submit','PurchaseReturn','DeadSubmit','Transfer','Move','Openning','Sold','DeadSold'));
+		$this->addField('transaction_type')->enum(array('Purchase','Issue','Consume','Submit','PurchaseReturn','DeadSubmit','Transfer','Move','Openning','Sold','DeadSold','UsedSubmit'));
 		$this->addField('to_branch_id')->defaultValue(0);
 		// $this->addField('to_container')->defaultValue(0);
 		// $this->addField('to_row')->defaultValue(0);
@@ -510,4 +510,37 @@ class Model_Stock_Transaction extends Model_Table {
 	}	
 
 
+	function usedSubmit($item,$qty,$narration,$staff=null,$agent=null,$dealer=null,$as_on=null,$branch=null){
+
+		if($staff->loaded() + $dealer->loaded() + $agent->loaded() > 1)
+			throw $this->exception('Only One of Satff/Dealer/Agent is required', 'ValidityCheck')->setField('qty');
+		if($this->loaded())
+			throw $this->exception('Please call on empty Object');
+		if(!$item->loaded() and (!$item instanceof Model_Stock_Item))
+			throw $this->exception('Please loaded object of Item Model');
+		if(!$branch)
+			$branch=$this->api->currentBranch;
+
+		$container = $this->add('Model_Stock_Container');
+		$container->loadUsedDefaultContainer($this->api->current_branch->id);
+		$row = $this->add('Model_Stock_Row');
+		$row->loadUsedDefaultRow($this->api->current_branch->id);
+
+		$this['item_id']=$item->id;
+		$this['branch_id']=$branch->id;
+		$this['qty']=$qty;
+		$this['narration']=$narration;
+		$this['transaction_type']='UsedSubmit';
+		if($staff->loaded())
+			$this['member_id']=$staff->id;
+		if($agent->loaded())
+			$this['member_id']=$agent->id;
+		if($dealer->loaded())
+			$this['member_id']=$dealer->id;
+		$this['rate']=$item->getAvgRate($this->api->now);
+		$this['amount'] = $this['rate'];
+		$this['to_container'] = $container['id'];
+		$this['to_row'] = $row['id'];
+		$this->save();
+	}
 }

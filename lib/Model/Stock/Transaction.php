@@ -10,10 +10,10 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->hasOne('Stock_Item','item_id');
 		$m = $this->hasOne('Model_Stock_Member','member_id');
 		$m->defaultValue(0);
-		$this->hasOne('Model_Stock_Container','from_container_id')->defaultValue(0);
-		$this->hasOne('Model_Stock_Container','to_container_id')->defaultValue(0);
-		$this->hasOne('Model_Stock_Row','to_row_id')->defaultValue(0);
-		$this->hasOne('Model_Stock_Row','from_row_id')->defaultValue(0);
+		$this->hasOne('Model_Stock_Container','from_container_id')->defaultValue(0)->sortable(true);
+		$this->hasOne('Model_Stock_Container','to_container_id')->defaultValue(0)->sortable(true);
+		$this->hasOne('Model_Stock_Row','to_row_id')->defaultValue(0)->sortable(true);
+		$this->hasOne('Model_Stock_Row','from_row_id')->defaultValue(0)->sortable(true);
 
 		$this->addField('qty')->defaultValue(0);
 		$this->addField('rate')->defaultValue(0); 

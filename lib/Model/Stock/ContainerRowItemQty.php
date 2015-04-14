@@ -6,10 +6,10 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Branch','branch_id');
-		$this->hasOne('Stock_Container','container_id')->defaultValue('Null');
-		$this->hasOne('Stock_Row','row_id')->defaultValue('Null');
-		$this->hasOne('Stock_Item','item_id')->defaultValue('Null');
+		$this->hasOne('Branch','branch_id')->sortable(true);
+		$this->hasOne('Stock_Container','container_id')->defaultValue('Null')->sortable(true);
+		$this->hasOne('Stock_Row','row_id')->defaultValue('Null')->sortable(true);
+		$this->hasOne('Stock_Item','item_id')->defaultValue('Null')->sortable(true);
 
 		$this->addField('qty'); 
 		

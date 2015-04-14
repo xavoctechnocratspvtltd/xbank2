@@ -5,7 +5,7 @@ class Model_Stock_Container extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Branch','branch_id');
+		$this->hasOne('Branch','branch_id')->sortable(true);
 		$this->addCondition('branch_id',$this->api->current_branch->id);
 		
 		$this->addField('name')->mandatory(true)->sortable(true);
@@ -48,11 +48,11 @@ class Model_Stock_Container extends Model_Table {
 
 	function beforeDelete(){
 		if($this['name']=='General' or $this['name']=='Dead'){
-			throw $this->exception('You can not Delete this Container, It is system generated');
+			$this->api->js()->univ()->errorMessage('System Generated, Cannot Delete')->execute();
 		}
 
-		if( $this->ref('Stock_Row')->count()->getOne() > 0 ) 
-			throw $this->exception("You can not Delete this Container, It Contains Row(s)");
+		if( $this->ref('Stock_Row')->count()->getOne() > 0 )
+			$this->api->js()->univ()->errorMessage(''.$this['name'].' Contains Row(s), Cannot Delete')->execute();
 			
 	}
 	

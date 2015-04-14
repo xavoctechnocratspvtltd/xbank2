@@ -6,7 +6,7 @@ class Model_Stock_Category extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Branch','branch_id');
+		$this->hasOne('Branch','branch_id')->sortable(true);
 		$this->addCondition('branch_id',$this->api->currentBranch->id);
 			
 		$this->addField('name')->sortable(true);

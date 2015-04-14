@@ -30,7 +30,7 @@ class Model_Stock_Item extends Model_Table {
 			throw $this->exception('This Function create New Items, So please pass Empty Object');
 		
 		if( ($other_fields['is_consumable'] + $other_fields['is_issueable'] + $other_fields['is_fixedassets'] ) > 1 or ($other_fields['is_consumable'] + $other_fields['is_issueable'] + $other_fields['is_fixedassets'] ) <= 0)
-			throw $this->exception('select any one from (is_consumable, is_issueable, is_fixedassets)');
+			throw $this->exception('select any one from (is_consumable, is_issueable, is_fixedassets)','ValidityCheck')->setField('is_fixedassets');
 
 		$this['name']=$name;
 		$this['category_id']=$other_fields['category_id'];
@@ -255,15 +255,16 @@ class Model_Stock_Item extends Model_Table {
 			$member = $staff;
 		elseif($agent->loaded())
 			$member = $agent;
-		else
+		elseif($dealer->loaded())
 			$member = $dealer;
-		
+		else
+			return 0;		
 						
 		$transaction_stock_issue=$this->add('Model_Stock_Transaction');
 		$transaction_stock_issue->addCondition('transaction_type','Issue');
 		$transaction_stock_issue->addCondition('item_id',$this->id);
 		$transaction_stock_issue->addCondition('member_id',$member->id);
-		$transaction_stock_issue->addCondition('created_at','<',$this->api->nextDate($on_date));	
+		$transaction_stock_issue->addCondition('created_at','<',$this->api->nextDate($on_date));
 		$transaction_stock_issue_qty=$transaction_stock_issue->sum('qty')->getOne();
 		$issue_qty = $transaction_stock_issue_qty?:0;
 		
@@ -273,11 +274,21 @@ class Model_Stock_Item extends Model_Table {
 		$transaction_stock_submit->addCondition('item_id',$this->id);
 		$transaction_stock_submit->addCondition('member_id',$member->id);
 		$transaction_stock_submit->addCondition('created_at','<',$this->api->nextDate($on_date));
-
 		$transaction_stock_submit_qty=$transaction_stock_submit->sum('qty')->getOne();
 		$submit_qty = $transaction_stock_submit_qty?:0;
+		
+		//NEW UPDATION USED SUBMIT
+		//ADD DUE TO USED SUBMIT TRANSACTION
+		$transaction_stock_usedsubmit=$this->add('Model_Stock_Transaction');
+		$transaction_stock_usedsubmit->addCondition('transaction_type','UsedSubmit');
+		$transaction_stock_usedsubmit->addCondition('item_id',$this->id);
+		$transaction_stock_usedsubmit->addCondition('member_id',$member->id);
+		$transaction_stock_usedsubmit->addCondition('created_at','<',$this->api->nextDate($on_date));
+		$transaction_stock_usedsubmit_qty=$transaction_stock_usedsubmit->sum('qty')->getOne();
+		$usedsubmit_qty = $transaction_stock_usedsubmit_qty?:0;
 
-		return ((($issue_qty-$submit_qty) >= $qty)?:0);
+
+		return ((($issue_qty-$submit_qty-$usedsubmit_qty) >= $qty)?:0);
 	}
 
 	function getQty($as_on){

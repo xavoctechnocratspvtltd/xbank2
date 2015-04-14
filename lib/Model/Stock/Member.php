@@ -50,9 +50,8 @@ class Model_Stock_Member extends Model_Table {
 		$submit_tra->addCondition('created_at','<',$as_on);
 		$submit_tra->addCondition('member_id',$member);
 		// $submit_tra->addCondition('transaction_type','Submit');
-		$submit_tra->addCondition('transaction_type',array('Submit','DeadSubmit'));
+		$submit_tra->addCondition('transaction_type',array('Submit','DeadSubmit','UsedSubmit'));
 		$submit_tra_qty = ($submit_tra->sum('qty')->getOne())?:0;
-
 		
 		$issue_tra = $this->add('Model_Stock_Transaction');
 		$issue_tra->addCondition('item_id',$item);

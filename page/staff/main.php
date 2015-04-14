@@ -55,7 +55,7 @@ class page_staff_main extends Page {
 					$staff_model->load($_GET[$p->short_name.'_id']);
 					
 					$lef_col=$col->addColumn(6);
-						$lef_col->add('View')->set("Employee Name - "." ".$staff_model['name']);
+						$lef_col->add('View')->setHtml("<b> Employee Name - "." ".$staff_model['name']);
 						$lef_col->add('View')->set("Employee Code - "." ".$staff_model['emp_code']);
 						$lef_col->add('View')->set("Marrialtal Status - "." ".$staff_model['marriatal_status']);
 						$lef_col->add('View')->set("Blood Group - "." ".$staff_model['blood_group']);

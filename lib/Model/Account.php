@@ -539,7 +539,7 @@ class Model_Account extends Model_Table {
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
 		$account_cr = $this->add('Model_Account')
-										->loadBy('AccountNumber',$amount_from_account);
+										->load($amount_from_account);
 		$account_dr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'CONVEYANCE EXPENSES');
 		$staff_model=$this->add('Model_Staff')->load($staff);

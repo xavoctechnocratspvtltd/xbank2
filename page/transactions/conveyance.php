@@ -36,13 +36,13 @@ class page_transactions_conveyance extends Page {
 		if($form->isSubmitted()){
 			
 			$account_model_temp = $this->add('Model_Account')
-										->loadBy('AccountNumber',$form['amount_from_account']);
+										->load($form['amount_from_account']);
 
 			if(!$account_model_temp->loaded())
 				$form->displayError('amount','Oops');
 
 			$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
-			$account_model->loadBy('AccountNumber',$form['amount_from_account']);
+			$account_model->load($form['amount_from_account']);
 
 			try {
 				$this->api->db->beginTransaction();

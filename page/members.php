@@ -9,7 +9,7 @@ class page_members extends Page {
 
 		$this->add('Controller_Acl');
 
-		$crud = $this->add('xCRUD');
+		$crud = $this->add('xCRUD',array('grid_class'=>'Grid_Member'));
 
 		$member_model = $this->add('Model_Member');
 		$member_model->setOrder('id','desc');

@@ -15,7 +15,7 @@ class page_stock_actions_move extends Page {
 		$colright = $col->addColumn(5);
 
 		// Transfer Item from 				
-		$colleft->add('View')->set('From')->setStyle(array('background-color'=>'#f12039','padding'=>'5px'));		
+		$colleft->add('View')->set('From')->setStyle(array('padding'=>'5px'))->addClass('atk-swatch-red');		
 			// From Container
 		$from_container_field = $form->addField('dropdown','from_container','Container')->validateNotNull()->setEmptyText('Please Select');
 		$from_container_model = $this->add('Model_Stock_Container');
@@ -34,12 +34,12 @@ class page_stock_actions_move extends Page {
 		$from_item_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 		
 		$from_qty_field = $form->addField('Number','from_qty','Qty')->validateNotNull();
-		$from_qty_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);		
+		$from_qty_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 		$from_narration_field = $form->addField('text','from_narration','Narration');
 		$from_narration_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 
 		// Transfer Item TO
-		$colright->add('View')->set('To')->setStyle(array('background-color'=>'#e1e1e1','padding'=>'5px'));
+		$colright->add('View')->set('To')->setStyle(array('padding'=>'5px'))->addClass('atk-swatch-green');
 			// TO Container
 		$to_container_field = $form->addField('dropdown','to_container','Container')->validateNotNull()->setEmptyText('Please Select');
 		$to_container_model = $this->add('Model_Stock_Container');	
@@ -51,9 +51,9 @@ class page_stock_actions_move extends Page {
 			//Todo Load Row Accrding to Container selection
 			// $to_row_model->addCondition('branch_id',$form['to_branch']);
 		$to_row_field->setModel($to_row_model);	
-		$to_row_field->js(true)->closest('div.atk-form-row')->appendTo($colright);	
-		// $to_narration_field = $form->addField('text','to_narration','Narration');
-		// $to_narration_field->js(true)->closest('div.atk-form-row')->appendTo($colright);
+		$to_row_field->js(true)->closest('div.atk-form-row')->appendTo($colright);
+		$is_used_submit = $form->addField('checkBox','is_used_submit');
+		$is_used_submit->js(true)->closest('div.atk-form-row')->appendTo($colright);
 		
 		$form->addSubmit('Move');
 
@@ -98,10 +98,21 @@ class page_stock_actions_move extends Page {
 		$crud->setModel($transfer_transaction,array('item','qty','rate','created_at','narration'),array('item','qty','rate','created_at','narration','from_container','from_row','to_container','to_row'));
 		
 		if($form->isSubmitted()){
-			
+
 			$from_container_model = $this->add('Model_Stock_Container');
 			$from_container_model->loadContainer($form['from_container']);
 
+			$to_container_model = $this->add('Model_Stock_Container');
+			$to_container_model->loadContainer($form['to_container']);
+
+			//CHECK FOR USED-SUBMIT MOVE TRANSACTION
+			if($form['is_used_submit']){
+				if(!preg_match('/used/',strtolower($from_container_model['name'])))
+					$form->displayError('from_container','Select Only Used Submit( Container and Row ) Only');
+				if(!preg_match('/used/',strtolower($to_container_model['name'])))
+					$form->displayError('to_container','Select Only Used Submit( Container and Row ) Only');
+			}
+			
 			$from_row_model = $this->add('Model_Stock_Row');
 			if(!$from_row_model->loadRow($form['from_row'],$form['from_container']))
 				$form->displayError('from_row','Row not Exist');
@@ -112,8 +123,6 @@ class page_stock_actions_move extends Page {
 			if(!$item_model->isExistInContainerRow($from_container_model,$from_row_model))
 				$form->displayError('from_item','Item not Exist in Selected Container or Row');
 
-			$to_container_model = $this->add('Model_Stock_Container');
-			$to_container_model->loadContainer($form['to_container']);
 
 			$to_row_model = $this->add('Model_Stock_Row');
 			// $to_row_model->loadRow($form['to_row'],$form['to_container']);

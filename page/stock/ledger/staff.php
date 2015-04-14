@@ -33,13 +33,13 @@ class page_stock_ledger_staff extends Page {
 		}
 
 		$scl_tab->add('View_Info')->set($str)->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$view_consume=$scl_tab->add('View_StockMember_Consume',array('member'=>$_GET['staff'],'from_date'=>$_GET['from_date'],'to_date'=>$form['to_date'],'filter'=>$_GET['filter'],'type'=>'Staff'));
+		$view_consume=$scl_tab->add('View_StockMember_Consume',array('item'=>$_GET['item'],'member'=>$_GET['staff'],'from_date'=>$_GET['from_date'],'to_date'=>$form['to_date'],'filter'=>$_GET['filter'],'type'=>'Staff'));
 		
 		$sil_tab->add('View_Info')->set($str)->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$view_issue=$sil_tab->add('View_StockMember_Issue',array('item'=>$_GET['item'],'member'=>$_GET['staff'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'filter'=>$_GET['filter'],'type'=>'Staff'));
 
 		$sfl_tab->add('View_Info')->set($str)->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$view_fixed=$sfl_tab->add('View_StockMember_FixedAssets',array('member'=>$_GET['staff'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'filter'=>$_GET['filter'],'type'=>'Staff'));
+		$view_fixed=$sfl_tab->add('View_StockMember_FixedAssets',array('item'=>$_GET['item'],'member'=>$_GET['staff'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'filter'=>$_GET['filter'],'type'=>'Staff'));
 
 		if($form->isSubmitted()){
 			$v->js()->reload(array('item'=>$form['item'],'staff'=>$form['staff'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();

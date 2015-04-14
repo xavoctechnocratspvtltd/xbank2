@@ -15,6 +15,7 @@ class Model_DSA extends Model_Table {
 
 		$this->hasMany('DocumentSubmitted','dsa_id');
 		$this->hasMany('DSAGuarantor','dsa_id');
+		$this->hasMany('Dealer','dsa_id');
 		// $this->add('filestore/Field_Image','doc_image_id')->type('image')->mandatory(true);
 				
 		$this->addHook('beforeDelete',$this);

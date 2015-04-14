@@ -178,5 +178,7 @@ class page_stock_reports_stock extends Page {
 			$grid->js()->reload(array('to_date'=>$form['to_date'],'filter'=>1))->execute();	
 		}	
 
+		$grid->addPaginator(50);
+
 	}
 }

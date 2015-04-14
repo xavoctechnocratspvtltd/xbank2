@@ -21,6 +21,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod DAY)";
 		});
 
+		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
+
 		// $this->scheme_join->addField('Interest');
 
 		//$this->add('dynamic_model/Controller_AutoCreator');

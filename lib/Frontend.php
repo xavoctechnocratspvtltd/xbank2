@@ -40,7 +40,7 @@ class Frontend extends ApiFrontend {
         $this->now = date('Y-m-d H:i:s',strtotime($this->recall('current_date',date('Y-m-d H:i:s'))));
         $this->jui->addStaticStylesheet('hindi');
 
-        if(strpos($this->page,'dsa_') !==false){
+        if(strpos($this->page,'dsa_') === 0){
             $auth = $this->add('BasicAuth');
             $auth->allowPage(array('corrections'));
             $auth->setModel('DSA','username','password');

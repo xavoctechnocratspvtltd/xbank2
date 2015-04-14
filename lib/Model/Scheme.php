@@ -38,7 +38,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('isDepriciable')->type('boolean')->defaultValue(false)->sortable(true);
 		$this->addField('DepriciationPercentBeforeSep')->caption('Depriciation % before September');
 		$this->addField('DepriciationPercentAfterSep')->caption('Depriciation % after September');
-		$this->addField('published')->type('boolean')->defaultValue(true);
+		$this->addExpression('published')->set('ActiveStatus');
 		
 		$this->addField('SchemePoints')->caption('Scheme Points')->system(true);
 		$this->addField('SchemeGroup')->defaultValue($this->schemeType);//->system(true);

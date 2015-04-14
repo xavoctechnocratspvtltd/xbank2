@@ -18,6 +18,8 @@ class Model_Account_DDS extends Model_Account{
 			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
 
+		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 

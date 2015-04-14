@@ -74,7 +74,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		if($test_account) $all_todays_matured_Accounts->addCondition('id',$test_account->id);
 
 		foreach ($all_todays_matured_Accounts as $acc_array) {
-			$all_todays_matured_Accounts->markMatured($on_date);
+			$all_todays_matured_Accounts->markMatured($on_date); // peying interest in there as well
 		}
 
 	}

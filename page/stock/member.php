@@ -4,6 +4,8 @@ class page_stock_member extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',array('default_view'=>false));
+
 		$crud=$this->add('xCRUD');
 
 		$party=$this->add('Model_Stock_Member');
@@ -22,7 +24,8 @@ class page_stock_member extends Page {
 	
 		if($g=$crud->grid){
 			$g->addPaginator(10);
-
 		}
+
+		$crud->add('Controller_Acl');
 	}
 }

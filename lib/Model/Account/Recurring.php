@@ -19,6 +19,8 @@ class Model_Account_Recurring extends Model_Account{
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
 
+		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
@@ -238,7 +240,7 @@ class Model_Account_Recurring extends Model_Account{
 
 		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
 
-		// Interest ... TDS Deduct ?????
+		// Interest ... TDS Deduct ????? :: asumed as not to give as too long time has done ... 
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_RECURRING, $this->ref('branch_id'), $on_date, 'Interest posting in Recurring Account', null, array('reference_id'=>$this->id));

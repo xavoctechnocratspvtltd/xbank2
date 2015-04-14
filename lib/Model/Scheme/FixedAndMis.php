@@ -172,7 +172,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		if($test_account) $active_fd_accounts->addCondition('id',$test_account->id);
 
 		foreach ($active_fd_accounts as $active_fd_accounts_array) {
-			$active_fd_accounts->doInterestProvision($on_date);
+			// $active_fd_accounts->doInterestProvision($on_date); // Already happening in Monthly so mute it here
 			$active_fd_accounts->revertProvision($on_date);
 		}
 	}

@@ -96,7 +96,7 @@ class page_transactions_jv extends Page {
 							$transaction->addCreditAccount($form['account_cr_'.$i], $form['amount_cr_'.$i]);
 					}
 					
-					$transaction->execute();
+					$transaction->execute();					
 			    $this->api->db->commit();
 			} catch (Exception $e) {
 			   	$this->api->db->rollBack();

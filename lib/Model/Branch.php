@@ -128,6 +128,11 @@ class Model_Branch extends Model_Table {
 		}
 
 		if(isset($this->api->next_voucher_no)){
+			if(($fraction = $this->api->next_voucher_no % 10) > 0){
+				$fraction++;
+				$this->api->next_voucher_no = ((int) ($this->api->next_voucher_no / 10)) + $fraction;
+				return $this->api->next_voucher_no;
+			}
 			$this->api->next_voucher_no++;
 			return $this->api->next_voucher_no;
 		}

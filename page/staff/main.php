@@ -46,7 +46,7 @@ class page_staff_main extends Page {
 				$acticve_staff_model->addExpression('accounts')->set($acticve_staff_model->refSQL('Account')->count());
 				$acticve_staff_model->addExpression('transactions')->set($acticve_staff_model->refSQL('Transaction')->count());
 
-				$crud->setModel($acticve_staff_model,array('branch','name','username','password','is_active','AccessLevel','accounts','transactions'));
+				$crud->setModel($acticve_staff_model,array(),array('branch','name','username','password','is_active','AccessLevel','accounts','transactions'));
 				
 				if(!$crud->isEditing()){
 					$crud->grid->addPaginator(50);
@@ -111,7 +111,7 @@ class page_staff_main extends Page {
 				$inacticve_staff_model->addExpression('accounts')->set($inacticve_staff_model->refSQL('Account')->count());
 				$inacticve_staff_model->addExpression('transactions')->set($inacticve_staff_model->refSQL('Transaction')->count());
 
-				$crud->setModel($inacticve_staff_model,array('branch','name','username','password','AccessLevel','accounts','transactions'));
+				$crud->setModel($inacticve_staff_model,array(),array('branch','name','username','password','AccessLevel','accounts','transactions'));
 				
 				if(!$crud->isEditing()){
 					$crud->grid->addPaginator(50);

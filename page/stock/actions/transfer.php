@@ -26,7 +26,7 @@ class page_stock_actions_transfer extends Page {
 		$from_container_field = $form->addField('dropdown','from_container','Container')->validateNotNull()->setEmptyText('Please Select');
 		$from_container_model = $this->add('Model_Stock_Container');
 		$from_container_model->addCondition('branch_id',$this->api->currentBranch->id);
-		$from_container_field->setModel($from_container_model->loadGeneralContainer());	
+		$from_container_field->setModel($from_container_model->loadGeneralAndUsed());	
 		$from_container_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 		
 		// $from_container_field->js('change',$form->js()->atk4_form('reloadField','from_row',array($this->api->url(),'from_container'=>$from_container_field->js()->val())));
@@ -37,7 +37,7 @@ class page_stock_actions_transfer extends Page {
 		$from_row_field = $form->addField('dropdown','from_row','Row')->validateNotNull()->setEmptyText('Please Select');
 		$from_row_model = $this->add('Model_Stock_Row');
 		$from_row_model->addCondition('branch_id',$this->api->currentBranch->id);
-		$from_row_field->setModel($from_row_model->loadGeneralRow());	
+		$from_row_field->setModel($from_row_model->loadGeneralAndUsed());	
 		$from_row_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 			// From Item
 		$from_item_field = $form->addField('autocomplete/Basic','from_item','Item')->validateNotNull();//->setEmptyText('Please Select');
@@ -55,6 +55,9 @@ class page_stock_actions_transfer extends Page {
 		$to_branch_model->addCondition('id','<>',$this->api->currentBranch->id);		
 		$to_branch_field->setModel($to_branch_model);
 		$to_branch_field->js(true)->closest('div.atk-form-row')->appendTo($colright);		
+		
+		$is_used_submit = $form->addField('checkBox','is_used_submit');
+		$is_used_submit->js(true)->closest('div.atk-form-row')->appendTo($colright);
 		
 		$form->addSubmit('Transfer');
 
@@ -98,13 +101,27 @@ class page_stock_actions_transfer extends Page {
 		$crud->setModel($transfer_transaction,array('branch','item','qty','rate','narration','created_at','to_branch_id'),array('branch','item','qty','rate','amount','narration','created_at','to_branch_id'));	
 
 		if($form->isSubmitted()){
+			//Check for UsedSubmit
+
 			$container_model = $this->add('Model_Stock_Container');
 			$container_model->loadContainer($form['from_container']);
-
+			
 			$row_model = $this->add('Model_Stock_Row');
-			if(!$row_model->loadRow($form['from_row'],$form['from_container']))
-				$form->displayError('from_row','Row not Exist');
+			$row_model = $row_model->loadRow($form['from_row'],$form['from_container']);
+			
+			if(preg_match('/used/',strtolower($container_model['name'])) and preg_match('/used/', strtolower($row_model['name']))){
+				if(!$form['is_used_submit'])
+					$form->displayError('is_used_submit','Select Used Submit');
+			}elseif($form['is_used_submit']){
+				if(!preg_match('/used/',strtolower($container_model['name'])))
+					$form->displayError('from_container','Select UsedSubmit Container');
+				if(!preg_match('/used/', strtolower($row_model['name'])))
+					$form->displayError('to_container','Select UsedSubmit Row');
+			}
 
+			if( !($row_model and $row_model->loaded()))
+				$form->displayError('from_row','Row not Exist');
+			
 			$item_model = $this->add('Model_Stock_Item');
 			$item_model->load($form['from_item']);
 			
@@ -116,7 +133,7 @@ class page_stock_actions_transfer extends Page {
 			$to_branch_model->load($form['to_branch']);
 			// Entry in Transaction
 			$transaction_model = $this->add('Model_Stock_Transaction');
-			$transaction_model->transfer($form['from_branch'],$container_model,$row_model,$item_model,$form['from_qty'],$form['narration'],$to_branch_model);
+			$transaction_model->transfer($form['from_branch'],$container_model,$row_model,$item_model,$form['from_qty'],$form['narration'],$to_branch_model,$form['is_used_submit']);
 			// remove item from cuurent branch stock
 			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');	
 			$criq_model->removeStock($container_model,$row_model,$item_model,$form['from_qty']);

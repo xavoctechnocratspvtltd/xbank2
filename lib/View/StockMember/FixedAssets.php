@@ -6,13 +6,16 @@ class View_StockMember_FixedAssets extends View {
 		// if(!$_GET['filter'])
 		// 	throw $this->exception('Something is wrong');
 		// 	 
-		
+		$this->api->StickyGet('item');
+
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');
 		$transaction_j_item->addField('is_fixedassets');
 		$transaction->addCondition('is_fixedassets',true);
 		$transaction->addCondition('transaction_type','Issue');
- 
+ 		if($_GET['item'])
+			$transaction->addCondition('item_id',$_GET['item']);
+
 		$grid=$this->add('Grid_AccountsBase');
 		$member_model=$this->add('Model_Stock_Member');
 		if($this->filter){
@@ -40,7 +43,7 @@ class View_StockMember_FixedAssets extends View {
 		$grid->addSno();
 
 		$grid->addHook('formatRow',function($grid){
-			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit'))){
+			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit','UsedSubmit'))){
 				$fill='DR';
 				$no_fill='CR';
 			}else{
@@ -60,7 +63,6 @@ class View_StockMember_FixedAssets extends View {
 
 		// $grid->addOpeningBalance(0,'DR',array('narration'=>'Openning Balance'),'DR');
 		$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
-
 
 
 	}

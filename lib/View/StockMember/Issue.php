@@ -5,13 +5,14 @@ class View_StockMember_Issue extends View {
 		parent::init();
 		// if(!$_GET['filter'])
 			// throw $this->exception('Something is wrong');
-		// 
+		//
+		$this->api->StickyGet('item');
 		$openning_bal = 0;	
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');
 		$transaction_j_item->addField('is_issueable');
 		$transaction->addCondition('is_issueable',true);
-		if($this->item)
+		if($_GET['item'])
 			$transaction->addCondition('item_id',$this->item);
 	
 		$transaction->addCondition('transaction_type',array('Issue','Submit','DeadSubmit','UsedSubmit'));
@@ -35,7 +36,7 @@ class View_StockMember_Issue extends View {
 			$transaction->addCondition('id',-1);
 		}
 		
-		$grid->setModel($transaction,array('item','qty','created_at'));	
+		$grid->setModel($transaction,array('item','qty','created_at','transaction_type'));	
 
 		$grid->addColumn('text','DR');
 		$grid->addColumn('text','CR');
@@ -43,8 +44,8 @@ class View_StockMember_Issue extends View {
 		
 		$grid->addSno();
 
-		$grid->addHook('formatRow',function($grid){
-			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit','UsedSubmit'))){
+		$grid->addHook('formatRow',function($g){
+			if(in_array($g->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit','UsedSubmit'))){
 				$fill='DR';
 				$no_fill='CR';
 			}else{
@@ -52,28 +53,27 @@ class View_StockMember_Issue extends View {
 				$no_fill='DR';
 			}
 
-			if($grid->model['transaction_type']=='Transfer' and $grid->model['to_branch_id']!=$grid->api->currentBranch->id){
+			if($g->model['transaction_type']=='Transfer' and $grid->model['to_branch_id']!=$grid->api->currentBranch->id){
 				$fill='CR';
 				$no_fill='DR';
 			}
-				$grid->current_row[$fill] = $grid->model['qty'];
-				$grid->current_row[$no_fill] ='';
+				$g->current_row[$fill] = $g->model['qty'];
+				$g->current_row[$no_fill] ='';
 		});
 
 
 		
 		if($this->item){
 			$grid->addOpeningBalance($openning_bal,'CR',array('item'=>'Openning Balance'),'CR');
+			$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
 		}
-		$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
-		// else{
-		// 	$grid->addMethod('format_balance',function($grid,$field){
-		// 		$m_temp = $grid->add('Model_Stock_Member');
-
-		// 		$grid->current_row[$field]= $m_temp->getOpeningQty($grid->model['member_id'],$grid->model['item_id'],$grid->api->nextDate($grid->model['created_at']));
-		// 	});
-		// 	$grid->addColumn('balance','balance');
-		// }	
+		else{
+			$grid->addMethod('format_balance',function($grid,$field){
+				$m_temp = $grid->add('Model_Stock_Member');
+				$grid->current_row[$field]= $m_temp->getOpeningQty($grid->model['member_id'],$grid->model['item_id'],$grid->api->nextDate($grid->model['created_at']));
+			});
+			$grid->addColumn('balance','balance');
+		}
 
 	}
 }

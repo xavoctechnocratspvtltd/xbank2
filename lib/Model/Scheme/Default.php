@@ -80,6 +80,7 @@ class Model_Scheme_Default extends Model_Scheme {
 				// These default accounts are required when a new branch created not when a new scheme of this type is created
 				array('under_scheme'=>'indirect expenses','intermediate_text'=>"",'Group'=>'ROUND OF','PAndLGroup'=>'ROUND OF'),
 				array('under_scheme'=>BRANCH_TDS_ACCOUNT,'intermediate_text'=>"",'Group'=>BRANCH_TDS_ACCOUNT,'PAndLGroup'=>BRANCH_TDS_ACCOUNT),
+				array('under_scheme'=>'indirect expenses','intermediate_text'=>"",'Group'=>'Conveyance Expenses','PAndLGroup'=>"Conveyance Expenses"),
 			);
 	}
 

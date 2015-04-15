@@ -5,17 +5,16 @@ class page_reports_deposit_commission extends Page {
 	function init(){
 		parent::init();
 
+		// TRA_ACCOUNT_OPEN_AGENT_COMMISSION, TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT
+		// TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT
+ 
 		$form=$this->add('Form');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
-		$array2=explode(',', ACCOUNT_TYPES);
-		$account_type_array=array('%'=>'All');
-		foreach ($array2 as $act) {
-			$account_type_array[$act] =$act;
-		}
+		$account_type_array=array('%'=>'All','DDS'=>'DDS','FixedAndMis'=>'Fixed And Mis','Recurring'=>'Recurring');
 
 
 		$form->addField('dropdown','account_type')->setValueList($account_type_array)->setEmptyText('Please Select');
@@ -27,6 +26,8 @@ class page_reports_deposit_commission extends Page {
 		$transaction_row=$this->add('Model_TransactionRow');
 		$transaction_row->getElement('amountCr')->caption('Net Commission')->type('int');
 		$transaction_join = $transaction_row->join('transactions','transaction_id');
+		// $transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
+
 		$account_join = $transaction_row->join('accounts','account_id');
 		$agent_join = $account_join->join('agents.account_id');
 		$agent_join->addField('agent_id_for_account','id');
@@ -82,7 +83,7 @@ class page_reports_deposit_commission extends Page {
 		$transaction_row->setOrder('created_at','desc');
 		$transaction_row->add('Controller_Acl');
 
-		$grid->setModel($transaction_row,array('AccountNumber','Amount','scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name','agent_account_number'));
+		$grid->setModel($transaction_row->debug(),array('AccountNumber','Amount','scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name','agent_account_number'));
 		$grid->addFormatter('voucher_no','voucherNo');
 
 		$grid->addMethod('format_totalCommission',function($g,$f){

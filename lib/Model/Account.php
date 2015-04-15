@@ -153,6 +153,14 @@ class Model_Account extends Model_Table {
 	function defaultBeforeDelete(){
 		if($this->ref('TransactionRow')->count()->getOne() > 0)
 			throw $this->exception('Account Contains Transactions, Cannot Delete');
+
+		$this->ref('Premium')->deleteAll();
+		$this->ref('JointMember')->deleteAll();
+		$this->ref('Premium')->deleteAll();
+		$this->ref('DocumentSubmitted')->deleteAll();
+		$this->ref('AccountGuarantor')->deleteAll();
+		$this->ref('Comment')->deleteAll();
+
 	}
 
 	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){
@@ -531,9 +539,16 @@ class Model_Account extends Model_Table {
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
 		$account_cr = $this->add('Model_Account')
-										->loadBy('AccountNumber',$amount_from_account);
+										->load($amount_from_account);
 		$account_dr = $this->add('Model_Account')
-										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'CONVEYANCE EXPENSES');
+										->tryLoadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'Conveyance Expenses');
+
+		if(!$account_dr->loaded()){
+			$scheme = $this->add('Model_Scheme');
+			$scheme->loadBy('name','indirect expenses');
+			$account_dr->createNewAccount($in_branch->getDefaultMember()->get('id'),$scheme->id,$in_branch,$in_branch['Code'].SP.'Conveyance Expenses',array('DefaultAC'=>true,'Group'=>'Conveyance Expenses','PAndLGroup'=>'Conveyance Expenses'));
+		}
+
 		$staff_model=$this->add('Model_Staff')->load($staff);
 		if(!$narration)
 			$narration = "Conveyance Amount paid to ";

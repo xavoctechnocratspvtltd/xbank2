@@ -19,6 +19,7 @@ class page_voucher_print extends Page {
 		$grid->setModel($transaction->ref('TransactionRow')->setOrder('amountDr desc, amountCr desc'),array('account','amountDr','amountCr'));
 
 		$this->add('View')->set(array($transaction['Narration'],'icon'=>'pencil'));
+		$this->add('View')->set(array($transaction['reference'],'icon'=>'pencil'));
 
 	}
 }

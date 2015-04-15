@@ -71,11 +71,11 @@ class Model_Transaction extends Model_Table {
 
 		// Transaction TYpe Save if not available
 		$this['transaction_type_id'] = $transaction_type_model->id;
-		$this['reference_id'] = isset($options['reference_id'])?:0;
+		$this['reference_id'] = isset($options['reference_id'])?$options['reference_id']:0;
 		$this['branch_id'] = $branch->id;
 		$this['voucher_no'] = $branch->newVoucherNumber($branch,$transaction_date);
 		$this['Narration'] = $Narration;
-		$this['created_at'] = $transaction_date;
+		$this['created_at'] = $transaction_date;		
 
 		$this->transaction_type = $transaction_type;
 		$this->branch = $branch;

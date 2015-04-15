@@ -11,7 +11,7 @@ class Model_Branch extends Model_Table {
 		$this->addField('PerformClosings')->type('boolean')->defaultValue(true)->display(array('grid'=>'grid/inline'));
 		$this->addField('SendSMS')->type('boolean')->defaultValue(true);
 		$this->addField('published')->type('boolean')->defaultValue(true);
-		$this->addField('next_voucher_no');//->type('boolean')->defaultValue(true);
+		// $this->addField('next_voucher_no');//->type('boolean')->defaultValue(true);
 
 		$this->hasMany('Staff','branch_id');
 		$this->hasMany('Member','branch_id');

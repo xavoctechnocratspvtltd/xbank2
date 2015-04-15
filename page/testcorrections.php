@@ -16,7 +16,7 @@ class page_testcorrections extends Page {
 		parent::init();
 		ini_set('memory_limit', '2048M');
 		set_time_limit(0);
-		
+
 		$this->correct_reference();
 		// $this->checkAndCreateDefaultAccounts();
 	}
@@ -32,6 +32,20 @@ class page_testcorrections extends Page {
 			if($acc->isFD() || $acc->isMIS() || $acc->isDDS() || $acc->isLoan() || $acc->isRecurring()){
 				$tr['reference_id'] = $acc->id;
 				$tr->save();
+			}
+		}
+
+		$trans = $this->add('Model_Transaction');
+		$trans->addCondition('created_at','>','2015-04-01');
+		$trans->addCondition('reference_id',null);
+
+		foreach ($trans as $tr) {
+			preg_match_all("/(UDR|JHD|GOG|SYR|OGN)(FD|RD|DDS|MIS|CC|SB|VL|SL)([0-9]+)/i", $tr['Narration'], $acNo);
+			// echo $acNo[1][0].$acNo[2][0].$acNo[3][0].' <br/>';
+			$acc= $this->add('Model_Account')->tryLoadBy('AccountNumber',$acNo[1][0].$acNo[2][0].$acNo[3][0]);
+			if($acc->loaded()){
+				$tr['reference_id'] = $acc->id;
+				$tr->saveAndUnload();
 			}
 		}
 

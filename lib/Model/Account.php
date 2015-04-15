@@ -953,4 +953,16 @@ class Model_Account extends Model_Table {
     	return $this['SchemeType'] == BANK_ACCOUNTS_SCHEME;
     }
 
+    function isCC(){
+    	return $this['account_type'] == ACCOUNT_TYPE_CC;
+    }
+
+    function isSaving(){
+    	return $this['account_type']=='Saving';
+    }
+	
+	function isCurrent(){
+    	return $this['account_type']=='Current';
+    }
+
 }

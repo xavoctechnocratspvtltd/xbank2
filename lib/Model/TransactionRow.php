@@ -18,6 +18,7 @@ class Model_TransactionRow extends Model_Table {
 		$join_transaction->addField('created_at');
 		$join_transaction->hasOne('TransactionType','transaction_type_id');
 		$join_transaction->hasOne('Branch','branch_id');
+		$join_transaction->hasOne('Account','reference_id');
 
 		$this->setOrder('created_at');
 

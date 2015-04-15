@@ -269,7 +269,7 @@ class Page_Tester extends Page {
                 if($this->proper_responses[$k]==$result && isset($this->proper_responses[$k])){
                     $row[$key.'_res']='<font color="green">PASS</font><br/>'.htmlspecialchars(is_array($result)?print_r($result,true):$result);
                 }elseif($this->proper_responses[$k]){
-                    $row[$key.'_res']='<font color="red">'.htmlspecialchars($result).'</font><br/>'.
+                    $row[$key.'_res']='<font color="red">'.htmlspecialchars(is_array($result)?print_r($result,true):$result).'</font><br/>'.
                         var_export($this->proper_responses[$k],true);
                 }
 

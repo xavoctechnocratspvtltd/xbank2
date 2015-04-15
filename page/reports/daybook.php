@@ -16,6 +16,7 @@ class page_reports_daybook extends Page {
 		$transaction_row->addField('amountCr');
 
 		$day_transaction_model->add('Controller_Acl');
+		$day_transaction_model->setOrder('voucher_no');
 		
 		$daybook_lister_grid = $this->add('Grid_DayBook');
 

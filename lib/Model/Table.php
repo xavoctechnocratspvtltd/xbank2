@@ -10,7 +10,6 @@ class Model_Table extends SQL_Model {
 		$this->addHook('beforeSave',function($model){
 
 			if($model->loaded()){
-				
 				$old_m = $model->newInstance()->load($model->id);
 				$changes=array();
 				foreach ($model->dirty as $dirty_field=>$changed) {
@@ -24,8 +23,19 @@ class Model_Table extends SQL_Model {
 				$log['model_class'] = get_class($model);
 				$log['pk_id'] = $model->id;
 				$log['name'] = json_encode($changes);
+				$log['type'] = "Edit";
 				$log->save();
 			}
+		});
+
+		$this->addHook('beforeDelete',function($model){
+
+				$log = $model->add('Model_Log');
+				$log['model_class'] = get_class($model);
+				$log['pk_id'] = $model->id;
+				$log['name'] = json_encode($model->data);
+				$log['type'] = "Delete";
+				$log->save();
 		});
 
 	}

@@ -29,7 +29,7 @@ class Model_Account extends Model_Table {
 		
 		//New Fields added//
 		$this->addField('account_type');
-		$this->addField('AccountNumber')->display(array('form'=>'Readonly'));//->mandatory(true);
+		$this->addField('AccountNumber');//->display(array('form'=>'Readonly'));//->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Displ. Name');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->sortable(true);
 
@@ -125,7 +125,9 @@ class Model_Account extends Model_Table {
 
 	function editing_default(){
 		$this->getElement('scheme_id')->system(true);
-		$this->getElement('AccountNumber')->system(true);
+		if( !$this->api->currentStaff->isSuper()){
+			$this->getElement('AccountNumber')->system(true);
+		}
 		$this->getElement('account_type')->system(true);
 		$this->getElement('Amount')->system(true);
 		$this->getElement('ModeOfOperation')->system(true);
@@ -156,7 +158,7 @@ class Model_Account extends Model_Table {
 
 		$this->ref('Premium')->deleteAll();
 		$this->ref('JointMember')->deleteAll();
-		$this->ref('Premium')->deleteAll();
+		// $this->ref('Premium')->deleteAll();
 		$this->ref('DocumentSubmitted')->deleteAll();
 		$this->ref('AccountGuarantor')->deleteAll();
 		$this->ref('Comment')->deleteAll();

@@ -13,6 +13,7 @@ class Model_Log extends Model_Table {
 		$this->addField('created_at')->type('datetime')->defaultValue(date('Y-m-d H:i:s'));
 
 		$this->addField('name')->type('text');
+		$this->addField('type');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

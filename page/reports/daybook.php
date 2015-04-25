@@ -16,6 +16,7 @@ class page_reports_daybook extends Page {
 		$transaction_row->addField('amountCr');
 
 		$day_transaction_model->add('Controller_Acl');
+		$day_transaction_model->setOrder('voucher_no');
 		
 		$daybook_lister_grid = $this->add('Grid_DayBook');
 
@@ -23,7 +24,8 @@ class page_reports_daybook extends Page {
 			$day_transaction_model->addCondition('created_at','>=',$_GET['date_selected']);
 			$day_transaction_model->addCondition('created_at','<',$this->api->nextDate($_GET['date_selected']));
 		}else{
-			$day_transaction_model->addCondition('created_at',$this->api->today);
+			$day_transaction_model->addCondition('created_at','>=',$this->api->today);
+			$day_transaction_model->addCondition('created_at','<',$this->api->nextDate($this->api->today));
 
 		}
  

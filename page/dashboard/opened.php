@@ -56,7 +56,7 @@ class page_dashboard_opened extends Page {
 		$accounts->addCondition('created_at','<',$this->api->nextDate($this->api->today));
 
 		
-		$accounts->addCondition('AccountNumber','like','SM%');
+		$accounts->addCondition('SchemeType',ACCOUNT_TYPE_SAVING);
 
 
 		$member_j = $accounts->join('members','member_id');
@@ -96,7 +96,7 @@ class page_dashboard_opened extends Page {
 		$accounts->addCondition('created_at','<',$this->api->nextDate($this->api->today));
 
 		
-		$accounts->addCondition('SchemeType',ACCOUNT_TYPE_BANK);
+		$accounts->addCondition('SchemeType',ACCOUNT_TYPE_DDS);
 
 
 		$member_j = $accounts->join('members','member_id');

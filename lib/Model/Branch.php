@@ -11,7 +11,7 @@ class Model_Branch extends Model_Table {
 		$this->addField('PerformClosings')->type('boolean')->defaultValue(true)->display(array('grid'=>'grid/inline'));
 		$this->addField('SendSMS')->type('boolean')->defaultValue(true);
 		$this->addField('published')->type('boolean')->defaultValue(true);
-		$this->addField('next_voucher_no');//->type('boolean')->defaultValue(true);
+		// $this->addField('next_voucher_no');//->type('boolean')->defaultValue(true);
 
 		$this->hasMany('Staff','branch_id');
 		$this->hasMany('Member','branch_id');
@@ -117,6 +117,8 @@ class Model_Branch extends Model_Table {
 
 		if(!$branch) $branch = $this;
 
+		$next_voucher_no = 'next_voucher_no_'. $branch->id;
+
 		$f_year = $this->api->getFinancialYear($transaction_date);	
 		$start_date = $f_year['start_date'];
 		
@@ -127,14 +129,17 @@ class Model_Branch extends Model_Table {
 			$cross_check=true;
 		}
 
-		if(isset($this->api->next_voucher_no)){
-			if(($fraction = $this->api->next_voucher_no % 10) > 0){
+		if(isset($this->api->$next_voucher_no)){
+			$fraction = explode(".",(string)$this->api->$next_voucher_no);
+			if(count($fraction)==2){
+				$fraction = $fraction[1];
+				$fraction = str_replace("0.", "", $fraction);
 				$fraction++;
-				$this->api->next_voucher_no = ((int) ($this->api->next_voucher_no / 10)) + $fraction;
-				return $this->api->next_voucher_no;
+				$this->api->$next_voucher_no = ((int) ($this->api->$next_voucher_no)) .'.'. $fraction;
+				return $this->api->$next_voucher_no;
 			}
-			$this->api->next_voucher_no++;
-			return $this->api->next_voucher_no;
+			$this->api->$next_voucher_no = $this->api->$next_voucher_no + 1;
+			return $this->api->$next_voucher_no;
 		}
 
 
@@ -147,7 +152,9 @@ class Model_Branch extends Model_Table {
 
 		$max_voucher = $transaction_model->_dsql()->getOne();
 		
+		
 		if($cross_check){
+			$max_voucher = (int) $max_voucher;
 			$cross_check = $this->add('Model_Transaction');
 			$cross_check->addCondition('branch_id',$branch->id);
 			$cross_check->addCondition('voucher_no',$max_voucher+1);
@@ -161,14 +168,16 @@ class Model_Branch extends Model_Table {
 				$cross_check_2->addCondition('branch_id',$branch->id);
 				$cross_check_2->addCondition('voucher_no','like',round($max_voucher).'%');
 				$cross_check_2->addCondition('created_at','>=',$start_date);
-				$cross_check_2->addCondition('created_at','<',$this->api->nextDate($f_year['end_date'])); // ! important next date				
+				$cross_check_2->addCondition('created_at','<',$this->api->nextDate($f_year['end_date'])); // ! important next date
 				$max_voucher_check = $cross_check_2->count()->getOne();
-				if($max_voucher_check > 0) 
-					return $max_voucher + ( 0.1 * $max_voucher_check);
+				if($max_voucher_check > 0) {
+					$this->api->$next_voucher_no = (string) ($max_voucher . ".". $max_voucher_check);
+					return $this->api->$next_voucher_no;
+				}
 			}
-			
 		}
-		$this->api->next_voucher_no = $max_voucher +1;
+
+		$this->api->$next_voucher_no = $max_voucher + 1;
 		return $max_voucher + 1 ;
 	}
 

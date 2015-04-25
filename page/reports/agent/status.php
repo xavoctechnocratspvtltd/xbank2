@@ -27,6 +27,9 @@ class page_reports_agent_status extends Page {
 		$member_join->addField('PhoneNos');
 		$member_join->addField('branch_id');
 
+		$sb_acc_join = $agent_model->join('accounts','account_id');
+		$sb_acc_join->addField('sb_branch','branch_id');
+
 		$agent_model->addExpression('status')->set(function($m,$q){
 			$date = $m->api->previousMonth(
 						$m->api->previousMonth(
@@ -57,15 +60,15 @@ class page_reports_agent_status extends Page {
 			return $acc->fieldQuery('created_at');
 		});
 
-		$agent_model->addCondition('branch_id',$this->api->current_branch->id);
+		$agent_model->addCondition('sb_branch',$this->api->current_branch->id);
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('status');
 			if($_GET['status']=='Inactive')
-				$agent_model->addCondition('status',false);
+				$agent_model->addCondition('status',0);
 			if($_GET['status']=='Active')
-				$agent_model->addCondition('status',true);
+				$agent_model->addCondition('status','>',0);
 		}else
 			$agent_model->addCondition('id',-1);
 
@@ -75,7 +78,7 @@ class page_reports_agent_status extends Page {
 		$grid->addSno();
 
 		$grid->removeColumn('ActiveStatus');
-		$grid->controller->importField('status');
+		// $grid->controller->importField('status');
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

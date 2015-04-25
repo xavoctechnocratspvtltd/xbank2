@@ -38,14 +38,32 @@ class Model_Transaction extends Model_Table {
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);
 
-		
-
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function beforeSave(){
 		$this['staff_id'] = $this->api->auth->model->id;
 		$this['updated_at'] = $this->api->now;
+
+		// Check Exisintg Voucher
+
+		$old_tra = $this->add('Model_Transaction');
+		$old_tra->addCondition('branch_id',$this['branch_id']);
+		$old_tra->addCondition('voucher_no',$this['voucher_no']);
+
+		$f_year = $this->api->getFinancialYear($this['created_at']);	
+		$start_date = $f_year['start_date'];
+		$end_date = $f_year['end_date'];
+
+		$old_tra->addCondition('created_at','>',$start_date);
+		$old_tra->addCondition('created_at','<=',$this->api->nextDate($start_date));
+
+		$old_tra->tryLoadAny();
+
+		if($old_tra->loaded()){
+			throw $this->exception('Voucher No '. $this['voucher_no']. ' already used');
+		}
+
 	}
 
 	function beforeDelete(){
@@ -71,11 +89,11 @@ class Model_Transaction extends Model_Table {
 
 		// Transaction TYpe Save if not available
 		$this['transaction_type_id'] = $transaction_type_model->id;
-		$this['reference_id'] = isset($options['reference_id'])?:0;
+		$this['reference_id'] = isset($options['reference_id'])?$options['reference_id']:0;
 		$this['branch_id'] = $branch->id;
 		$this['voucher_no'] = $branch->newVoucherNumber($branch,$transaction_date);
 		$this['Narration'] = $Narration;
-		$this['created_at'] = $transaction_date;
+		$this['created_at'] = $transaction_date;		
 
 		$this->transaction_type = $transaction_type;
 		$this->branch = $branch;

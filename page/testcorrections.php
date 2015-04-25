@@ -14,30 +14,64 @@ class page_testcorrections extends Page {
 
 	function init(){
 		parent::init();
-		$this->checkAndCreateDefaultAccounts();
+		ini_set('memory_limit', '2048M');
+		set_time_limit(0);
+
+		$this->correct_reference();
+		// $this->checkAndCreateDefaultAccounts();
 	}
 
-	function checkAndCreateDefaultAccounts(){
+	function correct_reference(){
+		$trans = $this->add('Model_Transaction');
+		$tr_row_j = $trans->join('transaction_row.transaction_id');
+		$tr_row_j->hasOne('Account','account_id');
+		$trans->addCondition('created_at','>','2015-04-01');
 
-   		$scheme = $this->add('Model_Scheme');
-		$branch = $this->add('Model_Branch');
-		foreach (explode(",", ACCOUNT_TYPES) as $acc_type) {
-	   		$all_schemes = $this->add('Model_Scheme_'.$acc_type);
-			foreach ($all_schemes as $junk) {
-                                foreach ($default_accounts = $all_schemes->getDefaultAccounts() as $details) {
-                                        $account = $this->add('Model_Account');
-                                        $account->_dsql()->where('AccountNumber Like "%'.$branch['Code'].SP.$details['intermediate_text'].'%'.$all_schemes['name'].'"');
-                                        $account->tryLoadAny();
-                                        if($account->loaded())
-                                                $this->add('View_Error')->set($account['AccountNumber']);
-                                        else
-                                            $this->add('View_Info')->set($account['AccountNumber']);
-                                        $account->destroy();
-                                        $scheme->unload();
-                                }
+		foreach ($trans as $tr) {
+			$acc = $tr->ref('account_id');
+			if($acc->isFD() || $acc->isMIS() || $acc->isDDS() || $acc->isLoan() || $acc->isRecurring()){
+				$tr['reference_id'] = $acc->id;
+				$tr->save();
 			}
 		}
-   	}
+
+		$trans = $this->add('Model_Transaction');
+		$trans->addCondition('created_at','>','2015-04-01');
+		$trans->addCondition('reference_id',null);
+
+		foreach ($trans as $tr) {
+			preg_match_all("/(UDR|JHD|GOG|SYR|OGN)(FD|RD|DDS|MIS|CC|SB|VL|SL)([0-9]+)/i", $tr['Narration'], $acNo);
+			// echo $acNo[1][0].$acNo[2][0].$acNo[3][0].' <br/>';
+			$acc= $this->add('Model_Account')->tryLoadBy('AccountNumber',$acNo[1][0].$acNo[2][0].$acNo[3][0]);
+			if($acc->loaded()){
+				$tr['reference_id'] = $acc->id;
+				$tr->saveAndUnload();
+			}
+		}
+
+	}
+
+	// function checkAndCreateDefaultAccounts(){
+
+ //   		$scheme = $this->add('Model_Scheme');
+	// 	$branch = $this->add('Model_Branch');
+	// 	foreach (explode(",", ACCOUNT_TYPES) as $acc_type) {
+	//    		$all_schemes = $this->add('Model_Scheme_'.$acc_type);
+	// 		foreach ($all_schemes as $junk) {
+ //                                foreach ($default_accounts = $all_schemes->getDefaultAccounts() as $details) {
+ //                                        $account = $this->add('Model_Account');
+ //                                        $account->_dsql()->where('AccountNumber Like "%'.$branch['Code'].SP.$details['intermediate_text'].'%'.$all_schemes['name'].'"');
+ //                                        $account->tryLoadAny();
+ //                                        if($account->loaded())
+ //                                                $this->add('View_Error')->set($account['AccountNumber']);
+ //                                        else
+ //                                            $this->add('View_Info')->set($account['AccountNumber']);
+ //                                        $account->destroy();
+ //                                        $scheme->unload();
+ //                                }
+	// 		}
+	// 	}
+ //   	}
 
 	function query($q,$get=false){
 		$obj = $this->api->db->dsql()->expr($q);

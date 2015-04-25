@@ -5,17 +5,16 @@ class page_reports_deposit_commission extends Page {
 	function init(){
 		parent::init();
 
+		// TRA_ACCOUNT_OPEN_AGENT_COMMISSION, TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT
+		// TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT
+ 
 		$form=$this->add('Form');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
-		$array2=explode(',', ACCOUNT_TYPES);
-		$account_type_array=array('%'=>'All');
-		foreach ($array2 as $act) {
-			$account_type_array[$act] =$act;
-		}
+		$account_type_array=array('%'=>'All','DDS'=>'DDS','FixedAndMis'=>'Fixed And Mis','Recurring'=>'Recurring');
 
 
 		$form->addField('dropdown','account_type')->setValueList($account_type_array)->setEmptyText('Please Select');
@@ -27,6 +26,8 @@ class page_reports_deposit_commission extends Page {
 		$transaction_row=$this->add('Model_TransactionRow');
 		$transaction_row->getElement('amountCr')->caption('Net Commission')->type('int');
 		$transaction_join = $transaction_row->join('transactions','transaction_id');
+		// $transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
+
 		$account_join = $transaction_row->join('accounts','account_id');
 		$agent_join = $account_join->join('agents.account_id');
 		$agent_join->addField('agent_id_for_account','id');
@@ -114,15 +115,7 @@ class page_reports_deposit_commission extends Page {
 		$grid->removeColumn('transaction_type');
 
 		$grid->addOrder()->move('amountCr','after','total_commission')->now();
-		$js=array(
-			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
-			$this->js()->_selector('#header')->toggle(),
-			$this->js()->_selector('#footer')->toggle(),
-			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
-			$this->js()->_selector('.atk-form')->toggle(),
-			);
-
-		$grid->js('click',$js);
+		
 		// $grid->addColumn('expander','accounts');
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();

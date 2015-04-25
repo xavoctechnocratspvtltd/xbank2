@@ -42,7 +42,7 @@ class page_transactions_bankwithdrawl extends Page {
 				$this->api->db->beginTransaction();
 					$narration = 'Being cash withdrawl from '. $account_model['AccountNumber'] .' by '. $form['staff_name'];
 					if ($form['narration']){
-						$narration = $form['narration'] . ' - ' . $from['staff_name'];
+						$narration = $form['narration'] . ' - ' . $form['staff_name'];
 					}
 
 					$accounts_to_debit = $this->api->current_branch['Code'] .SP . CASH_ACCOUNT;
@@ -52,7 +52,7 @@ class page_transactions_bankwithdrawl extends Page {
 
 					// IMPORTANT ... deposit is not by mistake. its CONTRA ENTRY .. so to keep
 					// Debit and Credit Ok as required USED DEPOSIT insted WITHDRAWL.
-			    	$account_model->deposit($form['amount'],$narration,array(array($accounts_to_debit=>$form['amount'])),$form=null,$on_date=null,$in_branch=null,$reference_id=null);
+			    	$account_model->deposit($form['amount'],$narration,array(array($accounts_to_debit=>$form['amount'])),$form_values=null,$on_date=null,$in_branch=null,$reference_id=null);
 			    $this->api->db->commit();
 			} catch (Exception $e) {
 			   	$this->api->db->rollBack();

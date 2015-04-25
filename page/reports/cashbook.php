@@ -24,6 +24,7 @@ class page_reports_cashbook extends Page {
 		$scheme_join->addField('scheme_name','name');
 
 		$cash_transaction_model->addCondition('scheme_name',CASH_ACCOUNT);
+		$cash_transaction_model->setOrder('voucher_no');
 		$cash_transaction_model->add('Controller_Acl');
 
 		if($_GET['from_date']){

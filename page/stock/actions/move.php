@@ -15,7 +15,7 @@ class page_stock_actions_move extends Page {
 		$colright = $col->addColumn(5);
 
 		// Transfer Item from 				
-		$colleft->add('View')->set('From')->setStyle(array('padding'=>'5px'))->addClass('atk-swatch-red');		
+		$colleft->add('View')->set('From')->setStyle(array('padding'=>'5px'))->addClass('atk-swatch-red');
 			// From Container
 		$from_container_field = $form->addField('dropdown','from_container','Container')->validateNotNull()->setEmptyText('Please Select');
 		$from_container_model = $this->add('Model_Stock_Container');
@@ -121,8 +121,10 @@ class page_stock_actions_move extends Page {
 			$item_model = $this->add('Model_Stock_Item');
 			$item_model->load($form['from_item']);
 			
-			if(!$item_model->isExistInContainerRow($from_container_model,$from_row_model))
+			if(!$item_model->isExistInContainerRow($from_container_model,$from_row_model)){
+				
 				$form->displayError('from_item','Item not Exist in Selected Container or Row');
+			}
 
 			$to_row_model = $this->add('Model_Stock_Row');
 			// $to_row_model->loadRow($form['to_row'],$form['to_container']);

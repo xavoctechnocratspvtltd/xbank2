@@ -37,7 +37,7 @@ class Model_Stock_ContainerRowItemQty extends Model_Table {
 		$container_model->loadGeneralContainer($branch_id);
 		
 		$row_model = $this->add('Model_Stock_Row');
-		$row_model->loadGeneralRow();
+		$row_model->loadGeneralRow($branch_id);
 			if($row_model->loaded()){
 				$this->addCondition('container_id',$container_model->id);
 				$this->addCondition('row_id',$row_model->id);

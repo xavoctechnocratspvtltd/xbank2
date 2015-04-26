@@ -32,6 +32,7 @@ class page_stock_reports_stock extends Page {
 		$grid->addMethod('format_purchase',function($g,$f){
 			$purchase_tra = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$purchase_tra->join('stock_items','item_id');
+			$purchase_tra->addCondition('branch_id',$g->api->currentBranch->id);
 			$purchase_tra->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
 			$purchase_tra->addCondition('transaction_type','Purchase');
 			$purchase_tra->addCondition('item_id',$g->model->id);
@@ -43,6 +44,7 @@ class page_stock_reports_stock extends Page {
 		$grid->addMethod('format_purchasereturn',function($g,$f){
 			$purchase_tra = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$purchase_tra->join('stock_items','item_id');
+			$purchase_tra->addCondition('branch_id',$g->api->currentBranch->id);
 			$purchase_tra->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
 			$purchase_tra->addCondition('transaction_type','PurchaseReturn');
 			$purchase_tra->addCondition('item_id',$g->model->id);
@@ -51,7 +53,7 @@ class page_stock_reports_stock extends Page {
 			$g->current_row_html[$f]=$purchase_tra_qty;
 		});
 
-		$grid->addMethod('format_transferto',function($g,$f){
+		$grid->addMethod('format_transferto',function($g,$f){			
 			$tra_model = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$tra_model->join('stock_items','item_id');
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
@@ -155,7 +157,7 @@ class page_stock_reports_stock extends Page {
 		});
 
 		$grid->addMethod('format_balance',function($g,$f){
-			$g->current_row_html[$f]=$g->model->getQty($_GET['to_date']?:$g->api->now);
+			$g->current_row_html[$f]=$g->model->getQty($_GET['to_date']?:$g->api->now,$this->api->currentBranch->id);
 		});
 
 		$grid->addMethod('format_amount',function($g,$f){

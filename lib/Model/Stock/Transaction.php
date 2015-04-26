@@ -212,11 +212,11 @@ class Model_Stock_Transaction extends Model_Table {
 		$to_row = $this->add('Model_Stock_Row');
 		
 		if($is_used_submit){
-			$to_container->loadUsedDefaultContainer($to_branch->id);
-			$to_row->loadUsedDefaultRow($to_branch->id);
+			$to_container = $to_container->loadUsedDefaultContainer($to_branch->id);
+			$to_row = $to_row->loadUsedDefaultRow($to_branch->id);
 		}else {
-			$to_container->loadGeneralContainer($to_branch->id);
-			$to_row->loadGeneralRow($to_branch->id);
+			$to_container = $to_container->loadGeneralContainer($to_branch->id);
+			$to_row = $to_row->loadGeneralRow($to_branch->id);
 		}
 		
 

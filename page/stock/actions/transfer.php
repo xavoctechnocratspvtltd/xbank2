@@ -14,19 +14,18 @@ class page_stock_actions_transfer extends Page {
 		$colmid = $col->addColumn(2);
 		$colright = $col->addColumn(5);
 
-			// Transfer Item from 
+			// Transfer Item from
 		$colleft->add('View')->set('From')->setStyle(array('background-color'=>'#f12039','padding'=>'5px'));
 		$from_branch_field = $form->addField('dropdown','from_branch','Branch')->validateNotNull()->setEmptyText('Please Select');
 		$from_branch_model = $this->add('Model_Branch');
 		$from_branch_model->addCondition('id',$this->api->currentBranch->id);
-		$from_branch_field->setModel($from_branch_model);	
-		$from_branch_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);				
+		$from_branch_field->setModel($from_branch_model);
+		$from_branch_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 			// From Container
 		
 		$from_container_field = $form->addField('dropdown','from_container','Container')->validateNotNull()->setEmptyText('Please Select');
 		$from_container_model = $this->add('Model_Stock_Container');
-		$from_container_model->addCondition('branch_id',$this->api->currentBranch->id);
-		$from_container_field->setModel($from_container_model->loadGeneralAndUsed());	
+		$from_container_field->setModel($from_container_model->loadGeneralAndUsed());
 		$from_container_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 		
 		// $from_container_field->js('change',$form->js()->atk4_form('reloadField','from_row',array($this->api->url(),'from_container'=>$from_container_field->js()->val())));
@@ -138,7 +137,7 @@ class page_stock_actions_transfer extends Page {
 			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');	
 			$criq_model->removeStock($container_model,$row_model,$item_model,$form['from_qty']);
 			//add general stock in to_branch (transferd)
-			$criq1_model = $this->add('Model_Stock_ContainerRowItemQty');	
+			$criq1_model = $this->add('Model_Stock_ContainerRowItemQty');
 			$criq1_model->addStockInGeneral($item_model,$form['from_qty'],$form['to_branch']);	
 			
 			$js = array($crud->js()->reload(),

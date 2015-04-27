@@ -49,6 +49,7 @@ class Model_PendingAccount extends Model_Account {
 	}
 
 	function reject(){
+		$this->breakHook('beforeDelete');
 		$this->delete();
 	}
 }

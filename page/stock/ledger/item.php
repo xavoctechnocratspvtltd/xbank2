@@ -20,8 +20,8 @@ class page_stock_ledger_item extends Page {
 
 		if($_GET['filter']){						
 			if($_GET['item']){
-				$item_model->addCondition('branch_id',$this->api->currentBranch->id);
 				$item_model->load($_GET['item']);
+				$transaction->addCondition('branch_id',$this->api->currentBranch->id);
 				$transaction->addCondition('item_id',$_GET['item']);
 			}
 			// if(!$_GET['include_dead'])

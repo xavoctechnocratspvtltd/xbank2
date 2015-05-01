@@ -78,6 +78,7 @@ class Model_Scheme_CC extends Model_Scheme {
  		$a=1;
  		$this->api->markProgress('accounts',$a,$cc_accounts->count()->getOne());
 		foreach ($cc_accounts as $accounts_array) {
+			// echo "working on".$cc_accounts['AccountNumber'];
 			$cc_accounts->postInterestEntry($on_date);
 	 		$this->api->markProgress('accounts',++$a,null,$cc_accounts['AccountNumber']);
 		}

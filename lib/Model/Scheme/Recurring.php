@@ -92,7 +92,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		if($test_account) $allaccounts_with_thismonth_duedate->addCondition('id',$test_account->id);
 
 		foreach ($allaccounts_with_thismonth_duedate as $junk) {
-			$allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
+			// $allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
 		}
 	}
 

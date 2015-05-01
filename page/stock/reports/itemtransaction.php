@@ -7,7 +7,7 @@ class page_stock_reports_itemtransaction extends Page{
 
 		$form = $this->add('Form');
 		$item_field = $form->addField('dropdown','item')->validateNotNull()->setEmptyText('Please Select');
-		$transaction_field = $form->addField('dropdown','transaction_type')->setValueList(array('Issue'=>'Issue','Purchase'=>'Purchase','Consume'=>'Consume','Submit'=>'Submit','PurchaseReturn'=>'PurchaseReturn','DeadSubmit'=>'DeadSubmit','Transfer'=>'Transfer','Sold'=>'Sold','DeadSold'=>'DeadSold'))->setEmptyText('Please Select');
+		$transaction_field = $form->addField('dropdown','transaction_type')->setValueList(array('Issue'=>'Issue','Purchase'=>'Purchase','Consume'=>'Consume','Submit'=>'Submit','UsedSubmit'=>'UsedSubmit','PurchaseReturn'=>'PurchaseReturn','DeadSubmit'=>'DeadSubmit','TransferIn'=>'TransferIn','TransferOut'=>'TransferOut','Sold'=>'Sold','DeadSold'=>'DeadSold'))->setEmptyText('Please Select');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
@@ -27,12 +27,27 @@ class page_stock_reports_itemtransaction extends Page{
 
 		if($_GET['filter']){
 			$transaction_model->addCondition('item_id',$_GET['item']);
-			$transaction_model->addCondition('branch_id',$this->api->currentBranch->id);
 			$transaction_model->addCondition('transaction_type','<>',array('Openning','move'));
+			
 			if($_GET['transaction_type']){
-				$transaction_model->addCondition('transaction_type',$_GET['transaction_type']);
+				if($_GET['transaction_type'] == "TransferIn"){
+					$transaction_model->addCondition('transaction_type','Transfer');
+					$transaction_model->addCondition('to_branch_id',$this->api->currentBranch->id);
+					$transaction_model->addCondition('branch_id','<>',$this->api->currentBranch->id);
+
+				}elseif($_GET['transaction_type'] == "TransferOut"){
+					$transaction_model->addCondition('transaction_type','Transfer');
+					$transaction_model->addCondition('to_branch_id','<>',$this->api->currentBranch->id);
+					$transaction_model->addCondition('branch_id',$this->api->currentBranch->id);
+				}else{
+					$transaction_model->addCondition('transaction_type',$_GET['transaction_type']);	
+					$transaction_model->addCondition('branch_id',$this->api->currentBranch->id);
+				}
+				
 				$transaction_name = $transaction_model['transaction_type'];	
+
 			}
+
 			$transaction_model->_dsql()->group('transaction_type');
 			$transaction_model->setOrder('transaction_type','desc');
 			
@@ -74,20 +89,32 @@ class page_stock_reports_itemtransaction extends Page{
 
 		$grid->setModel($transaction_model);
 		
-		$grid->removeColumn('branch');
+		if($_GET['transaction_type'] !== "TransferOut"){
+			$grid->removeColumn('branch');
+			$grid->removeColumn('to_branch_id');
+		}else{
+			$grid->addFormatter('to_branch_id','to');
+    		$grid->addMethod('format_to',function($g,$f){
+    			$g->current_row[$f] = $this->add('Model_Branch')->addCondition('id',$g->current_row[$f])->tryLoadAny()->get('name');
+    		});
+		}
+
+		if($_GET['transaction_type'] !=="Issue" or $_GET['transaction_type'] !=="Submit" or $_GET['transaction_type'] !=="Consume"){
+			$grid->removeColumn('member');
+		}
+			
 		$grid->removeColumn('item');
-		$grid->removeColumn('member');
 		$grid->removeColumn('rate');
 		$grid->removeColumn('amount');
-		$grid->removeColumn('narration');
+		// $grid->removeColumn('narration');
 		$grid->removeColumn('created_at');
 		$grid->removeColumn('issue_date');
 		$grid->removeColumn('submit_date');
-		$grid->removeColumn('to_branch_id');
 		$grid->removeColumn('to_container');
 		$grid->removeColumn('to_row');
 		$grid->removeColumn('from_container');
 		$grid->removeColumn('from_row');
+
 
 		if($_GET['filter'] and !$_GET['transaction_type']){
 			$grid->addOrder()->move('opening','after','transaction_type')->now();
@@ -100,5 +127,6 @@ class page_stock_reports_itemtransaction extends Page{
 		if($form->isSubmitted()){
 			$v->js()->reload(array('item'=>$form['item'],'transaction_type'=>$form['transaction_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1))->execute();
 		}
+
 	}
 }

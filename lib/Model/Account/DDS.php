@@ -103,7 +103,7 @@ class Model_Account_DDS extends Model_Account{
 		
 		$this->_dsql()->del('limit');
 
-		$this->saveAndUnload();
+		$this->saveAs('Model_Account');
 	}
 
 	function postInterestEntry($on_date){
@@ -211,8 +211,8 @@ class Model_Account_DDS extends Model_Account{
         $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Collection Charge ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
         
         $transaction->addDebitAccount($branch_code. SP . COLLECTION_CHARGE_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
-        $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - ($commissionForThisAgent * TDS_PERCENTAGE / 100)));
-        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($commissionForThisAgent * TDS_PERCENTAGE / 100)));
+        $transaction->addCreditAccount($agentAccount ,round(($commissionForThisAgent - ($commissionForThisAgent * $tds_percentage / 100)),3));
+        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,round((($commissionForThisAgent * $tds_percentage / 100)),3));
         
         $transaction->execute();
 	}

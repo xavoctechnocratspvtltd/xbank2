@@ -145,7 +145,6 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
 
-
 		// Count One more day when FD is openned
 		if($this['LastCurrentInterestUpdatedAt'] == $this['created_at']) $days['days_total']++;
 		// Deduct One Day from last day of maturity
@@ -169,7 +168,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		
 		$transaction->execute();
 
-		$this->api->markProgress('Doing_Provision',2,$on_date,5);
+		$this->api->markProgress('Doing_Provision',$this['AccountNumber'],$on_date,5);
 
 		$this->save();
 	}

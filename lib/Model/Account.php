@@ -139,7 +139,7 @@ class Model_Account extends Model_Table {
 		if(!$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !$this->allow_any_name AND !$this->loaded() ){
 			$start_code = ($this->ref('branch_id')->get('Code').$this->api->getConfig('account_code/'.$this['account_type']));
 			if(strpos($this['AccountNumber'], $start_code) !==0)
-				throw $this->exception('AccountNumber Format not accpeted, Must start with '. $start_code.' or SM','ValidityCheck')->setField('AccountNumber')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
+				throw $this->exception('AccountNumber Format not accpeted, Must start with '. $start_code.' or SM whie it is '. $this['AccountNumber'],'ValidityCheck')->setField('AccountNumber')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
 		}
 
 		// if(!$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 and substr($this['AccountNumber'],0,3) !== $this->api->current_branch['Code'])
@@ -153,7 +153,7 @@ class Model_Account extends Model_Table {
 	}
 
 	function defaultBeforeDelete(){
-		if($this->ref('TransactionRow')->count()->getOne() > 0)
+		if($this->table !='accounts_pending' AND $this->ref('TransactionRow')->count()->getOne() > 0)
 			throw $this->exception('Account Contains Transactions, Cannot Delete');
 
 		$this->ref('Premium')->deleteAll();
@@ -793,9 +793,12 @@ class Model_Account extends Model_Table {
 	}
 
 	function deActivate(){
+		if(!$this->loaded())
+			throw $this->exception("PLease load account before deActivate");
+
 		if($this->isActive()){
 			$this['ActiveStatus']=false;
-			$this->save();
+			$this->saveAs('Account');		
 		}
 	}
 

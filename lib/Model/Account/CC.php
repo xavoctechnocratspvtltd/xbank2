@@ -116,7 +116,7 @@ class Model_Account_CC extends Model_Account{
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_CC_ACCOUNT, $branch, $on_date, "Interest posting in CC Account",null,array('reference_id'=>$this->id));
 
-		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . $this['scheme_name'], $current_interest);
+		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_RECEIVED_ON . SP . $this['scheme_name'], $current_interest);
 		$transaction->addDebitAccount($this,$current_interest);
 		$transaction->execute();
 	}

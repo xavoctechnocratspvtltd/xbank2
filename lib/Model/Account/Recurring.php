@@ -236,7 +236,9 @@ class Model_Account_Recurring extends Model_Account{
 		$non_interest_paid_premiums_till_now->addCondition('PaidOn','>=',$fy['start_date']);
 		$non_interest_paid_premiums_till_now->addCondition('PaidOn','<',$this->api->nextDate($fy['end_date']));
 
-		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum(Paid*Amount)')->getOne();
+		$interest_paid = $this->interestPaid($on_date);
+
+		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum((Paid*Amount)+'.$interest_paid.')')->getOne();
 
 		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
 
@@ -258,8 +260,14 @@ class Model_Account_Recurring extends Model_Account{
 		
 		$this->payInterest();
 
+		$this->revertAccessInterest();
+
 		$this['MaturedStatus'] = true;
 		$this->save();
+	}
+
+	function revertAccessInterest(){
+
 	}
 
 	function premiums(){

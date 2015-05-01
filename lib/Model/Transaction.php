@@ -226,8 +226,8 @@ class Model_Transaction extends Model_Table {
 		}
 		
 		// Credit Sum Must Be Equal to Debit Sum
-		if($total_debit_amount != $total_credit_amount)
-			throw $this->exception('Debit and Credit Must be Same')->addMoreInfo('DebitSum',$total_debit_amount)->addMoreInfo('CreditSum',$total_credit_amount)->addMoreInfo('Transaction',$this->transaction_type)->addMoreInfo('reference_id',$this->options['reference_id']);
+		if((string)$total_debit_amount != (string)$total_credit_amount)
+			throw $this->exception('Debit and Credit Must be Same')->addMoreInfo('DebitSum',$total_debit_amount)->addMoreInfo('CreditSum',$total_credit_amount)->addMoreInfo('Transaction',$this->transaction_type)->addMoreInfo('difference',($total_debit_amount - $total_credit_amount))->addMoreInfo('reference_id',$this->options['reference_id']);
 
 	}
 

@@ -77,6 +77,8 @@ class page_stock_actions_move extends Page {
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 		$transfer_transaction=$this->add('Model_Stock_Transaction');
 		$transfer_transaction->addCondition('transaction_type','Move');
+		$transfer_transaction->addCondition('branch_id',$this->api->currentBranch->id);
+		
 		$transfer_transaction->setOrder('created_at','desc');
 
 		$crud->grid->addPaginator(10);

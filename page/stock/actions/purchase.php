@@ -38,6 +38,7 @@ class page_stock_actions_purchase extends Page {
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 		$purchase_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_transaction->addCondition('transaction_type','Purchase');
+		$purchase_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$purchase_transaction->setOrder('created_at','desc');
 		$crud->grid->addPaginator(15);
 		// DO Search Filter 

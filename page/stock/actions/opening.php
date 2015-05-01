@@ -34,6 +34,7 @@ class page_stock_actions_opening extends Page {
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 		$openning_transaction=$this->add('Model_Stock_Transaction');
 		$openning_transaction->addCondition('transaction_type','Openning');
+		$openning_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$openning_transaction->setOrder('created_at','desc');
 		$crud->grid->addPaginator(10);
 

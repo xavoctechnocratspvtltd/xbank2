@@ -40,6 +40,7 @@ class page_stock_actions_return extends Page {
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 		$purchase_return_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_return_transaction->addCondition('transaction_type','PurchaseReturn');
+		$purchase_return_transaction->addCondition('branch_id',$this->api->currentBranch->id);		
 		$purchase_return_transaction->setOrder('created_at','desc');
 		$crud->grid->addPaginator(15);		
 		// DO Search Filter		

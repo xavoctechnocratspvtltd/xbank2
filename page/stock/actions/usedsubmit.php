@@ -41,6 +41,7 @@ class page_stock_actions_usedsubmit extends Page {
 
 		$used_transaction=$this->add('Model_Stock_Transaction');
 		$used_transaction->addCondition('transaction_type','UsedSubmit');
+		$used_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$used_transaction->setOrder('created_at','desc');
 		if($crud->grid){
 			$crud->grid->addPaginator(10);

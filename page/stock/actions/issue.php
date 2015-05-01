@@ -56,6 +56,7 @@ class page_stock_actions_issue extends Page {
 		
 		$issue_transaction=$this->add('Model_Stock_Transaction');
 		$issue_transaction->addCondition('transaction_type',array('Issue'));
+		$issue_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$issue_transaction->setOrder('created_at','desc');
 
 		if($_GET['filter']){

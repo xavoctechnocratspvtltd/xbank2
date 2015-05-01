@@ -33,6 +33,7 @@ class page_stock_actions_deadsold extends Page {
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false));
 		$sold_transaction=$this->add('Model_Stock_Transaction');
 		$sold_transaction->addCondition('transaction_type','DeadSold');
+		$sold_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$sold_transaction->setOrder('created_at','desc');
 		if($crud->grid){
 			$crud->grid->addPaginator(10);

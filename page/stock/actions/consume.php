@@ -51,6 +51,7 @@ class page_stock_actions_consume extends Page {
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false));
 		$issue_transaction=$this->add('Model_Stock_Transaction');
 		$issue_transaction->addCondition('transaction_type','Consume');
+		$issue_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$issue_transaction->setOrder('created_at','desc');
 
 		if($crud->grid){

@@ -7,7 +7,7 @@ class page_stock_reports_itemtransaction extends Page{
 
 		$form = $this->add('Form');
 		$item_field = $form->addField('dropdown','item')->validateNotNull()->setEmptyText('Please Select');
-		$transaction_field = $form->addField('dropdown','transaction_type')->setValueList(array('Issue'=>'Issue','Purchase'=>'Purchase','Consume'=>'Consume','Submit'=>'Submit','PurchaseReturn'=>'PurchaseReturn','DeadSubmit'=>'DeadSubmit','Transfer'=>'Transfer','Sold'=>'Sold','DeadSold'=>'DeadSold'))->setEmptyText('Please Select');
+		$transaction_field = $form->addField('dropdown','transaction_type')->setValueList(array('Issue'=>'Issue','Purchase'=>'Purchase','Consume'=>'Consume','Submit'=>'Submit','UsedSubmit'=>'UsedSubmit','PurchaseReturn'=>'PurchaseReturn','DeadSubmit'=>'DeadSubmit','TransferIn'=>'TransferIn','TransferOut'=>'TransferOut','Sold'=>'Sold','DeadSold'=>'DeadSold'))->setEmptyText('Please Select');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
@@ -27,12 +27,27 @@ class page_stock_reports_itemtransaction extends Page{
 
 		if($_GET['filter']){
 			$transaction_model->addCondition('item_id',$_GET['item']);
-			$transaction_model->addCondition('branch_id',$this->api->currentBranch->id);
 			$transaction_model->addCondition('transaction_type','<>',array('Openning','move'));
+			
 			if($_GET['transaction_type']){
-				$transaction_model->addCondition('transaction_type',$_GET['transaction_type']);
+				if($_GET['transaction_type'] == "TransferIn"){
+					$transaction_model->addCondition('transaction_type','Transfer');
+					$transaction_model->addCondition('to_branch_id',$this->api->currentBranch->id);
+					$transaction_model->addCondition('branch_id','<>',$this->api->currentBranch->id);
+
+				}elseif($_GET['transaction_type'] == "TransferOut"){
+					$transaction_model->addCondition('transaction_type','Transfer');
+					$transaction_model->addCondition('to_branch_id','<>',$this->api->currentBranch->id);
+					$transaction_model->addCondition('branch_id',$this->api->currentBranch->id);
+				}else{
+					$transaction_model->addCondition('transaction_type',$_GET['transaction_type']);	
+					$transaction_model->addCondition('branch_id',$this->api->currentBranch->id);
+				}
+				
 				$transaction_name = $transaction_model['transaction_type'];	
+
 			}
+
 			$transaction_model->_dsql()->group('transaction_type');
 			$transaction_model->setOrder('transaction_type','desc');
 			

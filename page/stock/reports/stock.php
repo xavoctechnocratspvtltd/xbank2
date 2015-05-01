@@ -4,6 +4,7 @@ class page_stock_reports_stock extends Page {
 	function init(){
 		parent::init();
 
+		$self = $this;
 		$form=$this->add('Form');
 		$form->addField('DatePicker','to_date');
 		// $form->addField('DatePicker','from_date');
@@ -156,8 +157,8 @@ class page_stock_reports_stock extends Page {
 			$g->current_row_html[$f]=$g->model->getAvgRate($_GET['to_date']?:$g->api->now);			
 		});
 
-		$grid->addMethod('format_balance',function($g,$f){
-			$g->current_row_html[$f]=$g->model->getQty($_GET['to_date']?:$g->api->now,$this->api->currentBranch->id);
+		$grid->addMethod('format_balance',function($g,$f)use($self){
+			$g->current_row_html[$f]=$g->model->getQty($_GET['to_date']?:$g->api->now,$self->api->currentBranch->id);
 		});
 
 		$grid->addMethod('format_amount',function($g,$f){

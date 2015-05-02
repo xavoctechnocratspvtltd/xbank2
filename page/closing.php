@@ -9,6 +9,7 @@ class page_closing extends Page {
 			$this->api->forget('progress_data');
 			try{
 				$this->api->db->dsql()->owner->beginTransaction();
+				$this->api->closing_running =true;
 				foreach ($b=$this->add('Model_Branch')->addCondition('PerformClosings',true) as $branch_array) 
 					$b->performClosing($this->api->today);
 				// $this->api->db->dsql()->owner->rollBack();
@@ -17,6 +18,7 @@ class page_closing extends Page {
 				$this->api->db->dsql()->owner->rollBack();
 				throw $e;
 			}
+			unset($this->api->closing_running);
 		}else{
 			// $this->api->markProgress('branch',2,'Udaipur branch',5);
 			// $this->api->markProgress('schemes',rand(100,1024),'CC 4% Interest',1024);

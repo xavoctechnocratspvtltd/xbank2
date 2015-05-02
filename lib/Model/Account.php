@@ -150,6 +150,13 @@ class Model_Account extends Model_Table {
 			$this['Group'] = $this->add('Model_Scheme')->load($this['scheme_id'])->get('SchemeGroup');
 		if(!$this['PAndLGroup'])
 			$this['PAndLGroup'] = $this['Group'];
+
+		if($this->loaded() and $this->dirty['AccountNumber']){
+			$old_acc = $this->newInstance()->load($this->id);
+			$transactions = $this->add('Model_Transaction');
+			$transactions->dsql()->expr('UPDATE transactions SET Narration=REPLACE(Narration,"'.$old_acc['AccountNumber'].'","'.$this['AccountNumber'].'") WHERE Narration like "%'.$old_acc['AccountNumber'].'%"')->execute();
+		}
+
 	}
 
 	function defaultBeforeDelete(){

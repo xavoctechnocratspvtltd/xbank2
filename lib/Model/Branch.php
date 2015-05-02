@@ -11,7 +11,7 @@ class Model_Branch extends Model_Table {
 		$this->addField('PerformClosings')->type('boolean')->defaultValue(true)->display(array('grid'=>'grid/inline'));
 		$this->addField('SendSMS')->type('boolean')->defaultValue(true);
 		$this->addField('published')->type('boolean')->defaultValue(true);
-		// $this->addField('next_voucher_no');//->type('boolean')->defaultValue(true);
+		$this->addField('allow_login')->type('boolean')->defaultValue(true);
 
 		$this->hasMany('Staff','branch_id');
 		$this->hasMany('Member','branch_id');
@@ -205,7 +205,8 @@ class Model_Branch extends Model_Table {
 		$last_closing_date = $this->ref('Closing')->tryLoadAny()->get('daily');
 
 		if(strtotime($on_date) <= strtotime($last_closing_date)){
-			throw $this->exception('Daily Closing is already done before this date')->addMoreInfo('last_closing_date',$last_closing_date);
+			echo 'Daily Closing is already done before this date';
+			return;
 		}
 		
 

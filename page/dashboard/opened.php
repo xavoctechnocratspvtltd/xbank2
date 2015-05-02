@@ -458,5 +458,46 @@ class page_dashboard_opened extends Page {
 		$grid->addTotals(array('balance_on_date','Amount'));
 		$grid->addSno();
 
+		// Other Accounts Default
+
+		$this->add('H3')->set('All Other Accounts');
+		$grid=$this->add('Grid_AccountsBase');
+		$accounts=$this->add('Model_Active_Account');
+		$accounts->addCondition('created_at','>=',$this->api->today);
+		$accounts->addCondition('created_at','<',$this->api->nextDate($this->api->today));
+
+		
+		$accounts->addCondition('SchemeType','Default');
+		$accounts->addCondition('AccountNumber','not like','SM%');
+
+		$member_j = $accounts->join('members','member_id');
+
+		$member_j->addField('member_name','name');
+		$member_j->addField('FatherName');
+		$member_j->addField('PermanentAddress');
+		$member_j->addField('PhoneNos');
+
+		$accounts->add('Controller_Acl');
+		$accounts->setOrder('AccountNumber');
+
+		$grid->setModel($accounts,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','scheme', 'Amount','DueDate','agent','dealer'));
+
+		$grid->addMethod('format_crbal',function($grid,$field){
+			
+			try{
+				$bal = $grid->model->getOpeningBalance($grid->api->nextDate($grid->api->today));
+			}catch(Exception $e){
+				$grid->current_row[$field]=0;
+				return;
+			}
+
+			$bal_fig = $bal['Dr'] - $bal['Cr'];
+			$grid->current_row[$field] = $bal_fig;
+		});
+
+		$grid->addColumn('crbal','balance_on_date');
+		$grid->addTotals(array('balance_on_date','Amount'));
+		$grid->addSno();
+
 	}
 }

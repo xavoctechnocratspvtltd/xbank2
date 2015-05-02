@@ -35,7 +35,7 @@ class page_transactions_bankdeposit extends Page {
 				$this->api->db->beginTransaction();
 					$narration = 'Being cash deposited in '. $account_model['AccountNumber'] .' by '. $form['staff_name'];
 					if ($form['narration']){
-						$narration = $form['narration'] . ' - ' . $from['staff_name'];
+						$narration = $form['narration'] . ' - ' . $form['staff_name'];
 					}
 
 					$accounts_to_credit = $this->api->current_branch['Code'] .SP . CASH_ACCOUNT;

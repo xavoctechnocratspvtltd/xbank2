@@ -121,7 +121,7 @@ class Model_Member extends Model_Table {
 
 		if($admissionFee){
 			$transaction = $this->add('Model_Transaction');
-			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$branch, $on_date, "Member Registration Fee ", null, array('reference_id'=>$this->id));
+			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$branch, $on_date, "Member Registration Fee for ". $this->id, null, array('reference_id'=>$this->id));
 			
 			$transaction->addDebitAccount($this->ref('branch_id')->get('Code').SP.CASH_ACCOUNT, $admissionFee);
 			$transaction->addCreditAccount($this->ref('branch_id')->get('Code').SP.ADMISSION_FEE_ACCOUNT, $admissionFee);
@@ -138,7 +138,7 @@ class Model_Member extends Model_Table {
 			$share_account->createNewAccount($this->id, $share_capital_scheme->id ,$branch, $new_sm_number ,null,null,$on_date);
 
 			$transaction = $this->add('Model_Transaction');
-			$transaction->createNewTransaction(TRA_SHARE_ACCOUNT_OPEN,$branch, $on_date, "Share Account Opened for member ". $name, null, array('reference_id'=>$this->id));
+			$transaction->createNewTransaction(TRA_SHARE_ACCOUNT_OPEN,$branch, $on_date, "Share Account Opened for member ". $name . " ". $this->id , null, array('reference_id'=>$this->id));
 			
 			$transaction->addDebitAccount($this->ref('branch_id')->get('Code').SP.CASH_ACCOUNT, $shareValue);
 			$transaction->addCreditAccount($share_account, $shareValue);

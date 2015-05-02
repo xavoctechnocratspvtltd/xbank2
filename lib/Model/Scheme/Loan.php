@@ -157,7 +157,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$premiums->addCondition('branch_id',$branch->id);
 
 		// No Panelties for Loan Against Deposit Accounts
-		$premiums->addCondition('LoanAgainstAccount_id',0);
+		$premiums->addCondition('LoanAgainstAccount_id',null);
 
 		if($test_account) $premiums->addCondition('account_id',$test_account->id);
 
@@ -165,6 +165,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 //		if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
         $premiums->_dsql()->sql_templates['update']="update [table] [join] set [set] [where]  [group] [having] [order] [limit]";
         $premiums->_dsql()->update();
+
 	}
 
 

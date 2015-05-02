@@ -47,10 +47,17 @@ class Frontend extends ApiFrontend {
             $auth->check();
             // $header_menu1=$header->add('Menu_Dsa')->addClass('mymenu');
         }else{
+            $staff_model = $this->add('Model_Staff');
+            $staff_model->addExpression('branch_login_allow')->set($staff_model->refSQL('branch_id')->fieldQuery('allow_login'));
+            $staff_model->addCondition('branch_login_allow',true);
             $auth = $this->add('BasicAuth');
             $auth->allowPage(array('corrections'));
-            $auth->setModel('Staff','username','password');
+            $auth->setModel($staff_model,'username','password');
             $auth->check();
+
+            if(!$auth->model->tryLoad($auth->model->id)->loaded()){
+                $this->api->redirect($this->api->url('logout'));
+            }
 
             $this->currentStaff = $this->current_staff = $auth->model;
 

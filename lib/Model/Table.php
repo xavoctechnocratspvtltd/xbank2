@@ -8,7 +8,8 @@ class Model_Table extends SQL_Model {
 		// Log Editing Entries
 
 		$this->addHook('beforeSave',function($model){
-
+			if(@$model->api->closing_running) return;
+			
 			if($model->loaded()){
 				$old_m = $model->newInstance()->load($model->id);
 				$changes=array();

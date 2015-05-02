@@ -139,7 +139,7 @@ class Model_Account_Recurring extends Model_Account{
 		if(!$on_date) $on_date = $this->api->now;
 
 		$PremiumAmountAdjusted = $this->paidPremiums() * $this['Amount'];
-		$AmountForPremiums = $this['CurrentBalanceCr'] + $amount - $PremiumAmountAdjusted - $this->interestPaid($on_date);
+		$AmountForPremiums = ($this['CurrentBalanceCr'] + $amount) - ($PremiumAmountAdjusted + $this->interestPaid($on_date));
 
 		$premiumsSubmitedInThisAmount = (int) ($AmountForPremiums / $this['Amount']);
 

@@ -45,7 +45,7 @@ class page_accounts_SM extends Page {
 			$account_Default_model->hook('editing');
 		}
 
-		$crud->setModel($account_Default_model,array('AccountNumber','Amount','member_id','scheme_id','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','ActiveStatus','sig_image_id'),array('AccountNumber','member','scheme','ActiveStatus'));
+		$crud->setModel($account_Default_model,array('AccountNumber','Amount','member_id','scheme_id','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','ActiveStatus','sig_image_id'),array('AccountNumber','created_at','member','scheme','ActiveStatus'));
 		
 		if(!$crud->isEditing()){
 			// $crud->grid->addOrder()->move('member','first')->now();

@@ -45,9 +45,9 @@ class page_accounts_Default extends Page {
 		$account_Default_model->getElement('AccountNumber')->system(false)->editable(true)->display(array('form'=>'line'));
 		$account_Default_model->getElement('scheme_id')->system(false)->editable(true);
 
-		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','ActiveStatus','sig_image_id'),array('AccountNumber','scheme','ActiveStatus','member'));
+		$crud->setModel($account_Default_model,array('AccountNumber','member_id','scheme_id','ActiveStatus','sig_image_id'),array('AccountNumber','scheme','ActiveStatus','member','created_at'));
 		
-		if($crud->grid){
+		if(!$crud->isEditing()){
 			$crud->grid->addPaginator(100);
 			$crud->grid->addQuickSearch(array('AccountNumber'));
 			// $crud->grid->addOrder()->move('member','first')->now();

@@ -59,7 +59,7 @@ class page_accounts_CC extends Page {
 			$account_cc_model->hook('editing');
 		}
 
-		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'),array('AccountNumber','AccountDisplayName','member','scheme','Amount','agent','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
+		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'),array('AccountNumber','created_at','AccountDisplayName','member','scheme','Amount','agent','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'CCAccount'));
 		
 		if(!$crud->isEditing()){

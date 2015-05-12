@@ -205,6 +205,9 @@ class Model_Transaction extends Model_Table {
 
 	function executeSingleBranch(){
 
+		if(!count($this->dr_accounts) OR !count($this->cr_accounts))
+			return;
+
 		$this->save();
 
 		$total_debit_amount =0;
@@ -331,6 +334,7 @@ class Model_Transaction extends Model_Table {
 		foreach ($tr=$this->ref('TransactionRow') as $tr_array) {
 			$tr->forceDelete();
 		}
+		
 		$this->delete();
 	}
 

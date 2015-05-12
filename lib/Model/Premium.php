@@ -20,6 +20,8 @@ class Model_Premium extends Model_Table {
 		$this->addField('PaneltyPosted')->type('money')->defaultValue(0);
 		$this->addField('DueDate')->type('date');
 
+		$this->addExpression('name')->set($this->refSQL('account_id')->fieldQuery('name'));
+
 		$this->addExpression('panelty_to_post')->set('PaneltyCharged - PaneltyPosted');
 
 		// $this->add('dynamic_model/Controller_AutoCreator');

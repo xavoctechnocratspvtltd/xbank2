@@ -28,7 +28,6 @@ class page_stock_reports_itemtransaction extends Page{
 		if($_GET['filter']){
 			$transaction_model->addCondition('item_id',$_GET['item']);
 			$transaction_model->addCondition('transaction_type','<>',array('Openning','move'));
-			
 			if($_GET['transaction_type']){
 				if($_GET['transaction_type'] == "TransferIn"){
 					$transaction_model->addCondition('transaction_type','Transfer');
@@ -95,7 +94,7 @@ class page_stock_reports_itemtransaction extends Page{
 		}else{
 			$grid->addFormatter('to_branch_id','to');
     		$grid->addMethod('format_to',function($g,$f){
-    			$g->current_row[$f] = $this->add('Model_Branch')->addCondition('id',$g->current_row[$f])->tryLoadAny()->get('name');
+    			$g->current_row[$f] = $g->add('Model_Branch')->addCondition('id',$g->current_row[$f])->tryLoadAny()->get('name');
     		});
 		}
 

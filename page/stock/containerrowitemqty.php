@@ -22,7 +22,7 @@ class page_stock_containerrowitemqty extends Page {
 	
 		if($g=$crud->grid){
 			$g->addPaginator(50);
-
+			$g->addQuickSearch(array('branch','container','row','item'));
 		}
 
 	}

@@ -21,23 +21,27 @@ class page_stock_actions_transfer extends Page {
 		$from_branch_model->addCondition('id',$this->api->currentBranch->id);
 		$from_branch_field->setModel($from_branch_model);
 		$from_branch_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
-			// From Container
 		
+			// From Container
 		$from_container_field = $form->addField('dropdown','from_container','Container')->validateNotNull()->setEmptyText('Please Select');
 		$from_container_model = $this->add('Model_Stock_Container');
 		$from_container_field->setModel($from_container_model->loadGeneralAndUsed());
 		$from_container_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
-		
-		// $from_container_field->js('change',$form->js()->atk4_form('reloadField','from_row',array($this->api->url(),'from_container'=>$from_container_field->js()->val())));
-		// if($_GET['from_container']){
-
-		// 	}	
+		$from_container_field->js('change',$form->js()->atk4_form('reloadField','from_row',array($this->api->url(),'from_container'=>$from_container_field->js()->val())));
+			
 			// From Row
 		$from_row_field = $form->addField('dropdown','from_row','Row')->validateNotNull()->setEmptyText('Please Select');
 		$from_row_model = $this->add('Model_Stock_Row');
 		$from_row_model->addCondition('branch_id',$this->api->currentBranch->id);
-		$from_row_field->setModel($from_row_model->loadGeneralAndUsed());	
-		$from_row_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
+		$from_row_model->loadGeneralAndUsed();
+		if($_GET['from_container']){
+			$from_cont = $this->api->stickyGET('from_container');
+			$from_row_model->addCondition('container_id',$from_cont);
+		}else{
+			$from_row_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
+		}
+
+		$from_row_field->setModel($from_row_model);	
 			// From Item
 		$from_item_field = $form->addField('autocomplete/Basic','from_item','Item')->validateNotNull();//->setEmptyText('Please Select');
 		$from_item_field->setModel('Stock_Item');	
@@ -97,7 +101,15 @@ class page_stock_actions_transfer extends Page {
 				$transfer_transaction->addCondition('created_at','<=',$_GET['to_date']);
 		}
 
-		$crud->setModel($transfer_transaction,array('branch','item','qty','rate','narration','created_at','to_branch_id'),array('branch','item','qty','rate','amount','narration','created_at','to_branch_id'));	
+		$crud->setModel($transfer_transaction,array('branch','item','qty','rate','narration','created_at','to_branch_id'),array('branch','item','qty','rate','amount','narration','created_at','to_branch_id'));
+
+		if(!$crud->isEditing()){
+			$grid = $crud->grid;
+			$grid->addFormatter('to_branch_id','to');
+    		$grid->addMethod('format_to',function($g,$f){
+    			$g->current_row[$f] = $g->add('Model_Branch')->addCondition('id',$g->current_row[$f])->tryLoadAny()->get('name');
+    		});
+		}
 
 		if($form->isSubmitted()){
 			//Check for UsedSubmit
@@ -115,7 +127,7 @@ class page_stock_actions_transfer extends Page {
 				if(!preg_match('/used/',strtolower($container_model['name'])))
 					$form->displayError('from_container','Select UsedSubmit Container');
 				if(!preg_match('/used/', strtolower($row_model['name'])))
-					$form->displayError('to_container','Select UsedSubmit Row');
+					$form->displayError('from_row','Select UsedSubmit Row');
 			}
 
 			if( !($row_model and $row_model->loaded()))

@@ -22,12 +22,22 @@ class page_stock_actions_move extends Page {
 		$from_container_model->addCondition('branch_id',$this->api->currentBranch->id);
 		$from_container_field->setModel($from_container_model);	
 		$from_container_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
+		
+		$from_container_field->js('change',$form->js()->atk4_form('reloadField','from_row',array($this->api->url(),'from_container'=>$from_container_field->js()->val())));
 			// From Row
+
 		$from_row_field = $form->addField('dropdown','from_row','Row')->validateNotNull()->setEmptyText('Please Select');
+		
 		$from_row_model = $this->add('Model_Stock_Row');
 		$from_row_model->addCondition('branch_id',$this->api->currentBranch->id);
+		if($_GET['from_container']){
+			$from_container = $this->api->stickyGET('from_container');
+			$from_row_model->addCondition('container_id',$from_container);
+		}else{
+			$from_row_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
+		}
+		
 		$from_row_field->setModel($from_row_model);
-		$from_row_field->js(true)->closest('div.atk-form-row')->appendTo($colleft);
 			// From Item
 		$from_item_field = $form->addField('autocomplete/Basic','from_item','Item')->validateNotNull();//->setEmptyText('Please Select');
 		$from_item_field->setModel('Stock_Item');	
@@ -45,13 +55,19 @@ class page_stock_actions_move extends Page {
 		$to_container_model = $this->add('Model_Stock_Container');	
 		$to_container_field->setModel($to_container_model);	
 		$to_container_field->js(true)->closest('div.atk-form-row')->appendTo($colright);
+		$to_container_field->js('change',$form->js()->atk4_form('reloadField','to_row',array($this->api->url(),'to_container'=>$to_container_field->js()->val())));
+			
 			// To Row
 		$to_row_field = $form->addField('dropdown','to_row','Row')->validateNotNull()->setEmptyText('Please Select');
 		$to_row_model = $this->add('Model_Stock_Row');
-			//Todo Load Row Accrding to Container selection
-			// $to_row_model->addCondition('branch_id',$form['to_branch']);
-		$to_row_field->setModel($to_row_model);	
-		$to_row_field->js(true)->closest('div.atk-form-row')->appendTo($colright);
+		if($_GET['to_container']){
+			$to_container = $this->api->stickyGET('to_container');
+			$to_row_model->addCondition('container_id',$to_container);
+		}else{
+			$to_row_field->js(true)->closest('div.atk-form-row')->appendTo($colright);
+		}
+		$to_row_field->setModel($to_row_model);
+		
 		$is_used_submit = $form->addField('checkBox','is_used_submit');
 		$is_used_submit->js(true)->closest('div.atk-form-row')->appendTo($colright);
 		

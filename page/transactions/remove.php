@@ -51,7 +51,7 @@ class page_transactions_remove extends Page {
 
 					try{
 						$p->api->db->beginTransaction();
-							$p->add('Model_Account')->load($form['related_account'])->markDirty();
+								$p->add('Model_Account')->load($form['related_account'])->markDirty();
 							$transaction->forceDelete();
 					    $p->api->db->commit();
 					} catch (Exception $e) {

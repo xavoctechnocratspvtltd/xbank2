@@ -11,7 +11,7 @@ class Model_Branch extends Model_Table {
 		$this->addField('PerformClosings')->type('boolean')->defaultValue(true)->display(array('grid'=>'grid/inline'));
 		$this->addField('SendSMS')->type('boolean')->defaultValue(true);
 		$this->addField('published')->type('boolean')->defaultValue(true);
-		$this->addField('allow_login')->type('boolean')->defaultValue(true);
+		$this->addField('allow_login')->type('boolean')->defaultValue(true)->display(array('grid'=>'grid/inline'));
 
 		$this->hasMany('Staff','branch_id');
 		$this->hasMany('Member','branch_id');
@@ -20,10 +20,17 @@ class Model_Branch extends Model_Table {
 		$this->hasMany('Mo','branch_id');
 		$this->hasMany('Stock_Container','branch_id');
 
+		$this->addHook('beforeSave',$this);
 		$this->addHook('afterInsert',$this);
 		$this->addHook('beforeDelete',$this);
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave(){
+		if($this['Code']=='DFL'){
+			throw $this->exception('Cannot Edit Default Branch');
+		}
 	}
 
 	function beforeDelete(){

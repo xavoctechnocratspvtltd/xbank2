@@ -73,8 +73,8 @@ class page_stock_reports_stock extends Page {
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
 			$tra_model->addCondition('transaction_type','Transfer');
 			$tra_model->addCondition('item_id',$g->model->id);
-			$tra_model->addCondition('to_branch_id',$g->api->currentBranch->id);
-			$tra_model->addCondition('branch_id','<>',$g->api->currentBranch->id);
+			// $tra_model->addCondition('to_branch_id',$g->api->currentBranch->id);
+			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
 
 			$tra_model_qty = ($tra_model->sum('qty')->getOne())?:0;
 			$g->current_row_html[$f]=$tra_model_qty;

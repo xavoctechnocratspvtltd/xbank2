@@ -11,6 +11,7 @@ class View_StockMember_Consume extends View {
 		$transaction_j_item->addField('is_consumable');
 		$transaction->addCondition('is_consumable',true);
 		$transaction->addCondition('transaction_type','Consume');
+		// $transaction->setOrder('created_at','asc');
 		if($_GET['item'])
 			$transaction->addCondition('item_id',$_GET['item']);
 

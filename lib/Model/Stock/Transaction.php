@@ -16,8 +16,8 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->hasOne('Model_Stock_Row','from_row_id')->defaultValue(0)->sortable(true);
 
 		$this->addField('qty')->defaultValue(0);
-		$this->addField('rate')->defaultValue(0); 
-		$this->addField('amount')->defaultValue(0);
+		$this->addField('rate')->type('money')->defaultValue(0); 
+		$this->addField('amount')->type('money')->defaultValue(0);
 		$this->addField('narration');
 		$this->addField('created_at')->type('date')->defaultValue($this->api->today);
 		$this->addField('issue_date');

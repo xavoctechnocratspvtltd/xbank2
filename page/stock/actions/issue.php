@@ -14,11 +14,17 @@ class page_stock_actions_issue extends Page {
 		$container_model->addCondition('name','<>','General');
 		$container_model->addCondition('name','<>','Dead');
 		$container_field->setModel($container_model);
+		
+		$container_field->js('change',$form->js()->atk4_form('reloadField','row',array($this->api->url(),'container'=>$container_field->js()->val())));
 
 		$row_field = $form->addField('dropdown','row')->validateNotNull()->setEmptyText('Please Select');
 		$row_model = $this->add('Model_Stock_Row');
 		$row_model->addCondition('name','<>','General');
 		$row_model->addCondition('name','<>','Dead');
+		if($_GET['container']){
+			$container = $this->api->stickyGET('container');
+			$row_model->addCondition('container_id',$container);
+		}
 		$row_field->setModel($row_model);
 
 		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select')->validateNotNull();

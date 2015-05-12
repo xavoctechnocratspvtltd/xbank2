@@ -32,11 +32,11 @@ class page_stock_reports_itemtransaction extends Page{
 				if($_GET['transaction_type'] == "TransferIn"){
 					$transaction_model->addCondition('transaction_type','Transfer');
 					$transaction_model->addCondition('to_branch_id',$this->api->currentBranch->id);
-					$transaction_model->addCondition('branch_id','<>',$this->api->currentBranch->id);
+					// $transaction_model->addCondition('branch_id','<>',$this->api->currentBranch->id);
 
 				}elseif($_GET['transaction_type'] == "TransferOut"){
 					$transaction_model->addCondition('transaction_type','Transfer');
-					$transaction_model->addCondition('to_branch_id','<>',$this->api->currentBranch->id);
+					// $transaction_model->addCondition('branch_id','<>',$this->api->currentBranch->id);
 					$transaction_model->addCondition('branch_id',$this->api->currentBranch->id);
 				}else{
 					$transaction_model->addCondition('transaction_type',$_GET['transaction_type']);	
@@ -47,7 +47,7 @@ class page_stock_reports_itemtransaction extends Page{
 
 			}
 
-			$transaction_model->_dsql()->group('transaction_type');
+			// $transaction_model->_dsql()->group('transaction_type');
 			$transaction_model->setOrder('transaction_type','desc');
 			
 			$grid->addMethod('format_opening',function($g,$f){

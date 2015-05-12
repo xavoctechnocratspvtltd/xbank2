@@ -21,7 +21,7 @@ class Model_Stock_Item extends Model_Table {
  		$this->addHook('beforeDelete',$this);
 		$this->_dsql()->order('name','asc');
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
  
@@ -218,12 +218,14 @@ class Model_Stock_Item extends Model_Table {
 	}
 
 
-	function getOpeningQty($item_id=0){
+	function getOpeningQty($item_id=0,$branch_id=null){
 		if(!$item_id)
 			return 0;
 		$opening_tra = $this->add('Model_Stock_Transaction');
 		$opening_tra->addCondition('item_id',$item_id);
 		$opening_tra->addCondition('transaction_type','Openning');
+		if($branch_id)
+			$opening_tra->addCondition('branch_id',$branch_id);
 		$opening_tra_qty = ($opening_tra->sum('qty')->getOne())?:0;
 		return $opening_tra_qty;	
 	}
@@ -349,7 +351,7 @@ class Model_Stock_Item extends Model_Table {
 		$transfer_from_this_branch_tra = $this->add('Model_Stock_Transaction');
 		$transfer_from_this_branch_tra->addCondition('item_id',$this->id);
 		$transfer_from_this_branch_tra->addCondition('created_at','<',$as_on);
-		$transfer_from_this_branch_tra->addCondition('to_branch_id','<>',$this->api->currentBranch->id);
+		$transfer_from_this_branch_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$transfer_from_this_branch_tra->addCondition('transaction_type','Transfer');
 		$transfer_from_this_branch_tra_qty = ($transfer_from_this_branch_tra->sum('qty')->getOne())?:0;
 

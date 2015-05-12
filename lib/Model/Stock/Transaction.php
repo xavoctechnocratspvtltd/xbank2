@@ -33,7 +33,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->addHook('afterInsert',$this);
 		$this->addHook('beforeSave',$this);
 		
-
+		$this->setOrder('created_at','asc');
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 

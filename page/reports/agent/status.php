@@ -25,10 +25,10 @@ class page_reports_agent_status extends Page {
 		$member_join->addField('PermanentAddress');
 		$member_join->addField('PanNo');
 		$member_join->addField('PhoneNos');
-		$member_join->addField('branch_id');
+		$member_join->addField('member_branch_id','branch_id');
 
 		$sb_acc_join = $agent_model->join('accounts','account_id');
-		$sb_acc_join->addField('sb_branch','branch_id');
+		$sb_acc_join->addField('branch_id');
 
 		$agent_model->addExpression('status')->set(function($m,$q){
 			$date = $m->api->previousMonth(
@@ -52,6 +52,13 @@ class page_reports_agent_status extends Page {
 			return $sponsor->fieldQuery('PhoneNos');
 		});
 
+		$agent_model->addExpression('sponsor_cadre')->set(function($m,$q){
+			$sponsor = $m->add('Model_Agent',array('table_alias'=>'sponsor_cadre'));
+
+			$sponsor->addCondition('id',$m->getElement('sponsor_id'));
+			return $sponsor->fieldQuery('cadre');
+		});
+
 		$agent_model->addExpression('last_account_date')->set(function($m,$q){
 			$acc = $m->add('Model_Account',array('table_alias'=>'last_account'));
 			$acc->addCondition('agent_id',$m->getElement('id'));
@@ -60,7 +67,7 @@ class page_reports_agent_status extends Page {
 			return $acc->fieldQuery('created_at');
 		});
 
-		$agent_model->addCondition('sb_branch',$this->api->current_branch->id);
+		// $agent_model->addCondition('branch_id',$this->api->current_branch->id);
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -72,10 +79,17 @@ class page_reports_agent_status extends Page {
 		}else
 			$agent_model->addCondition('id',-1);
 
-		$grid->setModel($agent_model,array('name','FatherName','PermanentAddress','PhoneNos','PanNo','account','sponsor','sponsor_phone','last_account_date'));
+		$agent_model->addCondition('agent_member_name','not like','%Default%');
+
+		$agent_model->add('Controller_Acl');
+
+		$grid->setModel($agent_model,array('code','agent_member_name','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','current_individual_crpb','last_account_date','sponsor','sponsor_phone','sponsor_cadre'));
 		$grid->addPaginator(50);
 
 		$grid->addSno();
+		$grid->addFormatter('agent_member_name','wrap');
+		$grid->addFormatter('PermanentAddress','wrap');
+		$grid->addFormatter('account','wrap');
 
 		$grid->removeColumn('ActiveStatus');
 		// $grid->controller->importField('status');

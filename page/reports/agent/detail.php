@@ -35,7 +35,7 @@ class page_reports_agent_detail extends Page {
 		$agent->addCondition('branch_id',$this->api->current_branch->id);
 
 		$agent->addExpression('is_default')->set(function($m,$q){
-			$def_acc = $this->add('Model_Account',array('table_alias'=>'dfac_4_agent'));
+			$def_acc = $m->add('Model_Account',array('table_alias'=>'dfac_4_agent'));
 			$def_acc->addCondition('DefaultAC',true);
 			$def_acc->addCondition('member_id',$m->getElement('member_id'));
 			return $def_acc->count();
@@ -52,9 +52,14 @@ class page_reports_agent_detail extends Page {
 			return $sponsor->fieldQuery('PhoneNos');
 		});
 
+		$agent->addExpression('sponsor_cadre')->set(function($m,$q){
+			$sponsor = $m->add('Model_Agent',array('table_alias'=>'sponsor_cadre'));
+			$sponsor->addCondition('id',$m->getElement('sponsor_id'));
+			return $sponsor->fieldQuery('cadre');
+		});
+
 		$agent->getElement('created_at')->caption('Date Of Joining');
 
-		$agent->addExpression('current_cadre')->set("'TODO'");
 		$agent->addExpression('total_team_member')->set("'TODO'");
 
 		if($_GET['team_sponsor_id']){
@@ -67,12 +72,11 @@ class page_reports_agent_detail extends Page {
 		}
 
 
-
 		$view=$this->add('View');
 		$grid_agent=$view->add('Grid_AccountsBase');
 
-		$grid_agent->add('H3',null,'grid_buttons')->set('Agent Detail As On '. date('d-M-Y')); 
-		$grid_agent->setModel($agent,array('name','FatherName','PermanentAddress','PhoneNos','PanNo','account','sponsor','sponsor_phone','created_at','AgentCode','current_cadre','total_team_member'));
+		$grid_agent->add('H3',null,'grid_buttons')->set('Agent Detail As On '. date('d-M-Y'));
+		$grid_agent->setModel($agent,array('code','agent_member_name','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor_cadre','sponsor_phone','total_team_member'));
 		$grid_agent->addSno();
 
 		$grid_agent->addColumn('Button','member_list');

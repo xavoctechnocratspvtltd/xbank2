@@ -61,6 +61,8 @@ class page_reports_agent_detail extends Page {
 		$agent->getElement('created_at')->caption('Date Of Joining');
 
 		$agent->addExpression('total_team_member')->set("'TODO'");
+		$agent->addExpression('team_business')->set("'TODO'");
+		$agent->addExpression('self_business')->set($this->add('Model_Account')->addCondition('agent_id',$agent->getElement('id'))->sum('Amount') );
 
 		if($_GET['team_sponsor_id']){
 			$agent->addCondition('sponsor_id',$_GET['team_sponsor_id']);
@@ -76,9 +78,10 @@ class page_reports_agent_detail extends Page {
 		$grid_agent=$view->add('Grid_AccountsBase');
 
 		$grid_agent->add('H3',null,'grid_buttons')->set('Agent Detail As On '. date('d-M-Y'));
-		$grid_agent->setModel($agent,array('code','agent_member_name','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor_cadre','sponsor_phone','total_team_member'));
+		$grid_agent->setModel($agent,array('code','agent_member_name','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor','sponsor_cadre','sponsor_phone','self_business','team_business','current_individual_crpb','CumulativeBusinessCreditPoints','total_team_member'));
 		$grid_agent->addSno();
 
+		$grid_agent->addColumn('team_crpb');
 		$grid_agent->addColumn('Button','member_list');
 		
 		$view->add('H3')->set('Agent Guarantor');
@@ -94,7 +97,8 @@ class page_reports_agent_detail extends Page {
 			);
 
 		$grid_agent->js('click',$js);
-
+		$grid_agent->addFormatter('PermanentAddress','wrap');
+		$grid_agent->addFormatter('account','wrap');
 
 		if($form->isSubmitted()){
 

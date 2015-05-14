@@ -12,7 +12,7 @@ class page_reports_agent_tds extends Page {
 		if($_GET['to_date']) $till_date = $_GET['to_date'];
 
 		$form = $this->add('Form');
-		$agent_field=$form->addField('autocomplete/Basic','agent')->validateNotNull();
+		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
@@ -59,7 +59,10 @@ class page_reports_agent_tds extends Page {
 
 		// $model->setLimit(10);
 		$model->_dsql()->group('reference_id');
-		$grid->setModel($model,array('voucher_no','reference','dr_sum','created_at','tds','net_commission'));
+		$grid->setModel($model,array('agent_id','agent','voucher_no','reference','dr_sum','created_at','tds','net_commission'));
+		
+		if($_GET['agent'])
+			$grid->removeColumn('agent_id');
 
 		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 		$grid->addPaginator(50);
@@ -74,7 +77,7 @@ class page_reports_agent_tds extends Page {
 					'account_type'=>$form['account_type']
 				))->execute();
 		}
-			
+
 	}
 
 }

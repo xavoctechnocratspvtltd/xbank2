@@ -4,7 +4,7 @@ class page_reports_member_loaninsurance extends Page {
 
 	function init(){
 		parent::init();
-		$till_date="";
+		$till_date=$till_date=$this->api->today;
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
 		}

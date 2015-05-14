@@ -5,7 +5,7 @@ class page_reports_member_depositinsurance extends Page {
 	function init(){
 		parent::init();
 
-		$till_date="";
+		$till_date=$this->api->today;
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
 		}
@@ -16,7 +16,7 @@ class page_reports_member_depositinsurance extends Page {
 		$form->addSubmit('GET List');
 
 
-		$grid=$this->add('Grid_AccountsBase'); 
+		$grid=$this->add('Grid_AccountsBase');
 		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance List As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$accounts_model=$this->add('Model_Account');

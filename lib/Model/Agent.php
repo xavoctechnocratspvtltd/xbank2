@@ -26,12 +26,20 @@ class Model_Agent extends Model_Table {
 		$this->hasMany('AgentGuarantor','agent_id');
 		$this->hasMany('DocumentSubmitted','agent_id');
 		
+		$this->addExpression('code')->set($this->dsql()->concat($this->refSQL('account_id')->fieldQuery('branch_code'), ' ' , $this->getElement('id') ));
 
-		$this->addExpression('name')->set(function($m,$q){
+		$this->addExpression('agent_member_name')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('name');
+		});
+
+		$this->addExpression('agent_member_name_full')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('member_name');
 		});
 
-		$this->addExpression('code')->set($this->dsql()->concat($this->refSQL('account_id')->fieldQuery('branch_code'), ' ' , $this->getElement('id') ));
+		$this->addExpression('name')->set($this->dsql()->concat(
+				$this->getElement('code'),' ', $this->getElement('agent_member_name_full')
+			));
+
 
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('beforeSave',$this);

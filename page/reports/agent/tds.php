@@ -65,6 +65,16 @@ class page_reports_agent_tds extends Page {
 		
 		if($_GET['agent'])
 			$grid->removeColumn('agent_id');
+		else{
+			$grid->addMethod('format_agent_id',function($g,$f){
+				if($g->model['agent_id']){
+					$agent_m = $g->add('Model_Agent')->tryLoad($g->model['agent_id']);				
+					$g->current_row[$f] = $agent_m['name'];
+				}
+				
+			});
+			$grid->addFormatter('agent_id','agent_id');
+		}
 
 		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 		$grid->addPaginator(50);

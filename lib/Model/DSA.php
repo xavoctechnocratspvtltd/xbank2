@@ -12,6 +12,11 @@ class Model_DSA extends Model_Table {
 		$this->addField('username');
 		$this->addField('password');
 
+		$this->addField('phone_no_1');
+		$this->addField('phone_no_2');
+		$this->addField('email_id_1');
+		$this->addField('email_id_2');
+
 
 		$this->hasMany('DocumentSubmitted','dsa_id');
 		$this->hasMany('DSAGuarantor','dsa_id');

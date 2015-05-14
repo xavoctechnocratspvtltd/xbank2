@@ -5,9 +5,12 @@ class Model_Dealer extends Model_Table {
 		parent::init();
 
 		$this->hasOne('DSA','dsa_id');
-		$this->addField('name');
+		$this->addField('name')->caption('Firm Name');
 		$this->addField('properitor_name');
-		$this->addField('properitor_phone_no');
+		$this->addField('properitor_phone_no_1');
+		$this->addField('properitor_phone_no_2');
+		$this->addField('email_id_1');
+		$this->addField('email_id_2');
 		$this->addField('product');
 		
 		$this->addField('Address')->type('text');

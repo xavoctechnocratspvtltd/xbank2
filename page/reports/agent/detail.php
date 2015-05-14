@@ -35,7 +35,7 @@ class page_reports_agent_detail extends Page {
 		$agent->addCondition('branch_id',$this->api->current_branch->id);
 
 		$agent->addExpression('is_default')->set(function($m,$q){
-			$def_acc = $this->add('Model_Account',array('table_alias'=>'dfac_4_agent'));
+			$def_acc = $m->add('Model_Account',array('table_alias'=>'dfac_4_agent'));
 			$def_acc->addCondition('DefaultAC',true);
 			$def_acc->addCondition('member_id',$m->getElement('member_id'));
 			return $def_acc->count();

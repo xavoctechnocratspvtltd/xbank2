@@ -9,7 +9,7 @@ class page_reports_dealerdsa_dealer extends Page {
 		$form->addField('autocomplete/Basic','dealer')->setModel('Dealer');
 		$form->addSubmit('Details');
 
-		$grid = $this->add('Grid');
+		$grid = $this->add('Grid_AccountsBase');
 		$m = $this->add('Model_Dealer');
 
 		if($_GET['dealer_id']){
@@ -19,6 +19,7 @@ class page_reports_dealerdsa_dealer extends Page {
 		}
 
 		$grid->setModel($m);
+		$grid->addSno();
 		$grid->addPaginator(50);
 
 		if($form->isSubmitted()){

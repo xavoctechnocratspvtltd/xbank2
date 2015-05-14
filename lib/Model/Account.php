@@ -161,7 +161,9 @@ class Model_Account extends Model_Table {
 	}
 
 	function defaultBeforeDelete(){
-		if($this->table !='accounts_pending' AND $this->ref('TransactionRow')->count()->getOne() > 0)
+		if($this->table =='accounts_pending') return;
+
+		if($this->ref('TransactionRow')->count()->getOne() > 0)
 			throw $this->exception('Account Contains Transactions, Cannot Delete');
 
 		if($related_tran = $this->ref('RelatedTransactions')->addCondition('cr_sum','<>',0)->count()->getOne()){

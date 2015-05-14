@@ -59,9 +59,11 @@ class page_reports_agent_tds extends Page {
 		}else
 			$model->addCondition('id',-1);
 
+		$model->getElement('created_at')->caption('Deposit Date');
+		
 		// $model->setLimit(10);
 		$model->_dsql()->group('reference_id');
-		$grid->setModel($model,array('agent_id','agent','voucher_no','reference','dr_sum','created_at','tds','net_commission'));
+		$grid->setModel($model,array('agent_id','agent','voucher_no','reference','dr_sum','tds','net_commission','created_at'));
 		
 		if($_GET['agent'])
 			$grid->removeColumn('agent_id');

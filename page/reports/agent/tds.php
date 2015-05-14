@@ -34,6 +34,8 @@ class page_reports_agent_tds extends Page {
 		$model->addExpression('tds')->set($model->refSQL('TransactionRow')->addCondition('account','like','%TDS%')->sum('amountCr'));
 		$model->addExpression('net_commission')->set($model->refSQL('TransactionRow')->addCondition('account','not like','%TDS%')->sum('amountCr'));
 
+		$model->getElement('reference_id')->caption('Account');
+		$model->getElement('dr_sum')->caption('Total Amount');
 
 
 		if($_GET['filter']){
@@ -59,11 +61,24 @@ class page_reports_agent_tds extends Page {
 
 		// $model->setLimit(10);
 		$model->_dsql()->group('reference_id');
-		$grid->setModel($model,array('voucher_no','reference','dr_sum','created_at','tds','net_commission'));
+		$grid->setModel($model,array('agent','reference','voucher_no','created_at','dr_sum','tds','net_commission'));
 
 		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 		$grid->addPaginator(50);
 		$grid->addSno();
+
+		$grid->addMethod('format_deposit',function($g,$f){
+			$g->current_row[$f] = $g->add('Model_TransactionRow')
+									->addCondition('account_id',$g->model['reference_id'])
+									->addCondition('created_at',$g->model['created_at'])
+									->addCondition('amountCr','>',0)
+									->tryLoadAny()
+									->get('amountCr')
+									;
+		});
+
+		$grid->addColumn('deposit','deposit');
+		$grid->addOrder()->move('deposit','before','dr_sum')->now();
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array(

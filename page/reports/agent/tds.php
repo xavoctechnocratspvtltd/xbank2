@@ -69,7 +69,7 @@ class page_reports_agent_tds extends Page {
 			$grid->addMethod('format_agent_id',function($g,$f){
 				if($g->model['agent_id']){
 					$agent_m = $g->add('Model_Agent')->tryLoad($g->model['agent_id']);				
-					$g->current_row[$f] = $agent_m['name'];
+					$g->current_row[$f] = $agent_m['agent_member_name'];
 				}
 				
 			});

@@ -8,11 +8,13 @@ class page_utility_accwithoutimage extends Page {
 		$acc= $this->Add('Model_Account');
 		$acc->addCondition('sig_image_id',null);
 		$acc->addCondition('DefaultAC',0);
-		$acc->addCondition('SchemeType','Default');
+		$acc->setOrder('AccountNumber');
+		// $acc->addCondition('SchemeType','<>','Default');
 		$acc->add('Controller_Acl');
 
-		$grid=$this->add('Grid');
+		$grid=$this->add('Grid_AccountsBase');
 		$grid->setModel($acc,array('AccountNumber','member_id'));
 		$grid->addpaginator(100);
+		$grid->addSno();
 	}
 }

@@ -11,13 +11,13 @@ class page_reports_deposit_commission extends Page {
 		$form=$this->add('Form');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
+		$form->addField('DatePicker','from_date')->validateNotNull();
+		$form->addField('DatePicker','to_date')->validateNotNull();
 
 		$account_type_array=array('%'=>'All','DDS'=>'DDS','FixedAndMis'=>'Fixed And Mis','Recurring'=>'Recurring');
 
 
-		$form->addField('dropdown','account_type')->setValueList($account_type_array)->setEmptyText('Please Select');
+		$form->addField('dropdown','account_type')->setValueList($account_type_array);
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_AccountsBase');
@@ -42,7 +42,7 @@ class page_reports_deposit_commission extends Page {
 		$referance_account_join->addField('Amount');
 		$referance_account_scheme_join = $referance_account_join->join('schemes','scheme_id');
 		$referance_account_scheme_join->addField('ref_account_scheme_type','SchemeType');
-		$referance_account_scheme_join->addField('scheme_name','name');
+		$referance_account_scheme_join->addField('ref_account_scheme_name','name');
 
 
 
@@ -66,7 +66,7 @@ class page_reports_deposit_commission extends Page {
 
 			if($_GET['account_type']){
 				$this->api->stickyGET("account_type");
-				$transaction_row->addCondition('ref_account_scheme_type',$_GET['account_type']);
+				$transaction_row->addCondition('ref_account_scheme_type','like',$_GET['account_type']);
 			}
 
 		}else
@@ -83,7 +83,7 @@ class page_reports_deposit_commission extends Page {
 		$transaction_row->setOrder('created_at','desc');
 		$transaction_row->add('Controller_Acl');
 
-		$grid->setModel($transaction_row,array('AccountNumber','Amount','scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name','agent_account_number'));
+		$grid->setModel($transaction_row,array('AccountNumber','Amount','ref_account_scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name','agent_account_number'));
 		$grid->addFormatter('voucher_no','voucherNo');
 
 		$grid->addMethod('format_totalCommission',function($g,$f){

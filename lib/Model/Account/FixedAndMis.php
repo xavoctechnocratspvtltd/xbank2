@@ -40,11 +40,11 @@ class Model_Account_FixedAndMis extends Model_Account{
 			throw $this->exception('Cannot withdraw amount less then '. $balance ,'ValidityCheck')->setField('amount');
 		}
 		
-		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
-		$this['LastCurrentInterestUpdatedAt'] = $on_date;
+		// $this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);
+		// $this['LastCurrentInterestUpdatedAt'] = $on_date;
 
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date,$in_branch);
-		$this->save();
+		// $this->save();
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber=null,$otherValues=null,$form=null,$created_at=null){
@@ -252,8 +252,20 @@ class Model_Account_FixedAndMis extends Model_Account{
 		if(!$branch) $branch = $this->api->currentBranch;
 		
 		$provision_transactions_rows = $this->add('Model_TransactionRow');
-		
-		$provision_transactions_join = $provision_transactions_rows->join('transactions','transaction_type_id');
+		$provision_transactions_rows->getElement('reference_id')->sortable(true);
+		$provision_transactions_rows->getElement('amountDr')->sortable(true);
+
+		$provision_transactions_join = $provision_transactions_rows->join('transactions','transaction_id');
+		// $provision_transactions_join->addField('reference_id');
+		$account_join = $provision_transactions_join->join('accounts','reference_id');
+		$account_join->addField('AccountNumber');
+		$account_join->addField('account_created','created_at')->sortable(true);
+		$account_join->addField('account_braqnch_id','branch_id');
+
+		$scheme_join = $account_join->join('schemes','scheme_id');
+		$scheme_join->addField('scheme_name','name')->sortable(true);
+		$scheme_join->addField('Interest');
+
 		$transaction_type_join = $provision_transactions_join->join('transaction_types','transaction_type_id');
 
 		$transaction_type_model = $this->add('Model_TransactionType');
@@ -265,7 +277,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$provision_transactions_rows->addCondition('created_at','>=',$from_date);
 		$provision_transactions_rows->addCondition('created_at','<',$this->api->nextDate($to_date));
 
-
+		$provision_transactions_rows->addCondition('amountDr','>',0);
+		// $provision_transactions_rows->_dsql()->group('transaction_id');
 
 		return $provision_transactions_rows;
 

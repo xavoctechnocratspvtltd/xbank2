@@ -2,6 +2,7 @@
 
 class Controller_Acl extends AbstractController{
 	public $default_view = true;
+	public $branch_field= 'branch_id';
 	function init(){
 		parent::init();
 
@@ -46,7 +47,7 @@ class Controller_Acl extends AbstractController{
 		if(!$model_class) return;
 
 		if($acl->isCurrentBranchOnly() and $model_class->hasElement('branch_id')){
-			$model_class->addCondition('branch_id',$this->api->currentStaff['branch_id']);
+			$model_class->addCondition($this->branch_field,$this->api->currentStaff['branch_id']);
 		}
 
 		if(!$this->owner instanceof CRUD OR $this->owner->isEditing()) return;

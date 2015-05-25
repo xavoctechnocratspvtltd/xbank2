@@ -84,6 +84,10 @@ class Model_Staff extends Model_Table {
 		return $this->ref('Acl');
 	}
 
+	function branch(){
+		return $this->ref('branch_id');
+	}
+
 	function createNewStaff($name,$password,$AccessLevel,$branch_id=null){
 		if(!$branch_id) $branch_id = $this->api->current_branch->id;
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Staff');

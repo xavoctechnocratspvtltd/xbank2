@@ -5,6 +5,7 @@ class Frontend extends ApiFrontend {
     public $now;
     public $today;
     public $current_branch; 
+    public $current_staff; 
 
     function init()
     {

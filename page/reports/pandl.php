@@ -23,7 +23,8 @@ class page_reports_pandl extends Page {
 			$this->api->stickyGET('to_date');
 		}
 
-		$bs = $this->add('View_AccountSheet',array('from_date'=>$from_date,'to_date'=>$to_date,'pandl'=>true));
+		$for_branch= (!$this->api->current_staff->isSuper()?$this->api->current_staff->branch():false);
+		$bs = $this->add('View_AccountSheet',array('from_date'=>$from_date,'to_date'=>$to_date,'pandl'=>true,'for_branch'=>$for_branch));
 
 		$form = $this->add('Form');
 		$form->addField('DatePicker','from_date');
@@ -39,11 +40,10 @@ class page_reports_pandl extends Page {
 	}
 
 	function page_Details(){
-		$this->api->stickyGET('_id');
+		$this->api->stickyGET('_id'); // bs id
 
-		$this->add('View_Info')->set($_GET['_id']);
 		
-		$fy = $this->api->getFinancialYear('2014-01-01');
+		$fy = $this->api->getFinancialYear();
 
 		if(!$_GET['from_date'])
 			$from_date = $fy['start_date'];
@@ -59,7 +59,23 @@ class page_reports_pandl extends Page {
 			$this->api->stickyGET('to_date');
 		}
 
+		if($this->api->auth->model['AccessLevel'] <=80)
+			$for_branch = $this->api->current_branch;
+		else
+			$for_branch = false;
+
 		$bs= $this->add('Model_BalanceSheet')->load($_GET['_id']);
+
+		// DEtails based on bs
+		if($bs['show_sub']=='SchemeGroup'){
+			$this->add('View_BSPLChunks_SchemeGroup',array('under_balance_sheet_id'=>$bs->id,'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+		}elseif($bs['show_sub']=='Accounts'){
+			$this->add('View_BSPLChunks_Accounts',array('under_balance_sheet_id'=>$bs->id,'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+		}elseif($bs['show_sub']=='PAndLGroup'){
+			$this->add('View_BSPLChunks_PAndLGroup',array('under_balance_sheet_id'=>$bs->id,'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+		}else{
+			$this->add('View_Error')->set('Not Implemented yet');
+		}
 
 		
 

@@ -51,7 +51,7 @@ class Model_BalanceSheet extends Model_Table {
 		// $transaction_row->addCondition('ActiveStatus',true);
 		// $transaction_row->addCondition('affectsBalanceSheet',false);
 
-		$transaction_row->_dsql()->where("(($aj_ta.ActiveStatus = 1 OR $aj_ta.affectsBalanceSheet = 1))");
+		// $transaction_row->_dsql()->where("(($aj_ta.ActiveStatus = 1 OR $aj_ta.affectsBalanceSheet = 1))");
 
 		if($branch)
 			$transaction_row->addCondition('branch_id',$branch->id);
@@ -74,16 +74,16 @@ class Model_BalanceSheet extends Model_Table {
 			$account->addCondition('branch_id',$branch->id);
 
 		$account->_dsql()->del('fields')->field('SUM(OpeningBalanceCr) opcr')->field('SUM(OpeningBalanceDr) opdr');
-		$account->_dsql()->where("((accounts.ActiveStatus = 1 OR accounts.affectsBalanceSheet = 1))");
+		// $account->_dsql()->where("((accounts.ActiveStatus = 1 OR accounts.affectsBalanceSheet = 1))");
 		$result_op = $account->_dsql()->getHash();
 
 
 		$cr = $result['scr'];
-		if(!$forPandL OR false) $cr = $cr + $result_op['opcr'];
+		if(!$forPandL) $cr = $cr + $result_op['opcr'];
 		if(strtolower($side) =='cr') return $cr;
 
 		$dr = $result['sdr'];		
-		if(!$forPandL OR false) $dr = $dr + $result_op['opdr'];
+		if(!$forPandL) $dr = $dr + $result_op['opdr'];
 		if(strtolower($side) =='dr') return $dr;
 
 		return array('CR'=>$cr,'DR'=>$dr,'cr'=>$cr,'dr'=>$dr,'Cr'=>$cr,'Dr'=>$dr);

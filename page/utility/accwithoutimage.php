@@ -8,6 +8,7 @@ class page_utility_accwithoutimage extends Page {
 		$acc= $this->Add('Model_Account');
 		$acc->addCondition('sig_image_id',null);
 		$acc->addCondition('DefaultAC',0);
+		$acc->addCondition('ActiveStatus',true);
 		$acc->setOrder('AccountNumber');
 		// $acc->addCondition('SchemeType','<>','Default');
 		$acc->add('Controller_Acl');

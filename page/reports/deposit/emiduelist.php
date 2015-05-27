@@ -10,10 +10,10 @@ class page_reports_deposit_emiduelist extends Page {
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 
-		$form->addField('DatePicker','on_date');
+		$form->addField('DatePicker','on_date')->validateNotNull();
 		// $form->addField('DatePicker','on_date');
-		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','time_collapse'=>'Time Collapse'))->setEmptyText('Please Select');
-		$form->addField('dropdown','type')->setValueList(array('RD'=>'RD','DDS'=>'DDS'))->setEmptyText('Please Select');
+		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','time_collapse'=>'Time Collapse'))->setEmptyText('Please Select')->validateNotNull();
+		// $form->addField('dropdown','type')->setValueList(array('RD'=>'RD'))->setEmptyText('Please Select');
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_AccountsBase');
@@ -55,15 +55,16 @@ class page_reports_deposit_emiduelist extends Page {
 			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('Amount');
 		});
 
-		$account_model->addExpression('guarantor_name')->set(function($m,$q){
-			$guarantor_m = $m->add('Model_Member',array('table_alias'=>'guarantor_name_q'));
-			$ac_join = $guarantor_m->join('account_guarantors.member_id');
-			$ac_join->addField('account_id');
-			$guarantor_m->addCondition('account_id',$q->getField('id'));
-			$guarantor_m->setLimit(1);
-			$guarantor_m->setOrder('id');
-			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.name');
+		$account_model->addExpression('total')->set(function ($m,$q){
+			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_amount'));
+			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+			$dpc_m->addCondition('DueDate','<=',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			$dpc_m->addCondition('account_id',$q->getField('id'));
+			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn > '". ($_GET['on_date']?:$m->api->today) ."')");
+			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			return $dpc_m->sum('Amount');
 		});
+		
 
 		$account_model->addExpression('agent')->set($account_model->refSQL('agent_id')->fieldQuery('name'));
 		$account_model->addExpression('agent_code')->set($account_model->refSQL('agent_id')->fieldQuery('AgentCode'));
@@ -112,16 +113,17 @@ class page_reports_deposit_emiduelist extends Page {
 
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');
-		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','paid_premium_count','due_premium_count','premium_amount','guarantor_name','last_premium','agent','agent_code','agent_phone'));
+		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','paid_premium_count','due_premium_count','premium_amount','total','last_premium','agent','agent_code','agent_phone'));
 		$grid->addSno();
+		// $grid->removeColumn('last_premium');
 
-		$grid->addMethod('format_balance',function($g,$f){
-			$bal = $g->model->getOpeningBalance($on_date=$_GET['on_date']?:$g->api->today,$side='both',$forPandL=false);
-			$bal = $bal['Cr'] - $bal['Dr'];
-			$g->current_row[$f] = $bal .' Cr';
-		});
+		// $grid->addMethod('format_balance',function($g,$f){
+		// 	$bal = $g->model->getOpeningBalance($on_date=$_GET['on_date']?:$g->api->today,$side='both',$forPandL=false);
+		// 	$bal = $bal['Cr'] - $bal['Dr'];
+		// 	$g->current_row[$f] = $bal .' Cr';
+		// });
 
-		$grid->addColumn('balance','balance');
+		// $grid->addColumn('balance','balance');
 
 		$grid->addPaginator(50);
 

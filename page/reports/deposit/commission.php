@@ -40,6 +40,8 @@ class page_reports_deposit_commission extends Page {
 		$referance_account_join = $transaction_join->join('accounts','reference_id');
 		$referance_account_join->addField('AccountNumber');
 		$referance_account_join->addField('Amount');
+		$reference_member_join = $referance_account_join->join('members','member_id');
+		$reference_member_join->addField('member_name','name');
 		$referance_account_scheme_join = $referance_account_join->join('schemes','scheme_id');
 		$referance_account_scheme_join->addField('ref_account_scheme_type','SchemeType');
 		$referance_account_scheme_join->addField('ref_account_scheme_name','name');
@@ -83,7 +85,7 @@ class page_reports_deposit_commission extends Page {
 		$transaction_row->setOrder('created_at','desc');
 		$transaction_row->add('Controller_Acl');
 
-		$grid->setModel($transaction_row,array('AccountNumber','Amount','ref_account_scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name','agent_account_number'));
+		$grid->setModel($transaction_row,array('AccountNumber','member_name','Amount','ref_account_scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name','agent_account_number'));
 		$grid->addFormatter('voucher_no','voucherNo');
 
 		$grid->addMethod('format_totalCommission',function($g,$f){

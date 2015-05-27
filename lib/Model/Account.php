@@ -29,7 +29,7 @@ class Model_Account extends Model_Table {
 		
 		//New Fields added//
 		$this->addField('account_type');
-		$this->addField('AccountNumber');//->display(array('form'=>'Readonly'));//->mandatory(true);
+		$this->addField('AccountNumber')->sortable(true);//->display(array('form'=>'Readonly'));//->mandatory(true);
 		$this->addField('AccountDisplayName')->caption('Account Displ. Name');
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true)->sortable(true);
 

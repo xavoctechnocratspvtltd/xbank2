@@ -87,15 +87,15 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$grid->addPaginator(50);
 		$grid->addSno();
 
-		$js=array(
-			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
-			$this->js()->_selector('#header')->toggle(),
-			$this->js()->_selector('#footer')->toggle(),
-			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
-			$this->js()->_selector('.atk-form')->toggle(),
-			);
+		// $js=array(
+		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+		// 	$this->js()->_selector('#header')->toggle(),
+		// 	$this->js()->_selector('#footer')->toggle(),
+		// 	$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+		// 	$this->js()->_selector('.atk-form')->toggle(),
+		// 	);
 
-		$grid->js('click',$js);
+		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('account_type'=>$form['account_type'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();

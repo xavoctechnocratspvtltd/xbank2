@@ -15,5 +15,6 @@ class page_reports_deposit extends Page {
 		$tab1=$tabs->addTabURL('reports_deposit_emireceivedlist','Premium Received List');
 		$tab1=$tabs->addTabURL('reports_deposit_advancecheqpayment','Advance Cheque Payment');
 		$tab1=$tabs->addTabURL('reports_deposit_matureaccountswithcrbal','Matured A/C With Cr Bal');
+		$tab1=$tabs->addTabURL('reports_deposit_tdsquaterly','TDS Quarterly');
 	}
 }

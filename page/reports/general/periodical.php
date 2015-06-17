@@ -28,6 +28,9 @@ class page_reports_general_periodical extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
+		
+		$form->addField('account_amount_from');
+		$form->addField('account_amount_to');
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid');
@@ -77,13 +80,26 @@ class page_reports_general_periodical extends Page {
 									'SUM(IF(account_type ="Saving" OR account_type="Current",'.$scheme_join->table_alias.'.MinLimit,Amount)) amount'
 									));
 
-
-
 		$grid->setSource($account_model->_dsql());
 
-		$grid->addColumn('text','account_type');
-		$grid->addColumn('text','count');
+		$grid->addColumn('text','s_no');
+		$grid->addColumn('text','member_id');
+		$grid->addColumn('text','sm_no');
+		$grid->addColumn('text','account_open_date');
+		$grid->addColumn('text','account_no');
+		$grid->addColumn('text','scheme');
 		$grid->addColumn('text','amount');
+		$grid->addColumn('text','member_name');
+		$grid->addColumn('text','father_name');
+		$grid->addColumn('text','permanent_address');
+		$grid->addColumn('text','phone_no');
+		$grid->addColumn('text','agent_dealer_name');
+		$grid->addColumn('text','code_no');
+		$grid->addColumn('text','agent_saving_ac_no');
+		$grid->addColumn('text','agent_phone_no');
+		$grid->addColumn('text','nominee_name');
+		$grid->addColumn('text','age');
+		$grid->addColumn('text','relation');
 		// $grid->addColumn('Button','accounts');
 
 		$grid->addPaginator(50);

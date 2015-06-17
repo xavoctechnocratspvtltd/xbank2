@@ -26,10 +26,8 @@ class View_BSPLChunks_Accounts extends View {
 	}
 
 	function from_balancesheet_to_accounts(){
-
 		$bs= $this->add('Model_BalanceSheet')->load($this->under_balance_sheet_id);
-
-		$result= $this->add('Model_Scheme')->getOpeningBalanceByGroup($this->api->nextDate($this->to_date),$forPandL=false,$this->branch,$bs,array('AccountNumber','account','AccountNumber'));
+		$result= $this->add('Model_Scheme')->getOpeningBalanceByGroup($this->api->nextDate($this->to_date),$forPandL=$bs['is_pandl'],$this->branch,$bs,array('AccountNumber','account','AccountNumber'));
 
 		$grid = $this->add('Grid_BalanceSheet');
 		$grid->from_date = $this->from_date;
@@ -45,7 +43,7 @@ class View_BSPLChunks_Accounts extends View {
 	function from_scheme_to_accounts(){
 		$scheme= $this->add('Model_Scheme')->loadBy('name',$this->under_scheme);
 
-		$result= $this->add('Model_Scheme')->getOpeningBalanceByGroup($this->api->nextDate($this->to_date),$forPandL=false,$this->branch,null,array('AccountNumber','account','AccountNumber'),$scheme);
+		$result= $this->add('Model_Scheme')->getOpeningBalanceByGroup($this->api->nextDate($this->to_date),$forPandL=$bs['is_pandl'],$this->branch,null,array('AccountNumber','account','AccountNumber'),$scheme);
 
 		$grid = $this->add('Grid_BalanceSheet');
 		$grid->from_date = $this->from_date;

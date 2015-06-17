@@ -14,7 +14,7 @@ class View_BSPLChunks_SchemeGroup extends View {
 
 		$bs= $this->add('Model_BalanceSheet')->load($this->under_balance_sheet_id);
 
-		$result= $this->add('Model_Scheme')->getOpeningBalanceByGroup($this->api->nextDate($this->to_date),$forPandL=false,$this->branch,$bs,array('SchemeGroup','scheme','SchemeGroup'));
+		$result= $this->add('Model_Scheme')->getOpeningBalanceByGroup($this->api->nextDate($this->to_date),$forPandL=$bs['is_pandl'],$this->branch,$bs,array('SchemeGroup','scheme','SchemeGroup'));
 
 		$grid = $this->add('Grid_BalanceSheet',array('from_date'=>$this->from_date, 'to_date'=>$this->to_date));
 		$grid->setSource($result);

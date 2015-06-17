@@ -22,11 +22,12 @@ class View_BSPLChunks_Schemes extends View {
 
 	function schemeGroupToScheme(){
 		$schemes = $this->add('Model_Scheme');
+		$schemes->join('balance_sheet','balance_sheet_id')->addField('is_pandl');
 		$schemes->addCondition('SchemeGroup',$this->under_scheme_group);
 
 		$result_array=array();
 		foreach ($schemes as $s) {
-			$op_bal = $s->getOpeningBalance($this->api->nextDate($this->to_date),$side='both',$forPandL=false,$branch=$this->branch);
+			$op_bal = $s->getOpeningBalance($this->api->nextDate($this->to_date),$side='both',$forPandL=$schemes['is_pandl'],$branch=$this->branch);
 			$result_array[] = array('Scheme'=>$s['name'],'Amount'=>$op_bal['Dr']-$op_bal['Cr']);
 		}
 

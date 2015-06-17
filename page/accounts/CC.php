@@ -21,6 +21,10 @@ class page_accounts_CC extends Page {
 			    	$form->displayError($form->api->normalizeName($documents['name'].' value'),'Please Specify');
 			}
 
+			if(!$form['sig_image_id']){
+				$form->displayError('sig_image_id','Signature File is must to provide');
+			}
+
 			$cc_account_model = $crud->add('Model_Account_CC');
 			
 			try {
@@ -59,7 +63,7 @@ class page_accounts_CC extends Page {
 			$account_cc_model->hook('editing');
 		}
 
-		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus'),array('AccountNumber','created_at','AccountDisplayName','member','scheme','Amount','agent','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
+		$crud->setModel($account_cc_model,array('AccountNumber','AccountDisplayName','member_id','scheme_id','Amount','agent_id','ActiveStatus','sig_image_id'),array('AccountNumber','created_at','AccountDisplayName','member','scheme','Amount','agent','ActiveStatus','CurrentInterest','LastCurrentInterestUpdatedAt'));
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'CCAccount'));
 		
 		if(!$crud->isEditing()){

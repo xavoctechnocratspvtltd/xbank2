@@ -28,7 +28,7 @@ class page_reports_general_memberdepositeandloan extends Page {
 		});
 
 		$member_model->addExpression('add_fees')->set(function($m,$q)use($member_model){
-			$transaction_type_model = $this->add('Model_TransactionType');
+			$transaction_type_model = $m->add('Model_TransactionType');
 			$transaction_type_model->addCondition('name','NewMemberRegistrationAmount');
 			return $m->add('Model_Transaction')->addCondition('transaction_type_id',$transaction_type_model->fieldQuery('id'))->addCondition('reference_id',$member_model->getElement('id'))->sum('cr_sum');
 		});

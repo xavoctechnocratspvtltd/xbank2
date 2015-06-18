@@ -11,7 +11,7 @@ class page_reports_general_memberdepositeandloan extends Page {
 
 		$form=$this->add('Form');
 		$form->addField('DatePicker','as_on_date');
-		$account_type=$form->addField('DropDown','status')->setValueList(array('active'=>'Active','inactive'=>'Inactive'));
+		$account_type=$form->addField('DropDown','status')->setValueList(array(1=>'Active',0=>'Inactive'));
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_Report_MemberDepositeAndLoan',array('as_on_date'=>$as_on_date));
@@ -34,12 +34,14 @@ class page_reports_general_memberdepositeandloan extends Page {
 		});
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('as_on_date'=>$form['as_on_date']?:0,'filter'=>1))->execute();
+			$grid->js()->reload(array('as_on_date'=>$form['as_on_date']?:0,'status'=>$form['status'],'filter'=>1))->execute();
 		}
 
 		if($_GET['filter']){
 			if($_GET['as_on_date'])
 				$member_model->addCondition('created_at','<=',$as_on_date);
+			
+			$member_model->addCondition('is_active',$_GET['status']);
 		}
 
 		$grid->setModel($member_model,

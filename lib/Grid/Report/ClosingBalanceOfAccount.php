@@ -18,6 +18,7 @@ class Grid_Report_ClosingBalanceOfAccount extends Grid_AccountsBase{
 		$this->addSno();
 		$this->addPaginator(50);
 
+
 	}
 
 	function format_closing_balance_of_account($field){

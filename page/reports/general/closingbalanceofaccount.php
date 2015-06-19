@@ -28,15 +28,17 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$member_join->addField('PhoneNos');
 
 		if($_GET['filter']){
-			if($_GET['account_type'])
-				$account_model->addCondition('scheme_type',$_GET['account_type']);
+			if($_GET['account_type']){
+				$account_model->addCondition('SchemeType',$_GET['account_type']);
+			}
 		}
 	
-		$grid->setModel($account_model,array('AccountNumber','member','FatherName','PermanentAddress','PhoneNos'));
+		$grid->setModel($account_model,array('AccountNumber','member','FatherName','PermanentAddress','PhoneNos','SchemeType'));
 		
 		if($form->isSubmitted()){
+			throw new \Exception($form['account_type']);
 			$grid->js()->reload(array('as_on_date'=>$form['as_on_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();
-		}	
+		}
 
 	}
 

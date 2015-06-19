@@ -5,38 +5,56 @@ class page_reports_general_accountclose extends Page {
 	function page_index(){
 		// parent::init();
 
-		$till_date="";
+		$from_date = '1970-01-02';
+		$to_date = $this->api->today;
 		
-		if($_GET['to_date']){
-			$till_date=$_GET['to_date'];
+		$filter = $this->api->stickyGET('filter');
+
+		if($_GET['from_date']){
+			$from_date = $this->api->stickyGET['from_date'];
 		}
+
+		if($_GET['to_date']){
+			$to_date = $this->api->stickyGET['to_date'];
+		}
+
 
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$account_type=$form->addField('autocomplete/Basic','account_type');
+
+		$account_type=$form->addField('DropDown','account_type');
+		$array_value = $array_key = explode(',', ACCOUNT_TYPES);
+		$account_type->setValueList(array_combine($array_key, $array_value))->setEmptyText('Select Account type');
+		
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid');
-		$grid->add('H3',null,'grid_buttons')->set('Account Close Report As On '. date('d-M-Y',strtotime($till_date))); 
-		$data = array(
- 					array( 's_no' => '1', 'member_id' => 'Smith', 'account_no'=>'12-09-100','scheme'=>'2000', 'member_name'=>'any','father_name'=>'any','address'=>'1000','phone_no' )
-				);
+		$grid=$this->add('Grid_Report_AccountClose',array('from_date'=>$from_date,'to_date'=>$to_date));
 
-		// $account_model->add('Controller_Acl');
-		$grid->addColumn('s_no');
-		$grid->addColumn('member_id');
-		$grid->addColumn('account_no');
-		$grid->addColumn('scheme');
-		$grid->addColumn('member_name');
-		$grid->addColumn('father_name');
-		$grid->addColumn('address');
-		$grid->addColumn('phone_no');
+		$grid->add('H3',null,'grid_buttons')->set('Account Close Report From Date '. date('d-M-Y',strtotime($from_date)).'To Date '.date('d-M-Y',strtotime($to_date)) ); 
+		
+		$q = "(SELECT * FROM accounts WHERE accounts.CurrentBalanceCr = accounts.CurrentBalanceDr AND accounts.CurrentBalanceCr > 0)";
+		// $account_model1 = $this->api->db->dsql($this->api->db->dsql()->expr($q))->execute();
+		
+		$account_model = $this->add('Model_Account');
+		$member_join = $account_model->leftJoin('members','member_id');
+		$member_join->addField('FatherName')->caption('Father/Husband Name');
+		$member_join->addField('PermanentAddress');
+		$member_join->addField('PhoneNos');
 
-		$grid->setSource($data);
+		if($_GET['filter']){
+			if($_GET['account_type']){
+				$selected_account_type = $this->api->stickyGET('account_type');
+				// $account_model->addCondition('SchemeType',$selected_account_type);
+			}
+			// if($_GET['as_on_date'])
+				// $account_model->addCondition('created_at','<',$this->api->nextDate($_GET['as_on_date']));
+		}
+
+		$grid->setModel($account_model,array('member','AccountNumber','SchemeType','FatherName','PermanentAddress','PhoneNos'));
 		
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
+			$grid->js()->reload(array('to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();
 		}	
 
 	}

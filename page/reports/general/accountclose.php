@@ -33,10 +33,19 @@ class page_reports_general_accountclose extends Page {
 
 		$grid->add('H3',null,'grid_buttons')->set('Account Close Report From Date '. date('d-M-Y',strtotime($from_date)).'To Date '.date('d-M-Y',strtotime($to_date)) ); 
 		
-		$q = "(SELECT * FROM accounts WHERE accounts.CurrentBalanceCr = accounts.CurrentBalanceDr AND accounts.CurrentBalanceCr > 0)";
+		$q1 = '(SELECT * FROM accounts WHERE accounts.CurrentBalanceCr = accounts.CurrentBalanceDr AND accounts.CurrentBalanceCr > 0)';
+		$q = $this->api->db->dsql()->expr($q1);
+
+		// $q=$this->api->db->dsql()->table('accounts');
+		// $q->where('CurrentBalanceCr',$q->getField('CurrentBalanceDr'));
+		// $q->where('CurrentBalanceCr','>',0);
+		// echo $q->field('count(*)')->getOne();
 		// $account_model1 = $this->api->db->dsql($this->api->db->dsql()->expr($q))->execute();
 		
-		$account_model = $this->add('Model_Account');
+		$account_model = $this->add('Model_Account',array('alias'=>'xx'));
+		$account_model->addCondition('CurrentBalanceCr','>',0);
+		$account_model->addCondition('CurrentBalanceCr',$account_model->getField('CurrentBalanceDr'));
+		
 		$member_join = $account_model->leftJoin('members','member_id');
 		$member_join->addField('FatherName')->caption('Father/Husband Name');
 		$member_join->addField('PermanentAddress');

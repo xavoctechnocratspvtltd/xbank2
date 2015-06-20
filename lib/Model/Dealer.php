@@ -30,4 +30,8 @@ class Model_Dealer extends Model_Table {
 			throw $this->exception('Dealer is used in Accounts');
 		
 	}
+
+	function accounts(){
+		return $this->ref('Account');
+	}
 }

@@ -5,51 +5,40 @@ class page_reports_loan_forclose extends Page {
 	function page_index(){
 		// parent::init();
 
-		$till_date="";
-		
-		if($_GET['to_date']){
-			$till_date=$_GET['to_date'];
-		}
-
 		$form=$this->add('Form');
-		$dealer=$form->addField('autocomplete/Basic','account_no');
+		$loan_accoun = $form->addField('autocomplete/Basic','account_no')->validateNotNull();
+		$loan_accoun->setModel('Account_Loan');
 
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid');
-		$grid->add('H3',null,'grid_buttons')->set('For Close '. date('d-M-Y',strtotime($till_date))); 
-		$data = array(
- 					array( 's_no' => '1', 
- 							'account_no' => 'Smith', 
- 							'member_name'=>'2000', 
- 							'loan_amount'=>'1000', 
- 							'monthly_interest'=>'12-09-100',
- 							'panality'=>'any',
- 							'other_charge'=>'any',
- 							'for_close_charge'=>'1000', 
- 							'time_over_charge'=>'1000', 
- 							'total_amount_deposited'=>'1000', 
- 							'for_close_amount'=>'1000', 
- 						)
-				);
+		$grid=$this->add('Grid_AccountsBase');
+		$grid->add('H3',null,'grid_buttons')->set('For Close Report'); 
 
-		// $account_model->add('Controller_Acl');
-		$grid->addColumn('s_no');
-		$grid->addColumn('account_no');
-		$grid->addColumn('member_name');
-		$grid->addColumn('loan_amount');
-		$grid->addColumn('monthly_interest');
-		$grid->addColumn('panality');
-		$grid->addColumn('other_charge');
-		$grid->addColumn('for_close_charge');
-		$grid->addColumn('time_over_charge');
-		$grid->addColumn('total_amount_deposited');
-		$grid->addColumn('for_close_amount');
+		$account_model = $this->add('Model_Account_Loan');
+		if($_GET['filter']){
+			if($_GET['account_no'])
+				$account_no = $this->api->stickyGET('account_no');
+		}else
+			$account_no = -1;
 
-		$grid->setSource($data);
+		$account_model->addCondition('id',$account_no);
+
+		$grid->addSno();
+		// $grid->addColumn('member_name');
+		// $grid->addColumn('loan_amount');
+		// $grid->addColumn('monthly_interest');
+		// $grid->addColumn('panality');
+		// $grid->addColumn('other_charge');
+		// $grid->addColumn('for_close_charge');
+		// $grid->addColumn('time_over_charge');
+		// $grid->addColumn('total_amount_deposited');
+		// $grid->addColumn('for_close_amount');
+
+		$grid->setModel($account_model,array('AccountNumber','member','Amount','CurrentInterest'));
+		$grid->addPaginator(5);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
+			$grid->js()->reload(array('account_no'=>$form['account_no'],'filter'=>1))->execute();
 		}	
 
 	}

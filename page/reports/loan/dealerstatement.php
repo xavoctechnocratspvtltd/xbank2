@@ -49,10 +49,6 @@ class page_reports_loan_dealerstatement extends Page {
 			$account_type_value = $this->api->stickyGET('account_type');
 		}
 
-		if($_GET['status']){
-			$status = $this->api->stickyGET('status');
-		}
-
 		$account_model->addCondition('dealer_id',$dealer_id);
 		if($_GET['filter']){
 			$account_model->addCondition('created_at','>=',$from_date);
@@ -62,9 +58,12 @@ class page_reports_loan_dealerstatement extends Page {
 			$account_model->addCondition('SchemeType',$account_type_value);
 			}
 
-			if(isset($status)){
+			if($_GET['status']){
+				$status = $this->api->stickyGET('status');
 				$account_model->addCondition('ActiveStatus',$status);
-			}
+			}else
+				$account_model->addCondition('ActiveStatus','<>',1);
+
 
 			$member_join = $account_model->leftJoin('members','member_id');
 			$member_join->addField('FatherName')->caption('Father/Husband Name');
@@ -73,7 +72,7 @@ class page_reports_loan_dealerstatement extends Page {
 		}
 		
 
-		$grid->setModel($account_model,array('AccountNumber','scheme','name','FatherName','CurrentAddress','PhoneNos','dealer_id'));
+		$grid->setModel($account_model,array('AccountNumber','scheme','name','FatherName','CurrentAddress','PhoneNos','dealer_id','ActiveStatus'));
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('dealer'=>$form['dealer'],'status'=>$form['status'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();

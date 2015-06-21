@@ -18,6 +18,8 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 		$this->addSno();
 		$this->addPaginator(5);
 
+		$this->removeColumn('ActiveStatus');
+
 	}
 
 	function formatRow(){

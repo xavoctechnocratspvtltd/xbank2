@@ -24,7 +24,7 @@ class Model_Account_Loan extends Model_Account{
 
 		$this->addExpression('dealer_monthly_date')->set(function ($m,$q){
 			return $m->refSQL('dealer_id')->fieldQuery('dealer_monthly_date');
-		});		
+		});
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('editing',$this);

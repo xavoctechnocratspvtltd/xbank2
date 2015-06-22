@@ -1,25 +1,54 @@
 <?php
-
 class page_reports_loan_noc extends Page {
-	public $title="NOC Repots";
-	function page_index(){
-		// parent::init();
 
-		$till_date="";
-		
-		if($_GET['to_date']){
-			$till_date=$_GET['to_date'];
+	function init(){
+		parent::init();
+
+		$form = $this->add('Form');
+		$form->addField('autocomplete/Basic','account')->setModel('Active_Account_Loan','AccountNumber');
+		$form->addSubmit('GET');
+
+		$account_model = $this->add('Model_Account');
+		$account_model->tryLoadBy('AccountNumber',$_GET['account']);
+
+		$letter = $this->add('View',null, null, array('view/noc-letter'));
+		if($_GET['account']){
+			$letter->setModel($account_model);
+
+			$member= $account_model->ref('member_id');
+
+			// $letter->template->trySet('branch',$account_model->ref('branch_id')->get('name'));
+			// $letter->template->trySet('ref','Ref123');
+			// $letter->template->trySet('date',date('d/M/Y',strtotime($account_model['created_at'])));
+			$letter->template->trySet('member_name',$member['name']);
+			$letter->template->trySet('father_name',$member['FatherName']);
+			$letter->template->trySet('vehicle_no',"9090");
+			$letter->template->trySet('chassis_no',"9090");
+			$letter->template->trySet('engine_no',"9090");
+			$letter->template->trySet('account_number',$account_model['AccountNumber']);
+
+			// $letter->template->trySet('interest_rate',$account_model->ref('scheme_id')->get('Interest'));
+			// $letter->template->trySet('premium_amount',$account_model->ref('Premium')->tryLoadAny()->get('Amount'));
+			// $letter->template->trySet('number_of_premium',$account_model->ref('Premium')->count());
+			// $letter->template->trySet('date_of_submission',(date('d',strtotime($account_model->ref('Premium')->tryLoadAny()->get('created_at')))));
 		}
 
-		$form=$this->add('Form');
-		$form->addField('autocomplete/Basic','account_number');
+		$js=array(
+			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+			$this->js()->_selector('#header')->toggle(),
+			$this->js()->_selector('#footer')->toggle(),
+			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+			$this->js()->_selector('.atk-form')->toggle(),
+			$this->js()->_selector('.atk-layout-column h2')->toggle(),
+			// $this->js()->_selector('.atk-layout-row')->toggle(),
+			);
 
-		$form->addSubmit('GET List');
+		$letter->js('click',$js);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
-		}	
-
+			$letter->js()->reload(array('account'=>$form['account']))->execute();
+		}
+				
 	}
 
 }

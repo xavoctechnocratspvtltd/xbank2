@@ -13,7 +13,7 @@ class page_reports_general_fixedassets extends Page {
 
 		$form=$this->add('Form');
 		$assets_type_field=$form->addField('autocomplete/Basic','fixed_assets_type');
-		$assets_type_field->setModel();
+		// $assets_type_field->setModel();
 		$form->addField('DatePicker','as_on_date');
 		$form->addSubmit('GET List');
 

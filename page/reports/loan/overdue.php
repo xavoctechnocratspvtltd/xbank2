@@ -5,52 +5,41 @@ class page_reports_loan_overdue extends Page {
 	function page_index(){
 		// parent::init();
 
-		$till_date="";
+		$as_on_date=$this->api->today;
 		
-		if($_GET['to_date']){
-			$till_date=$_GET['to_date'];
+		if($_GET['as_on_date']){
+			$as_on_date=$this->api->stickyGET('as_on_date');
 		}
 
 		$form=$this->add('Form');
-		$dealer=$form->addField('autocomplete/Basic','account_no');
-		$dealer=$form->addField('DatePicker','as_on_date');
+		$account_no_field = $form->addField('autocomplete/Basic','account_no')->validateNotNull();
+		$account_no_field->setModel('Account_CC');
+		
+		$form->addField('DatePicker','as_on_date');
 
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid');
-		$grid->add('H3',null,'grid_buttons')->set('For Close '. date('d-M-Y',strtotime($till_date))); 
-		$data = array(
- 					array( 's_no' => '1',
- 							'account_no' => 'Smith', 
- 							'cc_name'=>'1000', 
- 							'member_name'=>'2000', 
- 							'father_name'=>'12-09-100',
- 							'current_address'=>'any',
- 							'contact_no'=>'1000', 
- 							'cc_limit'=>'1000', 
- 							'dr_balance'=>'1000', 
- 							'over_due_amount'=>'1000', 
- 							'over_due_amount_start_date'=>'1000', 
- 						)
-				);
+		$grid=$this->add('Grid_Report_CCOverDue', array('as_on_date' => $as_on_date ));
+		$grid->add('H3',null,'grid_buttons')->set('CC Over Due Report  As On '. date('d-M-Y',strtotime($as_on_date))); 
 
-		// $account_model->add('Controller_Acl');
-		$grid->addColumn('s_no');
-		$grid->addColumn('account_no');
-		$grid->addColumn('cc_name');
-		$grid->addColumn('member_name');
-		$grid->addColumn('father_name');
-		$grid->addColumn('current_address');
-		$grid->addColumn('contact_no');
-		$grid->addColumn('cc_limit');
-		$grid->addColumn('dr_balance');
-		$grid->addColumn('over_due_amount');
-		$grid->addColumn('over_due_amount_start_date');
+		$account_model = $this->add('Model_Account_CC');
+		$selected_account_no = -1;
+		if($_GET['filter']){
+			if($_GET['account_no']){
+				$selected_account_no = $this->api->stickyGET('account_no');
+			}
+		}
+				
+		$account_model->addCondition('id',$selected_account_no);
+		$member_join = $account_model->leftJoin('members','member_id');
+		$member_join->addField('FatherName')->caption('Father/Husband Name');
+		$member_join->addField('CurrentAddress');
+		$member_join->addField('PhoneNos');
 
-		$grid->setSource($data);
+		$grid->setModel($account_model,array('AccountNumber','name','FatherName','CurrentAddress','PhoneNos','Amount'));
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
+			$grid->js()->reload(array('account_no'=>$form['account_no'],'as_on_date'=>$form['as_on_date']?:0,'filter'=>1))->execute();
 		}	
 
 	}

@@ -16,36 +16,28 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 
 		$this->addFormatter('name','Wrap');
 		$this->addSno();
-		$paginator = $this->addPaginator(50);
+		$paginator = $this->addPaginator(5);
 		$this->skip_var = $paginator->skip_var;
 
 		$this->removeColumn('ActiveStatus');
+		$this->removeColumn('dealer_id');
 
 	}
 
 	function formatRow(){
 		//Code
-		// $account_model	= $this->add('Model_Account');
-		// $account_model->addCondition('dealer_id',$this->model['dealer_id']);
-		// $account_model->addCondition('SchemeType','Loan');
-		
-		$cr = 0;
-		$dr = 0;
-		$array = $this->model->getOpeningBalance($this->api->nextDate($this->to_date));
-		$cr += $array['CR'];
-		$dr += $array['DR'];
-
-		$amount = $cr-$dr;
-		$balance = $amount.' CR';
-		if($amount < 0)
-			$balance = abs($amount).' DR';
-		
-		if($this->model['SchemeType'] == "Loan"){
-			$this->current_row['loan_amount'] = $balance;
-		}else{
-			$this->current_row['net_amount'] = $balance;
+		$transactions = $this->add('Model_Transaction')->addCondition('reference_id',$this->model->id)->setLimit(1)->tryLoadAny();
+		$transactions_row = $this->add('Model_TransactionRow')->addCondition('transaction_id',$transactions->id)->setOrder('id','asc');
+		$i = 1;
+		foreach ($transactions_row as $tr) {
+			if($i == 1)
+				$this->current_row['loan_amount'] = $tr['amountDr'];
+			if($i == 3)
+				$this->current_row['net_amount'] = $tr['amountCr'];
+			if($i == 2)
+				$this->current_row['file_charge'] = $tr['amountCr'];
+			$i++;
 		}
-		
 		parent::formatRow();
 	}
 }

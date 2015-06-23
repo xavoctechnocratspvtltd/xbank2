@@ -11,9 +11,11 @@ class Grid_Report_AccountClose extends Grid_AccountsBase{
 		// $this->addFormatter('member','Wrap');
 		// $this->addFormatter('PermanentAddress','Wrap');
 		$this->addSno();
-		$paginator = $this->addPaginator(50);
+		$paginator = $this->addPaginator(5);
 		$this->skip_var = $paginator->skip_var;
 
+		$this->addFormatter('member','Wrap');
+		$this->addFormatter('PermanentAddress','Wrap');
 
 	}
 

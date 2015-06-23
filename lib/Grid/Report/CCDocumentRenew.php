@@ -10,7 +10,8 @@ class Grid_Report_CCDocumentRenew extends Grid_AccountsBase{
 		// $this->addFormatter('member','Wrap');
 		// $this->addFormatter('PermanentAddress','Wrap');
 		$this->addSno();
-		$this->addPaginator(5);
+		$paginator = $this->addPaginator(50);
+		$this->skip_var = $paginator->skip_var;
 
 		$this->addColumn('cc_name');
 		$this->addColumn('current_balance');

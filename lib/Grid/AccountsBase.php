@@ -6,7 +6,7 @@ class Grid_AccountsBase extends Grid{
 	public $order=null;
 	public $opening_balance = 0;
 	public $current_row_balance = 0;
-
+	public $skip_var=null;
 	function init(){
 		parent::init();
 		$this->order = $this->addOrder();
@@ -19,7 +19,9 @@ class Grid_AccountsBase extends Grid{
 
 	function format_sno($field){
 		if($this->model->loaded())
-			$this->current_row[$field] = (($this->sno++) + ($_GET[$this->name.'_paginator_skip']?:0));
+			$this->current_row[$field] = (($this->sno++) + ($_GET[$this->skip_var]));
+		
+		// $this->current_row[$field] = $this->skip_var;		
 	}
 
 	function init_voucherNo($field){

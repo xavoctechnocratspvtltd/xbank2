@@ -18,7 +18,8 @@ class Grid_Report_MemberDepositeAndLoan extends Grid_AccountsBase{
 		$this->addColumn('purpose_for_loan');
 		
 		$this->addSno();
-		$this->addPaginator(50);
+		$paginator = $this->addPaginator(50);
+		$this->skip_var = $paginator->skip_var;
 
 	}
 

@@ -4,9 +4,9 @@ class page_reports_deposit_tdsquaterly extends Page {
 	public $title="TDS Quaterly Reports";
 	function page_index(){
 		// parent::init();
-
+		
 		$form=$this->add('Form');
-		$dealer=$form->addField('DropDown','qtr')->setValueList(array('1'=>'1 Quarter','2'=>'2 Quarter','3'=>'3 Quarter','4'=>'4 Quarter'));
+		$dealer=$form->addField('DropDown','qtr')->setValueList(array('01'=>'1 Quarter','04'=>'2 Quarter','07'=>'3 Quarter','10'=>'4 Quarter'));
 
 		$form->addSubmit('GET List');
 
@@ -33,10 +33,19 @@ class page_reports_deposit_tdsquaterly extends Page {
 
 
 		if($_GET['filter']){
-			$year = date('Y',strtotime($this->api->today));
-			$from_date= date('Y-m-d',strtotime("2015-01-01"));
-			$to_date= date('Y-m-d',strtotime("2015-03-31"));
+			$date = $this->api->today;
+			if($_GET['qtr']){
+				$this->api->stickyGET('qtr');
+				$year = date('Y',strtotime($date));
+				$date = $year.'-'.$_GET['qtr'].'-'.'01';
+			}
 
+			
+			$quarter_date = $this->api->getFinancialQuarter($date);
+			$to_date = $quarter_date['start_date'];
+			$from_date = $quarter_date['end_date'];
+
+			// throw new \Exception($date.'::'.$to_date."::".$from_date);
 			$model->addCondition('created_at','>=',date('Y-m-01',strtotime($from_date)));
 			$model->addCondition('created_at','<=',date('Y-m-t',strtotime($to_date)));
 

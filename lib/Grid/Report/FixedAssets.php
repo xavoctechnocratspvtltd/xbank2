@@ -28,7 +28,7 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 		
 		$cr = 0;
 		$dr = 0;
-		$array = $this->model->getOpeningBalance($this->api->nextDate($this->to_date));
+		$array = $this->model->getOpeningBalance($this->api->nextDate($this->till_date));
 		$cr += $array['CR'];
 		$dr += $array['DR'];
 

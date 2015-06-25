@@ -36,6 +36,9 @@ class Model_Agent extends Model_Table {
 			return $m->refSQL('member_id')->fieldQuery('member_name');
 		});
 
+		$this->addExpression('agent_pan_no')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('PanNo');
+		});
 		$this->addExpression('name')->set($this->dsql()->concat(
 				$this->getElement('code'),' ', $this->getElement('agent_member_name_full')
 			));

@@ -32,25 +32,25 @@ class page_reports_deposit_tdsquaterly extends Page {
 		$model->getElement('agent_id')->caption('Name and Address');
 
 
-		if($_GET['filter']){
-			$date = $this->api->today;
-			if($_GET['qtr']){
-				$this->api->stickyGET('qtr');
-				$year = date('Y',strtotime($date));
-				$date = $year.'-'.$_GET['qtr'].'-'.'01';
-			}
+		// if($_GET['filter']){
+		// 	$date = $this->api->today;
+			// if($_GET['qtr']){
+			// 	$this->api->stickyGET('qtr');
+			// 	$year = date('Y',strtotime($date));
+			// 	$date = $year.'-'.$_GET['qtr'].'-'.'01';
+			// }
 
 			
-			$quarter_date = $this->api->getFinancialQuarter($date);
-			$to_date = $quarter_date['start_date'];
-			$from_date = $quarter_date['end_date'];
+			// $quarter_date = $this->api->getFinancialQuarter($date);
+			// $to_date = $quarter_date['start_date'];
+			// $from_date = $quarter_date['end_date'];
 
-			// throw new \Exception($date.'::'.$to_date."::".$from_date);
-			$model->addCondition('created_at','>=',date('Y-m-01',strtotime($from_date)));
-			$model->addCondition('created_at','<=',date('Y-m-t',strtotime($to_date)));
+			// // throw new \Exception($date.'::'.$to_date."::".$from_date);
+			// $model->addCondition('created_at','>=',date('Y-m-01',strtotime($from_date)));
+			// $model->addCondition('created_at','<=',date('Y-m-t',strtotime($to_date)));
 
-		}else
-			$model->addCondition('id',-1);
+		// }else
+			// $model->addCondition('id',-1);
 		
 		$model->setLimit(10);
 		$model->_dsql()->group('agent_id');

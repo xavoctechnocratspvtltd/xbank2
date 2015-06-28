@@ -39,6 +39,7 @@ class page_reports_loan_rcduelist extends Page {
 			$this->api->stickyGET('document');
 
 			if($_GET['dealer']){
+				$this->api->stickyGET('dealer');
 				$accounts_model->addCondition('dealer_id',$_GET['dealer']);
 			}
 
@@ -86,6 +87,7 @@ class page_reports_loan_rcduelist extends Page {
 						'loan_type'=>$form['loan_type'],
 						'status'=>$form['status'],
 						'document'=>$form['document'],
+						'dealer'=>$form['dealer'],
 						)
 				)->execute();
 		}

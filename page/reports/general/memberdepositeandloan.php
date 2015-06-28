@@ -23,14 +23,18 @@ class page_reports_general_memberdepositeandloan extends Page {
 			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->fieldQuery('AccountNumber');
 		});
 
-		$member_model->addExpression('share_account_amount')->set(function($m,$q){
-			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->fieldQuery('Amount');
-		});
+		// $member_model->addExpression('share_account_amount')->set(function($m,$q){
+		// 	$model = $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital');
+		// 	return  $model->sum('CurrentBalanceCr');
+		// });
 
 		$member_model->addExpression('add_fees')->set(function($m,$q)use($member_model){
-			$transaction_type_model = $m->add('Model_TransactionType');
-			$transaction_type_model->addCondition('name','NewMemberRegistrationAmount');
-			return $m->add('Model_Transaction')->addCondition('transaction_type_id',$transaction_type_model->fieldQuery('id'))->addCondition('reference_id',$member_model->getElement('id'))->sum('cr_sum');
+			return 10.000;
+
+			//Temporary Hide and Fixed with 10 Rupees
+			// $transaction_type_model = $m->add('Model_TransactionType');
+			// $transaction_type_model->addCondition('name','NewMemberRegistrationAmount');
+			// return $m->add('Model_Transaction')->addCondition('transaction_type_id',$transaction_type_model->fieldQuery('id'))->addCondition('reference_id',$member_model->getElement('id'))->sum('cr_sum');
 		});
 
 		if($form->isSubmitted()){
@@ -42,7 +46,8 @@ class page_reports_general_memberdepositeandloan extends Page {
 				$member_model->addCondition('created_at','<=',$as_on_date);
 			
 			$member_model->addCondition('is_active',$_GET['status']);
-		}
+		}else
+			$member_model->addCondition('id',-1);
 
 		$grid->setModel($member_model,
 								array('member_name',

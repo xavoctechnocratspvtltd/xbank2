@@ -5,18 +5,22 @@ class page_reports_loan_noc extends Page {
 		parent::init();
 
 		$form = $this->add('Form');
-		$form->addField('autocomplete/Basic','account')->setModel('Active_Account_Loan','AccountNumber');
+		$loan = $this->add('Model_Active_Account_Loan');
+		$loan->addCondition('branch_id',$this->api->current_branch->id);
+		$loan->addCondition('AccountNumber','not like','%DFL%');
+		$loan->addCondition('AccountNumber','not like','%Default%');
+		$form->addField('autocomplete/Basic','account')->setModel($loan);
 		$form->addSubmit('GET');
 
+		
 		$account_model = $this->add('Model_Account');
-		$account_model->tryLoadBy('AccountNumber',$_GET['account']);
 
 		$letter = $this->add('View',null, null, array('view/noc-letter'));
 		if($_GET['account']){
+			$account_model->tryLoad($_GET['account']);
 			$letter->setModel($account_model);
 
 			$member= $account_model->ref('member_id');
-
 			// $letter->template->trySet('branch',$account_model->ref('branch_id')->get('name'));
 			// $letter->template->trySet('ref','Ref123');
 			// $letter->template->trySet('date',date('d/M/Y',strtotime($account_model['created_at'])));

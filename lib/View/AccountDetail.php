@@ -47,8 +47,29 @@ class View_AccountDetail extends View {
 		$grid->setModel($schemes,array('name','Interest','AccountOpenningCommission','ProcessingFees','PremiumMode','MaturityPeriod','NumberOfPremiums','SchemeType','SchemeGroup','ReducingOrFlatRate'));
 
 		$documents = $ac_m->ref('DocumentSubmitted');
-		$grid= $this->add('Grid',null,'documents');
-		$grid->setModel($documents);
+		$grid_document= $this->add('Grid',null,'documents');
+		$grid_document->setModel($documents);
+		
+		$grid_document->addMethod('format_dealer',function($g,$f)use($ac_m){
+			if(!$g->model['dealer_id'])
+				$g->current_row[$f] = $ac_m['dealer'];
+		});
+		$grid_document->addColumn('dealer','dealer');
+
+		$grid_document->addMethod('format_agent',function($g,$f)use($ac_m){
+			if(!$g->model['agent_id'])
+				$g->current_row[$f] = $ac_m['agent'];
+		});
+		$grid_document->addColumn('agent','agent');
+		$grid_document->addMethod('format_doc_image',function($g,$f){
+			// if($g->model['doc_image']){
+			$g->current_row_html[$f] = '<a width="50px;" href="'.$g->model['doc_image'].'" target="_blank"><img style="width:50px;" src="'.$g->model['doc_image'].'"/></a>';
+			// }
+		});
+		$grid_document->addColumn('doc_image','doc_image');
+
+		$grid_document->removeColumn('member');
+
 
 		if(($premium_count =  $ac_m->ref('Premium')->count()->getOne()) > 0){
 			$premium_amount = $ac_m->ref('Premium')->fieldQuery('Amount')->getOne();

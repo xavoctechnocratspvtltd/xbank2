@@ -16,10 +16,25 @@ class Grid_Report_AccountClose extends Grid_AccountsBase{
 
 		$this->addFormatter('member','Wrap');
 		$this->addFormatter('PermanentAddress','Wrap');
+		$this->addColumn('status');
+		$this->addFormatter('status','status');
 
+		$this->removeColumn('ActiveStatus');
+	}
+
+	function format_status($fields){
+		if($this->model['ActiveStatus'] == 0)
+			$this->current_row_html[$fields] = "De-Active";
+		else
+			$this->current_row_html[$fields] = "Active";
 	}
 
 	// function formatRow(){
+	// 	if($this->model['ActiveStatus'] == 0)
+	// 		$this->current_row_html['ActiveStatus'] = "De-active";
+	// 	else
+	// 		$this->current_row_html['ActiveStatus'] = "Active";
 	// 	parent::formatRow();
+		
 	// }
 }

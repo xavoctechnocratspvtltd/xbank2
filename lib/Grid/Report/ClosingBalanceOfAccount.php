@@ -19,13 +19,15 @@ class Grid_Report_ClosingBalanceOfAccount extends Grid_AccountsBase{
 		$paginator = $this->addPaginator(50);
 		$this->skip_var = $paginator->skip_var;
 
+		$this->addQuickSearch(array('AccountNumber'));
+
 	}
 
 	function format_closing_balance_of_account($field){
 		//rd,dds,fd,mis Account
-		$account_model	= $this->add('Model_Account');
-		$account_model->addCondition('member_id',$this->model->id);
-		$account_model->addCondition('SchemeType',array('DDS',ACCOUNT_TYPE_FIXED,'Recurring'));
+		$account_model	= $this->add('Model_Active_Account');
+		$account_model->addCondition('member_id',$this->model['member_id']);
+		// $account_model->addCondition('SchemeType',array('DDS',ACCOUNT_TYPE_FIXED,'Recurring'));
 		$cr = 0;
 		$dr = 0;
 		
@@ -40,7 +42,7 @@ class Grid_Report_ClosingBalanceOfAccount extends Grid_AccountsBase{
 		if($amount < 0)
 			$balance = abs($amount).' DR';
 
-		$this->current_row[$field] = $balance;
+		$this->current_row_html[$field] = $balance;
 	}
 
 	function format_sm_account_no($field){

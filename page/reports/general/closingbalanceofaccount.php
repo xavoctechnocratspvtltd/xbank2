@@ -11,6 +11,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$filter = $this->api->stickyGET('filter');
 
 		if($_GET['as_on_date']){
+			$this->api->stickyGET('as_on_date');
 			$till_date=$this->api->nextDate($_GET['as_on_date']);
 		}
 
@@ -25,7 +26,8 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$grid=$this->add('Grid_Report_ClosingBalanceOfAccount',array('as_on_date'=>$till_date));
 		$grid->add('H3',null,'grid_buttons')->set('Account Close Report As On '. date('d-M-Y',strtotime($till_date)));
 
-		$account_model = $this->add('Model_Account');
+		$account_model = $this->add('Model_Active_Account');
+		$account_model->addCondition('branch_id',$this->api->current_branch->id);
 		$member_join = $account_model->leftJoin('members','member_id');
 		$member_join->addField('FatherName')->caption('Father/Husband Name');
 		$member_join->addField('PermanentAddress');

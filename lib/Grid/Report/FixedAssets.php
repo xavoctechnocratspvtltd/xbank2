@@ -3,18 +3,17 @@
 class Grid_Report_FixedAssets extends Grid_AccountsBase{
 	public $till_date;
 	public $scheme_type;
+	public $fixed_assets_type;
 
 	function setModel($model,$fields=null){
+		$model->getElement('SchemeType')->caption('Under Head');
 		parent::setModel($model,$fields);
-
 
 		$this->addSno();
 		$paginator = $this->addPaginator(50);
 		$this->skip_var = $paginator->skip_var;
 
-		$this->addColumn('purchase_date');
 		$this->addColumn('opening_amount');
-		$this->addColumn('under_head');
 		$this->addColumn('depretiation_at');
 		$this->addColumn('closing_balance');
 
@@ -37,12 +36,33 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 		if($amount < 0)
 			$balance = abs($amount).' DR';
 		
+		//Opening Amount: Current Financial Year ka opening Amount no according to as on date
 		if($this->model['SchemeType'] == "Loan"){
-			$this->current_row['loan_amount'] = $balance;
+			$this->current_row['opening_amount'] = 11;
+			$this->current_row['closing_balance'] = $balance;
 		}else{
-			$this->current_row['net_amount'] = $balance;
+			$this->current_row['closing_balance'] = $balance;
 		}
 		
+		// throw new \Exception($this->fixed_assets_type);
+		
+		//Depretitaion at: Plane&Machinary: 15%, Computer and Printer: 60% , Funrinture and fix:10%, Fixed Assets: 10%;
+		switch ($this->fixed_assets_type) {
+			case 'Fixed Assets':
+				$this->current_row['depretiation_at'] = '10%';
+				break;
+			case 'plant & machionary':
+				$this->current_row['depretiation_at'] = '15%';
+				break;
+			case 'furniture & fix':
+				$this->current_row['depretiation_at'] = '10%';
+				break;
+			case 'computer & printer':
+				$this->current_row['depretiation_at'] = '60%';
+				break;
+		}
+				
+
 		parent::formatRow();
 	}
 }

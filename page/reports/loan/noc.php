@@ -13,7 +13,7 @@ class page_reports_loan_noc extends Page {
 		$form->addSubmit('GET');
 
 		
-		$account_model = $this->add('Model_Account');
+		$account_model = $this->add('Model_Active_Account_Loan');
 
 		$letter = $this->add('View',null, null, array('view/noc-letter'));
 		if($_GET['account']){
@@ -21,20 +21,14 @@ class page_reports_loan_noc extends Page {
 			$letter->setModel($account_model);
 
 			$member= $account_model->ref('member_id');
-			// $letter->template->trySet('branch',$account_model->ref('branch_id')->get('name'));
-			// $letter->template->trySet('ref','Ref123');
-			// $letter->template->trySet('date',date('d/M/Y',strtotime($account_model['created_at'])));
 			$letter->template->trySet('member_name',$member['name']);
 			$letter->template->trySet('father_name',$member['FatherName']);
-			$letter->template->trySet('vehicle_no',"9090");
-			$letter->template->trySet('chassis_no',"9090");
-			$letter->template->trySet('engine_no',"9090");
 			$letter->template->trySet('account_number',$account_model['AccountNumber']);
 
-			// $letter->template->trySet('interest_rate',$account_model->ref('scheme_id')->get('Interest'));
-			// $letter->template->trySet('premium_amount',$account_model->ref('Premium')->tryLoadAny()->get('Amount'));
-			// $letter->template->trySet('number_of_premium',$account_model->ref('Premium')->count());
-			// $letter->template->trySet('date_of_submission',(date('d',strtotime($account_model->ref('Premium')->tryLoadAny()->get('created_at')))));
+			$letter->template->trySet('vehicle_no',$account_model->getVehicalNo());
+			$letter->template->trySet('chassis_no',$account_model->getChassisNo());
+			$letter->template->trySet('engine_no',$account_model->getEngineNo());
+
 		}
 
 		$js=array(
@@ -44,12 +38,13 @@ class page_reports_loan_noc extends Page {
 			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
 			$this->js()->_selector('.atk-form')->toggle(),
 			$this->js()->_selector('.atk-layout-column h2')->toggle(),
-			// $this->js()->_selector('.atk-layout-row')->toggle(),
 			);
 
 		$letter->js('click',$js);
 
 		if($form->isSubmitted()){
+			if(!$form['account'])
+				$form->error('account','Select One Account');
 			$letter->js()->reload(array('account'=>$form['account']))->execute();
 		}
 				

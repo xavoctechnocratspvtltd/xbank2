@@ -170,8 +170,8 @@ class page_stock_reports_stock extends Page {
 		$grid->addColumn('openning','openning');
 		$grid->addColumn('purchase','purchase');
 		$grid->addColumn('purchasereturn','purchase_return');
-		$grid->addColumn('transferto','transfer_out');
-		$grid->addColumn('transferfrom','transfer_in');
+		$grid->addColumn('transferto','transfer_in');
+		$grid->addColumn('transferfrom','transfer_out');
 		$grid->addColumn('issue','issue');
 		$grid->addColumn('consume','consume');
 		$grid->addColumn('submit','submit');

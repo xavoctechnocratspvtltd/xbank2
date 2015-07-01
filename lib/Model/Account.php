@@ -56,7 +56,7 @@ class Model_Account extends Model_Table {
 		// $this->addField('InterestToAccount')->type('int'); now converted to hasOne Account
 		$this->addField('Amount')->type('money')->defaultValue(0);
 		$this->addField('LockingStatus')->type('boolean')->defaultValue(false);
-		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(false);
+		$this->addField('affectsBalanceSheet')->type('boolean')->defaultValue(true);
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
 		$this->addField('Group');
 		$this->addField('PAndLGroup')->system(true);

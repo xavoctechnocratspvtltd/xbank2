@@ -278,7 +278,7 @@ class Model_Scheme extends Model_Table {
 		}
 
 		$transaction_row->_dsql()->del('fields')->field('SUM(amountDr) sdr')->field('SUM(amountCr) scr');
-		$transaction_row->_dsql()->where("($aj_ta.ActiveStatus=1 OR $aj_ta.affectsBalanceSheet=1)");
+		// $transaction_row->_dsql()->where("($aj_ta.ActiveStatus=1/* OR $aj_ta.affectsBalanceSheet=1*/)");
 
 		$result = $transaction_row->_dsql()->getHash();
 
@@ -292,7 +292,7 @@ class Model_Scheme extends Model_Table {
 
 		$account->_dsql()->del('fields')->field('SUM(OpeningBalanceCr) opcr')->field('SUM(OpeningBalanceDr) opdr');
 		$aj_ta = $account->table_alias;
-		$account->_dsql()->where("($aj_ta.ActiveStatus=1 OR $aj_ta.affectsBalanceSheet=1)");
+		// $account->_dsql()->where("($aj_ta.ActiveStatus=1 /*OR $aj_ta.affectsBalanceSheet=1*/)");
 		$result_op = $account->_dsql()->getHash();
 
 
@@ -340,7 +340,7 @@ class Model_Scheme extends Model_Table {
 		$transaction_row->addCondition('created_at','<',$on_date);
 		if($underHead)
 			$transaction_row->addCondition('balance_sheet_id',$underHead->id);
-		$transaction_row->_dsql()->where("($aj_ta.ActiveStatus=1 OR $aj_ta.affectsBalanceSheet=1)");
+		// $transaction_row->_dsql()->where("($aj_ta.ActiveStatus=1 /*OR $aj_ta.affectsBalanceSheet=1*/)");
 
 		if($branch)
 			$transaction_row->addCondition('branch_id',$branch->id);

@@ -42,7 +42,13 @@ class page_reports_general_fixedassets extends Page {
 
 		//Purchase Date: First Tranaction Date in the current financial year
 		$account_model->addExpression('purchase_date')->set(function($m,$q)use($financial_year){
-			return $m->refSQL('RelatedTransactions')->addCondition('created_at','>=',$financial_year['start_date'])->addCondition('created_at','<=',$financial_year['end_date'])->setLimit(1)->fieldQuery('created_at');
+			$tra_model = $m->add('Model_Transaction');
+			$tra_model->addCondition('reference_id',$m->id);
+			$tra_model->addCondition('created_at','>=',$financial_year['start_date']);
+			$tra_model->setLimit(1);
+			return $tra_model->fieldQuery('created_at');
+
+			// return $m->refSQL('RelatedTransactions')->addCondition('created_at','>=',$financial_year['start_date'])->addCondition('created_at','<=',$financial_year['end_date'])->setLimit(1)->fieldQuery('created_at');
 		});
 
 		//Uner Head: SchemeType		

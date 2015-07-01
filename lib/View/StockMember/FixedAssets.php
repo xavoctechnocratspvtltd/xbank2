@@ -7,6 +7,9 @@ class View_StockMember_FixedAssets extends View {
 		// 	throw $this->exception('Something is wrong');
 		// 	 
 		$this->api->StickyGet('item');
+		$this->api->StickyGet('member');
+		$this->api->StickyGet('from_date');
+		$this->api->StickyGet('to_date');
 
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');

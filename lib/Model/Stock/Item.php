@@ -329,7 +329,7 @@ class Model_Stock_Item extends Model_Table {
 
 		$submit_tra_qty = ($submit_tra->sum('qty')->getOne())?:0;
 
-		//Used Submit 
+		//Used Submit
 		$used_submit_tra = $this->add('Model_Stock_Transaction');
 		$used_submit_tra->addCondition('item_id',$this->id);
 		$used_submit_tra->addCondition('created_at','<',$as_on);
@@ -422,7 +422,7 @@ class Model_Stock_Item extends Model_Table {
 		$consume_tra_qty = ($consume_tra->sum('qty')->getOne())?:0;
 		// throw $this->exception("(($openning_tra_qty+$purchase_tra_qty+$submit_tra_qty+$transfer_to_this_branch_tra_qty)-($issue_tra_qty+$dead_tra_qty+$sold_tra_qty+$transfer_from_this_branch_tra_qty+$purchase_return_tra_qty));");
 		// throw $this->exception($purchase_tra_qty);
-		return (($openning_tra_qty+$purchase_tra_qty+$submit_tra_qty+$transfer_to_this_branch_tra_qty+$dead_tra_qty)-($issue_tra_qty+$sold_tra_qty+$transfer_from_this_branch_tra_qty+$purchase_return_tra_qty+$consume_tra_qty+$deadsold_tra_qty));
+		return (($openning_tra_qty+$purchase_tra_qty+$submit_tra_qty+$transfer_to_this_branch_tra_qty+$dead_tra_qty)-($issue_tra_qty+$sold_tra_qty+$transfer_from_this_branch_tra_qty+$purchase_return_tra_qty+$consume_tra_qty+$deadsold_tra_qty+$used_submit_tra_qty));
 
 	}
 

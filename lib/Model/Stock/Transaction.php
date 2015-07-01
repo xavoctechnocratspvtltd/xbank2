@@ -24,7 +24,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this->addField('submit_date');
 		$this->addField('transaction_type')->enum(array('Purchase','Issue','Consume','Submit','PurchaseReturn','DeadSubmit','Transfer','Move','Openning','Sold','DeadSold','UsedSubmit'));
 		$this->addField('to_branch_id')->defaultValue(0);
-		// $this->addField('to_container')->defaultValue(0);
+		$this->addField('is_used_submit')->type('boolean')->defaultValue(0);
 		// $this->addField('to_row')->defaultValue(0);
 		// $this->addField('from_container')->defaultValue(0);
 		// $this->addField('from_row')->defaultValue(0);
@@ -232,6 +232,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['from_row_id'] = $row->id;
 		$this['to_container_id'] = $to_container->id;
 		$this['to_row_id'] = $to_row->id;
+		$this['is_used_submit'] = $is_used_submit;
 		
 		$this->save();
 	}

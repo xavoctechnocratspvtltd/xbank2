@@ -307,7 +307,7 @@ class Model_Scheme extends Model_Table {
 		return array('CR'=>$cr,'DR'=>$dr,'cr'=>$cr,'dr'=>$dr,'Cr'=>$cr,'Dr'=>$dr);
 	}
 
-	function getOpeningBalanceByGroup($on_date=null,$forPandL=false,$branch=null,$underHead=null, $groupByField='SchemeGroup',$filter_by_schemes=null) {
+	function getOpeningBalanceByGroup($on_date=null,$forPandL=false,$branch=null,$underHead=null, $groupByField='SchemeGroup',$filter_by_schemes=null, $from_date=null) {
 
 		if(!is_array($groupByField) or count($groupByField)!=3)
 			throw $this->exception('groupByField should be array(field, from,new_name)', 'ValidityCheck')->setField('FieldName');
@@ -346,8 +346,8 @@ class Model_Scheme extends Model_Table {
 			$transaction_row->addCondition('branch_id',$branch->id);
 
 		if($forPandL){
-			$financial_start_date = $this->api->getFinancialYear($on_date,'start');
-			$transaction_row->addCondition('created_at','>=',$financial_start_date);
+			if(!$from_date) $from_date = $this->api->getFinancialYear($on_date,'start');
+			$transaction_row->addCondition('created_at','>=',$from_date);
 		}
 
 		if($filter_by_schemes)

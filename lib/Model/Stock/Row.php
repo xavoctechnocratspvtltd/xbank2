@@ -143,7 +143,7 @@ class Model_Stock_Row extends Model_Table {
 			$branch_id = $this->api->current_branch->id;
 
 		$cntr_model = $this->add('Model_Stock_Container');
-		$cntr_model->loadDeadContainer($branch_id);
+		$cntr_model->loadUsedDefaultContainer($branch_id);
 		$this->addCondition('branch_id',$branch_id);
 		$this->addCondition('container_id',$cntr_model->id);
 		$this->addCondition('name','UsedDefault');

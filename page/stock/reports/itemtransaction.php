@@ -106,7 +106,7 @@ class page_stock_reports_itemtransaction extends Page{
 		$grid->removeColumn('rate');
 		$grid->removeColumn('amount');
 		// $grid->removeColumn('narration');
-		$grid->removeColumn('created_at');
+		// $grid->removeColumn('created_at');
 		$grid->removeColumn('issue_date');
 		$grid->removeColumn('submit_date');
 		$grid->removeColumn('to_container');

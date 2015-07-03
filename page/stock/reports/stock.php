@@ -74,10 +74,9 @@ class page_stock_reports_stock extends Page {
 			$tra_model->addCondition('transaction_type','Transfer');
 			$tra_model->addCondition('item_id',$g->model->id);
 			$tra_model->addCondition('to_branch_id',$g->api->currentBranch->id);
-			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
 
-			$tra_model_qty = ($tra_model->sum('qty')->getOne())?:0;
-			$g->current_row_html[$f]=$tra_model_qty;
+			$tra_model_from_qty = ($tra_model->sum('qty')->getOne())?:0;
+			$g->current_row_html[$f]=$tra_model_from_qty;
 		});
 
 		$grid->addMethod('format_issue',function($g,$f){
@@ -170,8 +169,8 @@ class page_stock_reports_stock extends Page {
 		$grid->addColumn('openning','openning');
 		$grid->addColumn('purchase','purchase');
 		$grid->addColumn('purchasereturn','purchase_return');
-		$grid->addColumn('transferto','transfer_in');
-		$grid->addColumn('transferfrom','transfer_out');
+		$grid->addColumn('transferto','transfer_out');
+		$grid->addColumn('transferfrom','transfer_in');
 		$grid->addColumn('issue','issue');
 		$grid->addColumn('consume','consume');
 		$grid->addColumn('submit','submit');

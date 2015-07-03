@@ -29,8 +29,8 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		// $account_model = $this->add('Model_Active_Account');
 		
 		$tr_model = $this->add('Model_TransactionRow');
-		$tr_model->addCondition('branch_id',$this->api->current_branch->id);
-		
+		// $tr_model->addCondition('branch_id',$this->api->current_branch->id);
+
 		$tr_account_join = $tr_model->join('accounts','account_id');
 		$tr_account_join->addField('member_id');
 		$tr_account_join->addField('AccountNumber');
@@ -64,6 +64,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$tr_model->addCondition('DefaultAC',0);
 		$tr_model->_dsql()->group('account_id');
 		$tr_model->setOrder('account_id');
+		$tr_model->add('Controller_Acl');
 		$grid->setModel($tr_model,array('AccountNumber','name','FatherName','PermanentAddress','PhoneNos','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member'));
 		
 		if($form->isSubmitted()){

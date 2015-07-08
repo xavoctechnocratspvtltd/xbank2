@@ -13,17 +13,17 @@ class Grid_Report_TdsQuaterly extends Grid_AccountsBase{
 
 		$this->addColumn('s_no');
 		$this->addOrder()->move('s_no','first')->now();
-		$this->addFormatter('agent_id','Wrap');
+		// $this->addFormatter('agent_id','Wrap');
 	}
 	
 	function formatRow(){
-		if(!in_array($this->model['agent_id'],$this->previous_array)){
-			$this->previous_array[] = $this->model['agent_id'];
-			$agent_m = $this->add('Model_Agent')->tryLoad($this->model['agent_id']);				
-			$this->current_row['agent_id'] = $agent_m['name'];
-			$this->current_row['s_no'] = (($this->sno++) + ($_GET[$this->skip_var]));
-		}else
-			$this->current_row['agent_id'] = "";
+		// if(!in_array($this->model['agent_id'],$this->previous_array)){
+		// 	$this->previous_array[] = $this->model['agent_id'];
+		// 	$agent_m = $this->add('Model_Agent')->tryLoad($this->model['agent_id']);				
+		// 	$this->current_row['agent_id'] = $agent_m['name'];
+		// 	$this->current_row['s_no'] = (($this->sno++) + ($_GET[$this->skip_var]));
+		// }else
+		// 	$this->current_row['agent_id'] = "";
 
 		parent::formatRow();
 	}

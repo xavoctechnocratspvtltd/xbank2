@@ -539,6 +539,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['qty']=$qty;
 		$this['narration']=$narration;
 		$this['transaction_type']='UsedSubmit';
+		$this['is_used_submit']=1;
 		if($staff->loaded())
 			$this['member_id']=$staff->id;
 		if($agent->loaded())

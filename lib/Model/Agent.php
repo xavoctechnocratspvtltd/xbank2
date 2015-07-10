@@ -65,6 +65,11 @@ class Model_Agent extends Model_Table {
 		if($this->sponsor() and $this->sponsor()->isAtLowestCader()){
 			throw $this->exception('Sponsor is Advisor . Cannot Add','ValidityCheck')->setField('sponsor_id');
 		}
+
+		//Member ke is_agent field true 
+		$member  = $this->ref('member_id');
+		$member['is_agent'] = true;
+		$member->save();
 	}
 
 	function account(){

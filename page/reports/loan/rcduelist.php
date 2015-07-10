@@ -58,8 +58,8 @@ class page_reports_loan_rcduelist extends Page {
 			}
 
 			$accounts_model->addCondition('ActiveStatus',$_GET['status']);
-			$accounts_model->addCondition($q->orExpr()->where('documents_id',$_GET['document'])->where('documents_id is null'));
-
+			// $accounts_model->addCondition($q->orExpr()->where('documents_id',$_GET['document'])->where('documents_id is null'));
+			$accounts_model->addCondition('documents_id','<>',$_GET['document']);
 			$accounts_model->addCondition('created_at','<',$as_on_date);
 			$accounts_model->addCondition($q->orExpr()->where('submitted_on','>',$as_on_date)->where('submitted_on is null'));
 
@@ -78,6 +78,10 @@ class page_reports_loan_rcduelist extends Page {
 
 		$grid->addPaginator(50);
 		$grid->addSno();
+		$grid->addFormatter('scheme','Wrap');
+		$grid->addFormatter('member','Wrap');
+		$grid->addFormatter('address','Wrap');
+		$grid->addFormatter('Description','Wrap');
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(

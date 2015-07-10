@@ -4,8 +4,11 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 	public $till_date;
 	public $scheme_type;
 	public $fixed_assets_type;
+	public $current_financial_year; 
 
 	function setModel($model,$fields=null){
+		$this->current_financial_year = $this->api->getFinancialYear();
+
 		$model->getElement('SchemeType')->caption('Under Head');
 		parent::setModel($model,$fields);
 
@@ -37,12 +40,17 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 			$balance = abs($amount).' DR';
 		
 		//Opening Amount: Current Financial Year ka opening Amount no according to as on date
-		if($this->model['SchemeType'] == "Loan"){
-			$this->current_row['opening_amount'] = 11;
+		
+		// if($this->model['SchemeType'] == "Loan"){
+			//OPENING BALANCE CALCULATION
+			$start_date = $this->current_financial_year['start_date'];
+			$opening_array = $this->model->getOpeningBalance($this->api->nextDate($start_date));
+
+			$this->current_row['opening_amount'] = $opening_array['CR'];
 			$this->current_row['closing_balance'] = $balance;
-		}else{
-			$this->current_row['closing_balance'] = $balance;
-		}
+		// }else{
+			// $this->current_row['closing_balance'] = $balance;
+		// }
 		
 		// throw new \Exception($this->fixed_assets_type);
 		

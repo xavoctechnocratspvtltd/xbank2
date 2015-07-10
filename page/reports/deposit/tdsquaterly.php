@@ -120,7 +120,7 @@ class page_reports_deposit_tdsquaterly extends Page {
 
 		
 
-		$grid->setModel($agent_model->debug(),array('name','total_commission','total_tds','net_commission'));
+		$grid->setModel($agent_model,array('name','total_commission','total_tds','net_commission'));
 		
 		$grid->addColumn('ch_no');
 		

@@ -190,6 +190,7 @@ class Model_Stock_Transaction extends Model_Table {
 	}
 
 	function transfer($from_branch_id,$container,$row,$item,$qty,$narration,$to_branch,$is_used_submit=false,$as_on=null){
+		
 
 		if($this->loaded())
 			throw $this->exception('Please call on empty Object');
@@ -539,7 +540,7 @@ class Model_Stock_Transaction extends Model_Table {
 		$this['qty']=$qty;
 		$this['narration']=$narration;
 		$this['transaction_type']='UsedSubmit';
-		$this['is_used_submit']=1;
+		//$this['is_used_submit']=1;
 		if($staff->loaded())
 			$this['member_id']=$staff->id;
 		if($agent->loaded())

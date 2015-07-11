@@ -86,9 +86,39 @@ class page_reports_member_loaninsurance extends Page {
 		$grid->addFormatter('age','age');
 		$grid->addColumn('text','insurance_amount');
 
-		$grid->addPaginator(50);
+		$paginator = $grid->addPaginator(50);
+		$grid->skip_var = $paginator->skip_var;
+
 		$grid->addSno();
 		$grid->removeColumn('scheme');
+
+		//Formatter for Nominee
+
+		$grid->addMethod('format_nominee',function($g,$q){
+			if($g->model['nominee'])
+				$nominee = $g->model['nominee'];
+			else{
+				$sm = $g->add('Model_Account_SM')->addCondition('member_id',$g->model['member_id']);
+				$sm->tryLoadAny();
+				$nominee = $sm['Nominee'];
+			}
+			$g->current_row_html['nominee'] = $nominee;
+		});
+
+		$grid->addFormatter('nominee','nominee');
+
+				$grid->addMethod('format_relation_with_nominee',function($g,$q){
+			if($g->model['relation_with_nominee'])
+				$nominee = $g->model['relation_with_nominee'];
+			else{
+				$sm = $g->add('Model_Account_SM')->addCondition('member_id',$g->model['member_id']);
+				$sm->tryLoadAny();
+				$nominee = $sm['RelationWithNominee'];
+			}
+			$g->current_row_html['relation_with_nominee'] = $nominee;
+		});
+		$grid->addFormatter('relation_with_nominee','relation_with_nominee');
+
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

@@ -6,7 +6,10 @@ class page_reports_loan_noc extends Page {
 
 		$form = $this->add('Form');
 		$loan = $this->add('Model_Active_Account_Loan');
-		$loan->addCondition('branch_id',$this->api->current_branch->id);
+
+		if($this->api->current_branch->id != 1)
+			$loan->addCondition('branch_id',$this->api->current_branch->id);
+
 		$loan->addCondition('AccountNumber','not like','%DFL%');
 		$loan->addCondition('AccountNumber','not like','%Default%');
 		$form->addField('autocomplete/Basic','account')->setModel($loan);

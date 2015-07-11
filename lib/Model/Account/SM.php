@@ -13,8 +13,18 @@ class Model_Account_SM extends Model_Account_Default{
 		$this->getElement('account_type')->defaultValue('SM');
 
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
-		
+		// $this->addHook('beforeSave',$this);
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function afterSave(){
+
+		$member_model = $this->ref('member_id');
+		$member_model['Nominee'] = $this['Nominee'];
+		$member_model['NomineeAge'] = $this['NomineeAge'];
+		$member_model['RelationWithNominee'] = $this['RelationWithNominee'];
+		$member_model->save();
+
 	}
 
 	function updateForm($form){

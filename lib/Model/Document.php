@@ -31,4 +31,12 @@ class Model_Document extends Model_Table {
 	function loanDocuments(){
 		return $this->addCondition('LoanAccount',true);
 	}
+
+	function loadDocument($name){
+		if(!$name) return false;
+		$this->addCondition('name',$name);
+		$this->tryLoadAny();
+		return $this;
+	}
+
 }

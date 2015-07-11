@@ -42,6 +42,44 @@ class page_reports_member_member extends Page {
 		}
 		$grid->setModel($member_model);
 		
+		$grid->addMethod('format_Nominee',function($g,$q){
+			if($g->model['Nominee'])
+				$nominee = $g->model['Nominee'];
+			else{
+				$sm_account = $g->add('Model_Account_SM')->addCondition('member_id',$g->model->id);
+				$sm_account->tryLoadAny();
+				$nominee = $sm_account['Nominee'];
+			}
+			$g->current_row_html['Nominee'] = $nominee;
+		});
+		$grid->addFormatter('Nominee','Nominee');
+
+
+		$grid->addMethod('format_RelationWithNominee',function($g,$q){
+			if($g->model['RelationWithNominee'])
+				$nominee = $g->model['RelationWithNominee'];
+			else{
+				$sm_account = $g->add('Model_Account_SM')->addCondition('member_id',$g->model->id);
+				$sm_account->tryLoadAny();
+				$nominee = $sm_account['RelationWithNominee'];
+			}
+			$g->current_row_html['RelationWithNominee'] = $nominee;
+		});
+		$grid->addFormatter('RelationWithNominee','RelationWithNominee');
+		
+		$grid->addMethod('format_NomineeAge',function($g,$q){
+			if($g->model['NomineeAge'])
+				$nominee = $g->model['NomineeAge'];
+			else{
+				$sm_account = $g->add('Model_Account_SM')->addCondition('member_id',$g->model->id);
+				$sm_account->tryLoadAny();
+				$nominee = $sm_account['NomineeAge'];
+			}
+			$g->current_row_html['NomineeAge'] = $nominee;
+		});
+		$grid->addFormatter('NomineeAge','NomineeAge');
+
+
 
 	}
 

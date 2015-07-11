@@ -62,8 +62,8 @@ class page_reports_loan_dealerstatement extends Page {
 			$account_model->addCondition('created_at','<=',$this->api->nextDate($to_date));
 			
 			if(isset($account_type_value)){
-			$account_model->addCondition('SchemeType','Loan');
-			$account_model->addCondition('scheme_name',$account_type_value);
+				$account_model->addCondition('SchemeType','Loan');
+				$account_model->addCondition('account_type',$account_type_value);
 			}
 
 			$status = 1;

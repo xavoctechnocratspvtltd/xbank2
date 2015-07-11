@@ -62,8 +62,8 @@ class page_reports_agent_tds extends Page {
 		$model->getElement('created_at')->caption('Deposit Date');
 		
 		// $model->setLimit(10);
-		$model->_dsql()->group('reference_id');
-		$grid->setModel($model,array('agent_id','agent','voucher_no','reference','dr_sum','tds','net_commission','created_at'));
+		// $model->_dsql()->group('reference_id');
+		$grid->setModel($model,array('id','agent_id','agent','voucher_no','reference','dr_sum','tds','net_commission','created_at'));
 		
 		if($_GET['agent'])
 			$grid->removeColumn('agent_id');
@@ -85,7 +85,7 @@ class page_reports_agent_tds extends Page {
 		$grid->addMethod('format_deposit',function($g,$f){
 			$g->current_row[$f] = $g->add('Model_TransactionRow')
 									->addCondition('account_id',$g->model['reference_id'])
-									->addCondition('created_at',$g->model['created_at'])
+									// ->addCondition('created_at',$g->model['created_at'])
 									->addCondition('amountCr','>',0)
 									->tryLoadAny()
 									->get('amountCr')
@@ -93,6 +93,7 @@ class page_reports_agent_tds extends Page {
 		});
 
 		$grid->addColumn('deposit','deposit');
+
 		$grid->addOrder()->move('deposit','before','dr_sum')->now();
 
 		if($form->isSubmitted()){

@@ -8,10 +8,10 @@ class Grid_Report_TdsQuaterly extends Grid_AccountsBase{
 		parent::setModel($model,$fields);
 
 		// $this->addSno();
+		$this->addSno();
 		$paginator = $this->addPaginator(50);
 		$this->skip_var = $paginator->skip_var;
 
-		$this->addColumn('s_no');
 		$this->addOrder()->move('s_no','first')->now();
 		// $this->addFormatter('agent_id','Wrap');
 	}

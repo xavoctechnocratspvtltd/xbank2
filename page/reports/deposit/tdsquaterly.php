@@ -13,6 +13,9 @@ class page_reports_deposit_tdsquaterly extends Page {
 		$grid = $this->add('Grid_Report_TdsQuaterly');
 
 		$agent_model = $this->add('Model_Agent');
+		$member_join = $agent_model->LeftJoin('members','member_id');
+		$member_join->addField('branch_id');
+		$agent_model->addCondition('branch_id',$this->api->current_branch->id);
 
 		$from_date = '-';
 		$to_date = '-';
@@ -119,6 +122,7 @@ class page_reports_deposit_tdsquaterly extends Page {
 		
 
 		
+		$agent_model->setOrder('total_commission','asc');
 
 		$grid->setModel($agent_model,array('name','total_commission','total_tds','net_commission'));
 		

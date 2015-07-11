@@ -113,7 +113,12 @@ class page_reports_deposit_emiduelist extends Page {
 
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');
+		// $account_model->setLimit(10);
 		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','paid_premium_count','due_premium_count','premium_amount','total','last_premium','agent','agent_code','agent_phone'));
+		
+		if($_GET['agent']){
+			$grid->removeColumn('agent_code');
+		}
 		$grid->addSno();
 		// $grid->removeColumn('last_premium');
 
@@ -125,8 +130,8 @@ class page_reports_deposit_emiduelist extends Page {
 
 		// $grid->addColumn('balance','balance');
 
-		$grid->addPaginator(50);
-
+		$paginator = $grid->addPaginator(50);
+		$grid->skip_var = $paginator->skip_var;
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
 		// 	$this->js()->_selector('#header')->toggle(),

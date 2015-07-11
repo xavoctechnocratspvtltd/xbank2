@@ -86,9 +86,22 @@ class Model_Member extends Model_Table {
 
 	}
 
-	function beforeSave(){
+	function beforeSave($m){
+
+		$date = new MyDateTime($this->api->today);
+		$date->sub(new DateInterval('P216M'));
+
+		if(strtotime($m['DOB']) > strtotime($date->format('Y-m-d')))
+			throw $this->exception('Member Must Be Adult', 'ValidityCheck')->setField('DOB');
+		
+		if(strtotime('1970-01-01') == strtotime($m['DOB']))
+			throw $this->exception('Date Format Must be dd/mm/YYYY', 'ValidityCheck')->setField('DOB');
+
+		// Check For Proper Mobile Number
+		if(strlen($m['PhoneNos'])<10)
+			throw $this->exception(' Please Enter correct No'.strlen($m['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
+
 		// if(!$this['title'])
-		// 	throw $this->exception('Please Select Title', 'ValidityCheck')->setField('title');
 		// if(!$this['Occupation'])
 		// 	throw $this->exception('Please Select Occupation', 'ValidityCheck')->setField('Occupation');
 
@@ -98,16 +111,20 @@ class Model_Member extends Model_Table {
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
 
-		// Check for adult member
-		$date = new MyDateTime($this->api->today);
-		$date->sub(new DateInterval('P216M'));
+		// // Check for adult member
+		// $date = new MyDateTime($this->api->today);
+		// $date->sub(new DateInterval('P216M'));
 
-		if(strtotime($other_values['DOB']) > strtotime($date->format('Y-m-d')))
-			throw $this->exception('Member Must Be Adult', 'ValidityCheck')->setField('DOB');
 
-		// Check For Proper Mobile Number
-		if(strlen($other_values['PhoneNos'])<10)
-			throw $this->exception(' Please Enter correct No'.strlen($other_values['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
+		// if(strtotime($other_values['DOB']) > strtotime($date->format('Y-m-d')))
+		// 	throw $this->exception('Member Must Be Adult', 'ValidityCheck')->setField('DOB');
+		
+		// if(strtotime('1970-01-01') == strtotime($other_values['DOB']))
+		// 	throw $this->exception('Date Format Must be dd/mm/YYYY', 'ValidityCheck')->setField('DOB');
+		
+		// // Check For Proper Mobile Number
+		// if(strlen($other_values['PhoneNos'])<10)
+		// 	throw $this->exception(' Please Enter correct No'.strlen($other_values['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
 
 
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Member');

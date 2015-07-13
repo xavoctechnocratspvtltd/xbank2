@@ -91,14 +91,14 @@ class Model_Member extends Model_Table {
 		$date = new MyDateTime($this->api->today);
 		$date->sub(new DateInterval('P216M'));
 
-		if(strtotime($m['DOB']) > strtotime($date->format('Y-m-d')))
+		if( $m->isDirty('DOB') && strtotime($m['DOB']) > strtotime($date->format('Y-m-d')))
 			throw $this->exception('Member Must Be Adult', 'ValidityCheck')->setField('DOB');
 		
-		if(strtotime('1970-01-01') == strtotime($m['DOB']))
+		if($m->isDirty('DOB') && strtotime('1970-01-01') == strtotime($m['DOB']))
 			throw $this->exception('Date Format Must be dd/mm/YYYY', 'ValidityCheck')->setField('DOB');
 
 		// Check For Proper Mobile Number
-		if(strlen($m['PhoneNos'])<10)
+		if( $m->isDirty('PhoneNos') && strlen($m['PhoneNos'])<10)
 			throw $this->exception(' Please Enter correct No'.strlen($m['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
 
 		// if(!$this['title'])

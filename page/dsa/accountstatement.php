@@ -5,7 +5,7 @@ class page_dsa_accountstatement extends Page{
 
 		// $this->add('Controller_Acl');
 		$account_model=$this->add('Model_Account');
-		$dealers_j=$account_model->join('dealers.dsa_id');
+		$dealers_j=$account_model->join('dealers','dealer_id');
 		$dealers_j->addField('dsa_id');
 		$account_model->addCondition('dsa_id',$this->api->auth->model->id);
 

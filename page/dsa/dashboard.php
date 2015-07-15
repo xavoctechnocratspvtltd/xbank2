@@ -9,13 +9,12 @@ class page_dsa_dashboard extends Page {
 		$tabs = $this->add('Tabs');
 		
 		// Dealers
-		$dealers_tab = $tabs->addTab('Dealers');
-		
-		$grid = $dealers_tab->add('Grid');
-		$grid->setModel($this->api->auth->model->ref('Dealer'));
-
-		// $dealers_tab = $tabs->addTab('Dealers');
-
-
+		$tabs->addTabURl('dsa_dealers','Dealers');
+		$tabs->addTabURl('dsa_emiduelist','EMI Due List');
+		$tabs->addTabURl('dsa_emireceivedlist','EMI Received List');
+		$tabs->addTabURl('dsa_rcduelist','R.C. Due List');
+		$tabs->addTabURl('dsa_dealerstatement','Dealer Statements');
+		$tabs->addTabURl('dsa_accountstatement','Account Statements');
 	}
+
 }

@@ -20,8 +20,6 @@ class page_voucher_print extends Page {
 		$transaction = $this->add('Model_Transaction');
 		$transaction->load($_GET['transaction_id']);
 		
-		
-		
 		$cols= $this->add('Columns');
 		$left=$cols->addColumn(6);
 		$right=$cols->addColumn(6);

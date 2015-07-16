@@ -1,0 +1,86 @@
+<style>
+
+#main{
+		width:80%;
+		max-height:auto;
+		height:auto; 
+		position: relative;
+	}
+	#main > img{
+		width: 100%;
+		top:0;
+		left:0;
+	}
+	.name{
+		position:absolute;
+		top:230px;
+		left:500px;
+		font-size:20px;
+	}
+	.f_name{
+		position:absolute;
+		top:259px;
+		left:500px;
+		font-size:20px;
+	}
+	.address{
+		top:292px;
+		left:300px;
+		font-size:20px;
+		position:absolute;
+	}
+	.d_amount{
+		top:388px;
+		left:485px;
+		font-size:20px;
+		position:absolute;
+	}
+	.nominee_name{
+		position:absolute;
+		top:422px;
+		left:391px;
+		font-size:20px;
+	}
+	.nominee_relation{
+		position:absolute;
+		top:422px;
+		left:738px;
+		font-size:20px;
+	}
+	.nominee_age{
+		position:absolute;
+		top:422px;
+		left:878px;
+		font-size:20px;
+	}
+	.nominee_dob{
+		position:absolute;
+		top:459px;
+		left:545px;
+		font-size:20px;
+		letter-spacing: 12px;
+	}
+	.special_candidate{
+		position:absolute;
+		top:486px;
+		left:449px;
+		font-size:20px;
+	}
+</style>
+	<div class="container">
+		{$Content}
+	
+		<div id="main">
+			<img src="templates/images/fd_receipt_new.jpg" />
+			<p class="name">{$name}</p>
+			<p class="f_name">{$f_name}</p>
+			<p class="address">{$address}</p>
+			<p class="d_amount">{$deposite_amount}</p>
+			<p class="nominee_name">{$nominee_name}</p>
+			<p class="nominee_relation">{$relation_with_nominee}</p>
+			<p class="nominee_age">{$nominee_age}</p>
+			<p class="nominee_dob">{$nominee_dob}</p>
+			<p class="special_candidate">{$special_candidate}</p>
+					
+       	</div>
+    </div>  

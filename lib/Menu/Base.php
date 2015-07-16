@@ -82,6 +82,7 @@ class Menu_Base extends Menu {
 		$mad_sub_menus->addMenuItem('agents','Agents');
 		$mad_sub_menus->addMenuItem('dealers','Dealers');
 		$mad_sub_menus->addMenuItem('dsa','DSA');
+		$mad_sub_menus->addMenuItem('employee','Employees');
 		$mad->js('click',$mad_sub_menus_popover->showJS());
 		
 		// $general_sub_menus = $general_sub_menus_popover->add('Menu_Vertical');
@@ -140,6 +141,7 @@ class Menu_Base extends Menu {
 		$utilities_sub_menus->addMenuItem('documents','Documents Management');
 		$utilities_sub_menus->addMenuItem('utility_setdate','Change Date');
 		$utilities_sub_menus->addMenuItem('utility_accwithoutimage','Accounts Without Images');
+		$utilities_sub_menus->addMenuItem('utility_fdaccount','F.D. Bond Accounts');
 		$utilities->js('click',$utilities_sub_menus_popover->showJS());
 
 		// $member_sub_menus = $member_sub_menus_popover->add('Menu_Vertical');

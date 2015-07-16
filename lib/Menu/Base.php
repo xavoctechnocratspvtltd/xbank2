@@ -142,6 +142,7 @@ class Menu_Base extends Menu {
 		$utilities_sub_menus->addMenuItem('utility_setdate','Change Date');
 		$utilities_sub_menus->addMenuItem('utility_accwithoutimage','Accounts Without Images');
 		$utilities_sub_menus->addMenuItem('utility_fdaccount','F.D. Bond Accounts');
+		$utilities_sub_menus->addMenuItem('utility_sharecertificate','Share Certificate Print');
 		$utilities->js('click',$utilities_sub_menus_popover->showJS());
 
 		// $member_sub_menus = $member_sub_menus_popover->add('Menu_Vertical');

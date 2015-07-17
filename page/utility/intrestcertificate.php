@@ -5,19 +5,25 @@ class page_utility_intrestcertificate extends Page{
 	function init(){
 		parent::init();
 
-		$account=$this->add('Model_Account_FixedAndMis');
 		$form=$this->add('Form');
-		$acc_field=$form->addField('autocomplete/Basic','account')->validateNotNull();
-		$acc_field->setModel($account);
-		$form->addSubmit('Print');
+		$account_field = $form->addField('autocomplete/Basic','member')->validateNotNull();
+		$account_field->setModel('Member');
+
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
+		$form->addSubmit('Get It');
 
 		if($form->isSubmitted()){
 			$this->js()->univ()->newWindow($this->api->url('utility_intrestprint',
-															array('account_id'=>$form['account'],
-															'cut_page'=>1
+															array(
+																'member_id'=>$form['member'],
+																'from_date'=>$form['from_date'],
+																'to_date'=>$form['to_date'],
+																'cut_page'=>1
 															)
 					)
-					)->execute();	
+					)->execute();
 		}
+
 	}	
 }

@@ -141,7 +141,9 @@ class Model_Account_Loan extends Model_Account{
 	function addDocumentDetailsFromPending($extra_info){
 
 		if(!isset($extra_info['documents_feeded'])) return;
-		
+		echo "<pre>";
+		print_r($extra_info);
+		echo "</pre>";
 		$doc_info = $extra_info['documents_feeded'];
 		foreach ($doc_info as $doc_name => $value) {
 			$document = $this->add('Model_Document')->loadBy('name',$doc_name);

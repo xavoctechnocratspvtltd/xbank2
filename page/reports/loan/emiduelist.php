@@ -122,11 +122,11 @@ class page_reports_loan_emiduelist extends Page {
 					break;
 				case 'hardlist':
 					$account_model->addCondition('due_premium_count','>',2);
-					$account_model->addCondition('due_premium_count','<=',5);
+					$account_model->addCondition('due_premium_count','<=',4);
 					$account_model->addCondition('last_premium','>=',$till_date);
 					break;
 				case 'npa':
-					$account_model->addCondition('due_premium_count','>',5);
+					$account_model->addCondition('due_premium_count','>=',5);
 					$account_model->addCondition('last_premium','>=',$till_date);
 					break;
 

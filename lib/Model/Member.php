@@ -10,6 +10,8 @@ class Model_Member extends Model_Table {
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.')->mandatory(true);
 		$this->addField('name')->mandatory(true);
+		$this->addField('username')->mandatory(true);
+		$this->addField('password')->mandatory(true);
 		$this->addField('CurrentAddress')->type('text')->mandatory(true);
 		$this->addField('landmark');
 		$this->addField('tehsil');

@@ -16,7 +16,7 @@ class Grid_Report_ClosingBalanceOfAccount extends Grid_AccountsBase{
 		// $this->model->getElement('name')->caption('Member');
 		$this->addFormatter('PermanentAddress','Wrap');
 		$this->addSno();
-		$paginator = $this->addPaginator(50);
+		$paginator = $this->addPaginator(500);
 		$this->skip_var = $paginator->skip_var;
 
 		$this->addQuickSearch(array('AccountNumber'));

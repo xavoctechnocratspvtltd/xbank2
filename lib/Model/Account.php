@@ -397,7 +397,7 @@ class Model_Account extends Model_Table {
 		$document_submitted->addCondition('accounts_id',$this->id);
 		$document_submitted->tryLoadAny();
 		
-		if($value=='') throw $this->exception('Value Must Be Filled','ValidityCheck')->setField($this->api->normalizeName($document['name'].' value'));
+		if($value=='') throw $this->exception('Value Must Be Filled for '. $document['name'],'ValidityCheck')->setField($this->api->normalizeName($document['name'].' value'));
 
 		$document_submitted['Description'] = $value;
 		$document_submitted->save();

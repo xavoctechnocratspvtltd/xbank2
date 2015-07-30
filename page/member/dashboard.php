@@ -13,17 +13,7 @@ class page_member_dashboard extends Page{
 		$grid->addPaginator(20);
 
 		$grid->addMethod('format_AccountNumber',function($g,$f){
-		$url = $this->api->url('voucher_print');
-		$transactions = $this->add('Model_Transaction');
-		$transactions->addCondition('reference_id',$g->model->id);
-		// $transaction_id =($this->model instanceof Model_TransactionRow)? $this->model['transaction_id']: $this->model->id;
-		$g->current_row_html[$f] = "<a href='#voucher' class='voucher' onclick='$(this).univ().frameURL(\"Transaction Voucher ". $transactions['voucher_no'] ." uuid:". $g->model->id ."\",\"" .
-                    $url->set(array(
-                        $f => $g->model->id,
-                        'transaction_id'=>$g->model->id,
-                        $this->name.'_'.$f => $g->model->id
-                    )) . "\")'".
-            ">".$g->current_row[$f]."</a>";
+			$g->current_row_html[$f]='<a href="javascript:void(0)" onclick="'.$g->js()->univ()->frameURL('Account Statement',$g->api->url('member_statement',array('member_id'=>$g->model['member_id'],'account_id'=>$g->model->id))).'">'.$g->current_row[$f].'</a>';
 		});
 
 		$grid->addColumn('AccountNumber','AccountNumber');

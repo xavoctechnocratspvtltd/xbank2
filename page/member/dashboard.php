@@ -19,9 +19,9 @@ class page_member_dashboard extends Page{
 		$grid->addColumn('AccountNumber','AccountNumber');
 
 		$grid->addFormatter('member','wrap');
-		
-		$grid->addMethod('format_Balance',function($g,$f){
-			$openinig_blalnce = $g->model->getOpeningBalance($this->api->nextDate($this->api->today));
+		$self=$this;
+		$grid->addMethod('format_Balance',function($g,$f)use($self){
+			$openinig_blalnce = $g->model->getOpeningBalance($self->api->nextDate($self->api->today));
 			$cr = $openinig_blalnce['CR'];
 			$dr = $openinig_blalnce['DR'];
 

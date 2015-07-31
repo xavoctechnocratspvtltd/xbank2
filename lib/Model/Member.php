@@ -10,8 +10,8 @@ class Model_Member extends Model_Table {
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.')->mandatory(true);
 		$this->addField('name')->mandatory(true);
-		$this->addField('username')->mandatory(true);
-		$this->addField('password')->mandatory(true);
+		$this->addField('username');
+		$this->addField('password');
 		$this->addField('CurrentAddress')->type('text')->mandatory(true);
 		$this->addField('landmark');
 		$this->addField('tehsil');
@@ -71,6 +71,7 @@ class Model_Member extends Model_Table {
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);
+		$this->addHook('afterInsert',$this);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -107,6 +108,13 @@ class Model_Member extends Model_Table {
 		// if(!$this['Occupation'])
 		// 	throw $this->exception('Please Select Occupation', 'ValidityCheck')->setField('Occupation');
 
+	}
+
+	function afterInsert($m,$id){
+		$member=$this->add('Model_Member')->load($id);
+		$member['username']=$id;
+		$member['password']=rand(9999,99999);
+		$member->save();
 	}
 
 	function createNewMember($name, $admissionFee, $shareValue, $branch=null, $other_values=array(),$form=null,$on_date=null){

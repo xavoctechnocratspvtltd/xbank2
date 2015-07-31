@@ -49,7 +49,7 @@ class Frontend extends ApiFrontend {
             $auth->check();
             
             $dsa_menu=$header->add('Menu')->addClass('mymenu');
-            $dsa_menu->addMenuItem('logout','Logout');
+            $dsa_menu->addMenuItem('dsa_logout','Logout');
 
         }elseif(strpos($this->page,'member_') === 0){
             
@@ -59,7 +59,8 @@ class Frontend extends ApiFrontend {
             $auth->check();
             
             $member_menu=$header->add('Menu')->addClass('mymenu');
-            $member_menu->addMenuItem('logout','Logout');            
+            $member_menu->addMenuItem('member_logout','Logout');
+                        
         }elseif(strpos($this->page,'agent_') === 0){
             
             $auth = $this->add('BasicAuth');

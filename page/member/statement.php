@@ -50,7 +50,7 @@ class page_member_statement extends Page {
 
 		$transactions_row->setOrder('created_at');
 		$grid->setModel($transactions_row,array('account','created_at','Narration','amountDr','amountCr'));
-		$grid->addPaginator(20);
+		// $grid->addPaginator(20);
 
 		$grid->addSno();
 

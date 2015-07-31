@@ -9,11 +9,11 @@ class page_member_dashboard extends Page{
 		$account_model->addCondition('member_id',$this->api->auth->model->id);
 
 		$grid = $this->add('Grid_AccountStatement');
-		$grid->setModel($account_model,array('AccountNumber','member','scheme','branch','account_type','ActiveStatus','ModeOfOperation','OpeningBalanceDr'));
+		$grid->setModel($account_model,array('AccountNumber','member','scheme','branch','account_type','ActiveStatus','ModeOfOperation'));
 		$grid->addPaginator(20);
 
 		$grid->addMethod('format_AccountNumber',function($g,$f){
-			$g->current_row_html[$f]='<a href="javascript:void(0)" onclick="'.$g->js()->univ()->frameURL('Account Statement',$g->api->url('member_statement',array('member_id'=>$g->model['member_id'],'account_id'=>$g->model->id))).'">'.$g->current_row[$f].'</a>';
+			$g->current_row_html[$f]='<a href="javascript:void(0)" onclick="'.$g->js()->univ()->newWindow($g->api->url('member_statement',array('member_id'=>$g->model['member_id'],'account_id'=>$g->model->id))).'">'.$g->current_row[$f].'</a>';
 		});
 
 		$grid->addColumn('AccountNumber','AccountNumber');

@@ -9,7 +9,7 @@ class page_member_dashboard extends Page{
 		$account_model->addCondition('member_id',$this->api->auth->model->id);
 
 		$grid = $this->add('Grid_AccountStatement');
-		$grid->setModel($account_model);//,array('reference_id','voucher_no','created_at','Narration','amountDr','amountCr'));
+		$grid->setModel($account_model,array('AccountNumber','member','scheme','branch','account_type','ActiveStatus','ModeOfOperation','OpeningBalanceDr'));
 		$grid->addPaginator(20);
 
 		$grid->addMethod('format_AccountNumber',function($g,$f){
@@ -17,6 +17,23 @@ class page_member_dashboard extends Page{
 		});
 
 		$grid->addColumn('AccountNumber','AccountNumber');
+
+		$grid->addFormatter('member','wrap');
+		
+		$grid->addMethod('format_Balance',function($g,$f){
+			$openinig_blalnce = $g->model->getOpeningBalance($this->api->nextDate($this->api->today));
+			$cr = $openinig_blalnce['CR'];
+			$dr = $openinig_blalnce['DR'];
+
+			$amount = $cr-$dr;
+			$balance = $amount.' CR';
+			if($amount < 0)
+				$balance = abs($amount).' DR';
+
+			$g->current_row_html[$f] = $balance;
+		});
+		
+		$grid->addColumn('Balance','Balance');
 
 		$order=$grid->addOrder();
 		$order->move('AccountNumber','before','member')->now();

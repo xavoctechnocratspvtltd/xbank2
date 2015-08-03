@@ -100,10 +100,32 @@ class Model_Scheme_Loan extends Model_Scheme {
         $loan_accounts->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
 		if($test_account) $loan_accounts->addCondition('id',$test_account->id);
 
+		// Copy to let be Deactivated in some process in between
+		// So, its Not active account
+		// will load it by active account id in loop
+		$loan_accounts_copy  = $this->add('Model_Account_Loan');
+		$loan_accounts_copy->scheme_join->addField('Interest');
+		$loan_accounts_copy->scheme_join->addField('NumberOfPremiums');
+		$loan_accounts_copy->scheme_join->addField('ReducingOrFlatRate');
+
+		$loan_accounts_copy->leftJoin('premiums.account_id')
+						->addField('DueDate');
+
+		$loan_accounts_copy->addExpression('due_panelty')->set(function($m,$q)use($on_date){
+			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+		});
+
+		$loan_accounts_copy->addCondition('branch_id',$branch->id);
+
+        $loan_accounts_copy->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
+		// if($test_account) $loan_accounts_copy->addCondition('id',$test_account->id);
+
+
 		foreach ($loan_accounts as $acc_array) {
-            $loan_accounts->postInterestEntry($on_date);
-			if($loan_accounts['due_panelty'] > 0)
-				$loan_accounts->postPanelty($on_date);
+			$loan_accounts_copy->load($loan_accounts->id);
+            $loan_accounts_copy->postInterestEntry($on_date);
+			if($loan_accounts_copy['due_panelty'] > 0)
+				$loan_accounts_copy->postPanelty($on_date);
 		}
 
 		// all accounts that has passed their last EMI and has some panelty to be posted

@@ -1,0 +1,23 @@
+html
+  body
+    div(id='{$_name}')
+      | {$Content}
+      | {rows}
+      | {row}
+      div
+        | {$emp_name}
+        | {$basic_salary}
+        | {$total_days}
+        input
+        | {$paid_days}
+        |         {$leave}
+        |         {$salary}
+        |         {$PF_salary}
+        |         {$DED}
+        |         {$PF_amount}
+        |         {$other_allowance}
+        |         {$allow_paid}
+        |         {$net_payable}
+        |         {$narration}
+      |     {/row}
+      |   {/rows}

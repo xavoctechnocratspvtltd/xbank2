@@ -13,8 +13,13 @@ class page_employee extends Page{
 	}
 
 	function page_addEmployee(){
+		$emp=$this->add('Model_Employee');
+		// $emp->addExpression('emp_code')->set(function($m,$q){
+		// 	return $m->id;//->fieldQuery('id');
+		// });
+
 		$crud=$this->add('CRUD');
-		$crud->setModel('Employee');
+		$crud->setModel($emp);
 		// $crud->addRef('EmployeeSalary');
 	}
 
@@ -198,7 +203,7 @@ class page_employee extends Page{
 		$form->addSubmit('Get Record');
 
 		$salary_model=$this->add('Model_EmployeeSalary');
-		$grid=$this->add('Grid');
+		$grid=$this->add('Grid_Employee');
 
 		$this->api->stickyGET('branch');
 		$this->api->stickyGET('month');

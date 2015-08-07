@@ -40,14 +40,14 @@ class Model_Employee extends Model_Table{
 		$this->addField('pf_deduct');
 		$this->addField('employee_status');
 		$this->addField('basic_salary');
-		$this->addField('other_allowance');
+		$this->addField('other_allownace');
 		$this->addField('society_contri');
 		$this->addField('net_payable');
 		$this->addField('net_salary');
 
 		$this->hasMany('EmployeeSalary','employee_id');
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function empSalary(){

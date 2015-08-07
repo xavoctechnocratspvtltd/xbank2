@@ -42,8 +42,14 @@ class Model_Account_Recurring extends Model_Account{
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null){
 
-		if(($this['CurrentBalanceCr'] + $amount - $this->interestPaid($on_date)) > ($this->ref('scheme_id')->get('NumberOfPremiums') * $this['Amount'])){
-			throw $this->exception(' CAnnot Deposit More then '.$this->duePremiums() . ' premiums', 'ValidityCheck')->setField('amount');
+		$interest_till_date = $this->interestPaid($on_date);
+		if(($this['CurrentBalanceCr'] + $amount - $interest_till_date) > (($this->ref('scheme_id')->get('NumberOfPremiums') * $this['Amount'])+$interest_till_date)){
+			throw $this->exception(' Cannot Deposit More then '.$this->duePremiums() . ' premiums', 'ValidityCheck')
+				->setField('amount')
+				->addMoreInfo('Cr Amount After This Amount',($this['CurrentBalanceCr'] + $amount - $this->interestPaid($on_date)))
+				->addMoreInfo('Amount Allowed',($this->ref('scheme_id')->get('NumberOfPremiums') * $this['Amount'])+$this->interestPaid($on_date))
+				->addMoreInfo('Interest Till',$this->interestPaid($on_date))
+				;
 		}
 		
 		parent::deposit($amount,$narration,$accounts_to_debit,$form,$on_date);
@@ -182,7 +188,7 @@ class Model_Account_Recurring extends Model_Account{
 	function duePremiums($as_on_date=null){
 		if(!$this->loaded()) throw $this->exception('Account Must be loaded to get due Premiums');
 		
-		$prem = $this->ref('Premiums');
+		$prem = $this->ref('Premium');
 		$prem->addCondition('PaidOn',null);
 
 		if($as_on_date) $prem->addCondition('DueDate','<=',$as_on_date);

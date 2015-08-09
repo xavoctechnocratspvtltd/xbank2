@@ -1,10 +1,14 @@
 <?php
 
 class View_StockMember_Consume extends View {
+
 	function init(){
 		parent::init();
 		
 		$this->api->StickyGet('item');
+		$this->api->StickyGet('member');
+		$this->api->StickyGet('from_date');
+		$this->api->StickyGet('to_date');
 
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction_j_item=$transaction->join('stock_items','item_id');
@@ -12,15 +16,15 @@ class View_StockMember_Consume extends View {
 		$transaction->addCondition('is_consumable',true);
 		$transaction->addCondition('transaction_type','Consume');
 		// $transaction->setOrder('created_at','asc');
-		if($_GET['item'])
+		if($_GET['item']){			
 			$transaction->addCondition('item_id',$_GET['item']);
+		}
 
 		$grid=$this->add('Grid_AccountsBase');
 		$member_model=$this->add('Model_Stock_Member');
-		
-		if($_GET['filter']){
-						
-			if($_GET['member']){
+
+		if($this->filter){
+			if($this->member){										
 				$member_model->load($this->member);
 				$transaction->addCondition('member_id',$this->member);
 			}

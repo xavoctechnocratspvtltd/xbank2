@@ -17,7 +17,7 @@ class page_testcorrections extends Page {
 		ini_set('memory_limit', '2048M');
 		set_time_limit(0);
 
-		$this->correct_reference();
+		// $this->correct_reference();
 		// $this->checkAndCreateDefaultAccounts();
 	}
 
@@ -79,6 +79,34 @@ class page_testcorrections extends Page {
 			return $obj->getOne();
 		else
 			return $obj->execute();
+	}
+
+
+	function page_updateVlDocument(){
+		$loan_account = $this->add('Model_Account_Loan');
+		$loan_account->addCondition($loan_account->dsql()->orExpr()->where('AccountNumber','like','%vl%')->where('AccountNumber','like','%fvl%'));
+		$loan_account->addCondition('ActiveStatus',true);
+		$loan_account->setOrder('id','desc');
+
+		$str="";
+		$count = 0;
+		foreach ($loan_account as $junk) {
+			$document = $this->add('Model_DocumentSubmitted');
+			$document->addCondition('accounts_id',$junk->id);
+			$document->addCondition('documents_id',9);
+			$document->tryLoadAny();
+			if(!$document->count()->getOne()){
+				$document->save();
+				$count++;
+			}
+
+			$str .= $junk['id'].$junk['AccountNumber']."<br/>"; 
+		}
+
+		$this->add('View_Info')->set("Total Account".$loan_account->count()->getOne()."Total Account Update".$count);
+		$this->add('View_Info')->setHtml($str);
+
+
 	}
 
 

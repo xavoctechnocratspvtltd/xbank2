@@ -62,15 +62,17 @@ class page_reports_loan_dealerstatement extends Page {
 			$account_model->addCondition('created_at','<=',$this->api->nextDate($to_date));
 			
 			if(isset($account_type_value)){
-			$account_model->addCondition('SchemeType','Loan');
-			$account_model->addCondition('scheme_name',$account_type_value);
+				$account_model->addCondition('SchemeType','Loan');
+				$account_model->addCondition('account_type',$account_type_value);
 			}
 
-			if($_GET['status']){
+			$status = 1;
+			if($_GET['status'] == 0){
+				$account_model->addCondition('ActiveStatus','<>',1);
+			 }else{
 				$status = $this->api->stickyGET('status');
 				$account_model->addCondition('ActiveStatus',$status);
-			}else
-				$account_model->addCondition('ActiveStatus','<>',1);
+			 }
 
 
 			$member_join = $account_model->leftJoin('members','member_id');
@@ -92,6 +94,8 @@ class page_reports_loan_dealerstatement extends Page {
 		
 
 		$grid->setModel($account_model,$grid_column_array);
+
+		// $move fileds at and 
 
 		if($form->isSubmitted()){
 			$send = array('dealer'=>$form['dealer'],'status'=>$form['status'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'loan_type'=>$form['loan_type'],'filter'=>1);

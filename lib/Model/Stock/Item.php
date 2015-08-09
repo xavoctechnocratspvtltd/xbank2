@@ -301,6 +301,7 @@ class Model_Stock_Item extends Model_Table {
 
 		// 'Openning'
 		$openning_tra = $this->add('Model_Stock_Transaction');
+		$openning_tra->addCondition('is_used_submit',0);
 		$openning_tra->addCondition('item_id',$this->id);
 		$openning_tra->addCondition('created_at','<',$as_on);
 		$openning_tra->addCondition('transaction_type','Openning');
@@ -311,6 +312,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//Purchase
 		$purchase_tra = $this->add('Model_Stock_Transaction');
+		$purchase_tra->addCondition('is_used_submit',0);
 		$purchase_tra->addCondition('item_id',$this->id);
 		$purchase_tra->addCondition('created_at','<',$as_on);
 		$purchase_tra->addCondition('transaction_type','Purchase');
@@ -322,6 +324,7 @@ class Model_Stock_Item extends Model_Table {
 		//'Submit'
 		$submit_tra = $this->add('Model_Stock_Transaction');
 		$submit_tra->addCondition('item_id',$this->id);
+		$submit_tra->addCondition('is_used_submit',0);
 		$submit_tra->addCondition('created_at','<',$as_on);
 		$submit_tra->addCondition('transaction_type','Submit');
 		if($branch_id)
@@ -329,8 +332,9 @@ class Model_Stock_Item extends Model_Table {
 
 		$submit_tra_qty = ($submit_tra->sum('qty')->getOne())?:0;
 
-		//Used Submit 
+		//Used Submit
 		$used_submit_tra = $this->add('Model_Stock_Transaction');
+		$used_submit_tra->addCondition('is_used_submit',0);
 		$used_submit_tra->addCondition('item_id',$this->id);
 		$used_submit_tra->addCondition('created_at','<',$as_on);
 		$used_submit_tra->addCondition('transaction_type','UsedSubmit');
@@ -341,6 +345,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//'Transfer'
 		$transfer_to_this_branch_tra = $this->add('Model_Stock_Transaction');
+		$transfer_to_this_branch_tra->addCondition('is_used_submit',0);
 		$transfer_to_this_branch_tra->addCondition('item_id',$this->id);
 		$transfer_to_this_branch_tra->addCondition('created_at','<',$as_on);
 		$transfer_to_this_branch_tra->addCondition('to_branch_id',$this->api->currentBranch->id);
@@ -349,6 +354,7 @@ class Model_Stock_Item extends Model_Table {
 		
 		//Transfer From
 		$transfer_from_this_branch_tra = $this->add('Model_Stock_Transaction');
+		$transfer_from_this_branch_tra->addCondition('is_used_submit',0);
 		$transfer_from_this_branch_tra->addCondition('item_id',$this->id);
 		$transfer_from_this_branch_tra->addCondition('created_at','<',$as_on);
 		$transfer_from_this_branch_tra->addCondition('branch_id',$this->api->currentBranch->id);
@@ -357,6 +363,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//Issue
 		$issue_tra = $this->add('Model_Stock_Transaction');
+		$issue_tra->addCondition('is_used_submit',0);
 		$issue_tra->addCondition('item_id',$this->id);
 		$issue_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$issue_tra->addCondition('created_at','<',$as_on);
@@ -368,6 +375,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//'DeadSubmit'
 		$dead_tra = $this->add('Model_Stock_Transaction');
+		$dead_tra->addCondition('is_used_submit',0);
 		$dead_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$dead_tra->addCondition('item_id',$this->id);
 		$dead_tra->addCondition('created_at','<',$as_on);
@@ -379,6 +387,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//'DeadSold'
 		$deadsold_tra = $this->add('Model_Stock_Transaction');
+		$deadsold_tra->addCondition('is_used_submit',0);
 		$deadsold_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$deadsold_tra->addCondition('item_id',$this->id);
 		$deadsold_tra->addCondition('created_at','<',$as_on);
@@ -390,6 +399,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//'Sold'	
 		$sold_tra = $this->add('Model_Stock_Transaction');
+		$sold_tra->addCondition('is_used_submit',0);
 		$sold_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$sold_tra->addCondition('item_id',$this->id);
 		$sold_tra->addCondition('created_at','<',$as_on);
@@ -401,6 +411,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//'PurchaseReturn'
 		$purchase_return_tra = $this->add('Model_Stock_Transaction');
+		$purchase_return_tra->addCondition('is_used_submit',0);
 		$purchase_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$purchase_return_tra->addCondition('item_id',$this->id);
 		$purchase_return_tra->addCondition('created_at','<',$as_on);
@@ -412,6 +423,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//'Consume'
 		$consume_tra = $this->add('Model_Stock_Transaction');
+		$consume_tra->addCondition('is_used_submit',0);
 		$consume_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$consume_tra->addCondition('item_id',$this->id);
 		$consume_tra->addCondition('created_at','<',$as_on);

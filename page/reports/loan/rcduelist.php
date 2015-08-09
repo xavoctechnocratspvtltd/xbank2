@@ -16,7 +16,7 @@ class page_reports_loan_rcduelist extends Page {
 		$form->addField('DatePicker','as_on_date');
 		$form->addField('dropdown','loan_type')->setValueList(array('vl'=>'VL','fvl'=>'FVL','other'=>'Other'));
 		$form->addField('dropdown','status')->setValueList(array('1'=>'Active','0'=>'De Activated'));
-		$form->addField('DropDown','document')->setModel($this->add('Model_Document')->loanDocuments());
+		// $form->addField('DropDown','document')->setModel($this->add('Model_Document')->loanDocuments());
 
 		$form->addSubmit('GET List');
 
@@ -39,6 +39,7 @@ class page_reports_loan_rcduelist extends Page {
 			$this->api->stickyGET('document');
 
 			if($_GET['dealer']){
+				$this->api->stickyGET('dealer');
 				$accounts_model->addCondition('dealer_id',$_GET['dealer']);
 			}
 
@@ -57,10 +58,19 @@ class page_reports_loan_rcduelist extends Page {
 			}
 
 			$accounts_model->addCondition('ActiveStatus',$_GET['status']);
-			$accounts_model->addCondition($q->orExpr()->where('documents_id',$_GET['document'])->where('documents_id is null'));
 
-			$accounts_model->addCondition('created_at','<',$as_on_date);
-			$accounts_model->addCondition($q->orExpr()->where('submitted_on','>',$as_on_date)->where('submitted_on is null'));
+			// if($_GET['document']){
+				// $this->api->stickyGET('document');
+			
+				//HardCoded for Loan
+				$vehical_document = $this->add('Model_Document')->loadDocument('VEHICLE NO.');
+				$accounts_model->addCondition('documents_id',$vehical_document->id);
+				// $accounts_model->addCondition( $q->orExpr()->where('documents_id',$vehical_document->id)->where('documents_id','<>',$vehical_document->id));
+				$accounts_model->addCondition($q->orExpr()->where('Description',"")->where('Description is null'));
+			// }
+			// $accounts_model->addCondition($q->orExpr()->where('documents_id',$_GET['document'])->where('documents_id is null'));
+			$accounts_model->addCondition('created_at','<',$this->api->nextDate($as_on_date));
+			// $accounts_model->addCondition($q->orExpr()->where('submitted_on','>=',$this->api->nextDate($as_on_date))->where('submitted_on is null'));
 
 		}else{
 			$accounts_model->addCondition('id',-1);
@@ -73,10 +83,15 @@ class page_reports_loan_rcduelist extends Page {
 		$accounts_model->addCondition('DefaultAC',false);
 		$accounts_model->add('Controller_Acl');
 
+		$accounts_model->setOrder('Description','asc');
 		$grid->setModel($accounts_model,array('AccountNumber','scheme','member','father_name','address','phone_nos','maturity_date','dealer','Description','submitted_on'));
 
 		$grid->addPaginator(50);
 		$grid->addSno();
+		$grid->addFormatter('scheme','Wrap');
+		$grid->addFormatter('member','Wrap');
+		$grid->addFormatter('address','Wrap');
+		$grid->addFormatter('Description','Wrap');
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(
@@ -86,6 +101,7 @@ class page_reports_loan_rcduelist extends Page {
 						'loan_type'=>$form['loan_type'],
 						'status'=>$form['status'],
 						'document'=>$form['document'],
+						'dealer'=>$form['dealer'],
 						)
 				)->execute();
 		}

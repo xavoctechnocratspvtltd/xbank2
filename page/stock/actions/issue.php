@@ -29,7 +29,13 @@ class page_stock_actions_issue extends Page {
 
 		$item_field=$form->addField('autocomplete/Basic','item')->validateNotNull();//->setEmptyText('Please Select')->validateNotNull();
 		$item_model=$this->add('Model_Stock_Item');
-		$item_model->addCondition('is_issueable',true);
+		// $item_model->addCondition('is_issueable',true);
+		$item_model->addCondition(
+    		$item_model->dsql()->orExpr()
+     			->where('is_issueable',true)
+     			->where('is_fixedassets',true)
+     		);
+		// $item_model->addCondition('is_fixedassets',true);
 		$item_field->setModel($item_model);
 		$staff_field=$form->addField('dropdown','staff')->setEmptyText('Please Select');
 		$staff_field->setModel('Stock_Staff');

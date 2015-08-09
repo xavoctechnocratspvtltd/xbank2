@@ -59,7 +59,7 @@ class page_stock_actions_transfer extends Page {
 		$to_branch_field->setModel($to_branch_model);
 		$to_branch_field->js(true)->closest('div.atk-form-row')->appendTo($colright);		
 		
-		$is_used_submit = $form->addField('checkBox','is_used_submit');
+		$is_used_submit = $form->addField('checkBox','is_used_submit')->set(false);
 		$is_used_submit->js(true)->closest('div.atk-form-row')->appendTo($colright);
 		
 		$form->addSubmit('Transfer');
@@ -113,7 +113,6 @@ class page_stock_actions_transfer extends Page {
 
 		if($form->isSubmitted()){
 			//Check for UsedSubmit
-
 			$container_model = $this->add('Model_Stock_Container');
 			$container_model->loadContainer($form['from_container']);
 			
@@ -144,13 +143,17 @@ class page_stock_actions_transfer extends Page {
 			$to_branch_model->load($form['to_branch']);
 			// Entry in Transaction
 			$transaction_model = $this->add('Model_Stock_Transaction');
+			
 			$transaction_model->transfer($form['from_branch'],$container_model,$row_model,$item_model,$form['from_qty'],$form['narration'],$to_branch_model,$form['is_used_submit']);
 			// remove item from cuurent branch stock
 			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');	
 			$criq_model->removeStock($container_model,$row_model,$item_model,$form['from_qty']);
 			//add general stock in to_branch (transferd)
 			$criq1_model = $this->add('Model_Stock_ContainerRowItemQty');
-			$criq1_model->addStockInGeneral($item_model,$form['from_qty'],$form['to_branch']);	
+			if($form['is_used_submit']){
+				$criq1_model->addStockInUsedDefault($item_model,$form['from_qty'],$form['to_branch']);
+			}else
+				$criq1_model->addStockInGeneral($item_model,$form['from_qty'],$form['to_branch']);	
 			
 			$js = array($crud->js()->reload(),
 					$form->js()->univ()->successMessage("Item ( ".$item_model['name']." ) From Branch ( ".$this->api->currentBranch['name']." ) To Branch ( ".$to_branch_model['name']." ) Transfer Successfully" )

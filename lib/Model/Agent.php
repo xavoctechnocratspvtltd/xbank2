@@ -10,6 +10,8 @@ class Model_Agent extends Model_Table {
 		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'));;
 		$this->hasOne('Cadre','cadre_id');
 		// $this->hasOne('Tree','tree_id');
+		$this->addField('username')->mandatory(true);
+		$this->addField('password')->mandatory(true);
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->system(true);
@@ -65,6 +67,11 @@ class Model_Agent extends Model_Table {
 		if($this->sponsor() and $this->sponsor()->isAtLowestCader()){
 			throw $this->exception('Sponsor is Advisor . Cannot Add','ValidityCheck')->setField('sponsor_id');
 		}
+
+		//Member ke is_agent field true 
+		$member  = $this->ref('member_id');
+		$member['is_agent'] = true;
+		$member->save();
 	}
 
 	function account(){

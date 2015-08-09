@@ -6,73 +6,128 @@ class page_reports_deposit_tdsquaterly extends Page {
 		// parent::init();
 		
 		$form=$this->add('Form');
-		$dealer=$form->addField('DropDown','qtr')->setValueList(array('01'=>'1 Quarter','04'=>'2 Quarter','07'=>'3 Quarter','10'=>'4 Quarter'));
+		$dealer=$form->addField('DropDown','qtr')->setValueList(array('04'=>'1 Quarter','07'=>'2 Quarter','10'=>'3 Quarter','01'=>'4 Quarter'));
 
 		$form->addSubmit('GET List');
 
-		$grid = $this->add('Grid_AccountsBase');
-		$grid->add('H3',null,'grid_buttons')->set('TDS Report As On ');
+		$grid = $this->add('Grid_Report_TdsQuaterly');
 
-		$model = $this->add('Model_Transaction');
-		$model->addCondition('transaction_type',array(TRA_ACCOUNT_OPEN_AGENT_COMMISSION,TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT));
+		$agent_model = $this->add('Model_Agent');
+		$member_join = $agent_model->LeftJoin('members','member_id');
+		$member_join->addField('branch_id');
+		$agent_model->addCondition('branch_id',$this->api->current_branch->id);
 
-		$reference_account_j = $model->join('accounts','reference_id');
-		$reference_account_j->addField('agent_id');
-		$reference_account_j->addField('account_type');
-		$agent_j = $reference_account_j->LeftJoin('agents','agent_id');
-		$member_j = $agent_j->LeftJoin('members','member_id');
-		$member_j->addField('PanNo');
-		// $model->addExpression('total_commission')->set($model->fieldQuery('cr_sum'));
-		$model->addExpression('tds_amt')->set($model->refSQL('TransactionRow')->addCondition('account','like','%TDS%')->sum('amountCr'));
-		$model->addExpression('total_comm')->set($model->refSQL('TransactionRow')->addCondition('account','not like','%TDS%')->sum('amountCr'));
-		$model->addExpression('tds_per')->set('10');
-
-		$model->getElement('reference_id')->caption('Account');
-		$model->getElement('dr_sum')->caption('Net Amount');
-		$model->getElement('agent_id')->caption('Name and Address');
-
+		$from_date = '-';
+		$to_date = '-';
 
 		if($_GET['filter']){
+			$this->api->stickyGET('filter');
 			$date = $this->api->today;
 			if($_GET['qtr']){
 				$this->api->stickyGET('qtr');
 				$year = date('Y',strtotime($date));
+				if($_GET['qtr']=='01') $year++;
 				$date = $year.'-'.$_GET['qtr'].'-'.'01';
 			}
 
 			
 			$quarter_date = $this->api->getFinancialQuarter($date);
-			$to_date = $quarter_date['start_date'];
-			$from_date = $quarter_date['end_date'];
+			$from_date = $quarter_date['start_date'];
+			$to_date = $quarter_date['end_date'];
 
+			$grid->add('H3',null,'grid_buttons')->set('TDS Report From: '.$from_date.' To Date '.$to_date);
 			// throw new \Exception($date.'::'.$to_date."::".$from_date);
-			$model->addCondition('created_at','>=',date('Y-m-01',strtotime($from_date)));
-			$model->addCondition('created_at','<=',date('Y-m-t',strtotime($to_date)));
 
 		}else
-			$model->addCondition('id',-1);
+			$agent_model->addCondition('id',-1);
+
+
+		$agent_model->addExpression('total_commission')->set(function($m,$q)use($from_date, $to_date){
+			$tr_row = $m->add('Model_TransactionRow',array('table_alias'=>'tcomm'));
+			$tr_j = $tr_row->join('transactions','transaction_id');
+			$tr_j->join('transaction_types','transaction_type_id')
+				->addField('transaction_type_name','name');
+			$tr_j->addField('tr_created_at','created_at');
+			
+			$account_j = $tr_row->join('transactions','transaction_id')
+				->join('accounts','reference_id');
+			
+			$account_j->addField('agent_id');
+
+			$agent_j = $account_j
+				->join('agents','agent_id')
+				;
+
+			$tr_row->addCondition('agent_id',$q->getField('id'));
+			$tr_row->addCondition('tr_created_at','>=',$from_date);
+			$tr_row->addCondition('tr_created_at','<',$m->api->nextDate($to_date));
+			$tr_row->addCondition('transaction_type_name',array(TRA_ACCOUNT_OPEN_AGENT_COMMISSION,TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT));
+			// $tr_row->addCondition('branch_id',2);
+
+			return $tr_row->sum('amountDr');
+
+		});
+
+		$agent_model->addExpression('total_tds')->set(function($m,$q)use($from_date, $to_date){
+			$tr_row = $m->add('Model_TransactionRow',array('table_alias'=>'ttds'));
+			$tr_j = $tr_row->join('transactions','transaction_id');
+			$tr_j->join('transaction_types','transaction_type_id')
+				->addField('transaction_type_name','name');
+			
+			$account_j = $tr_row->join('transactions','transaction_id')
+				->join('accounts','reference_id');
+			
+			$account_j->addField('agent_id');
+
+			$agent_j = $account_j
+				->join('agents','agent_id')
+				;
+
+			$tr_row->addCondition('agent_id',$q->getField('id'));
+			$tr_row->addCondition('created_at','>=',$from_date);
+			$tr_row->addCondition('created_at','<',$m->api->nextDate($to_date));
+			$tr_row->addCondition('transaction_type_name',array(TRA_ACCOUNT_OPEN_AGENT_COMMISSION,TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT));
+			$tr_row->addCondition('account','like','%TDS%');
+			// $tr_row->addCondition('branch_id',2);
+
+			return $tr_row->sum('amountCr');
+
+		});
 		
-		$model->setLimit(10);
-		$model->_dsql()->group('agent_id');
-		$grid->setModel($model,array('agent_id','agent','PanNo','tds_per','total_comm','tds_amt','dr_sum'));
+		$agent_model->addExpression('net_commission')->set(function($m,$q)use($from_date, $to_date){
+			$tr_row = $m->add('Model_TransactionRow',array('table_alias'=>'ncomm'));
+			$tr_j = $tr_row->join('transactions','transaction_id');
+			$tr_j->join('transaction_types','transaction_type_id')
+				->addField('transaction_type_name','name');
+			
+			$account_j = $tr_row->join('transactions','transaction_id')
+				->join('accounts','reference_id');
+			
+			$account_j->addField('agent_id');
+
+			$agent_j = $account_j
+				->join('agents','agent_id')
+				;
+
+			$tr_row->addCondition('agent_id',$q->getField('id'));
+			$tr_row->addCondition('created_at','>=',$from_date);
+			$tr_row->addCondition('created_at','<',$m->api->nextDate($to_date));
+			$tr_row->addCondition('transaction_type_name',array(TRA_ACCOUNT_OPEN_AGENT_COMMISSION,TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT));
+			$tr_row->addCondition('account','not like','%TDS%');
+			// $tr_row->addCondition('branch_id',2);
+
+			return $tr_row->sum('amountCr');
+
+		});
 		
-		$grid->addColumn('month');
-		$grid->addColumn('date_of_tds');
+
+		
+		$agent_model->setOrder('total_commission','asc');
+
+		$grid->setModel($agent_model,array('name','total_commission','total_tds','net_commission'));
+		
 		$grid->addColumn('ch_no');
-
-		$grid->addMethod('format_agent_id',function($g,$f){
-				if($g->model['agent_id']){
-					$agent_m = $g->add('Model_Agent')->tryLoad($g->model['agent_id']);				
-					$g->current_row[$f] = $agent_m['name'];
-				}
-				
-			});
-		$grid->addFormatter('agent_id','agent_id,Wrap');
-
-		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
-		$grid->addPaginator(50);
-		$grid->addSno();
-
+		
 		if($form->isSubmitted()){
 			$grid->js()->reload(array(
 					'filter'=>1,

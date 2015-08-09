@@ -6,6 +6,7 @@ class Frontend extends ApiFrontend {
     public $today;
     public $current_branch; 
     public $current_staff; 
+    public $current_member; 
 
     function init()
     {
@@ -46,8 +47,31 @@ class Frontend extends ApiFrontend {
             $auth->allowPage(array('corrections'));
             $auth->setModel('DSA','username','password');
             $auth->check();
-            // $header_menu1=$header->add('Menu_Dsa')->addClass('mymenu');
-        }else{
+            
+            $dsa_menu=$header->add('Menu')->addClass('mymenu');
+            $dsa_menu->addMenuItem('dsa_logout','Logout');
+
+        }elseif(strpos($this->page,'member_') === 0){
+            
+            $auth = $this->add('BasicAuth');
+            $auth->allowPage(array('corrections'));
+            $auth->setModel('Member','username','password');
+            $auth->check();
+            
+            $member_menu=$header->add('Menu')->addClass('mymenu');
+            $member_menu->addMenuItem('member_logout','Logout');
+                        
+        }elseif(strpos($this->page,'agent_') === 0){
+            
+            $auth = $this->add('BasicAuth');
+            $auth->allowPage(array('corrections'));
+            $auth->setModel('Agent','username','password');
+            $auth->check();
+
+            $agent_menu=$header->add('Menu')->addClass('mymenu');
+            $agent_menu->addMenuItem('logout','Logout');
+        }
+        else{
             $staff_model = $this->add('Model_Staff');
             $staff_model->addExpression('branch_login_allow')->set($staff_model->refSQL('branch_id')->fieldQuery('allow_login'));
             $staff_model->addCondition('branch_login_allow',true);
@@ -64,14 +88,9 @@ class Frontend extends ApiFrontend {
 
             $this->currentBranch = $this->current_branch = $this->auth->model->ref('branch_id');
             $this->title = ' :: [' . $this->api->current_branch['name'].']';
+            // die('Hi');
             $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
         }
-
-
-        // $header_menu1->addMenuItem('index',array('Home','icon'=>'home','swatch'=>'yellow'));
-
-        
-
     }
 
     function setDate($date){

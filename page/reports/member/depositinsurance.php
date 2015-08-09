@@ -85,7 +85,9 @@ class page_reports_member_depositinsurance extends Page {
 		$grid->addFormatter('age','age');
 		$grid->addColumn('text','insurance_amount');
 
-		$grid->addPaginator(50);
+		$paginator = $grid->addPaginator(50);
+		$grid->skip_var = $paginator->skip_var;
+
 		$grid->addSno();
 		$grid->removeColumn('scheme');
 

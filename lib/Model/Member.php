@@ -10,6 +10,8 @@ class Model_Member extends Model_Table {
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.')->mandatory(true);
 		$this->addField('name')->mandatory(true);
+		$this->addField('username');
+		$this->addField('password');
 		$this->addField('CurrentAddress')->type('text')->mandatory(true);
 		$this->addField('landmark');
 		$this->addField('tehsil');
@@ -69,6 +71,7 @@ class Model_Member extends Model_Table {
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);
+		$this->addHook('afterInsert',$this);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -86,28 +89,52 @@ class Model_Member extends Model_Table {
 
 	}
 
-	function beforeSave(){
+	function beforeSave($m){
+
+		$date = new MyDateTime($this->api->today);
+		$date->sub(new DateInterval('P216M'));
+
+		if( $m->isDirty('DOB') && strtotime($m['DOB']) > strtotime($date->format('Y-m-d')))
+			throw $this->exception('Member Must Be Adult', 'ValidityCheck')->setField('DOB');
+		
+		if($m->isDirty('DOB') && strtotime('1970-01-01') == strtotime($m['DOB']))
+			throw $this->exception('Date Format Must be dd/mm/YYYY', 'ValidityCheck')->setField('DOB');
+
+		// Check For Proper Mobile Number
+		if( $m->isDirty('PhoneNos') && strlen($m['PhoneNos'])<10)
+			throw $this->exception(' Please Enter correct No'.strlen($m['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
+
 		// if(!$this['title'])
-		// 	throw $this->exception('Please Select Title', 'ValidityCheck')->setField('title');
 		// if(!$this['Occupation'])
 		// 	throw $this->exception('Please Select Occupation', 'ValidityCheck')->setField('Occupation');
 
+	}
+
+	function afterInsert($m,$id){
+		$member=$this->add('Model_Member')->load($id);
+		$member['username']=$id;
+		$member['password']=rand(9999,99999);
+		$member->save();
 	}
 
 	function createNewMember($name, $admissionFee, $shareValue, $branch=null, $other_values=array(),$form=null,$on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
 
-		// Check for adult member
-		$date = new MyDateTime($this->api->today);
-		$date->sub(new DateInterval('P216M'));
+		// // Check for adult member
+		// $date = new MyDateTime($this->api->today);
+		// $date->sub(new DateInterval('P216M'));
 
-		if(strtotime($other_values['DOB']) > strtotime($date->format('Y-m-d')))
-			throw $this->exception('Member Must Be Adult', 'ValidityCheck')->setField('DOB');
 
-		// Check For Proper Mobile Number
-		if(strlen($other_values['PhoneNos'])<10)
-			throw $this->exception(' Please Enter correct No'.strlen($other_values['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
+		// if(strtotime($other_values['DOB']) > strtotime($date->format('Y-m-d')))
+		// 	throw $this->exception('Member Must Be Adult', 'ValidityCheck')->setField('DOB');
+		
+		// if(strtotime('1970-01-01') == strtotime($other_values['DOB']))
+		// 	throw $this->exception('Date Format Must be dd/mm/YYYY', 'ValidityCheck')->setField('DOB');
+		
+		// // Check For Proper Mobile Number
+		// if(strlen($other_values['PhoneNos'])<10)
+		// 	throw $this->exception(' Please Enter correct No'.strlen($other_values['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
 
 
 		if($this->loaded()) throw $this->exception('Use Empty Model to create new Member');

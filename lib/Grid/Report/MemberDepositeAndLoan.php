@@ -7,6 +7,7 @@ class Grid_Report_MemberDepositeAndLoan extends Grid_AccountsBase{
 		parent::setModel($model,$fields);
 
 		//Code
+		$this->addColumn('share_account_amount');
 		$this->addFormatter('member_name','Wrap');
 
 		$this->addColumn('deposite_amount');
@@ -21,6 +22,7 @@ class Grid_Report_MemberDepositeAndLoan extends Grid_AccountsBase{
 		$paginator = $this->addPaginator(50);
 		$this->skip_var = $paginator->skip_var;
 
+		$this->addOrder()->move('share_account_amount','after','sm_no')->now();
 	}
 
 	function format_deposite_amount($field){
@@ -75,6 +77,14 @@ class Grid_Report_MemberDepositeAndLoan extends Grid_AccountsBase{
 			$purpose_for_loan .='<br>'.$value;
 		}
 		$this->current_row_html['purpose_for_loan'] = $purpose_for_loan;
+
+
+		$account_model	= $this->add('Model_Account');
+		$account_model->addCondition('member_id',$this->model->id);
+		$account_model->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital');
+		$account_model->tryLoadAny();
+		$this->current_row_html['share_account_amount'] = $account_model['CurrentBalanceCr'] - $account_model['CurrentBalanceDr'];
+
 
 		parent::formatRow();
 	}	

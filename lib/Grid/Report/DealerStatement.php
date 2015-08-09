@@ -12,7 +12,6 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 		$this->addColumn('loan_amount');
 		$this->addColumn('net_amount');
 		$this->addColumn('file_charge');
-		$this->addColumn('bank_detail');
 
 		$this->addFormatter('name','Wrap');
 		$this->addSno();

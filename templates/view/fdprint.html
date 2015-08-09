@@ -1,0 +1,101 @@
+<style>
+
+#main{	
+		width:800px;
+		max-height:auto;
+		height:auto; 
+		position: absolute;
+		/*text-transform: capitalize;*/
+	}
+	#main > img{
+		width:800px;
+		position: fixed;
+		top:0;
+		left:0;
+	}
+	.name{
+		width:350px;
+		position:relative;
+		top:177px;
+		left:358px;
+		text-transform: capitalize;
+		/*font-size:18px;*/
+	}
+	.f_name{
+		position:relative;
+		top:183px;
+		left:343px;
+		width: 400px;
+		text-transform: capitalize;
+		/*font-size:18px;*/
+	}
+	.address{
+		position:relative;
+		top:186px;
+		left:204px;
+		width: 500px;
+		text-transform: capitalize;
+		/*font-size:18px;*/
+	}
+	.d_amount{
+		position:relative;
+		top:243px;
+		left:358px;
+		width: 280px;
+		/*font-size:18px;*/
+	}
+	.nominee_name{
+		text-transform: capitalize;
+		position:relative;
+		width: 200px;
+		top:244px;
+		left:278px;
+		/*font-size:18px;*/
+	}
+	.nominee_relation{
+		text-transform: capitalize;
+		position:relative;
+		width: 80px;
+		top:226px;
+		left:540px;
+		/*font-size:18px;*/
+	}
+	.nominee_age{
+		position:relative;
+		width: 80px;
+		top:207px;
+		left:654px;
+		/*font-size:18px;*/
+	}
+	.nominee_dob{
+		position:relative;
+		top:218px;
+		left:390px;
+		width: 250px;
+		/*font-size:18px;*/
+		letter-spacing: 10px;
+	}
+	.special_candidate{
+		position:relative;
+		top:486px;
+		left:449px;
+		/*font-size:18px;*/
+	}
+</style>
+	<div class="container">
+		{$Content}
+	
+		<div id="main">
+			<img src="templates/images/fd_receipt_new.jpg" />
+			<div class="name">{$name}</div>
+			<div class="f_name">{$f_name}</div>
+			<div class="address">{$address}</div>
+			<div class="d_amount">{$deposite_amount}</div>
+			<div class="nominee_name">{$nominee_name}</div>
+			<div class="nominee_relation">{$relation_with_nominee}</div>
+			<div class="nominee_age">{$nominee_age}</div>
+			<div class="nominee_dob">{$nominee_dob}</div>
+			<div class="special_candidate">{$special_candidate}</div>
+					
+       	</div>
+    </div>  

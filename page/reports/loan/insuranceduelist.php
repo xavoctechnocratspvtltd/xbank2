@@ -38,7 +38,6 @@ class page_reports_loan_insuranceduelist extends Page {
 				$accounts_model->addCondition('insurance_month','>=',(int) date('m',strtotime($_GET['from_date'])));
 				$accounts_model->addCondition('insurance_date','>=',(int)date('d',strtotime($_GET['from_date'])));
 				$accounts_model->addCondition('maturity_date','>=',$this->api->nextDate($_GET['from_date']));
-				
 			}
 
 			if($_GET['to_date']){
@@ -47,9 +46,10 @@ class page_reports_loan_insuranceduelist extends Page {
 				$accounts_model->addCondition('insurance_date','<=',(int)date('d',strtotime($_GET['to_date'])));
 			}
 			
-			if($_GET['dealer'])
+			if($_GET['dealer']){
 				$this->api->stickyGET('dealer');
 				$accounts_model->addCondition('dealer_id',$_GET['dealer']);
+			}
 
 		}else
 			$accounts_model->addCondition('id',-1);

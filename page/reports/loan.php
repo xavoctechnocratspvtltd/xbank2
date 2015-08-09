@@ -6,7 +6,7 @@ class page_reports_loan extends Page {
 		parent::init();
 
 		$tabs=$this->add('Tabs');
-		$tab1=$tabs->addTabURL('reports_loan_emiduelist','EMU Due List');
+		$tab1=$tabs->addTabURL('reports_loan_emiduelist','EMI Due List');
 		$tab1=$tabs->addTabURL('reports_loan_emireceivedlist','EMI Rceceived List');
 		$tab1=$tabs->addTabURL('reports_loan_insuranceduelist','Insurance Due List');
 		$tab1=$tabs->addTabURL('reports_loan_dispatch','Loan Dispatch');

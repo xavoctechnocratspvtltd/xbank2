@@ -41,7 +41,6 @@ class page_reports_pandl extends Page {
 
 	function page_Details(){
 		$this->api->stickyGET('_id'); // bs id
-
 		
 		$fy = $this->api->getFinancialYear();
 
@@ -66,7 +65,7 @@ class page_reports_pandl extends Page {
 
 		$bs= $this->add('Model_BalanceSheet')->load($_GET['_id']);
 
-		// DEtails based on bs
+		// Details based on bs
 		if($bs['show_sub']=='SchemeGroup'){
 			$this->add('View_BSPLChunks_SchemeGroup',array('under_balance_sheet_id'=>$bs->id,'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
 		}elseif($bs['show_sub']=='Accounts'){

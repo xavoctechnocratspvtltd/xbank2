@@ -122,11 +122,11 @@ class page_reports_loan_emiduelist extends Page {
 					break;
 				case 'hardlist':
 					$account_model->addCondition('due_premium_count','>',2);
-					$account_model->addCondition('due_premium_count','<=',5);
+					$account_model->addCondition('due_premium_count','<=',4);
 					$account_model->addCondition('last_premium','>=',$till_date);
 					break;
 				case 'npa':
-					$account_model->addCondition('due_premium_count','>',5);
+					$account_model->addCondition('due_premium_count','>=',5);
 					$account_model->addCondition('last_premium','>=',$till_date);
 					break;
 
@@ -186,17 +186,13 @@ class page_reports_loan_emiduelist extends Page {
 		$account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
 		$grid->setModel($account_model,$grid_column_array);
+
 		// $grid->addColumn('text','openning_date');
 
-		
-		// $grid->add('Order')
-		// 		->move('total','after','other_charges')
-		// 		->now();
 		$grid->addPaginator(50);
 		$grid->addSno();
 		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount'));
 		$grid->removeColumn('last_premium');
-
 		$js=array(
 			// $this->js()->_selector('.atk-layout-row')->toggle(),
 			$this->js()->_selector('#header')->toggle(),

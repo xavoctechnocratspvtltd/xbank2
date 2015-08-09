@@ -10,37 +10,33 @@ class Grid_Report_ClosingBalanceOfAccount extends Grid_AccountsBase{
 		$this->addColumn('closing_balance_of_account');
 		$this->addFormatter('closing_balance_of_account','closing_balance_of_account');
 		
-		$this->addColumn('sm_account_no');
-		$this->addFormatter('sm_account_no','sm_account_no');
+		// $this->addColumn('sm_account_no');
+		// $this->addFormatter('sm_account_no','sm_account_no');
 
-		$this->addFormatter('member','Wrap');
+		// $this->model->getElement('name')->caption('Member');
 		$this->addFormatter('PermanentAddress','Wrap');
 		$this->addSno();
-		$paginator = $this->addPaginator(50);
+		$paginator = $this->addPaginator(500);
 		$this->skip_var = $paginator->skip_var;
 
+		$this->addQuickSearch(array('AccountNumber'));
+
+		$this->removeColumn('sum');
+		$this->removeColumn('member');
+		$this->removeColumn('member_id');
+		$this->removeColumn('SchemeType');
+		$this->removeColumn('OpeningBalanceCr');
+		$this->removeColumn('OpeningBalanceDr');
 	}
 
 	function format_closing_balance_of_account($field){
-		//rd,dds,fd,mis Account
-		$account_model	= $this->add('Model_Account');
-		$account_model->addCondition('member_id',$this->model->id);
-		$account_model->addCondition('SchemeType',array('DDS',ACCOUNT_TYPE_FIXED,'Recurring'));
-		$cr = 0;
-		$dr = 0;
-		
-		foreach ($account_model as $account) {
-			$array = $account->getOpeningBalance($this->api->nextDate($this->as_on_date));
-			$cr += $array['CR'];
-			$dr += $array['DR'];
-		}	
-
-		$amount = $cr-$dr;
+		$amount = $this->model['OpeningBalanceCr']-$this->model['OpeningBalanceDr'];
+		$amount = $amount + $this->model['sum'];
 		$balance = $amount.' CR';
 		if($amount < 0)
 			$balance = abs($amount).' DR';
 
-		$this->current_row[$field] = $balance;
+		$this->current_row_html[$field] = $balance;
 	}
 
 	function format_sm_account_no($field){

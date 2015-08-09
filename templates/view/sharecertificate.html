@@ -1,0 +1,72 @@
+<style>
+
+#main{
+		width:80%;
+		max-height:auto;
+		height:auto; 
+		position: fixed;
+	}
+	#main > img{
+		position: fixed;
+		/*width: 100%;*/
+		top:0;
+		left:0;
+	}
+	.name{
+		position:relative;
+		top:87px;
+		left:125px;
+		font-size:20px;
+	}
+	.acc_holder{
+		position:relative;
+		top:207px;
+		left:276px;
+		font-size:20px;
+	}
+	.acc_no{
+		position:relative;
+		top:44px;
+		left:292px;
+		font-size:20px;
+	}
+	.date{
+		top:-44px;
+		left:414px;
+		font-size:20px;
+		position:relative;
+	}
+	.d_amount{
+		top:388px;
+		left:485px;
+		font-size:20px;
+		position:relative;
+	}
+	.no_share{
+		position:relative;
+		top:-87px;
+		left:603px;
+		font-size:20px;
+	}
+	.no_shares{
+		position:relative;
+		top:119px;
+		left:400px;
+		font-size:20px;
+	}
+
+	
+</style>
+	<div class="container">
+		{$Content}
+	
+		<div id="main">
+			<img src="templates/images/certificate.jpg" />
+			<p class="name">{$certificate_no}</p>
+			<p class="acc_no">{$account_no}</p>
+			<p class="acc_holder">{$account_holder}</p>
+			<p class="date">{$date}</p>
+			<p class="no_share">{$no_of_share}</p>
+			<p class="no_shares">{$no_of_shares}</p>
+       	</div>
+    </div>  

@@ -30,29 +30,29 @@ class page_debug extends Page {
 
 		// $g->addFormatter('voucher_no','voucherNo');
 
-		$this->add('H2')->set('Wrong currentBalances');
+		// $this->add('H2')->set('Wrong currentBalances');
 
-		$model = $this->add('Model_Account');
-		$model->addExpression('cr_sum')->set($model->refSQL('TransactionRow')->sum('amountCr'));
-		$model->addExpression('dr_sum')->set($model->refSQL('TransactionRow')->sum('amountDr'));
+		// $model = $this->add('Model_Account');
+		// $model->addExpression('cr_sum')->set($model->refSQL('TransactionRow')->sum('amountCr'));
+		// $model->addExpression('dr_sum')->set($model->refSQL('TransactionRow')->sum('amountDr'));
 
-		if(strpos($_GET['submit'], 'inline') === false){
-			$model->_dsql()->having(array(
-					array($model->dsql()->expr('cr_sum+OpeningBalanceCr'),'<>',$model->getElement('CurrentBalanceCr')),
-					array($model->dsql()->expr('dr_sum+OpeningBalanceDr'),'<>',$model->getElement('CurrentBalanceDr'))
-						)
-					);
+		// if(strpos($_GET['submit'], 'inline') === false){
+		// 	$model->_dsql()->having(array(
+		// 			array($model->dsql()->expr('cr_sum+OpeningBalanceCr'),'<>',$model->getElement('CurrentBalanceCr')),
+		// 			array($model->dsql()->expr('dr_sum+OpeningBalanceDr'),'<>',$model->getElement('CurrentBalanceDr'))
+		// 				)
+		// 			);
 
-		}
+		// }
 
-		// $model->addCondition('dr_sum','<>',$model->getElement('CurrentBalanceDr'));
+		// // $model->addCondition('dr_sum','<>',$model->getElement('CurrentBalanceDr'));
 
-		$g = $this->add('Grid_AccountsBase');
-		$g->setModel($model,array('AccountNumber','OpeningBalanceCr','OpeningBalanceDr','CurrentBalanceCr','cr_sum','CurrentBalanceDr','dr_sum'));
-		$g->addPaginator(100);
+		// $g = $this->add('Grid_AccountsBase');
+		// $g->setModel($model,array('AccountNumber','OpeningBalanceCr','OpeningBalanceDr','CurrentBalanceCr','cr_sum','CurrentBalanceDr','dr_sum'));
+		// $g->addPaginator(100);
 
-		$g->addFormatter('CurrentBalanceCr','grid/inline');
-		$g->addFormatter('CurrentBalanceDr','grid/inline');
+		// $g->addFormatter('CurrentBalanceCr','grid/inline');
+		// $g->addFormatter('CurrentBalanceDr','grid/inline');
 
 
 

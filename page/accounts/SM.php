@@ -49,6 +49,7 @@ class page_accounts_SM extends Page {
 		
 		if(!$crud->isEditing()){
 			// $crud->grid->addOrder()->move('member','first')->now();
+			$crud->grid->addQuickSearch(array('AccountNumber'));
 		}
 
 		if($crud->isEditing()){

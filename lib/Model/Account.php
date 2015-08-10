@@ -680,9 +680,9 @@ class Model_Account extends Model_Table {
 		if(!$transaction_date) $transaction_date = $this->api->now;
 		if(!$in_branch) $in_branch = $this->api->current_branch;
 
-		$account_cr = $this->add('Model_Account')
-										->loadBy('AccountNumber',$amount_from_account);
 		$account_dr = $this->add('Model_Account')
+										->loadBy('AccountNumber',$amount_from_account);
+		$account_cr = $this->add('Model_Account')
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'Visit Charge');
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));

@@ -287,6 +287,8 @@ class Model_Account_Loan extends Model_Account{
 	        $interest = round(($this['Amount'] * $rate * ($premiums + 1)) / 1200) / $premiums;
 	    }
 
+	    $interest = round($interest,0);
+
 	    // $interest = interest value for one premium
 
 	    $transaction = $this->add('Model_Transaction');

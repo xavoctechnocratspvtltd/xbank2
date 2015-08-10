@@ -68,6 +68,8 @@ class page_accounts_statement extends Page {
 
 		$grid->addSno();
 
+		$grid->addTotals(array('amountCr','amountDr'));
+
 		if($form->isSubmitted()){
 			
 			$a=$this->add('Model_Account');

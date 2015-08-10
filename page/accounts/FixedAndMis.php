@@ -95,7 +95,8 @@ class page_Accounts_FixedAndMis extends Page {
 		}
 
 		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','mo_id','team_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeParentName','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','mo','team'));
-
+		$crud->add('Controller_DocumentsManager',array('doc_type'=>'FixedMISAccount'));
+		
 		if($crud->isEditing()){
 			if($crud->form->hasElement('account_type')){
 				$type_field = $crud->form->getElement('account_type');

@@ -51,6 +51,7 @@ class Model_Account_CC extends Model_Account{
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null,$transaction_in_branch=null){
 		if(!$transaction_in_branch) $transaction_in_branch = $this->api->current_branch;
+		if(!$on_date) $on_date = $this->api->now;
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getCCInterest($on_date);
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 		$this->save();
@@ -59,6 +60,7 @@ class Model_Account_CC extends Model_Account{
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null,$transaction_in_branch=null){
 		if(!$transaction_in_branch) $transaction_in_branch = $this->api->current_branch;
+		if(!$on_date) $on_date = $this->api->now;
 		$ccbalance = $this['Amount'] /* This is CC LIMIT actually in Amount*/ - ($this['CurrentBalanceDr'] - $this['CurrentBalanceCr']);
 		if (round($ccbalance,0) < round($amount,0))
 			throw $this->exception('Cannot withdraw more than '. $ccbalance,'ValidityCheck')->setField('amount');
@@ -86,8 +88,9 @@ class Model_Account_CC extends Model_Account{
 		
 		$interest = $on_amount * $at_interest_rate * $days['days_total'] / 36500;
 
-		// echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
-
+		echo $this['AccountNumber'] .' :: on-date '.$on_date . ' -- Op DR '. $openning_balance['DR'] .' : Op CR '.$openning_balance['CR'].' on amount '. $on_amount . ' -- @ ' . $at_interest_rate . ' -- for days '. $days['days_total'] . ' -- interest is = ' . $interest . '<br/>';
+		throw new \Exception("Error Processing Request", 1);
+		
 		return $interest;
 	}
 

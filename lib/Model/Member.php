@@ -54,7 +54,7 @@ class Model_Member extends Model_Table {
 		$this->addField('is_agent')->type('boolean')->mandatory(true)->defaultValue(false)->group('system');
 
 		$this->addExpression('age')->set(function($m,$q){
-			return "25";
+			return $q->expr('TIMESTAMPDIFF(YEAR, [0], CURDATE())',array('DOB'));
 		});
 
 		$this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",PermanentAddress)')->display(array('grid'=>'shorttext'));

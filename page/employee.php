@@ -120,8 +120,8 @@ class page_employee extends Page{
 			$pf_amount=$pf_col->addField('line','pf_amount_'.$emp_model['id']);//->set($new_pf_amount);
 			
 			$o_c=$col->addColumn(1);
-			$other_allw=$o_c->addField('hidden','other_allowance_'.$emp_model['id'])->set($emp_model['other_allownace']);
-			$o_c->add('View')->setHtml($emp_model['other_allownace'].'&nbsp');
+			$other_allw=$o_c->addField('hidden','other_allowance_'.$emp_model['id'])->set($emp_model['other_allowance']);
+			$o_c->add('View')->setHtml($emp_model['other_allowance'].'&nbsp');
 			
 
 			$ap_col=$col->addColumn(1);
@@ -165,7 +165,7 @@ class page_employee extends Page{
 				$salary['pf_salary']=$record_form['pf_salary_'.$emp_model['id']];
 				$salary['ded']=$record_form['ded_'.$emp_model['id']];
 				$salary['pf_amount']=$record_form['pf_amount_'.$emp_model['id']];
-				$salary['other_allownace']=$record_form['other_allowance_'.$emp_model['id']];
+				$salary['other_allowance']=$record_form['other_allowance_'.$emp_model['id']];
 				$salary['allow_paid']=$record_form['allow_paid_'.$emp_model['id']];
 				$salary['net_payable']=$record_form['net_payable_'.$emp_model['id']];
 				$salary['narration']=$record_form['narration_'.$emp_model['id']];

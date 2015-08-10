@@ -26,7 +26,7 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->addField('ded')->defaultValue(0);
 		$this->addField('pf_amount')->defaultValue(0);
 		$this->addField('allow_paid')->defaultValue(0);
-		$this->addField('other_allownace')->defaultValue(0);
+		$this->addField('other_allowance')->defaultValue(0);
 		$this->addField('net_payable')->defaultValue(0);
 		$this->addField('narration')->defaultValue(0);
 

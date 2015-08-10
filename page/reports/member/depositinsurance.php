@@ -17,7 +17,7 @@ class page_reports_member_depositinsurance extends Page {
 
 
 		$grid=$this->add('Grid_AccountsBase');
-		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance List As On '. date('d-M-Y',strtotime($till_date))); 
+		$grid->add('H3',null,'grid_buttons')->set('Deposit Member Insurance Report As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$accounts_model=$this->add('Model_Account');
 		$accounts_model->add('Controller_Acl');

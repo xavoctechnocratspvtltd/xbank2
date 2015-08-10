@@ -7,7 +7,7 @@ class page_reports_deposit_emiduelist extends Page {
 		parent::init();
 
 		$form=$this->add('Form');
-		$agent_field=$form->addField('autocomplete/Basic','agent');
+		$agent_field=$form->addField('autocomplete/Basic','agent')->validateNotNull();
 		$agent_field->setModel('Agent');
 
 		$form->addField('DatePicker','on_date')->validateNotNull();
@@ -104,12 +104,14 @@ class page_reports_deposit_emiduelist extends Page {
 			// if($_GET['on_date'])
 			// 	$account_model->addCondition('created_at','<=',$_GET['on_date']);
 
-			if($_GET['account_type']){
-				$account_model->addCondition('account_type',$_GET['account_type']);
-			}
+			// if($_GET['account_type']){
+			// 	$account_model->addCondition('account_type',$_GET['account_type']);
+			// }
 
-		}else
-			$account_model->addCondition('id',-1);
+		}
+		// else
+		// 	$account_model->addCondition('id',-1);
+
 
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');

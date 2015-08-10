@@ -32,7 +32,8 @@ class page_reports_agent_detail extends Page {
 		$member_join->addField('PhoneNos');
 		$member_join->addField('branch_id');
 
-		$agent->addCondition('branch_id',$this->api->current_branch->id);
+		$agent->add('Controller_Acl');
+		// $agent->addCondition('branch_id',$this->api->current_branch->id);
 
 		$agent->addExpression('is_default')->set(function($m,$q){
 			$def_acc = $m->add('Model_Account',array('table_alias'=>'dfac_4_agent'));
@@ -73,6 +74,7 @@ class page_reports_agent_detail extends Page {
 			$agent_guarantor->addCondition('agent_id',$_GET['agent']);
 		}
 
+		$agent->tryLoadAny();
 
 		$view=$this->add('View');
 		$grid_agent=$view->add('Grid_AccountsBase');

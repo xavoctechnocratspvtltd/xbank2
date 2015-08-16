@@ -9,7 +9,9 @@ class page_reports_agent_tds extends Page {
 		parent::init();
 
 		$till_date = $this->api->today;
+		$from_date = '01-01-1970';
 		if($_GET['to_date']) $till_date = $_GET['to_date'];
+		if($_GET['from_date']) $from_date = $_GET['from_date'];
 
 		$form = $this->add('Form');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
@@ -21,7 +23,7 @@ class page_reports_agent_tds extends Page {
 		$form->addSubmit('Go');
 
 		$grid = $this->add('Grid_AccountsBase');
-		$grid->add('H3',null,'grid_buttons')->set('Agent TDS Report As On '. date('d-M-Y',strtotime($till_date))); 
+		$grid->add('H3',null,'grid_buttons')->set('Agent TDS Report FROM '. date('d-M-Y',strtotime($from_date)) .' to '. date('d-M-Y',strtotime($till_date))); 
 
 		$model = $this->add('Model_Transaction');
 		$model->addCondition('transaction_type',array(TRA_ACCOUNT_OPEN_AGENT_COMMISSION,TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT));

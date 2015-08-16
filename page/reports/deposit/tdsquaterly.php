@@ -13,7 +13,7 @@ class page_reports_deposit_tdsquaterly extends Page {
 		$agent_field->setModel('Agent');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('DropDown','account_type')->setValueList(array('%'=>'All','DDS'=>'DDS','Recurring'=>'Recurring','FD'=>'FD','MIS'=>'MIS'));
+		// $form->addField('DropDown','account_type')->setValueList(array('%'=>'All','DDS'=>'DDS','Recurring'=>'Recurring','FD'=>'FD','MIS'=>'MIS'));
 
 		$form->addSubmit('Go');
 
@@ -55,12 +55,12 @@ class page_reports_deposit_tdsquaterly extends Page {
 			$this->api->stickyGET("filter");
 			$this->api->stickyGET("from_date");
 			$this->api->stickyGET("to_date");
-			$this->api->stickyGET("account_type");
+			// $this->api->stickyGET("account_type");
 			$this->api->stickyGET("agent");
 
-			if($_GET['account_type']){
-				$model->addCondition('account_type','like',$_GET['account_type']);
-			}
+			// if($_GET['account_type']){
+			// 	$model->addCondition('account_type','like',$_GET['account_type']);
+			// }
 
 			if($_GET['from_date'])
 				$model->addCondition('created_at','>=',$_GET['from_date']);
@@ -70,7 +70,6 @@ class page_reports_deposit_tdsquaterly extends Page {
 
 			if($_GET['agent'])
 				$model->addCondition('agent_id',$_GET['agent']);
-			else
 		}else
 			$model->addCondition('id',-1);
 
@@ -97,7 +96,7 @@ class page_reports_deposit_tdsquaterly extends Page {
 			// $grid->addFormatter('agent_id','agent_id');
 		}
 
-		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
+		// $grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 		$grid->addPaginator(500);
 		$grid->addTotals(array('sum_net_commission'));
 		$grid->addSno();
@@ -115,7 +114,7 @@ class page_reports_deposit_tdsquaterly extends Page {
 					'from_date'=>$form['from_date']?:0,
 					'agent'=>$form['agent']?:0,
 					'to_date'=>$form['to_date']?:0,
-					'account_type'=>$form['account_type']
+					// 'account_type'=>$form['account_type']
 				))->execute();
 		}
 

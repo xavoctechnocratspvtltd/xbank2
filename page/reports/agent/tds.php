@@ -27,15 +27,24 @@ class page_reports_agent_tds extends Page {
 		$model->addCondition('transaction_type',array(TRA_ACCOUNT_OPEN_AGENT_COMMISSION,TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT,TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT));
 
 		$reference_account_j = $model->join('accounts','reference_id');
+		$agent_j=$reference_account_j->join('agents','agent_id');
 		$reference_account_j->addField('agent_id');
 		$reference_account_j->addField('account_type');
+		$agent_member_j = $agent_j->join('members','member_id');
+		$agent_member_j->addField('PanNo');
+		
+
 
 		// $model->addExpression('total_commission')->set($model->fieldQuery('cr_sum'));
 		$model->addExpression('tds')->set($model->refSQL('TransactionRow')->addCondition('account','like','%TDS%')->sum('amountCr'));
+		// $model->addExpression('tds')->set('"0"');
+		$model->addExpression('tr_row_count')->set($model->refSQL('TransactionRow')->count());
 		$model->addExpression('net_commission')->set($model->refSQL('TransactionRow')->addCondition('account','not like','%TDS%')->sum('amountCr'));
 
 		$model->getElement('reference_id')->caption('Account');
 		$model->getElement('dr_sum')->caption('Total Amount');
+
+		// $model->add('Controller_Acl');
 
 
 		if($_GET['filter']){
@@ -50,20 +59,23 @@ class page_reports_agent_tds extends Page {
 			}
 
 			if($_GET['from_date'])
-				$model->addCondition('created_at','>=',date('Y-m-01',strtotime($_GET['from_date'])));
+				$model->addCondition('created_at','>=',$_GET['from_date']);
 
 			if($_GET['to_date'])
-				$model->addCondition('created_at','<=',date('Y-m-t',strtotime($_GET['to_date'])));
+				$model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			if($_GET['agent'])
 				$model->addCondition('agent_id',$_GET['agent']);
 		}else
 			$model->addCondition('id',-1);
 
+		$model->addCondition('dr_sum','>',0);
+		$model->addCondition('tr_row_count',3);
 		$model->getElement('created_at')->caption('Deposit Date');
-		
+		$model->setOrder('created_at');
+
 		// $model->setLimit(10);
 		// $model->_dsql()->group('reference_id');
-		$grid->setModel($model,array('id','agent_id','agent','voucher_no','reference','dr_sum','tds','net_commission','created_at'));
+		$grid->setModel($model,array('id','agent_id','agent','voucher_no','reference','dr_sum','tds','net_commission','created_at','PanNo'));
 		
 		if($_GET['agent'])
 			$grid->removeColumn('agent_id');
@@ -79,7 +91,8 @@ class page_reports_agent_tds extends Page {
 		}
 
 		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
+		$grid->addTotals(array('net_commission'));
 		$grid->addSno();
 
 		$grid->addMethod('format_deposit',function($g,$f){
@@ -91,6 +104,22 @@ class page_reports_agent_tds extends Page {
 									->get('amountCr')
 									;
 		});
+
+		// $grid->addMethod('format_total_commission',function($g,$f){
+		// 	$comm = $g->model['PanNo']?$g->model['net_commission']*1.111111111: $g->model['net_commission']*1.25;
+		// 	$g->current_row[$f] = round($comm,2);
+		// 	$g->format_float($f);
+		// });
+		// $grid->addFormatter('dr_sum','total_commission');
+
+		// $grid->addMethod('format_tds',function($g,$f){
+		// 	$comm = $g->current_row['dr_sum'] - $g->model['net_commission'];
+		// 	$g->current_row[$f] = round($comm,2);
+		// 	$g->format_float($f);
+		// });
+		// $grid->addFormatter('tds','tds');
+
+		$grid->removeColumn('PanNo');
 
 		$grid->addColumn('deposit','deposit');
 

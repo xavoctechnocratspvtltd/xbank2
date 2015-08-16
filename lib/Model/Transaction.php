@@ -237,6 +237,9 @@ class Model_Transaction extends Model_Table {
 	
 	function executeInterBranch(){
 
+		if(!count($this->dr_accounts) OR !count($this->cr_accounts))
+			return;
+		
 		$other_branch = array_values($this->other_branches_involved);
 		$other_branch = $other_branch[0];		
 

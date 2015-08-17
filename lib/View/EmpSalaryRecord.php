@@ -48,7 +48,7 @@ class View_EmpSalaryRecord extends View{
 
 		$total_leave_count=$emp['CL']+$emp['CCL']+$emp['LWP']+$emp['ABSENT']+$emp['weekly_off'];
 		$this->template->set('total_leave',$total_leave_count);
-
+		$this->template->set('amount_in_words',$emp->convert_number_to_words($emp['net_payable']));
 		
 	}
 	function setModel($model){

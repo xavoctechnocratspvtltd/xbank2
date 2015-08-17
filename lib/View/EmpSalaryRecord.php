@@ -8,13 +8,12 @@ class View_EmpSalaryRecord extends View{
 		$emp=$this->add('Model_EmployeeSalary');
 		$emp->load($_GET['salary_id']);
 
-		
 		$this->template->set('emp_name',$emp->ref('employee_id')->get('name'));
 		$this->template->set('location',$emp->ref('employee_id')->get('branch'));
 		$this->template->set('emp_code',$emp['employee_id']);
-		$this->template->set('dob',$emp->ref('employee_id')->get('DOB'));
+		$this->template->set('dob',date('d-m-Y',strtotime($emp->ref('employee_id')->get('DOB'))));
 		$this->template->set('month',$emp['month']);
-		$this->template->set('doj',$emp->ref('employee_id')->get('date_of_joining'));
+		$this->template->set('doj',date('d-m-Y',strtotime($emp->ref('employee_id')->get('date_of_joining'))));
 		$this->template->set('designation',$emp->ref('employee_id')->get('designation'));
 		$this->template->set('pro_fund_no',$emp->ref('employee_id')->get('pf_no'));
 		$this->template->set('pan_no',$emp->ref('employee_id')->get('pan_no'));

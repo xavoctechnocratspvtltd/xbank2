@@ -40,7 +40,6 @@ class page_employee extends Page{
 					'May'=>"May",'Jun'=>"Jun",'July'=>"July",'Aug'=>"Aug",'Sep'=>"Sep",
 					'Oct'=>"Oct",'Nov'=>"Nov",'Dec'=>"Dec");
 
-
 		$branch=$this->add('Model_Branch');
 		$emp_model=$this->add('Model_Employee');
 		$emp_salary_j=$emp_model->LeftJoin('employee_salary_record.id');
@@ -81,6 +80,8 @@ class page_employee extends Page{
 		$lable_c->addColumn(1)->add('H4')->set('ALW. Paid');
 		$lable_c->addColumn(1)->add('H4')->set('Net Payable');
 		$lable_c->addColumn(1)->add('H4')->set('Narrtion');
+		$lable_c->addColumn(1)->add('H4')->set('Leave Type');
+		$lable_c->addColumn(1)->add('H4')->set('Weekly_Off');
 		foreach ($emp_model as  $junk) {
 			$col= $record_form->add('Columns');
 			$cl=$col->addColumn(1)->addClass('atk-col-1');
@@ -134,7 +135,12 @@ class page_employee extends Page{
 			$n_c->add('View')->setHtml(/*$record_form['net_payable_'.$emp_model['id']].*/'&nbsp')->addClass('value-text');
 			
 			$col->addColumn(1)->addField('line','narration_'.$emp_model['id']);//->set($emp_model['narration']);
-			
+			$col->addColumn(1)->addField('line','cl_'.$emp_model['id']);
+			$col->addColumn(1)->addField('line','ccl_'.$emp_model['id']);
+			$col->addColumn(1)->addField('line','lwp_'.$emp_model['id']);
+			$col->addColumn(1)->addField('line','absent_'.$emp_model['id']);
+			$col->addColumn(1)->addField('line','weekly_off_'.$emp_model['id']);
+
 			$ded->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$ded,$pf_amount);
 			$ap->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);
 			$pf_amount->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);
@@ -169,7 +175,11 @@ class page_employee extends Page{
 				$salary['allow_paid']=$record_form['allow_paid_'.$emp_model['id']];
 				$salary['net_payable']=$record_form['net_payable_'.$emp_model['id']];
 				$salary['narration']=$record_form['narration_'.$emp_model['id']];
-				
+				$salary['CL']=$record_form['cl_'.$emp_model['id']];
+				$salary['CCL']=$record_form['ccl_'.$emp_model['id']];
+				$salary['LWP']=$record_form['lwp_'.$emp_model['id']];
+				$salary['ABSENT']=$record_form['absent_'.$emp_model['id']];
+				$salary['weekly_off']=$record_form['weekly_off_'.$emp_model['id']];
 				$salary->save();
 			}
 			$record_form->js()->reload(array(

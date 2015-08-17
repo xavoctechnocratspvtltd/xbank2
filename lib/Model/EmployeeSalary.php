@@ -17,7 +17,11 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->hasOne('Employee','employee_id');
 		$this->addField('month')->setValueList($month);
 		$this->addField('year')->setValueList($years);
-		// $this->addField('working_day')->defaultValue(0);
+		$this->addField('CL');
+		$this->addField('CCL');
+		$this->addField('LWP');
+		$this->addField('ABSENT');
+		$this->addField('weekly_off');
 		$this->addField('total_days')->defaultValue(0);
 		$this->addField('paid_days')->defaultValue(0);
 		$this->addField('leave')->defaultValue(0);
@@ -30,6 +34,6 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->addField('net_payable')->defaultValue(0);
 		$this->addField('narration')->defaultValue(0);
 
-		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

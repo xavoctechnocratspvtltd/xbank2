@@ -28,13 +28,13 @@ class View_EmpSalaryRecord extends View{
 		$total_payable_amount=round($emp['salary']+$emp['allow_paid'],2);
 		$this->template->set('total_payable_amount',$total_payable_amount);
 
-		$this->template->set('pay_salary',$emp['salary']);
-		$this->template->set('pay_other_allw',$emp['allow_paid']);
+		$this->template->set('pay_salary',round($emp['salary'],2));
+		$this->template->set('pay_other_allw',round($emp['allow_paid'],2));
 		$this->template->set('working_day',$emp['total_days']);
 		$this->template->set('p_day',$emp['paid_days']);
 		
-		$this->template->set('provided_fund',$emp['pf_amount']);
-		$this->template->set('other_deduction',$emp['ded']);
+		$this->template->set('provided_fund',round($emp['pf_amount'],2));
+		$this->template->set('other_deduction',round($emp['ded'],2));
 
 		$total_deductoin_amount=round($emp['pf_amount']+$emp['ded'],2);
 		$this->template->set('total_deduction',$total_deductoin_amount);

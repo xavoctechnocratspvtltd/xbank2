@@ -22,10 +22,10 @@ class View_EmpSalaryRecord extends View{
 		$this->template->set('net_salary',$emp['net_payable']);
 		$this->template->set('department',$emp->ref('employee_id')->get('department'));
 		
-		$total=$emp->ref('employee_id')->get('basic_salary')+$emp->ref('employee_id')->get('other_allownace');
+		$total=round($emp->ref('employee_id')->get('basic_salary')+$emp->ref('employee_id')->get('other_allownace'),2);
 		$this->template->set('total',$total);
 
-		$total_payable_amount=$emp['salary']+$emp['allow_paid'];
+		$total_payable_amount=round($emp['salary']+$emp['allow_paid'],2);
 		$this->template->set('total_payable_amount',$total_payable_amount);
 
 		$this->template->set('pay_salary',$emp['salary']);
@@ -36,7 +36,7 @@ class View_EmpSalaryRecord extends View{
 		$this->template->set('provided_fund',$emp['pf_amount']);
 		$this->template->set('other_deduction',$emp['ded']);
 
-		$total_deductoin_amount=$emp['pf_amount']+$emp['ded'];
+		$total_deductoin_amount=round($emp['pf_amount']+$emp['ded'],2);
 		$this->template->set('total_deduction',$total_deductoin_amount);
 
 		$this->template->set('cl',$emp['CL']);

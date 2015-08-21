@@ -7,8 +7,11 @@ $.each({
   },
 
   salary: function (salary,basic_salary,total_days,paid_days){
-  	$(salary).val(parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val())); 
-  	$(salary).parent('.atk-col-1').find('.value-text').text(parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val()));
+    value = parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val());
+    value = parseFloat(value).toFixed(2);
+
+  	$(salary).val(value); 
+  	$(salary).parent('.atk-col-1').find('.value-text').text(value);
   },
 
   allowPaid: function (allow_paid,paid_days,total_days,other_allow){

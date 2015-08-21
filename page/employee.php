@@ -4,7 +4,7 @@ class page_employee extends Page{
 	public $title ='Employee Management';
 	function page_index(){
 		// parent::init();
-
+		$this->api->jui->addStaticStyleSheet('bank-layout','.css');
 		$tab=$this->add('Tabs');
 		$tab->addTabURL('./addEmployee','Add Employees');
 		$tab->addTabURL('./manageSalary','Salary Structure');
@@ -65,38 +65,42 @@ class page_employee extends Page{
 		$col1->addColumn(4)->addField('Dropdown','year')->setValueList($years)->setEmptyText('Please Select Year')->validateNotNull(true);
 		$col1->addColumn(4);
 		$wd=$col1->addField('line','working_day');
-		$record_form->add('View')->set('')->addClass('well');
+		$record_form->add('View')->setHtml('&nbsp;<br/><br/>')->addClass('');
 
 		$lable_c=$record_form->add('Columns');
-		$lable_c->addColumn(1)->add('H4')->set('Name & B. Salary');
-		$lable_c->addColumn(1)->add('H4')->set('T. Days');
-		$lable_c->addColumn(1)->add('H4')->set('Paid Days');
-		$lable_c->addColumn(1)->add('H4')->set('Leave');
-		$lable_c->addColumn(1)->add('H4')->set('Salary');
-		$lable_c->addColumn(1)->add('H4')->set('PF Salary');
-		$lable_c->addColumn(1)->add('H4')->set('DED.');
-		$lable_c->addColumn(1)->add('H4')->set('PF AMT');
-		$lable_c->addColumn(1)->add('H4')->set('Other ALW.');
-		$lable_c->addColumn(1)->add('H4')->set('ALW. Paid');
-		$lable_c->addColumn(1)->add('H4')->set('Net Payable');
-		$lable_c->addColumn(1)->add('H4')->set('Narrtion');
-		$lable_c->addColumn(1)->add('H4')->set('Leave Type');
-		$lable_c->addColumn(1)->add('H4')->set('Weekly_Off');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Name & B. Salary');
+		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('T. Days');
+		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('Paid Days');
+		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('Leave');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Salary');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('PF Salary');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('DED.');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('PF AMT');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Other ALW.');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('ALW. Paid');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Net Payable');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Narrtion');
+		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('CL');
+		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('CCL');
+		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('LWP');
+		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('ABSENT');
+		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('Weekly Off');
+
 		foreach ($emp_model as  $junk) {
-			$col= $record_form->add('Columns');
-			$cl=$col->addColumn(1)->addClass('atk-col-1');
+			$col= $record_form->add('Columns')->addClass('atk-box');
+			$cl=$col->addColumn(1)->addClass('bank-col-1 atk-col-1');
 			$cl->add('View')->setHtml($emp_model['name']."&nbsp<br/>[ ".$emp_model['basic_salary'].' ]');
 			$cl->addField('hidden','name_'.$emp_model['id']);//->set($emp_model['name']);
 			// $cl->addField('hidden','branch_'.$emp_model['id'])->set($emp_model['branch_id']);
 			$basic_salary = $cl->addField('hidden','basic_salary_'.$emp_model['id'])->set($emp_model['basic_salary']);
 			
-			$t_c=$col->addColumn(1);
+			$t_c=$col->addColumn(1)->addClass('bank-col-2');
 			$td = $t_c->addField('hidden','total_days_'.$emp_model['id']);//->set($emp_model['total_days']);
-			$t_c->add('View')->setHtml(/*$emp_model['total_days'].*/'&nbsp;')->addClass('value-text');
+			$t_c->add('View')->setHtml(/*$emp_model['total_days'].*/'&nbsp;')->addClass('value-text bank-col-2');
 			
-			$pd_col = $col->addColumn(1);
+			$pd_col = $col->addColumn(1)->addClass('bank-col-2');
 			$pd=$pd_col->addField('line','paid_days_'.$emp_model['id']);//->set($emp_model['paid_days']);
-			$col->addColumn(1)->addField('line','leave_'.$emp_model['id']);//->set($emp_model['leave']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','leave_'.$emp_model['id']);//->set($emp_model['leave']);
 			
 			$total_days = 1;
 			if($emp_model['total_days'])
@@ -104,42 +108,43 @@ class page_employee extends Page{
 
 			$new_salary_amount=($emp_model['basic_salary']/$total_days * $emp_model['paid_days']); 
 			
-			$s_c=$salary=$col->addColumn(1);
+			$s_c=$salary=$col->addColumn(1)->addClass('bank-col-1');
 			$salary_f = $s_c->addField('hidden','salary_'.$emp_model['id']);//->set($new_salary_amount);
 			$s_c->add('View')->setHtml(/*$emp_model['salary'].*/'&nbsp')->addClass('value-text');
 			
-			$p_c=$col->addColumn(1);
+			$p_c=$col->addColumn(1)->addClass('bank-col-1');
 			$pf=$p_c->addField('hidden','pf_salary_'.$emp_model['id']);//->set($salary_f);
 			$p_c->add('View')->setHtml(/*$emp_model['salary'].*/'&nbsp')->addClass('value-text');
 
-			$ded_col=$col->addColumn(1);
+			$ded_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ded=$ded_col->addField('line','ded_'.$emp_model['id']);//->set($emp_model['ded']);
 
 			$new_pf_amount =  round(($emp_model['salary'] / 100) * 12,2);
 			
-			$pf_col=$col->addColumn(1);
+			$pf_col=$col->addColumn(1)->addClass('bank-col-1');
 			$pf_amount=$pf_col->addField('line','pf_amount_'.$emp_model['id']);//->set($new_pf_amount);
 			
-			$o_c=$col->addColumn(1);
+			$o_c=$col->addColumn(1)->addClass('bank-col-1');
 			$other_allw=$o_c->addField('hidden','other_allowance_'.$emp_model['id'])->set($emp_model['other_allowance']);
 			$o_c->add('View')->setHtml($emp_model['other_allowance'].'&nbsp');
 			
 
-			$ap_col=$col->addColumn(1);
+			$ap_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ap=$ap_col->addField('line','allow_paid_'.$emp_model['id']);//->set($emp_model['allow_paid']);
 			
 			$new_nt_amount= ($emp_model['salary'] + $emp_model['allow_paid'] - $emp_model['ded']-$emp_model['pf_amount']);			
 
-			$n_c=$col->addColumn(1);
+			$n_c=$col->addColumn(1)->addClass('bank-col-1');
 			$nt=$n_c->addField('hidden','net_payable_'.$emp_model['id']);//->set($new_nt_amount);
 			$n_c->add('View')->setHtml(/*$record_form['net_payable_'.$emp_model['id']].*/'&nbsp')->addClass('value-text');
+			$record_form->add('View')->setHtml('&nbsp;<br/>');
 			
-			$col->addColumn(1)->addField('line','narration_'.$emp_model['id']);//->set($emp_model['narration']);
-			$col->addColumn(1)->addField('line','cl_'.$emp_model['id']);
-			$col->addColumn(1)->addField('line','ccl_'.$emp_model['id']);
-			$col->addColumn(1)->addField('line','lwp_'.$emp_model['id']);
-			$col->addColumn(1)->addField('line','absent_'.$emp_model['id']);
-			$col->addColumn(1)->addField('line','weekly_off_'.$emp_model['id']);
+			$col->addColumn(1)->addClass('bank-col-1 bank-col-3')->addField('line','narration_'.$emp_model['id']);//->set($emp_model['narration']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','cl_'.$emp_model['id']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','ccl_'.$emp_model['id']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','lwp_'.$emp_model['id']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','absent_'.$emp_model['id']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','weekly_off_'.$emp_model['id']);
 
 			$ded->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$ded,$pf_amount);
 			$ap->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);

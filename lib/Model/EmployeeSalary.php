@@ -32,7 +32,7 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->addField('allow_paid')->defaultValue(0);
 		$this->addField('other_allowance')->defaultValue(0);
 		$this->addField('net_payable')->defaultValue(0);
-		$this->addField('narration')->defaultValue(0);
+		$this->addField('narration')->type('text')->defaultValue(0);
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

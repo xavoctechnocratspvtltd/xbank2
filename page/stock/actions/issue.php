@@ -61,7 +61,7 @@ class page_stock_actions_issue extends Page {
 		$form->js(true)->hide();
 
 		$this->add('View_Info')->set('Issue Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>true));
 		if($crud->grid){
 			$crud->grid->addPaginator(10);
 		}
@@ -103,11 +103,10 @@ class page_stock_actions_issue extends Page {
 			$dealer=$this->add('Model_Stock_Dealer')->tryLoad($form['dealer']);
 			$transaction=$this->add('Model_Stock_Transaction');
 
-			if($item['is_issueable']){
+			if($item['is_issueable'] or $item['is_fixedassets']){
 				$transaction->issue($item,$form['qty'],$form['narration'],$staff,$agent,$dealer,$container,$row);
 				$criq_model->removeStock($container,$row,$item,$form['qty']);
 			}
-					
 			//todo item removed from its current location	
 			
 			$js = array($crud->grid->js()->reload(),

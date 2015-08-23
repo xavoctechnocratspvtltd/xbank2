@@ -37,7 +37,7 @@ class page_stock_actions_submit extends Page {
 		$form->js(true)->hide();
 
 		$this->add('View_Info')->set('Submit Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>true));
 		$submit_transaction=$this->add('Model_Stock_Transaction');
 		$submit_transaction->addCondition('transaction_type','Submit');
 		$submit_transaction->addCondition('branch_id',$this->api->currentBranch->id);

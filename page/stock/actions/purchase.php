@@ -35,7 +35,7 @@ class page_stock_actions_purchase extends Page {
 		$form->js(true)->hide();
 
 		$this->add('View_Info')->set('Purchase Stock Transaction')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>true));
 		$purchase_transaction=$this->add('Model_Stock_Transaction');
 		$purchase_transaction->addCondition('transaction_type','Purchase');
 		$purchase_transaction->addCondition('branch_id',$this->api->currentBranch->id);

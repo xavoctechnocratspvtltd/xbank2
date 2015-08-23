@@ -33,7 +33,7 @@ class page_employee extends Page{
 		$date=$this->api->today;
 		$y=date('Y',strtotime($date));
 		for ($i=$y; $i >=1970 ; $i--) { 
-			$years[]=$i;
+			$years[$i]=$i;
 		}
 
 		$month=array( 'Jan'=>"Jan",'Feb'=>"Feb",'March'=>"March",'April'=>"April",

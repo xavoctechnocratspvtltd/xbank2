@@ -18,6 +18,13 @@ class View_FDPrint extends View{
 		$this->template->set('nominee_age',$account['NomineeAge']);
 		$this->template->set('nominee_dob',date('d-m-Y',strtotime($account['MinorNomineeDOB'])));
 		$this->template->set('special_candidate',"");
+		$this->template->set('account_no',$account['AccountNumber']);
+		$this->template->set('date_of_issue',date("d-M-Y",strtotime($account['created_at'])));
+		$this->template->set('as_on_date',date("d-M-Y",strtotime($account['created_at'])));
+		$this->template->set('period',$account->ref('scheme_id')->get('MaturityPeriod'));
+		$this->template->set('due_date',date("d-M-Y",strtotime($account['maturity_date'])));
+		$this->template->set('interest',$account->ref('scheme_id')->get('Interest')."%");
+		$this->template->set('maturity_amount',$account->getAmountForInterest($account['maturity_date']));
 		
 	}
 

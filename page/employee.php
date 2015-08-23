@@ -41,7 +41,7 @@ class page_employee extends Page{
 					'Oct'=>"Oct",'Nov'=>"Nov",'Dec'=>"Dec");
 
 		$branch=$this->add('Model_Branch');
-		$emp_model=$this->add('Model_Employee');
+		$emp_model=$this->add('Model_Employee')->addCondition('is_active',true);
 		$emp_salary_j=$emp_model->LeftJoin('employee_salary_record.id');
 		
 		// $emp_salary_j->addField('employee_id');
@@ -85,6 +85,7 @@ class page_employee extends Page{
 		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('LWP');
 		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('ABSENT');
 		$lable_c->addColumn(1)->addClass('bank-col-2')->add('H5')->set('Weekly Off');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Total Working Day');
 
 		foreach ($emp_model as  $junk) {
 			$col= $record_form->add('Columns')->addClass('atk-box');
@@ -119,7 +120,7 @@ class page_employee extends Page{
 			$ded_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ded=$ded_col->addField('line','ded_'.$emp_model['id']);//->set($emp_model['ded']);
 
-			$new_pf_amount =  round(($emp_model['salary'] / 100) * 12,2);
+			$new_pf_amount =  round(($emp_model['salary'] / 100) * 12);
 			
 			$pf_col=$col->addColumn(1)->addClass('bank-col-1');
 			$pf_amount=$pf_col->addField('line','pf_amount_'.$emp_model['id']);//->set($new_pf_amount);
@@ -145,6 +146,7 @@ class page_employee extends Page{
 			$col->addColumn(1)->addClass('bank-col-2')->addField('line','lwp_'.$emp_model['id']);
 			$col->addColumn(1)->addClass('bank-col-2')->addField('line','absent_'.$emp_model['id']);
 			$col->addColumn(1)->addClass('bank-col-2')->addField('line','weekly_off_'.$emp_model['id']);
+			$col->addColumn(1)->addClass('bank-col-1')->addField('line','total_working_day_'.$emp_model['id']);
 
 			$ded->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$ded,$pf_amount);
 			$ap->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);
@@ -152,8 +154,8 @@ class page_employee extends Page{
 			$pd->js( 'change')->univ()->salary($salary_f,$basic_salary,$td,$pd);
 			$pd->js( 'change')->univ()->allowPaid($ap,$pd,$td,$other_allw);
 			$wd->js( 'change')->univ()->workingDays($td,$wd);
-			$pd->js( 'change')->univ()->pfSalary($pf,$salary_f);
-			$pd->js( 'change')->univ()->pfAmount($pf_amount,$salary_f);
+			$pd->js( 'change')->univ()->pfSalary($pf,$salary_f,$emp_model['pf_deduct']=='YES'?1:0);
+			$pd->js( 'change')->univ()->pfAmount($pf_amount,$salary_f,$emp_model['pf_deduct']=='YES'?1:0);
 		}
 
 		$record_form->addSubmit('Go');
@@ -185,6 +187,7 @@ class page_employee extends Page{
 				$salary['LWP']=$record_form['lwp_'.$emp_model['id']];
 				$salary['ABSENT']=$record_form['absent_'.$emp_model['id']];
 				$salary['weekly_off']=$record_form['weekly_off_'.$emp_model['id']];
+				$salary['total_working_day']=$record_form['total_working_day_'.$emp_model['id']];
 				$salary->save();
 			}
 			$record_form->js()->reload(array(
@@ -208,43 +211,50 @@ class page_employee extends Page{
 		$date=$this->api->today;
 		$y=date('Y',strtotime($date));	
 		for ($i=$y; $i >=1970 ; $i--) { 
-			$years[]=$i;
+			$years[$i]=$i;
 		}
 		$form=$this->add('Form',null,null,array('form/horizontal'));
 		$branch_field=$form->addField('Dropdown','branch')->setEmptyText('Please Select Branch');
 		$branch_field->setModel('Branch');
 		$form->addField('Dropdown','month')->setValueList($month)->validateNotNull(true)->setEmptyText('Please Select Month');
 		$form->addField('Dropdown','year')->setValueList($years)->validateNotNull(true)->setEmptyText('Please Select Year');
+		$form->addField('autocomplete/Basic','employee')->setModel('Model_Employee');
 		$form->addSubmit('Get Record');
 
-		$salary_model=$this->add('Model_EmployeeSalary');
-		$grid=$this->add('Grid_Employee');
+		$v = $this->add('View');
+		// $grid=$this->add('Grid_Employee');
 
 		$this->api->stickyGET('branch');
 		$this->api->stickyGET('month');
 		$this->api->stickyGET('year');
 		
-		if($_GET['filters']){
-			$this->api->stickyGET('filter');
-
+		if($this->api->stickyGET('filters')){
+			$salary_model=$this->add('Model_EmployeeSalary');
+			$crud = $v->add('CRUD',array('grid_class'=>'Grid_Employee','allow_del'=>false,'allow_add'=>false));
+			
 			if($_GET['branch']){
 				$salary_model->addCondition('branch_id',$_GET['branch']);
 			}
-			if($_GET['month']){
+			if($_GET['month']){				
 				$salary_model->addCondition('month',$_GET['month']);
 			}
 			if($_GET['year']){
 				$salary_model->addCondition('year',$_GET['year']);
 			}
-		}else
-			$salary_model->addCondition('id',-1);	
+			if($_GET['employee']){
+				$salary_model->addCondition('employee_id',$_GET['employee']);
+			}
+			
+			$crud->setModel($salary_model);
+		}
 
-		$grid->setModel($salary_model);
+		
 		if($form->isSubmitted()){
-			$grid->js()->reload(array(
+			$v->js()->reload(array(
 								'branch'=>$form['branch']?:0,
 								'month'=>$form['month']?:0,
 								'year'=>$form['year']?:0,
+								'employee'=>$form['employee']?:0,
 								'filters'=>1)
 							)
 			->execute();

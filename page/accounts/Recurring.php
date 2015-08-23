@@ -18,6 +18,7 @@ class page_accounts_Recurring extends Page {
 			$new_account = $crud->add('Model_Account_Recurring');
 			try {
 				$crud->api->db->beginTransaction();
+				if(!$form['collector_id'] && $form['agent_id']) $form['collector_id'] = $form['agent_id'];
 			    $new_account->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
 			    $crud->api->db->commit();
 			} catch (Exception $e) {

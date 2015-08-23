@@ -45,6 +45,13 @@ class page_agents extends Page{
 
 		}
 
+		if($crud->isEditing('edit')){			//TODO 
+			
+			$account_of_member_field = $crud->form->getElement('account_id');
+			$account_of_member_field->model->addCondition('member_id',$crud->form->model['member_id']);
+			// $account_of_member_field->model->addCondition('ActiveStatus',true);
+		}
+
 		$crud->add('Controller_Acl');
 	}
 }

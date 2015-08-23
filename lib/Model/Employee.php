@@ -5,6 +5,9 @@ class Model_Employee extends Model_Table{
 		parent::init();
 
 		$this->hasOne('Branch','branch_id');
+		$this->add('filestore/Field_Image','employee_image_photo');
+		$this->add('filestore/Field_Image','employee_image_signature');
+
 		$this->addField('name')->mandatory(true)->caption('Employee');
 		$this->addField('emp_code')->caption('Emp. Code');
 		$this->addField('designation');

@@ -6,7 +6,7 @@ class Model_Employee extends Model_Table{
 
 		$this->hasOne('Branch','branch_id');
 		$this->addField('name')->mandatory(true)->caption('Employee');
-		// $this->addField('emp_code')->caption('Emp. Code');
+		$this->addField('emp_code')->caption('Emp. Code');
 		$this->addField('designation');
 		$this->addField('department')->caption('Department/Location');
 		$this->addField('DOB')->caption('Date of Birth')->type('date');
@@ -38,7 +38,7 @@ class Model_Employee extends Model_Table{
 		$this->addField('bank_name');
 		$this->addField('bank_account_no');
 		$this->addField('paymemt_mode');
-		$this->addField('pf_deduct')->enum(array('YES','NO'));
+		$this->addField('pf_deduct')->enum(array('YES','NO'))->defaultValue('YES');
 		$this->addField('employee_status');
 		$this->addField('basic_salary');
 		$this->addField('other_allowance');
@@ -48,7 +48,7 @@ class Model_Employee extends Model_Table{
 
 		$this->hasMany('EmployeeSalary','employee_id');
 
-		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function empSalary(){

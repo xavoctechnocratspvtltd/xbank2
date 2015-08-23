@@ -22,13 +22,21 @@ $.each({
   	$(t_day).parent('.atk-col-1').find('.value-text').text(parseInt($(w_day).val()));
   },
 
-  pfSalary:function(pf_salary,salary){
-  	$(pf_salary).val( parseInt($(salary).val()));
-  	$(pf_salary).parent('.atk-col-1').find('.value-text').text(parseInt($(salary).val()));
+  pfSalary:function(pf_salary,salary,deduct){
+  	salary = 0;
+	if(deduct){
+		salary = parseInt($(salary).val());
+	}
+	$(pf_salary).val(salary);
+	$(pf_salary).parent('.atk-col-1').find('.value-text').text(salary);
   },
 
-  pfAmount: function (pf_amount,salary){
-  	$(pf_amount).val(parseInt($(salary).val()) * 12 / 100   );
+  pfAmount: function (pf_amount,salary,deduct){
+  	salary = 0;
+	if(deduct){
+		salary = parseInt($(salary).val()) * 12 / 100 ;
+	}
+  	$(pf_amount).val(salary);
   }
 
 

@@ -15,6 +15,11 @@ class Model_EmployeeSalary extends Model_Table{
 
 		$this->hasOne('Branch','branch_id');
 		$this->hasOne('Employee','employee_id');
+
+		$this->addExpression('employee_code')->set(function($m,$q){
+			return $m->refSQL('employee_id')->fieldQuery('emp_code');
+		});
+		
 		$this->addField('month')->setValueList($month);
 		$this->addField('year')->setValueList($years);
 		$this->addField('CL');
@@ -29,10 +34,12 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->addField('pf_salary')->defaultValue(0);
 		$this->addField('ded')->defaultValue(0);
 		$this->addField('pf_amount')->defaultValue(0);
-		$this->addField('allow_paid')->defaultValue(0);
 		$this->addField('other_allowance')->defaultValue(0);
+		$this->addField('allow_paid')->defaultValue(0);
 		$this->addField('net_payable')->defaultValue(0);
 		$this->addField('narration')->type('text')->defaultValue(0);
+		$this->addField('total_working_day');
+
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

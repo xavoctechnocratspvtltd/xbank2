@@ -8,7 +8,7 @@ $.each({
 
   salary: function (salary,basic_salary,total_days,paid_days){
     value = parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val());
-    value = parseFloat(value).toFixed(2);
+    // value = parseFloat(value).toFixed(0);
 
   	$(salary).val(value); 
   	$(salary).parent('.atk-col-1').find('.value-text').text(value);
@@ -23,20 +23,20 @@ $.each({
   },
 
   pfSalary:function(pf_salary,salary,deduct){
-  	salary = 0;
-	if(deduct){
-		salary = parseInt($(salary).val());
-	}
-	$(pf_salary).val(salary);
-	$(pf_salary).parent('.atk-col-1').find('.value-text').text(salary);
+  	salary_value = 0;
+  if(deduct){
+    salary_value = parseInt($(salary).val());
+  }
+  $(pf_salary).val(salary_value);
+  $(pf_salary).parent('.atk-col-1').find('.value-text').text(salary_value);
   },
 
   pfAmount: function (pf_amount,salary,deduct){
-  	salary = 0;
-	if(deduct){
-		salary = parseInt($(salary).val()) * 12 / 100 ;
-	}
-  	$(pf_amount).val(salary);
+    salary_value = 0;
+    if(deduct){
+     salary_value = parseInt($(salary).val()) * 12 / 100 ;
+    }
+    $(pf_amount).val(salary_value);
   }
 
 

@@ -41,7 +41,7 @@ class page_employee extends Page{
 					'Oct'=>"Oct",'Nov'=>"Nov",'Dec'=>"Dec");
 
 		$branch=$this->add('Model_Branch');
-		$emp_model=$this->add('Model_Employee');
+		$emp_model=$this->add('Model_Employee')->addCondition('is_active',true);
 		$emp_salary_j=$emp_model->LeftJoin('employee_salary_record.id');
 		
 		// $emp_salary_j->addField('employee_id');
@@ -120,7 +120,7 @@ class page_employee extends Page{
 			$ded_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ded=$ded_col->addField('line','ded_'.$emp_model['id']);//->set($emp_model['ded']);
 
-			$new_pf_amount =  round(($emp_model['salary'] / 100) * 12,0);
+			$new_pf_amount =  round(($emp_model['salary'] / 100) * 12);
 			
 			$pf_col=$col->addColumn(1)->addClass('bank-col-1');
 			$pf_amount=$pf_col->addField('line','pf_amount_'.$emp_model['id']);//->set($new_pf_amount);

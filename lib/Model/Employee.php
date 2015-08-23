@@ -18,8 +18,8 @@ class Model_Employee extends Model_Table{
 		$this->addField('father_name');
 		$this->addField('mother_name');
 		$this->addField('marital_status');
-		$this->addField('no_of_dependends');
-		$this->addField('identity_mark');
+		$this->addField('relation_with_nominee');
+		$this->addField('last_qualification');
 		$this->addField('contact_no');
 		$this->addField('email_id');
 		$this->addField('permanent_address');
@@ -33,8 +33,8 @@ class Model_Employee extends Model_Table{
 		$this->addField('pan_no');
 		$this->addField('driving_licence_no');
 		$this->addField('validity_of_driving_licence');
-		$this->addField('pass_port_no');
-		$this->addField('validity_of_pass_port');
+		$this->addField('pf_joining_date');
+		$this->addField('agreement_date');
 		$this->addField('bank_name');
 		$this->addField('bank_account_no');
 		$this->addField('paymemt_mode');
@@ -45,6 +45,7 @@ class Model_Employee extends Model_Table{
 		$this->addField('society_contri');
 		$this->addField('net_payable');
 		$this->addField('net_salary');
+		$this->addField('is_active')->type('boolean')->defaultValue(true);
 
 		$this->hasMany('EmployeeSalary','employee_id');
 

@@ -7,8 +7,11 @@ $.each({
   },
 
   salary: function (salary,basic_salary,total_days,paid_days){
-  	$(salary).val(parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val())); 
-  	$(salary).parent('.atk-col-1').find('.value-text').text(parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val()));
+    value = parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val());
+    // value = parseFloat(value).toFixed(0);
+
+  	$(salary).val(value); 
+  	$(salary).parent('.atk-col-1').find('.value-text').text(value);
   },
 
   allowPaid: function (allow_paid,paid_days,total_days,other_allow){
@@ -19,13 +22,21 @@ $.each({
   	$(t_day).parent('.atk-col-1').find('.value-text').text(parseInt($(w_day).val()));
   },
 
-  pfSalary:function(pf_salary,salary){
-  	$(pf_salary).val( parseInt($(salary).val()));
-  	$(pf_salary).parent('.atk-col-1').find('.value-text').text(parseInt($(salary).val()));
+  pfSalary:function(pf_salary,salary,deduct){
+  	salary_value = 0;
+  if(deduct){
+    salary_value = parseInt($(salary).val());
+  }
+  $(pf_salary).val(salary_value);
+  $(pf_salary).parent('.atk-col-1').find('.value-text').text(salary_value);
   },
 
-  pfAmount: function (pf_amount,salary){
-  	$(pf_amount).val(parseInt($(salary).val()) * 12 / 100   );
+  pfAmount: function (pf_amount,salary,deduct){
+    salary_value = 0;
+    if(deduct){
+     salary_value = parseInt($(salary).val()) * 12 / 100 ;
+    }
+    $(pf_amount).val(salary_value);
   }
 
 

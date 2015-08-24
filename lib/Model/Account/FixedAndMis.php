@@ -18,7 +18,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType',ACCOUNT_TYPE_FIXED);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
-			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod DAY)";
+			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod DAY)+1";
 		});
 
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
@@ -128,13 +128,22 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$days = $this->api->my_date_diff($on_date,$this['created_at']);
 
-		$years_completed = (int) ($days['days_total'] / 365) ;
-		
+		$years_completed = (int) (($days['days_total']) / 365) ;
+		$remaining_days = ($days['days_total'] % 365) - 1 ;
+
+		$interest_rate = $this['Interest'];
+		if(!$interest_rate) $interest_rate = $this->ref('scheme_id')->get('Interest');
 
 		for ($i=0; $i < $years_completed; $i++) { 
-			$interest = $on_amount * $this['Interest'] / 100;
+			$interest = $on_amount * $interest_rate / 100;
 			$on_amount += $interest;
 		}
+
+		if($remaining_days){
+			$interest = $on_amount * $interest_rate / 36500 * ($remaining_days);
+			$on_amount += $interest;
+		}
+
 		// echo "doing provision on $on_amount on $on_date for ".$days['days_total']." days and years completed = $years_completed <br/>";
 		return $on_amount;
 	}

@@ -52,6 +52,15 @@ class View_IntrestPrint extends CompleteLister{
 																TRA_INTEREST_POSTING_IN_LOAN)
 										);		
 
+		if($_GET['from_date']){
+			$transaction_row->addCondition('created_at','>',$_GET['from_date']);
+		}
+
+		if($_GET['to_date']){
+			$transaction_row->addCondition('created_at','<=',$this->api->nextDate($_GET['to_date']));
+		}
+
+
 		// throw new Exception('member_id'.$_GET['member_id']."from_date".$_GET['from_date']."to_date".$_GET['to_date'], 1);
 		// throw new \Exception("MEmber_id=".$transaction_row['member_id']."Member_name=".$transaction_row['name']);
 		$this->setModel($transaction_row);

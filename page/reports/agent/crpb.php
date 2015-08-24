@@ -13,6 +13,7 @@ class page_reports_agent_crpb extends Page {
 
 		$form=$this->add('Form');
 		$agent=$form->addField('autocomplete/Basic','agent');
+		$agent->setModel('Agent');
 		$qrtr=$form->addField('autocomplete/Basic','qrtr');
 
 		$form->addSubmit('GET List');

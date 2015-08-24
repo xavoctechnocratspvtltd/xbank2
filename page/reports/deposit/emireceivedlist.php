@@ -48,7 +48,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$scheme_join->addField('SchemeType');
 		$transaction_type_join->addField('transaction_type_name','name');
 
-		$transaction_row_model->addCondition('transaction_type_name',TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT);
+		$transaction_row_model->addCondition('transaction_type_name',array(TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT,TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT));
 		$transaction_row_model->addCondition('amountCr','>',0);
 		$transaction_row_model->addCondition(
 			$transaction_row_model->dsql()->orExpr()

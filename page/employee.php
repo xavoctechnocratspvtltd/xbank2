@@ -19,7 +19,18 @@ class page_employee extends Page{
 		// });
 
 		$crud=$this->add('CRUD',array('grid_class'=>'Grid_Employee'));
-		$crud->setModel($emp);
+		$crud->setModel($emp,array('branch_id','emp_code','name','designation',
+					'contact_no','department','date_of_joining','emergency_no',
+					'father_name','mother_name','DOB','marital_status',
+					'last_qualification','email_id','permanent_address','present_address',
+					'pan_no','driving_licence_no','validity_of_driving_licence','bank_name',
+					'bank_account_no','experince','prev_company','prev_department',
+					'prev_leaving_company_date','leaving_resion','pf_joining_date','pf_no',
+					'pf_nominee','relation_with_nominee','pf_deduct','esi_no',
+					'esi_nominee','agreement_date','paymemt_mode','employee_status',
+					'basic_salary','other_allowance','society_contri','net_payable',
+					'net_salary','employee_image_photo','employee_image_signature','date_of_leaving',
+					'is_active'),array());
 		// $crud->addRef('EmployeeSalary');
 	}
 

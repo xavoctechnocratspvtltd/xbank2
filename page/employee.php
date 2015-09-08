@@ -6,8 +6,8 @@ class page_employee extends Page{
 		// parent::init();
 		$this->api->jui->addStaticStyleSheet('bank-layout','.css');
 		$tab=$this->add('Tabs');
-		$tab->addTabURL('./addEmployee','Add Employees');
 		$tab->addTabURL('./manageSalary','Salary Structure');
+		$tab->addTabURL('./addEmployee','Add Employees');
 		$tab->addTabURL('./salaryRecord','Salary Managment');
 
 	}
@@ -57,9 +57,6 @@ class page_employee extends Page{
 		$form->addSubmit('Get Result');
 		$form->add('View')->setHtml('&nbsp;<br/><br/>')->addClass('');
 
-		$this->api->stickyGET('month');
-		$this->api->stickyGET('year');
-
 
 		//Second Form
 
@@ -100,31 +97,31 @@ class page_employee extends Page{
 
 		// $emp_model = $this->add('Model_EmployeeSalary');
 		$emp_model=$this->add('Model_Employee')->addCondition('is_active',true);
-		$emp_salary_j=$emp_model->leftJoin('employee_salary_record.employee_id');		
-		$emp_salary_j->addField('month');
-		$emp_salary_j->addField('year');
-		$emp_salary_j->addField('paid_days');
-		$emp_salary_j->addField('total_days');
-		$emp_salary_j->addField('leave');
-		$emp_salary_j->addField('salary');
-		$emp_salary_j->addField('ded');
-		$emp_salary_j->addField('pf_amount');
-		$emp_salary_j->addField('allow_paid');
-		$emp_salary_j->addField('narration');
-		$emp_salary_j->addField('CL');
-		$emp_salary_j->addField('CCL');
-		$emp_salary_j->addField('LWP');
-		$emp_salary_j->addField('ABSENT');
 
-		// if($_GET['filter']){
+		// $emp_salary_j->addField('month');
+		// $emp_salary_j->addField('year');
+		// $emp_salary_j->addField('paid_days');
+		// $emp_salary_j->addField('total_days');
+		// $emp_salary_j->addField('leave');
+		// $emp_salary_j->addField('salary');
+		// $emp_salary_j->addField('ded');
+		// $emp_salary_j->addField('pf_amount');
+		// $emp_salary_j->addField('allow_paid');
+		// $emp_salary_j->addField('narration');
+		// $emp_salary_j->addField('CL');
+		// $emp_salary_j->addField('CCL');
+		// $emp_salary_j->addField('LWP');
+		// $emp_salary_j->addField('ABSENT');
+
 
 		foreach ($emp_model as  $junk) {
-			$emp_model->addCondition('is_active',true);
-			$emp_model->addCondition($emp_model->dsql()->orExpr()->where('month',$_GET['month'])
-																	->where('month',null));
-			$emp_model->addCondition($emp_model->dsql()->orExpr()->where('year',$_GET['year'])
-																	->where('year',null));
-			// $emp_model->tryLoadAny();
+
+			// Check for existing entry
+			$emp_salary =  $this->add('Model_EmployeeSalary');
+			$emp_salary->addCondition('employee_id',$emp_model->id);
+			$emp_salary->addCondition('month',$_GET['month']);
+			$emp_salary->addCondition('year',$_GET['year']);
+			$emp_salary->tryLoadAny();
 
 			$col= $record_form->add('Columns')->addClass('atk-box');
 			$cl=$col->addColumn(1)->addClass('bank-col-1 atk-col-1');
@@ -134,18 +131,18 @@ class page_employee extends Page{
 			$basic_salary = $cl->addField('hidden','basic_salary_'.$emp_model['id'])->set($emp_model['basic_salary']);
 			
 			$t_c=$col->addColumn(1)->addClass('bank-col-2');
-			$td = $t_c->addField('hidden','total_days_'.$emp_model['id'])->set($emp_model['total_days'])/*$emp_model['total_days'].*/;
-			$t_c->add('View')->setHtml($emp_model['total_days'].'&nbsp;')->addClass('value-text bank-col-2');
+			$td = $t_c->addField('hidden','total_days_'.$emp_model['id'])->set($emp_salary['total_days'])/*$emp_model['total_days'].*/;
+			$t_c->add('View')->setHtml($emp_salary['total_days'].'&nbsp;')->addClass('value-text bank-col-2');
 			
 			$pd_col = $col->addColumn(1)->addClass('bank-col-2');
-			$pd=$pd_col->addField('line','paid_days_'.$emp_model['id'])->set($emp_model['paid_days']);
+			$pd=$pd_col->addField('line','paid_days_'.$emp_model['id'])->set($emp_salary['paid_days']);
 			$col->addColumn(1)->addClass('bank-col-2')->addField('line','leave_'.$emp_model['id']);//->set($emp_model['leave']);
 			
-			$total_days = 1;
-			if($emp_model['total_days'])
-				$total_days = $emp_model['total_days'];
+			$total_days = 30;
+			if($emp_salary['total_days'])
+				$total_days = $emp_salary['total_days'];
 
-			$new_salary_amount=($emp_model['basic_salary']/$total_days * $emp_model['paid_days']); 
+			$new_salary_amount=($emp_model['basic_salary']/$total_days * $emp_salary['paid_days']); 
 			
 			$s_c=$salary=$col->addColumn(1)->addClass('bank-col-1');
 			$salary_f = $s_c->addField('hidden','salary_'.$emp_model['id'])->set($new_salary_amount);

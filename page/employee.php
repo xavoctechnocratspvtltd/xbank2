@@ -152,7 +152,7 @@ class page_employee extends Page{
 			$s_c->add('View')->setHtml($emp_salary['salary'].'&nbsp')->addClass('value-text');
 			
 			$p_c=$col->addColumn(1)->addClass('bank-col-1');
-			$pf=$p_c->addField('hidden','pf_salary_'.$emp_model['id'])->set($salary_f);
+			$pf=$p_c->addField('hidden','pf_salary_'.$emp_model['id'])->set($emp_salary['salary']);
 			$p_c->add('View')->setHtml($emp_salary['salary'].'&nbsp')->addClass('value-text');
 
 			$ded_col=$col->addColumn(1)->addClass('bank-col-1');

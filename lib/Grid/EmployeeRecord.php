@@ -29,7 +29,7 @@ class Grid_EmployeeRecord extends Grid_AccountsBase{
 		// 			'net_salary','employee_image_photo','employee_image_signature','date_of_leaving',
 		// 			'is_active');
 		$m=parent::setModel($model,$field);
-		$this->addTotals(array('pf_salary','ded','net_payable'));
+		$this->addTotals(array('pf_salary','pf_amount','ded','net_payable'));
 		$this->addSno();
 		// $this->addQuickSearch(array('name','emp_code','contact_no','father_name','pf_no','bank_name','bank_account_no'));
 		// $c->grid->->move('edit','first')->now();

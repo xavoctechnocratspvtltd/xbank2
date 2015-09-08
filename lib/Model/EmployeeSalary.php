@@ -63,9 +63,12 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->addField('net_payable')->defaultValue(0);
 		$this->addField('narration')->type('text')->defaultValue(0);
 		$this->addField('total_month_day');
-
+		$this->addHook('beforeSave',$this);
 
 		$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave(){
 	}
 
 	function convert_number_to_words($number) {

@@ -16,13 +16,13 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->hasOne('Branch','branch_id');
 		$this->hasOne('Employee','employee_id');
 
-		// $this->addExpression('employee_code')->set(function($m,$q){
-		// 	return $m->refSQL('employee_id')->fieldQuery('emp_code');
-		// });
+		$this->addExpression('employee_code')->set(function($m,$q){
+			return $m->refSQL('employee_id')->fieldQuery('emp_code');
+		});
 
 		$this->addExpression('name')->set(function($m,$q){
 			return $m->refSQL('employee_id')->fieldQuery('name');
-		});
+		})->caption('Employee name');
 		$this->addExpression('basic_salary')->set(function($m,$q){
 			return $m->refSQL('employee_id')->fieldQuery('basic_salary');
 		});

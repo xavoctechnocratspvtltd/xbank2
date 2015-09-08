@@ -313,7 +313,12 @@ class page_employee extends Page{
 				$salary_model->addCondition('employee_id',$_GET['employee']);
 			}
 			
-			$crud->setModel($salary_model);
+			$crud->setModel($salary_model,array('branch','name','employee_code',
+												'CL','CCL','LWP','ABSENT',
+												'monthly_off','basic_salary','total_days','paid_days',
+												'leave','salary','pf_salary','ded',
+												'other_allowance','allow_paid','net_payable','is_active',
+												'salary_date','narration','total_month_day'));
 		}
 
 		

@@ -131,12 +131,12 @@ class page_employee extends Page{
 			$basic_salary = $cl->addField('hidden','basic_salary_'.$emp_model['id'])->set($emp_model['basic_salary']);
 			
 			$t_c=$col->addColumn(1)->addClass('bank-col-2');
-			$td = $t_c->addField('hidden','total_days_'.$emp_model['id'])->set($emp_salary['total_days'])/*$emp_model['total_days'].*/;
-			$t_c->add('View')->setHtml($emp_salary['total_days'].'&nbsp;')->addClass('value-text bank-col-2');
+			$td = $t_c->addField('hidden','total_days_'.$emp_model['id'])->set($emp_salary['total_days']?:$_GET['working_day']);
+			$t_c->add('View')->setHtml($emp_salary['total_days']?:$_GET['working_day'].'&nbsp;')->addClass('value-text bank-col-2');
 			
 			$pd_col = $col->addColumn(1)->addClass('bank-col-2');
 			$pd=$pd_col->addField('line','paid_days_'.$emp_model['id'])->set($emp_salary['paid_days']);
-			$col->addColumn(1)->addClass('bank-col-2')->addField('line','leave_'.$emp_model['id']);//->set($emp_model['leave']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','leave_'.$emp_model['id'])->set($emp_salary['leave']);
 			
 			$total_days = 30;
 			if($emp_salary['total_days'])
@@ -146,16 +146,16 @@ class page_employee extends Page{
 			
 			$s_c=$salary=$col->addColumn(1)->addClass('bank-col-1');
 			$salary_f = $s_c->addField('hidden','salary_'.$emp_model['id'])->set($new_salary_amount);
-			$s_c->add('View')->setHtml($emp_model['salary'].'&nbsp')->addClass('value-text');
+			$s_c->add('View')->setHtml($emp_salary['salary'].'&nbsp')->addClass('value-text');
 			
 			$p_c=$col->addColumn(1)->addClass('bank-col-1');
-			$pf=$p_c->addField('hidden','pf_salary_'.$emp_model['id']);//->set($salary_f);
-			$p_c->add('View')->setHtml($emp_model['salary'].'&nbsp')->addClass('value-text');
+			$pf=$p_c->addField('hidden','pf_salary_'.$emp_model['id'])->set($salary_f);
+			$p_c->add('View')->setHtml($emp_salary['salary'].'&nbsp')->addClass('value-text');
 
 			$ded_col=$col->addColumn(1)->addClass('bank-col-1');
-			$ded=$ded_col->addField('line','ded_'.$emp_model['id'])->set($emp_model['ded']);
+			$ded=$ded_col->addField('line','ded_'.$emp_model['id'])->set($emp_salary['ded']);
 
-			$new_pf_amount =  round(($emp_model['salary'] / 100) * 12);
+			$new_pf_amount =  round(($emp_salary['salary'] / 100) * 12);
 			
 			$pf_col=$col->addColumn(1)->addClass('bank-col-1');
 			$pf_amount=$pf_col->addField('line','pf_amount_'.$emp_model['id'])->set($new_pf_amount);
@@ -166,24 +166,24 @@ class page_employee extends Page{
 			
 
 			$ap_col=$col->addColumn(1)->addClass('bank-col-1');
-			$ap=$ap_col->addField('line','allow_paid_'.$emp_model['id'])->set($emp_model['allow_paid']);
+			$ap=$ap_col->addField('line','allow_paid_'.$emp_model['id'])->set($emp_salary['allow_paid']);
 			
-			$new_nt_amount= ($emp_model['salary'] + $emp_model['allow_paid'] - $emp_model['ded']-$emp_model['pf_amount']);			
+			$new_nt_amount= ($emp_salary['salary'] + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']);			
 
 			$n_c=$col->addColumn(1)->addClass('bank-col-1');
 			$nt=$n_c->addField('hidden','net_payable_'.$emp_model['id'])->set($new_nt_amount);
 			$n_c->add('View')->setHtml($record_form['net_payable_'.$emp_model['id']].'&nbsp')->addClass('value-text');
 			$record_form->add('View')->setHtml('&nbsp;<br/>');
 			
-			$col->addColumn(1)->addClass('bank-col-1 bank-col-3')->addField('line','narration_'.$emp_model['id'])->set($emp_model['narration']);
-			$col->addColumn(1)->addClass('bank-col-2')->addField('line','cl_'.$emp_model['id'])->set($emp_model['CL']);
-			$col->addColumn(1)->addClass('bank-col-2')->addField('line','ccl_'.$emp_model['id'])->set($emp_model['CCL']);
-			$col->addColumn(1)->addClass('bank-col-2')->addField('line','lwp_'.$emp_model['id'])->set($emp_model['LWP']);
-			$col->addColumn(1)->addClass('bank-col-2')->addField('line','absent_'.$emp_model['id'])->set($emp_model['ABSENT']);
+			$col->addColumn(1)->addClass('bank-col-1 bank-col-3')->addField('line','narration_'.$emp_model['id'])->set($emp_salary['narration']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','cl_'.$emp_model['id'])->set($emp_salary['CL']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','ccl_'.$emp_model['id'])->set($emp_salary['CCL']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','lwp_'.$emp_model['id'])->set($emp_salary['LWP']);
+			$col->addColumn(1)->addClass('bank-col-2')->addField('line','absent_'.$emp_model['id'])->set($emp_salary['ABSENT']);
 			$wf_col=$col->addColumn(1)->addClass('bank-col-1');
-			$wf=$wf_col->addField('line','monthly_off_'.$emp_model['id'])->set($emp_model['monthly_off']);
+			$wf=$wf_col->addField('line','monthly_off_'.$emp_model['id'])->set($emp_salary['monthly_off']?:$_GET['monthly_off']);
 			$tmd_col=$col->addColumn(1)->addClass('bank-col-2');
-			$tmd=$tmd_col->addField('line','total_month_day_'.$emp_model['id'])->set($emp_model['total_month_day']);
+			$tmd=$tmd_col->addField('line','total_month_day_'.$emp_model['id'])->set($emp_salary['total_month_day']?:$_GET['monthly_in_day']);
 
 			$ded->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$ded,$pf_amount);
 			$ap->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);

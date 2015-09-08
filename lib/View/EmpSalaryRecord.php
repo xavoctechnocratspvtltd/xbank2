@@ -9,7 +9,13 @@ class View_EmpSalaryRecord extends View{
 		$emp->load($_GET['salary_id']);
 
 		$this->template->set('emp_name',$emp->ref('employee_id')->get('name'));
-		$this->template->set('location',$emp->ref('employee_id')->get('branch'));
+		if($emp->ref('employee_id')->get('branch')=='Default'){
+			// throw new Exception("Error Processing Request", 1);
+			$this->template->set('location','Head Office Udaipur');
+		}else{
+			$this->template->set('location',$emp->ref('employee_id')->get('branch'));
+		}
+			
 		$this->template->set('emp_code',$emp['employee_id']);
 		$this->template->set('dob',date('d-m-Y',strtotime($emp->ref('employee_id')->get('DOB'))));
 		$this->template->set('month',$emp['month']);
@@ -18,7 +24,7 @@ class View_EmpSalaryRecord extends View{
 		$this->template->set('pro_fund_no',$emp->ref('employee_id')->get('pf_no'));
 		$this->template->set('pan_no',$emp->ref('employee_id')->get('pan_no'));
 		$this->template->set('basic_salary',$emp->ref('employee_id')->get('basic_salary'));
-		$this->template->set('other_allowance',$emp->ref('employee_id')->get('other_allownace'));
+		$this->template->set('other_allowance',$emp->ref('employee_id')->get('other_allowance')?:0);
 		$this->template->set('net_salary',$emp['net_payable']);
 		$this->template->set('department',$emp->ref('employee_id')->get('department'));
 		
@@ -48,8 +54,10 @@ class View_EmpSalaryRecord extends View{
 		$total_leave_count=$emp['CL']+$emp['CCL']+$emp['LWP']+$emp['ABSENT']+$emp['weekly_off'];
 		$this->template->set('total_leave',$total_leave_count);
 		$this->template->set('amount_in_words',$emp->convert_number_to_words($emp['net_payable']));
+		$this->template->set('date_of_generate',date('d-m-Y',strtotime($this->api->today)));
+		}
 		
-	}
+	
 	function setModel($model){
 		parent::setModel($model);
 	}

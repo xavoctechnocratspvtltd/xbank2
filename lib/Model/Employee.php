@@ -8,8 +8,8 @@ class Model_Employee extends Model_Table{
 		$this->add('filestore/Field_Image','employee_image_photo');
 		$this->add('filestore/Field_Image','employee_image_signature');
 
-		$this->addField('name')->mandatory(true)->caption('Employee');
-		$this->addField('emp_code')->caption('Emp. Code');
+		$this->addField('name')->mandatory(true)->caption('Employee Name');
+		$this->addField('emp_code')->caption('Emp. Code')->set($this->id);
 		$this->addField('designation');
 		$this->addField('department')->caption('Department/Location');
 		$this->addField('DOB')->caption('Date of Birth')->type('date');
@@ -18,10 +18,11 @@ class Model_Employee extends Model_Table{
 		$this->addField('prev_department')->caption('Previous Designation');
 		$this->addField('prev_leaving_company_date')->type('date')->caption('Date of Leaving in  Previous Company ');
 		$this->addField('leaving_resion');
+		$this->addField('emergency_no');
 		$this->addField('father_name');
 		$this->addField('mother_name');
 		$this->addField('marital_status');
-		$this->addField('relation_with_nominee');
+		$this->addField('relation_with_nominee')->enum(array('Father','Mother','Wife','Husband','Son','Brother','Sister','Doughter'));
 		$this->addField('last_qualification');
 		$this->addField('contact_no');
 		$this->addField('email_id');

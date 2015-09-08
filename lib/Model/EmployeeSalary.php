@@ -16,9 +16,25 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->hasOne('Branch','branch_id');
 		$this->hasOne('Employee','employee_id');
 
-		$this->addExpression('employee_code')->set(function($m,$q){
-			return $m->refSQL('employee_id')->fieldQuery('emp_code');
+		// $this->addExpression('employee_code')->set(function($m,$q){
+		// 	return $m->refSQL('employee_id')->fieldQuery('emp_code');
+		// });
+
+		$this->addExpression('name')->set(function($m,$q){
+			return $m->refSQL('employee_id')->fieldQuery('name');
 		});
+		$this->addExpression('basic_salary')->set(function($m,$q){
+			return $m->refSQL('employee_id')->fieldQuery('basic_salary');
+		});
+		$this->addExpression('other_allowance')->set(function($m,$q){
+			return $m->refSQL('employee_id')->fieldQuery('other_allowance');
+		});
+		$this->addExpression('is_active')->set(function($m,$q){
+			return $m->refSQL('employee_id')->fieldQuery('is_active');
+		});
+
+
+
 		
 		$this->addField('month')->setValueList($month);
 		$this->addField('year')->setValueList($years);
@@ -26,19 +42,20 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->addField('CCL');
 		$this->addField('LWP');
 		$this->addField('ABSENT');
-		$this->addField('weekly_off');
+		$this->addField('monthly_off');
 		$this->addField('total_days')->defaultValue(0);
 		$this->addField('paid_days')->defaultValue(0);
-		$this->addField('leave')->defaultValue(0);
+		$this->addField('leave')->Caption('Total Leave')->defaultValue(0);
 		$this->addField('salary')->defaultValue(0);
 		$this->addField('pf_salary')->defaultValue(0);
 		$this->addField('ded')->defaultValue(0);
 		$this->addField('pf_amount')->defaultValue(0);
-		$this->addField('other_allowance')->defaultValue(0);
+		// $this->addField('other_allowance')->defaultValue(0);
 		$this->addField('allow_paid')->defaultValue(0);
 		$this->addField('net_payable')->defaultValue(0);
 		$this->addField('narration')->type('text')->defaultValue(0);
-		$this->addField('total_working_day');
+		$this->addField('total_month_day');
+		$this->addField('opening_cl');
 
 
 		$this->add('dynamic_model/Controller_AutoCreator');

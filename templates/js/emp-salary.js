@@ -8,7 +8,7 @@ $.each({
 
   salary: function (salary,basic_salary,total_days,paid_days){
     value = parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val());
-    // value = parseFloat(value).toFixed(0);
+    value = parseFloat(value).toFixed(0);
 
   	$(salary).val(value); 
   	$(salary).parent('.atk-col-1').find('.value-text').text(value);
@@ -22,13 +22,23 @@ $.each({
   	$(t_day).parent('.atk-col-1').find('.value-text').text(parseInt($(w_day).val()));
   },
 
+  weeklyOff: function (wf,t_w_f){
+    $(wf).val( parseInt($(t_w_f).val()));
+    $(wf).parent('.atk-col-1').find('.value-text').text(parseInt($(t_w_f).val()));
+  },
+
+  dayInMonth: function (tmd,mid){
+    $(tmd).val( parseInt($(mid).val()));
+    $(tmd).parent('.atk-col-1').find('.value-text').text(parseInt($(mid).val()));
+  },
+
   pfSalary:function(pf_salary,salary,deduct){
   	salary_value = 0;
   if(deduct){
     salary_value = parseInt($(salary).val());
   }
   $(pf_salary).val(salary_value);
-  $(pf_salary).parent('.atk-col-1').find('.value-text').text(salary_value);
+  $(pf_salary).parent('.bank-col-1').find('.value-text').text(salary_value);
   },
 
   pfAmount: function (pf_amount,salary,deduct){

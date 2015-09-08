@@ -49,7 +49,7 @@ class page_employee extends Page{
 		$col1->addColumn(3)->addField('Dropdown','month')->setValueList($month)->setEmptyText('Please Select Month')->validateNotNull(true);
 		$col1->addColumn(3)->addField('Dropdown','year')->setValueList($years)->setEmptyText('Please Select Year')->validateNotNull(true);
 		$wd_col=$col1->addColumn(2);
-		$wd=$wd_col->addField('line','working_day');
+		$wd=$wd_col->addField('line','working_day','Total Day In Month');
 		$twf_col=$col1->addColumn(2);
 		$twf=$twf_col->addField('line','monthly_off');
 		$mid_col=$col1->addColumn(2);

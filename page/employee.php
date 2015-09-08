@@ -6,8 +6,8 @@ class page_employee extends Page{
 		// parent::init();
 		$this->api->jui->addStaticStyleSheet('bank-layout','.css');
 		$tab=$this->add('Tabs');
-		$tab->addTabURL('./manageSalary','Salary Structure');
 		$tab->addTabURL('./addEmployee','Add Employees');
+		$tab->addTabURL('./manageSalary','Salary Structure');
 		$tab->addTabURL('./salaryRecord','Salary Managment');
 
 	}

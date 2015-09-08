@@ -50,8 +50,41 @@ class Model_Employee extends Model_Table{
 		$this->addField('net_payable');
 		$this->addField('net_salary');
 		$this->addField('is_active')->type('boolean')->defaultValue(true);
+		$this->addField('opening_cl')->defaultValue(0);
+		$this->addField('effective_cl_date')->type('date');
 
 		$this->hasMany('EmployeeSalary','employee_id');
+
+
+
+		$this->addExpression('ccl_availed')->set(function($m,$q){
+			return $q->expr("IFNULL([0],0)",
+			array(
+				$m->refSQL('EmployeeSalary')->addCondition('salary_date','>',$q->getField('effective_cl_date'))->sum('CCL')
+				)
+			);
+		});
+
+		$this->addExpression('cl_availed')->set(function($m,$q){
+			return $q->expr("IFNULL([0],0)",
+			array(
+					$m->refSQL('EmployeeSalary')->addCondition('salary_date','>',$q->getField('effective_cl_date'))->sum('CL')
+				)
+			);
+
+		});
+
+		$this->addExpression('cl_allowed')->set(function($m,$q){
+			return $q->expr(
+				"IFNULL([0],0) + period_diff(date_format(now(), '%Y%m'), date_format([1], '%Y%m')) + IFNULL([2],0) - IFNULL([3],0)",
+				array(
+					$m->getElement('opening_cl'),
+					$m->getElement('effective_cl_date'),
+					$m->getElement('ccl_availed'),
+					$m->getElement('cl_availed')
+					)
+				);		
+		})->caption('CL Allowed (as on actual date)');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

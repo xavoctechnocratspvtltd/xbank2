@@ -16,7 +16,7 @@ class Grid_Employee extends Grid_AccountsBase{
 	}
 	
 	function setModel($model,$field=array()){
-		$field=array('branch','emp_code','name','designation',
+		$field=array('cl_allowed','branch','emp_code','name','designation',
 					'contact_no','department','date_of_joining','emergency_no',
 					'father_name','mother_name','DOB','marital_status',
 					'last_qualification','email_id','permanent_address','present_address',

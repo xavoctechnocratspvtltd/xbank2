@@ -3,9 +3,9 @@ class Model_EmployeeSalary extends Model_Table{
 	public $table='employee_salary_record';
 	function init(){
 		parent::init();
-		$month=array( 'Jan'=>"Jan",'Feb'=>"Feb",'March'=>"March",'April'=>"April",
-					'May'=>"May",'Jun'=>"Jun",'July'=>"July",'Aug'=>"Aug",'Sep'=>"Sep",
-					'Oct'=>"Oct",'Nov'=>"Nov",'Dec'=>"Dec");
+		$month=array( '01'=>"Jan",'02'=>"Feb",'03'=>"March",'04'=>"April",
+					'05'=>"May",'06'=>"Jun",'07'=>"July",'08'=>"Aug",'09'=>"Sep",
+					'10'=>"Oct",'11'=>"Nov",'12'=>"Dec");
 
 		$date=$this->api->today;
 		$y=date('Y',strtotime($date));	
@@ -33,6 +33,14 @@ class Model_EmployeeSalary extends Model_Table{
 			return $m->refSQL('employee_id')->fieldQuery('is_active');
 		});
 
+		$this->addExpression('salary_date')->set(function($m,$q){
+			return $q->expr('LAST_DAY(CONCAT([0],"-",[1],"-01"))',
+					array(
+						$m->getElement('year'),
+						$m->getElement('month')
+					)
+				);
+		});
 
 
 		
@@ -55,7 +63,6 @@ class Model_EmployeeSalary extends Model_Table{
 		$this->addField('net_payable')->defaultValue(0);
 		$this->addField('narration')->type('text')->defaultValue(0);
 		$this->addField('total_month_day');
-		$this->addField('opening_cl');
 
 
 		$this->add('dynamic_model/Controller_AutoCreator');

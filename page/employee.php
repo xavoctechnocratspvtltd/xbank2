@@ -36,9 +36,9 @@ class page_employee extends Page{
 			$years[$i]=$i;
 		}
 
-		$month=array( 'Jan'=>"Jan",'Feb'=>"Feb",'March'=>"March",'April'=>"April",
-					'May'=>"May",'Jun'=>"Jun",'July'=>"July",'Aug'=>"Aug",'Sep'=>"Sep",
-					'Oct'=>"Oct",'Nov'=>"Nov",'Dec'=>"Dec");
+		$month=array( '01'=>"Jan",'02'=>"Feb",'03'=>"March",'04'=>"April",
+					'05'=>"May",'06'=>"Jun",'07'=>"July",'08'=>"Aug",'09'=>"Sep",
+					'10'=>"Oct",'11'=>"Nov",'12'=>"Dec");
 
 		$branch=$this->add('Model_Branch');	
 
@@ -176,7 +176,9 @@ class page_employee extends Page{
 			$record_form->add('View')->setHtml('&nbsp;<br/>');
 			
 			$col->addColumn(1)->addClass('bank-col-1 bank-col-3')->addField('line','narration_'.$emp_model['id'])->set($emp_salary['narration']);
-			$col->addColumn(1)->addClass('bank-col-2')->addField('line','cl_'.$emp_model['id'])->set($emp_salary['CL']);
+			$cl_col=$col->addColumn(1)->addClass('bank-col-2');
+			$cl_col->addField('line','cl_'.$emp_model['id'])->set($emp_salary['CL']);
+			$cl_col->add('View')->set($emp_model['cl_allowed'])->addClass('atk-box');
 			$col->addColumn(1)->addClass('bank-col-2')->addField('line','ccl_'.$emp_model['id'])->set($emp_salary['CCL']);
 			$col->addColumn(1)->addClass('bank-col-2')->addField('line','lwp_'.$emp_model['id'])->set($emp_salary['LWP']);
 			$col->addColumn(1)->addClass('bank-col-2')->addField('line','absent_'.$emp_model['id'])->set($emp_salary['ABSENT']);
@@ -244,9 +246,9 @@ class page_employee extends Page{
 
 	function page_salaryRecord(){
 	
-		$month=array( 'Jan'=>"Jan",'Feb'=>"Feb",'March'=>"March",'April'=>"April",
-					'May'=>"May",'Jun'=>"Jun",'July'=>"July",'Aug'=>"Aug",'Sep'=>"Sep",
-					'Oct'=>"Oct",'Nov'=>"Nov",'Dec'=>"Dec");
+		$month=array( '01'=>"Jan",'02'=>"Feb",'03'=>"March",'04'=>"April",
+					'05'=>"May",'06'=>"Jun",'07'=>"July",'08'=>"Aug",'09'=>"Sep",
+					'10'=>"Oct",'11'=>"Nov",'12'=>"Dec");
 		
 		$date=$this->api->today;
 		$y=date('Y',strtotime($date));	

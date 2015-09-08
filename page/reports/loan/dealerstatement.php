@@ -8,7 +8,7 @@ class page_reports_loan_dealerstatement extends Page {
 		$from_date='1970-02-01';
 		$to_date=$this->api->today;
 
-		if($_GET['to_date']){
+		if($this->api->stickyGET('to_date')){
 			$to_date = $this->api->stickyGET('to_date');
 		}
 
@@ -37,7 +37,8 @@ class page_reports_loan_dealerstatement extends Page {
 
 		$grid=$this->add('Grid_Report_DealerStatement',array('from_date'=>$from_date,'to_date'=>$to_date,'account_type'=>$_GET['account_type'],'account_status'=>$_GET['status']));
 		$grid->add('H3',null,'grid_buttons')->set('Dealer Payment Detail From Date - '.$from_date.' To Date - '.$to_date);
-
+		$grid->addSno();
+		
 		// $account_model->add('Controller_Acl');
 		// $grid->addColumn('loan_amount');
 		// $grid->addColumn('net_amount');
@@ -57,7 +58,7 @@ class page_reports_loan_dealerstatement extends Page {
 		$account_model->addCondition('dealer_id',$dealer_id);
 
 		$grid_column_array = array('AccountNumber','scheme','name','FatherName','CurrentAddress','PhoneNos','dealer_id','ActiveStatus');
-		if($_GET['filter']){
+		if($this->api->stickyGET('filter')){
 			$account_model->addCondition('created_at','>=',$from_date);
 			$account_model->addCondition('created_at','<=',$this->api->nextDate($to_date));
 			

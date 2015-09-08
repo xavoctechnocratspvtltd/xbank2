@@ -18,7 +18,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$this->getElement('scheme_id')->getModel()->addCondition('SchemeType',ACCOUNT_TYPE_FIXED);
 
 		$this->addExpression('maturity_date')->set(function($m,$q){
-			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod DAY)+1";
+			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod DAY)";
 		});
 
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
@@ -126,11 +126,11 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$on_amount = $this['Amount'];
 
-		$days = $this->api->my_date_diff($on_date,$this['created_at']);
+		$days = $this->api->my_date_diff($on_date,date("Y-m-d",strtotime($this['created_at'])));
 
 		$years_completed = (int) (($days['days_total']) / 365) ;
-		$remaining_days = ($days['days_total'] % 365) - 1 ;
-
+		$remaining_days = ($days['days_total'] % 365) ;
+		
 		$interest_rate = $this['Interest'];
 		if(!$interest_rate) $interest_rate = $this->ref('scheme_id')->get('Interest');
 
@@ -241,19 +241,32 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $interest;
 
-		if($mark_matured) $this['MaturedStatus'] = true;
-
-		$this->save();
+		// 
 
 		$creditAccount = $this->ref('intrest_to_account_id');
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, "FD monthly Interest Deposited in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_MIS_ACCOUNT, $this->ref('branch_id'), $on_date, "MIS monthly Interest Posting in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+		
+		$transaction->addDebitAccount('Interest Paid On'.SP.$this->ref('scheme_id')->get('name'), $interest);
+		$transaction->addCreditAccount($this, $interest);
+		
+		$transaction->execute();
+
+		// 
+
+		$creditAccount = $this->ref('intrest_to_account_id');
+
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_MIS_ACCOUNT, $this->ref('branch_id'), $on_date, "MIS monthly Interest Deposited from ".$this['AccountNumber']." to " . $creditAccount['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
 		$transaction->addDebitAccount($this, $interest);
 		$transaction->addCreditAccount($creditAccount, $interest);
 		
 		$transaction->execute();
+		
+		if($mark_matured) $this['MaturedStatus'] = true;
+		$this->saveAndUnload();
 		// throw $this->exception('interstToAnotherAccountEntry post entry to be checked');
 	}
 

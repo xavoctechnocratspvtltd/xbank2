@@ -56,7 +56,7 @@ class page_employee extends Page{
 		$twf=$twf_col->addField('line','monthly_off');
 		$mid_col=$col1->addColumn(2);
 		$mid=$mid_col->addField('line','monthly_in_day');	
-		$form->addSubmit('Get Result');
+		$form->addSubmit('Click Here')->addClass('atk-swatch-red atk-padding');
 		$form->add('View')->setHtml('&nbsp;<br/><br/>')->addClass('');
 
 		// $f_month->js( 'change')->univ()->totalDayInMonth($wd,$f_month,$f_year);

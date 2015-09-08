@@ -171,7 +171,7 @@ class page_employee extends Page{
 			$ap_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ap=$ap_col->addField('line','allow_paid_'.$emp_model['id'])->set(round($emp_salary['allow_paid']));
 			
-			$new_nt_amount= ($emp_salary['salary'] + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']);			
+			$new_nt_amount= (round($emp_salary['salary'] + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']));			
 
 			$n_c=$col->addColumn(1)->addClass('bank-col-1');
 			$nt=$n_c->addField('hidden','net_payable_'.$emp_model['id'])->set($new_nt_amount);

@@ -38,10 +38,10 @@ class Grid_Employee extends Grid_AccountsBase{
   //  		$order->move('name','after','emp_code')->now();
   		// $$order->move($this->getElement('customer_email'),'first');
 
-		return $m;
-
+		// $this->addFormatter('scheme','wrap');
 		$this->addFormatter('permanent_address','wrap');
 		$this->addFormatter('present_address','wrap');
+		return $m;
 	}
 
 	function add_sno(){

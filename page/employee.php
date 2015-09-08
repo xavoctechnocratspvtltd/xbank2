@@ -30,7 +30,7 @@ class page_employee extends Page{
 					'esi_nominee','agreement_date','paymemt_mode','employee_status',
 					'basic_salary','other_allowance','society_contri','net_payable',
 					'net_salary','employee_image_photo','employee_image_signature','date_of_leaving',
-					'is_active'),array());
+					'is_active','effective_cl_date','opening_cl'),array());
 		// $crud->addRef('EmployeeSalary');
 	}
 

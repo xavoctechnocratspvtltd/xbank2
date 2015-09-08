@@ -9,12 +9,16 @@ $.each({
     value = parseInt($(basic_salary).val()) / parseInt($(total_days).val()) * parseInt($(paid_days).val());
     value = parseFloat(value).toFixed(0);
 
-  	$(salary).val(value); 
+    $(salary).val(value); 
     $(salary).parent('.atk-col-1').find('.value-text').text(value);
   },
 
   allowPaid: function (allow_paid,paid_days,total_days,other_allow){
-    $(allow_paid).val( parseInt($(paid_days).val()) / parseInt($(total_days).val()) * parseInt($(other_allow).val()) );
+    allow_value = parseInt($(paid_days).val()) / parseInt($(total_days).val()) * parseInt($(other_allow).val());
+    allow_value = parseFloat(allow_value).toFixed(0);
+    
+    $(allow_paid).val(allow_value);
+    
   },
   workingDays: function (t_day,w_day){
     $(t_day).val( parseInt($(w_day).val()));
@@ -54,6 +58,7 @@ $.each({
     salary_value = 0;
     if(deduct){
      salary_value = parseInt($(salary).val()) * 12 / 100 ;
+     salary_value = parseFloat(salary_value).toFixed(0);
     }
     $(pf_amount).val(salary_value);
   }

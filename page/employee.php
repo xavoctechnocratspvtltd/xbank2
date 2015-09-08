@@ -46,8 +46,10 @@ class page_employee extends Page{
 		// $record_form->addStyle(array('border'=>'2px solid black'));
 		$col1=$form->add('Columns');
 		// $col1->addColumn(3)->addField('Dropdown','branch')->setEmptyText('Please Select Branch')->validateNotNull(true)->setModel($branch);
-		$col1->addColumn(3)->addField('Dropdown','month')->setValueList($month)->setEmptyText('Please Select Month')->validateNotNull(true);
-		$col1->addColumn(3)->addField('Dropdown','year')->setValueList($years)->setEmptyText('Please Select Year')->validateNotNull(true);
+		$month_col=$col1->addColumn(3);
+		$f_month=$month_col->addField('Dropdown','month')->setValueList($month)->setEmptyText('Please Select Month')->validateNotNull(true);
+		$year_col=$col1->addColumn(3);
+		$f_year=$year_col->addField('Dropdown','year')->setValueList($years)->setEmptyText('Please Select Year')->validateNotNull(true);
 		$wd_col=$col1->addColumn(2);
 		$wd=$wd_col->addField('line','working_day','Total Day In Month');
 		$twf_col=$col1->addColumn(2);
@@ -57,6 +59,7 @@ class page_employee extends Page{
 		$form->addSubmit('Get Result');
 		$form->add('View')->setHtml('&nbsp;<br/><br/>')->addClass('');
 
+		// $f_month->js( 'change')->univ()->totalDayInMonth($wd,$f_month,$f_year);
 
 		//Second Form
 
@@ -197,6 +200,7 @@ class page_employee extends Page{
 			$pd->js( 'change')->univ()->pfAmount($pf_amount,$salary_f,$emp_model['pf_deduct']=='YES'?1:0);
 			$twf->js( 'change')->univ()->weeklyOff($wf,$twf);
 			$mid->js( 'change')->univ()->dayInMonth($tmd,$mid);
+			$f_year->js( 'change')->univ()->totalDayInMonth($wd,$f_month,$f_year,$td);
 		}
 
 		$record_form->addSubmit('Go');

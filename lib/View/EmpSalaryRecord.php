@@ -18,7 +18,7 @@ class View_EmpSalaryRecord extends View{
 			
 		$this->template->set('emp_code',$emp['employee_code']);
 		$this->template->set('dob',date('d-m-Y',strtotime($emp->ref('employee_id')->get('DOB'))));
-		$this->template->set('month',$emp['month']);
+		$this->template->set('month',date('M-'.$emp['year'],strtotime($emp['month'])));
 		$this->template->set('doj',date('d-m-Y',strtotime($emp->ref('employee_id')->get('date_of_joining'))));
 		$this->template->set('designation',$emp->ref('employee_id')->get('designation'));
 		$this->template->set('pro_fund_no',$emp->ref('employee_id')->get('pf_no'));
@@ -44,6 +44,10 @@ class View_EmpSalaryRecord extends View{
 
 		$total_deductoin_amount=round($emp['pf_amount']+$emp['ded'],2);
 		$this->template->set('total_deduction',$total_deductoin_amount);
+		$this->template->set('avaied_month',date('M',strtotime($emp['month'])));
+		$this->template->set('avaied_year',date('Y',strtotime($emp['year'])));
+		$this->template->set('leave_month',date('M',strtotime($emp['month'])));
+		$this->template->set('leave_year',date('Y',strtotime($emp['year'])));
 
 		$this->template->set('cl',$emp['CL']);
 		$this->template->set('ccl',$emp['CCL']);

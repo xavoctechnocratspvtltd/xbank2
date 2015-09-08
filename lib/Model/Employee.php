@@ -24,7 +24,7 @@ class Model_Employee extends Model_Table{
 		$this->addField('marital_status');
 		$this->addField('relation_with_nominee')->enum(array('Father','Mother','Wife','Husband','Son','Brother','Sister','Doughter'));
 		$this->addField('last_qualification');
-		$this->addField('contact_no');
+		$this->addField('contact_no')->type('int');
 		$this->addField('email_id');
 		$this->addField('permanent_address');
 		$this->addField('present_address');

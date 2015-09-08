@@ -16,7 +16,7 @@ class Grid_Employee extends Grid_AccountsBase{
 	}
 	
 	function setModel($model,$field=array()){
-		$field=array('cl_allowed','branch','emp_code','name','designation',
+		$field=array('branch','emp_code','name','designation',
 					'contact_no','department','date_of_joining','emergency_no',
 					'father_name','mother_name','DOB','marital_status',
 					'last_qualification','email_id','permanent_address','present_address',
@@ -27,7 +27,7 @@ class Grid_Employee extends Grid_AccountsBase{
 					'esi_nominee','agreement_date','paymemt_mode','employee_status',
 					'basic_salary','other_allowance','society_contri','net_payable',
 					'net_salary','employee_image_photo','employee_image_signature','date_of_leaving',
-					'is_active');
+					'is_active','effective_cl_date','opening_cl','cl_allowed');
 		$m=parent::setModel($model,$field);
 		// $this->addTotals(array('pf_salary','ded','net_payable'));
 		$this->addSno();
@@ -38,6 +38,9 @@ class Grid_Employee extends Grid_AccountsBase{
   //  		$order->move('name','after','emp_code')->now();
   		// $$order->move($this->getElement('customer_email'),'first');
 
+		// $this->addFormatter('scheme','wrap');
+		$this->addFormatter('permanent_address','wrap');
+		$this->addFormatter('present_address','wrap');
 		return $m;
 	}
 

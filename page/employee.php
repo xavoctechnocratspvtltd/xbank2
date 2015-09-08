@@ -6,8 +6,8 @@ class page_employee extends Page{
 		// parent::init();
 		$this->api->jui->addStaticStyleSheet('bank-layout','.css');
 		$tab=$this->add('Tabs');
-		$tab->addTabURL('./manageSalary','Salary Structure');
 		$tab->addTabURL('./addEmployee','Add Employees');
+		$tab->addTabURL('./manageSalary','Salary Structure');
 		$tab->addTabURL('./salaryRecord','Salary Managment');
 
 	}
@@ -19,7 +19,18 @@ class page_employee extends Page{
 		// });
 
 		$crud=$this->add('CRUD',array('grid_class'=>'Grid_Employee'));
-		$crud->setModel($emp);
+		$crud->setModel($emp,array('branch_id','emp_code','name','designation',
+					'contact_no','department','date_of_joining','emergency_no',
+					'father_name','mother_name','DOB','marital_status',
+					'last_qualification','email_id','permanent_address','present_address',
+					'pan_no','driving_licence_no','validity_of_driving_licence','bank_name',
+					'bank_account_no','experince','prev_company','prev_department',
+					'prev_leaving_company_date','leaving_resion','pf_joining_date','pf_no',
+					'pf_nominee','relation_with_nominee','pf_deduct','esi_no',
+					'esi_nominee','agreement_date','paymemt_mode','employee_status',
+					'basic_salary','other_allowance','society_contri','net_payable',
+					'net_salary','employee_image_photo','employee_image_signature','date_of_leaving',
+					'is_active','effective_cl_date','opening_cl'),array());
 		// $crud->addRef('EmployeeSalary');
 	}
 
@@ -171,7 +182,7 @@ class page_employee extends Page{
 			$ap_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ap=$ap_col->addField('line','allow_paid_'.$emp_model['id'])->set(round($emp_salary['allow_paid']));
 			
-			$new_nt_amount= ($emp_salary['salary'] + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']);			
+			$new_nt_amount= (round($emp_salary['salary'] + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']));			
 
 			$n_c=$col->addColumn(1)->addClass('bank-col-1');
 			$nt=$n_c->addField('hidden','net_payable_'.$emp_model['id'])->set($new_nt_amount);
@@ -302,7 +313,12 @@ class page_employee extends Page{
 				$salary_model->addCondition('employee_id',$_GET['employee']);
 			}
 			
-			$crud->setModel($salary_model);
+			$crud->setModel($salary_model,array('branch','name','employee_code',
+												'CL','CCL','LWP','ABSENT',
+												'monthly_off','basic_salary','total_days','paid_days',
+												'leave','salary','pf_salary','ded',
+												'other_allowance','allow_paid','net_payable','is_active',
+												'salary_date','narration','total_month_day'));
 		}
 
 		

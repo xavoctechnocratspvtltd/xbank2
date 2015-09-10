@@ -52,7 +52,7 @@ class Model_Employee extends Model_Table{
 		$this->addField('is_active')->type('boolean')->defaultValue(true);
 		$this->addField('opening_cl')->defaultValue(0);
 		$this->addField('effective_cl_date')->type('date');
-
+		$this->addHook('beforeSave',$this);
 		$this->hasMany('EmployeeSalary','employee_id');
 
 
@@ -93,5 +93,11 @@ class Model_Employee extends Model_Table{
 		$emp = $this->ref('EmployeeSalary');
 		if($emp->loaded()) return $emp;
 		return false;
+	}
+
+	function beforeSave(){
+		if(strlen($this['contact_no']) !=10){
+			throw $this->exception('Contact No must be 10 digits ','ValidityCheck')->setField('contact_no');
+		}
 	}
 }

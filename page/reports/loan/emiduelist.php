@@ -14,7 +14,7 @@ class page_reports_loan_emiduelist extends Page {
 		if($_GET['till_date']){
 			$till_date=$this->api->stickyGET('till_date');
 		}
-		$grid->add('H3',null,'grid_buttons')->set('Loan EMI Due List As On '. date('d-M-Y',strtotime($till_date)));
+		$grid->add('H3',null,'grid_buttons')->set('Loan EMI '.$_GET['report_type'].' As On '. date('d-M-Y',strtotime($till_date)));
 
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
@@ -31,6 +31,8 @@ class page_reports_loan_emiduelist extends Page {
 
 
 		$account_model=$this->add('Model_Active_Account_Loan');
+		$q=$account_model->dsql();
+
 		$member_join=$account_model->join('members','member_id');
 		$member_join->addField('member_name','name');
 		$member_join->addField('FatherName');
@@ -39,16 +41,18 @@ class page_reports_loan_emiduelist extends Page {
 
 		$account_model->addCondition('DefaultAC',false);
 
-		$account_model_j=$account_model->join('premiums.account_id','id');
-		$account_model_j->addField('DueDate');
+		// $account_model_j=$account_model->join('premiums.account_id','id');
+		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','DueDate','scheme','member_name','FatherName','PermanentAddress','PhoneNos','dealer','guarantor_name','guarantor_phno','last_premium','paid_premium_count','due_premium_count','emi_amount','due_panelty','other_charges','total');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','PermanentAddress','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total');
+		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
 						->addCondition('PaidOn','<>',null)
 						->addCondition('DueDate','<',$m->api->nextDate($till_date))
 						->count();
+			return "'paid_premium_count'";
 		})->sortable(true);
 
 		$account_model->addExpression('due_premium_count')->set(function($m,$q)use($till_date){
@@ -56,18 +60,27 @@ class page_reports_loan_emiduelist extends Page {
 						->addCondition('PaidOn',null)
 						->addCondition('DueDate','<',$m->api->nextDate($till_date))
 						->count();
+			return "'due_premium_count'";
+		});
+
+		$account_model->addExpression('due_date')->set(function($m,$q){
+			return $m->refSQL('Premium')->setLimit(1)->fieldQuery('DueDate');
+			return "'due_premium_count'";
 		});
 
 		$account_model->addExpression('last_premium')->set(function($m,$q){
 			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('DueDate');
+			return "'last_premium'";
 		});
 
 		$account_model->addExpression('emi_amount')->set(function($m,$q){
 			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('Amount');
+			return "'emi_amount'";
 		});
 
 		$account_model->addExpression('due_panelty')->set(function($m,$q)use($till_date){
-			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$till_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+			return $m->refSQL('Premium')->addCondition('DueDate','<',$till_date)->sum($m->dsql()->expr('IFNULL(PaneltyCharged,0)'));
+			return "'due_panelty'";
 		});
 
 		$account_model->addExpression('other_charges')->set(function($m,$q){
@@ -75,6 +88,7 @@ class page_reports_loan_emiduelist extends Page {
 			$tr_m->addCondition('transaction_type_id',13); // JV
 			$tr_m->addCondition('account_id',$q->getField('id'));
 			return $tr_m->sum('amountDr');
+			return "'other_charges'";
 
 		});
 
@@ -86,6 +100,7 @@ class page_reports_loan_emiduelist extends Page {
 			$guarantor_m->setLimit(1);
 			$guarantor_m->setOrder('id');
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.name');
+			return "'guarantor_name'";
 		});
 
 
@@ -97,6 +112,18 @@ class page_reports_loan_emiduelist extends Page {
 			$guarantor_m->setLimit(1);
 			$guarantor_m->setOrder('id');
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PhoneNos');
+			return "'guarantor_phno'";
+		});
+
+		$account_model->addExpression('guarantor_address')->set(function($m,$q){
+			$guarantor_m = $m->add('Model_Member',array('table_alias'=>'guarantor_addr_q'));
+			$ac_join = $guarantor_m->join('account_guarantors.member_id');
+			$ac_join->addField('account_id');
+			$guarantor_m->addCondition('account_id',$q->getField('id'));
+			$guarantor_m->setLimit(1);
+			$guarantor_m->setOrder('id');
+			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PermanentAddress');
+			return "'guarantor_phno'";
 		});
 		
 
@@ -109,7 +136,8 @@ class page_reports_loan_emiduelist extends Page {
 			$this->api->stickyGET('loan_type');
 			$this->api->stickyGET('report_type');
 
-			$account_model->addCondition('DueDate','<=',$till_date);
+
+			// $account_model->addCondition('DueDate','<=',$till_date);
 
 			if($_GET['dealer'])
 				$account_model->addCondition('dealer_id',$_GET['dealer']);
@@ -131,7 +159,7 @@ class page_reports_loan_emiduelist extends Page {
 					break;
 
 				case 'time_collapse':
-					$account_model->addCondition('last_premium','<',$till_date);
+					$account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$till_date)));
 					break;
 				
 				default:
@@ -142,9 +170,16 @@ class page_reports_loan_emiduelist extends Page {
 			switch ($_GET['loan_type']) {
 				case 'vl':
 					$account_model->addCondition('AccountNumber','like','%vl%');
+					$account_model->addCondition('AccountNumber','not like','%fvl%');
 					break;
 				case 'pl':
 					$account_model->addCondition('AccountNumber','like','%pl%');
+					break;
+				case 'fvl':
+					$account_model->addCondition('AccountNumber','like','%FVL%');
+					break;
+				case 'sl':
+					$account_model->addCondition('AccountNumber','like','%SL%');
 					break;
 				case 'other':
 					$account_model->addCondition('AccountNumber','not like','%pl%');
@@ -153,20 +188,30 @@ class page_reports_loan_emiduelist extends Page {
 					break;
 			}
 
-			$grid->addMethod('format_total',function($g,$f){
+			// $grid->addMethod('format_total',function($g,$f){
+			// 	$temp  = $g->current_row_html[$f]= ($g->model['due_premium_count'] * $g->model['emi_amount']) +$g->model['due_panelty']+$g->model['other_charges'];
+			// 	if(!isset($g->total)) $g->total=0;
+			// 	$g->total += $temp;
+			// });
 
-				$g->current_row_html[$f]= ($g->model['due_premium_count'] * $g->model['emi_amount']) +$g->model['due_panelty']+$g->model['other_charges'];
+			// $grid->addMethod('format_totals_total',function($g,$f){
+			// 	$g->current_row_html[$f]= $g->total;
+			// });
 
-			});
+			// $grid->addMethod('format_emidue',function($g,$f){
 
-			$grid->addMethod('format_emidue',function($g,$f){
+			// 	$temp  = $g->current_row_html[$f]=$g->model['due_premium_count']*$g->model['emi_amount'];
+			// 	if(!isset($g->emidue)) $g->emidue=0;
+			// 	$g->emidue += $temp;
 
-				$g->current_row_html[$f]=$g->model['due_premium_count']*$g->model['emi_amount'];
+			// });
 
-			});
+			// $grid->addMethod('format_totals_emidue',function($g,$f){
 
-			$grid->addColumn('total','total');
-			$grid->addColumn('emidue','emi_dueamount');
+			// 	$g->current_row_html[$f]= $g->emidue;
+
+			// });
+
 
 
 			foreach ($document as $junk) {
@@ -183,15 +228,38 @@ class page_reports_loan_emiduelist extends Page {
 		}else
 			$account_model->addCondition('id',-1);
 
-		$account_model->_dsql()->group('id');
+		$account_model->add('misc\Field_Callback','total')->set(function($m){
+			return ($m['due_premium_count'] * $m['emi_amount']) +$m['due_panelty']+$m['other_charges'];
+		});
+
+		$account_model->add('misc\Field_Callback','emi_dueamount')->set(function($m){
+			return $m['due_premium_count']*$m['emi_amount'];
+		});
+
+		// $account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
+
+
 		$grid->setModel($account_model,$grid_column_array);
 
+		if($_GET['filter']){
+			// $grid->addColumn('emidue','emi_dueamount');
+			// $grid->addColumn('total','total');
+			$grid->addOrder()
+				->move('emi_dueamount','after','emi_amount')
+				->move('total','after','other_charges')
+				->now();
+
+			$grid->addFormatter('guarantor_address','wrap');
+			$grid->addFormatter('PermanentAddress','wrap');
+		}
 		// $grid->addColumn('text','openning_date');
 
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 		$grid->addSno();
-		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount'));
+		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty'));
+		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ));
+
 		$grid->removeColumn('last_premium');
 		$js=array(
 			// $this->js()->_selector('.atk-layout-row')->toggle(),

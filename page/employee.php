@@ -222,11 +222,12 @@ class page_employee extends Page{
 			foreach ($emp_model as  $junk) {
 			
 				if($record_form['paid_days_'.$emp_model['id']] > $record_form['total_days_'.$emp_model['id']]){
-					throw new Exception("Paid Day Not  can not '>' to Total Days ", 1);
+					$record_form->displayError($record_form->getElement('paid_days_'.$emp_model['id']),'Paid Day Not  can not > to Total Days ');
+
 				}
 
 				if($record_form['allow_paid_'.$emp_model['id']] > $record_form['other_allowance_'.$emp_model['id']]){
-					throw new Exception("Allow Paid Can  Not be '>' to Other Allowance ", 1);
+					$record_form->displayError($record_form->getElement('allow_paid_'.$emp_model['id']),'Allow Paid Can  Not be > to Other Allowance ');
 				}
 
 				$salary = $this->add('Model_EmployeeSalary');

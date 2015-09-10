@@ -15,7 +15,7 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 
 		$this->addFormatter('name','Wrap');
 		$this->addSno();
-		$paginator = $this->addPaginator(5);
+		$paginator = $this->addPaginator(500);
 		$this->skip_var = $paginator->skip_var;
 
 		$this->removeColumn('ActiveStatus');

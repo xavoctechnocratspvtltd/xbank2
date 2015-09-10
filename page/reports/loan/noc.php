@@ -16,7 +16,7 @@ class page_reports_loan_noc extends Page {
 		$form->addSubmit('GET');
 
 		
-		$account_model = $this->add('Model_Active_Account_Loan');
+		$account_model = $this->add('Model_Account_Loan')->addCondition('ActiveStatus',false)->addCondition('DefaultAC',false);
 
 		$letter = $this->add('View',null, null, array('view/noc-letter'));
 		if($_GET['account']){

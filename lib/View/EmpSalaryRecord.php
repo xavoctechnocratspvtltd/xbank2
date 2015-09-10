@@ -31,29 +31,35 @@ class View_EmpSalaryRecord extends View{
 		$total=round($emp->ref('employee_id')->get('basic_salary') + $emp->ref('employee_id')->get('other_allowance'));
 		$this->template->set('total',$total);
 
-		$total_payable_amount=round($emp['salary']+$emp['allow_paid'],2);
+		$total_payable_amount=round($emp['salary']+$emp['allow_paid']);
 		$this->template->set('total_payable_amount',$total_payable_amount);
 
-		$this->template->set('pay_salary',round($emp['salary'],2));
-		$this->template->set('pay_other_allw',round($emp['allow_paid'],2));
+		$this->template->set('pay_salary',round($emp['salary']));
+		$this->template->set('pay_other_allw',round($emp['allow_paid']));
 		$this->template->set('working_day',$emp['total_days']);
 		$this->template->set('p_day',$emp['paid_days']);
 		
-		$this->template->set('provided_fund',round($emp['pf_amount'],2));
-		$this->template->set('other_deduction',round($emp['ded'],2));
+		$this->template->set('provided_fund',round($emp['pf_amount']));
+		$this->template->set('other_deduction',round($emp['ded']));
 
-		$total_deductoin_amount=round($emp['pf_amount']+$emp['ded'],2);
+		$total_deductoin_amount=round($emp['pf_amount']+$emp['ded']);
 		$this->template->set('total_deduction',$total_deductoin_amount);
 		$this->template->set('avaied_month',date('M',strtotime($emp['month'])));
 		$this->template->set('avaied_year',date('Y',strtotime($emp['year'])));
 		$this->template->set('leave_month',date('M',strtotime($emp['month'])));
 		$this->template->set('leave_year',date('Y',strtotime($emp['year'])));
 
+		$this->template->set('total_cl',$emp->ref('employee_id')->get('cl_allowed'));
+		$this->template->set('month_cl',$emp['CL']);
+		
+		$balance_cl=$emp->ref('employee_id')->get('cl_allowed') - $emp['CL'];
+
+		$this->template->set('balance_cl',$balance_cl);
 		$this->template->set('cl',$emp['CL']);
 		$this->template->set('ccl',$emp['CCL']);
 		$this->template->set('lwp',$emp['LWP']);
 		$this->template->set('absent',$emp['ABSENT']);
-		$this->template->set('weekly_off',$emp['weekly_off']);
+		$this->template->set('weekly_off',$emp['monthly_off']);
 
 		$total_leave_count=$emp['CL']+$emp['CCL']+$emp['LWP']+$emp['ABSENT']+$emp['weekly_off'];
 		$this->template->set('total_leave',$total_leave_count);

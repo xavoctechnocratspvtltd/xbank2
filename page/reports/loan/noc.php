@@ -12,6 +12,7 @@ class page_reports_loan_noc extends Page {
 
 		$loan->addCondition('AccountNumber','not like','%DFL%');
 		$loan->addCondition('AccountNumber','not like','%Default%');
+		$loan->addCondition('ActiveStatus',false);
 		$form->addField('autocomplete/Basic','account')->setModel($loan);
 		$form->addSubmit('GET');
 

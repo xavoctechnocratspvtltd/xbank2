@@ -5,7 +5,7 @@ class page_reports_loan_noc extends Page {
 		parent::init();
 
 		$form = $this->add('Form');
-		$loan = $this->add('Model_Active_Account_Loan');
+		$loan = $this->add('Model_Account_Loan');
 
 		if($this->api->current_branch->id != 1)
 			$loan->addCondition('branch_id',$this->api->current_branch->id);

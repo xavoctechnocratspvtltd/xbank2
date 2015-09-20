@@ -81,6 +81,7 @@ class page_reports_loan_dealerstatement extends Page {
 			$member_join->addField('CurrentAddress');
 			$member_join->addField('PhoneNos');
 
+
 			foreach ($document as $junk) {
 				$doc_id = $document->id;
 				if($_GET['doc_'.$document->id]){
@@ -89,13 +90,15 @@ class page_reports_loan_dealerstatement extends Page {
 						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
 					});
 					$grid_column_array[] = $this->api->normalizeName($document['name']);
+					if(!isset($gridOrder)) $gridOrder = $grid->addOrder();
+					$gridOrder->move($this->api->normalizeName($document['name']),'last');
 				}
 			}
 		}
 		
 
 		$grid->setModel($account_model,$grid_column_array);
-
+		if(isset($gridOrder)) $gridOrder->now();
 		// $move fileds at and 
 
 		if($form->isSubmitted()){

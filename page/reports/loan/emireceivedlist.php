@@ -87,7 +87,7 @@ class page_reports_loan_emireceivedlist extends Page {
 		$transaction_row_model->add('Controller_Acl');
 		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','FatherName','amountCr','Narration','created_at','dealer_name'));
 
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 		$grid->addSno();
 		$grid->addTotals(array('amountCr'));
 

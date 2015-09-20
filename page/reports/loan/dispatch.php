@@ -26,7 +26,8 @@ class page_reports_loan_dispatch extends Page {
 
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid'); 
+		$grid=$this->add('Grid_AccountsBase');
+		$grid->addSno(); 
 		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance Due List As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$account_model=$this->add('Model_Account_Loan');
@@ -104,6 +105,7 @@ class page_reports_loan_dispatch extends Page {
 							->fieldQuery('Description');
 				});
 				$grid_array[] = $this->api->normalizeName($document_model['name']);
+				
 			}
 
 			if($_GET['dealer']){

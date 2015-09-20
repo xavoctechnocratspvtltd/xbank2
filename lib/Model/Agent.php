@@ -42,6 +42,10 @@ class Model_Agent extends Model_Table {
 		$this->addExpression('agent_pan_no')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('PanNo');
 		});
+
+		$this->addExpression('agent_phone_no')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
+		});
 		
 		$this->addExpression('name')->set($this->dsql()->concat(
 				$this->getElement('code'),' ', $this->getElement('agent_member_name_full')

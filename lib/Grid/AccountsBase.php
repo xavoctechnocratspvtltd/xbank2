@@ -18,7 +18,7 @@ class Grid_AccountsBase extends Grid{
 	}
 
 	function format_sno($field){
-		if($this->model->loaded())
+		// if($this->model->loaded())
 			$this->current_row[$field] = (($this->sno++) + ($_GET[$this->skip_var]));
 		
 		// $this->current_row[$field] = $this->skip_var;		

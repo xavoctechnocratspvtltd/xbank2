@@ -14,7 +14,7 @@ class Frontend extends ApiFrontend {
 
         // config-default.php file is placed at root of project folder
         $this->api->dbConnect();
-        $this->title =  'Agiletoolkit 4.3';
+        $this->title =  'Bhawani Credit Co-Operative Society Ltd.';
 
         $this->pathfinder->addLocation(array(
             'php'=>'lib',

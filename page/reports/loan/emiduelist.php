@@ -64,7 +64,8 @@ class page_reports_loan_emiduelist extends Page {
 		});
 
 		$account_model->addExpression('due_date')->set(function($m,$q){
-			return $m->refSQL('Premium')->setLimit(1)->fieldQuery('DueDate');
+			$t = $m->refSQL('Premium')->setLimit(1);
+			return $q->expr("DAY([0])",array($t->fieldQuery('DueDate')));
 			return "'due_premium_count'";
 		});
 
@@ -213,7 +214,6 @@ class page_reports_loan_emiduelist extends Page {
 			// });
 
 
-
 			foreach ($document as $junk) {
 				$doc_id = $document->id;
 				if($_GET['doc_'.$document->id]){
@@ -240,6 +240,8 @@ class page_reports_loan_emiduelist extends Page {
 		$account_model->add('Controller_Acl');
 
 
+
+
 		$grid->setModel($account_model,$grid_column_array);
 
 		if($_GET['filter']){
@@ -258,19 +260,19 @@ class page_reports_loan_emiduelist extends Page {
 		$grid->addPaginator(500);
 		$grid->addSno();
 		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty'));
-		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ));
+		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ,'output_filename'=>$_GET['report_type'].' lilst_as_on '. $till_date.".csv"));
 
 		$grid->removeColumn('last_premium');
-		$js=array(
-			// $this->js()->_selector('.atk-layout-row')->toggle(),
-			$this->js()->_selector('#header')->toggle(),
-			$this->js()->_selector('#footer')->toggle(),
-			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
-			$this->js()->_selector('.atk-form')->toggle(),
-			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
-			);
+		// $js=array(
+		// 	// $this->js()->_selector('.atk-layout-row')->toggle(),
+		// 	$this->js()->_selector('#header')->toggle(),
+		// 	$this->js()->_selector('#footer')->toggle(),
+		// 	$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+		// 	$this->js()->_selector('.atk-form')->toggle(),
+		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+		// 	);
 
-		$grid->js('click',$js);
+		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
 

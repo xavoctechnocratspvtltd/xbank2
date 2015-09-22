@@ -10,7 +10,7 @@ class page_utility_setdate extends Page {
 		$form->addSubmit('Change');
 
 		if($form->isSubmitted()){
-			$this->api->setDate($form['date']);
+			$this->api->setDate($form['date']. " ". date("H:i:s"));
 			$this->js()->redirect()->execute();
 		}
 	}

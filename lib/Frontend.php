@@ -38,7 +38,7 @@ class Frontend extends ApiFrontend {
         
         $footer=$l->addFooter();
         $header=$l->addHeader();
-        $this->today = date('Y-m-d',strtotime($this->recall('current_date',date('Y-m-d'))));
+        $this->today = date('Y-m-d 09:00:00',strtotime($this->recall('current_date',date('Y-m-d'))));
         $this->now = date('Y-m-d H:i:s',strtotime($this->recall('current_date',date('Y-m-d H:i:s'))));
         $this->jui->addStaticStylesheet('hindi');
 

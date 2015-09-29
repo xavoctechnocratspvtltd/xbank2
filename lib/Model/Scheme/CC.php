@@ -86,7 +86,12 @@ class Model_Scheme_CC extends Model_Scheme {
 		// $this->resetCurrentInterest($branch, $test_account);
 	}
 
+	function halfYearly(){
+		// Nothing to be done
+		// throw $this->exception('Half Yearly closing function must be in scheme');
+	}
+
 	function yearly($branch=null,$on_date=null,$test_account=null){
-		throw $this->exception('Renewal Charges to be done');
+		// throw $this->exception('Renewal Charges to be done');
 	}
 }

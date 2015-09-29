@@ -37,6 +37,7 @@ class page_reports_general_document extends Page {
 		$document_submitted_model=$this->add('Model_DocumentSubmitted');
 		$document_join = $document_submitted_model->join('documents','documents_id');
 		$account_join = $document_submitted_model->leftJoin('accounts','accounts_id');
+		$account_join->addField('account_dealer_id','dealer_id');
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 
 		$account_join->addField('branch_id');
@@ -49,7 +50,7 @@ class page_reports_general_document extends Page {
 
 			if($_GET['dealer']){
 				$this->api->stickyGET("dealer");
-				$document_submitted_model->addCondition('dealer_id',$_GET['dealer']);
+				$document_submitted_model->addCondition('account_dealer_id',$_GET['dealer']);
 			}
 
 			if($_GET['member']){
@@ -116,17 +117,17 @@ class page_reports_general_document extends Page {
 		$document_submitted_model->add('Controller_Acl');
 
 		$grid->setModel($document_submitted_model);
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 
-		$js=array(
-			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
-			$this->js()->_selector('#header')->toggle(),
-			$this->js()->_selector('#footer')->toggle(),
-			$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
-			$this->js()->_selector('.atk-form')->toggle(),
-			);
+		// $js=array(
+		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
+		// 	$this->js()->_selector('#header')->toggle(),
+		// 	$this->js()->_selector('#footer')->toggle(),
+		// 	$this->js()->_selector('ul.ui-tabs-nav')->toggle(),
+		// 	$this->js()->_selector('.atk-form')->toggle(),
+		// 	);
 
-		$grid->js('click',$js);
+		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
 			$send = array(

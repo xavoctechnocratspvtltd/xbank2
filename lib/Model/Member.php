@@ -40,7 +40,7 @@ class Model_Member extends Model_Table {
 		$this->addField('MinorDOB')->type('date');
 		$this->addField('ParentName');
 		$this->addField('RelationWithParent');
-		$this->addField('ParentAddress');
+		$this->addField('ParentAddress')->defaultValue(" ");
 		$this->addField('FilledForm60')->caption('Filled Form 60/61')->type('boolean')->mandatory(true);
 		$this->addField('PanNo');
 		$this->addField('Nominee');
@@ -72,7 +72,7 @@ class Model_Member extends Model_Table {
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('afterInsert',$this);
-
+		// $this->debug();
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
 

@@ -49,8 +49,14 @@ class page_members extends Page {
 				$form->displayError('PanNo','PanNo is must');
 
 			
-
-			$new_member_model->createNewMember($form['name'], $admissionFee=10, $shareValue, $branch=null, $other_values=$form->getAllFields(),$form,$on_date=null);
+			try {
+				$crud->api->db->beginTransaction();
+				$new_member_model->createNewMember($form['name'], $admissionFee=10, $shareValue, $branch=null, $other_values=$form->getAllFields(),$form,$on_date=null);
+				$crud->api->db->commit();
+			} catch (Exception $e) {
+			   	$crud->api->db->rollBack();
+			   	throw $e;
+			}
 			return true;
 		});
 

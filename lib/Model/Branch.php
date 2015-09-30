@@ -210,6 +210,7 @@ class Model_Branch extends Model_Table {
 
 		$on_date = date('Y-m-d',strtotime($on_date));
 		$last_closing_date = $this->ref('Closing')->tryLoadAny()->get('daily');
+		$last_half_yearly_closing_date = $this->ref('Closing')->tryLoadAny()->get('halfyearly');
 
 		if(strtotime($on_date) <= strtotime($last_closing_date)){
 			echo 'Daily Closing is already done before this date';
@@ -253,13 +254,14 @@ class Model_Branch extends Model_Table {
 				
 				if($this->is_HalfYearEnding($on_date,$test_account)){
 					$this->api->markProgress('halfyearly',$s++,$st,null);
-					$schemes->halfYearly($this, $on_date,$test_account);
+					$schemes->halfYearly($this, $on_date,$test_account,$last_half_yearly_closing_date);
 					$this->ref('Closing')->tryLoadAny()->set('halfyearly',$on_date)->save();
 				}
 				
-				if($this->is_YearEnd($on_date))
+				if($this->is_YearEnd($on_date)){
 					$schemes->yearly($this, $on_date,$test_account);
 					$this->ref('Closing')->tryLoadAny()->set('yearly',$on_date)->save();
+				}
 			}
 		}
 

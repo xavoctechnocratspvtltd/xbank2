@@ -94,19 +94,27 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 
 	}
 
-	function halfYearly( $branch=null, $on_date=null, $test_account=null ) {
+	function halfYearly( $branch=null, $on_date=null, $test_account=null, $last_halfyearly_closing=null ) {
 		if ( !$branch ) $branch=$this->api->current_branch;
 
 		$sbca_account = $this->add( 'Model_Account_SavingAndCurrent' );
 		$sbca_account->addCondition( 'ActiveStatus', true );
 		$sbca_account->addCondition( 'branch_id', $branch->id );
 		$sbca_account->addCondition( 'created_at', '<', $on_date );
+		$sbca_account->addCondition( 'account_type', 'Saving');
 
 		if ( $test_account ) $sbca_account->addCondition( 'id', $test_account->id );
 
+		if(!$last_halfyearly_closing)
+			$last_halfyearly_closing = $branch->ref('Closing')->tryLoadAny()->get('halfyearly');
+		// throw new \Exception($last_halfyearly_closing);
+		$i=1;
+		$total_sb_accounts = $sbca_account->count()->getOne();
 		foreach ( $sbca_account as $accounts_array ) {
-			$sbca_account->applyHalfYearlyInterest( $on_date );
+			$sbca_account->applyHalfYearlyInterest( $on_date , null, $last_halfyearly_closing);
+			$this->api->markProgress('Doing_Saving_Interest',$i++,$sbca_account['AccountNumber'],$total_sb_accounts);
 		}
+		
 	}
 
 	function yearly( $branch=null, $on_date=null, $test_account=null ) {

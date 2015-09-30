@@ -120,7 +120,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 	// 	return $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days['days_total'] / 36500);
 	// }
 
-	function getAmountForInterest($on_date=null){
+	function getAmountForInterest($on_date=null,$calculate_remainig_days=true){
 		
 		if(!$on_date) $on_date = $this->api->today;
 
@@ -139,7 +139,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 			$on_amount += $interest;
 		}
 
-		if($remaining_days){
+		if($remaining_days and $calculate_remainig_days){
 			$interest = $on_amount * $interest_rate / 36500 * ($remaining_days);
 			$on_amount += $interest;
 		}
@@ -159,7 +159,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		// Deduct One Day from last day of maturity
 		if($maturity_day) $days['days_total']--;
 
-		$interest = $this->getAmountForInterest($on_date) * $this['Interest'] * $days['days_total'] / 36500;
+		$interest = $this->getAmountForInterest($on_date,false) * $this['Interest'] * $days['days_total'] / 36500;
 	
 	
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
@@ -235,7 +235,30 @@ class Model_Account_FixedAndMis extends Model_Account{
 	function interstToAnotherAccountEntry($on_date,$mark_matured=false){
 		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
 		
-		$interest = ( $this['CurrentBalanceCr'] - $this['CurrentBalanceDr'] ) * $this['Interest'] * $days['days_total'] / 36500;
+
+		$days_to_count = $days['days_total'];
+
+		if(date('m',strtotime($on_date))==2){
+			// Its february
+			if($days_to_count == date("t",strtotime($on_date))) $days_to_count=30;
+		}
+		if($days_to_count >= 30) $days_to_count=30;
+
+		if($days_to_count==30)
+			$interest = $this['Amount'] * $this['Interest'] / 1200;
+		else
+			$interest = $this['Amount'] * $this['Interest'] * $days_to_count / 36500;
+
+
+		$interest = round($interest,2);
+
+		// OLD SOFTWARE CODE FOR REFERENCE HERE : xcideveloper joomla
+		// if($days['days_total'] < 30 && (date("m",strtotime(getNow("Y-m-d"))) - 1 ) !=2)
+  //           $interest = $acc->RdAmount * $days['days_total'] * $sc->Interest / 36500;
+  //       else
+  //           $interest = round($acc->RdAmount * $sc->Interest / 1200,ROUND_TO);
+
+
 		
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 
@@ -248,22 +271,28 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_MIS_ACCOUNT, $this->ref('branch_id'), $on_date, "MIS monthly Interest Posting in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
-		$transaction->addDebitAccount('Interest Paid On'.SP.$this->ref('scheme_id')->get('name'), $interest);
+		$transaction->addDebitAccount($this['branch_code'].SP.'Interest Paid On'.SP.$this->ref('scheme_id')->get('name'), $interest);
 		$transaction->addCreditAccount($this, $interest);
 		
 		$transaction->execute();
 
 		// 
 
-		$creditAccount = $this->ref('intrest_to_account_id');
+		try{
 
-		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_MIS_ACCOUNT, $this->ref('branch_id'), $on_date, "MIS monthly Interest Deposited from ".$this['AccountNumber']." to " . $creditAccount['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
-		
-		$transaction->addDebitAccount($this, $interest);
-		$transaction->addCreditAccount($creditAccount, $interest);
-		
-		$transaction->execute();
+			$creditAccount = $this->ref('intrest_to_account_id');
+
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_MIS_ACCOUNT, $this->ref('branch_id'), $on_date, "MIS monthly Interest Deposited from ".$this['AccountNumber']." to " . $creditAccount['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$transaction->addDebitAccount($this, $interest);
+			$transaction->addCreditAccount($creditAccount, $interest);
+			
+			$transaction->execute();
+		}catch(\Exception $e){
+			echo $this['AccountNumber'];
+			throw $e;
+		}
 		
 		if($mark_matured) $this['MaturedStatus'] = true;
 		$this->saveAndUnload();

@@ -257,9 +257,10 @@ class Model_Branch extends Model_Table {
 					$this->ref('Closing')->tryLoadAny()->set('halfyearly',$on_date)->save();
 				}
 				
-				if($this->is_YearEnd($on_date))
+				if($this->is_YearEnd($on_date)){
 					$schemes->yearly($this, $on_date,$test_account);
 					$this->ref('Closing')->tryLoadAny()->set('yearly',$on_date)->save();
+				}
 			}
 		}
 

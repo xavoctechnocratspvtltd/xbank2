@@ -48,7 +48,8 @@ class Model_Account_DDS extends Model_Account{
 		$maturity_months = $this->ref('scheme_id')->get('MaturityPeriod');
 		$dds_amount = $this['Amount'];
 
-		$required_amount = (($dds_amount * $maturity_months) + $given_interest) - ($this['CurrentBalanceCr']);
+		$required_amount = (($dds_amount * $maturity_months * 30) + $given_interest) - ($this['CurrentBalanceCr']);
+
 		if($amount > $required_amount)
 			throw $this->exception('Exceeding Amount, only required '. $required_amount, 'ValidityCheck')->setField('amount');
 
@@ -130,12 +131,12 @@ class Model_Account_DDS extends Model_Account{
 
 	function interestGiven($from_date=null,$to_date=null){
 		$transaction_row = $this->add('Model_TransactionRow');
-		$transaction_join = $transaction_row->join('transactions','transaction_id');
-		$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
-		$transaction_type_join->addField('_transaction_type','name');
+		// $transaction_join = $transaction_row->join('transactions','transaction_id');
+		// $transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
+		// $transaction_type_join->addField('x_transaction_type','name');
 
-		$transaction_row->addCondition('_transaction_type',TRA_INTEREST_POSTING_IN_DDS);
-
+		$transaction_row->addCondition('transaction_type',TRA_INTEREST_POSTING_IN_DDS);
+		$transaction_row->addCondition('account_id',$this->id);
 
 		if($from_date)
 			$transaction_row->addCondition('created_at','>=',$from_date);

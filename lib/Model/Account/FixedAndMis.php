@@ -235,7 +235,30 @@ class Model_Account_FixedAndMis extends Model_Account{
 	function interstToAnotherAccountEntry($on_date,$mark_matured=false){
 		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
 		
-		$interest = ( $this['CurrentBalanceCr'] - $this['CurrentBalanceDr'] ) * $this['Interest'] * $days['days_total'] / 36500;
+
+		$days_to_count = $days['days_total'];
+
+		if(date('m',strtotime($on_date))==2){
+			// Its february
+			if($days_to_count == date("t",strtotime($on_date))) $days_to_count=30;
+		}
+		if($days_to_count >= 30) $days_to_count=30;
+
+		if($days_to_count==30)
+			$interest = $this['Amount'] * $this['Interest'] / 1200;
+		else
+			$interest = $this['Amount'] * $this['Interest'] * $days_to_count / 36500;
+
+
+		$interest = round($interest,2);
+
+		// OLD SOFTWARE CODE FOR REFERENCE HERE : xcideveloper joomla
+		// if($days['days_total'] < 30 && (date("m",strtotime(getNow("Y-m-d"))) - 1 ) !=2)
+  //           $interest = $acc->RdAmount * $days['days_total'] * $sc->Interest / 36500;
+  //       else
+  //           $interest = round($acc->RdAmount * $sc->Interest / 1200,ROUND_TO);
+
+
 		
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 

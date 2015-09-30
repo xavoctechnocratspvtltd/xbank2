@@ -49,7 +49,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 	function getSavingInterest($on_date=null,$after_date_not_included=null,$on_amount=null, $at_interest_rate=null,$add_last_day=false){
 		if(!$on_date) $on_date = $this->api->today;
-		if(!$after_date_not_included) $after_date_not_included = $this['LastCurrentInterestUpdatedAt'];
+		if(!$after_date_not_included) $after_date_not_included = $this['LastCurrentInterestUpdatedAt']?:$this->api->nextDate($this['created_at']);
 		if(!$on_amount){
 			$openning_balance = $this->getOpeningBalance($this->api->nextDate($after_date_not_included));
 			$on_amount = ($openning_balance['CR'] - $openning_balance['DR']) > 0 ? ($openning_balance['CR'] - $openning_balance['DR']) :0;

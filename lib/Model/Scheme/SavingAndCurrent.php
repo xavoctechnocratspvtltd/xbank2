@@ -101,15 +101,18 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 		$sbca_account->addCondition( 'ActiveStatus', true );
 		$sbca_account->addCondition( 'branch_id', $branch->id );
 		$sbca_account->addCondition( 'created_at', '<', $on_date );
+		$sbca_account->addCondition( 'account_type', 'Saving');
 
 		if ( $test_account ) $sbca_account->addCondition( 'id', $test_account->id );
 
 		if(!$last_halfyearly_closing)
 			$last_halfyearly_closing = $branch->ref('Closing')->tryLoadAny()->get('halfyearly');
 		// throw new \Exception($last_halfyearly_closing);
-		
+		$i=1;
+		$total_sb_accounts = $sbca_account->count()->getOne();
 		foreach ( $sbca_account as $accounts_array ) {
 			$sbca_account->applyHalfYearlyInterest( $on_date , null, $last_halfyearly_closing);
+			$this->api->markProgress('Doing_Saving_Interest',$i++,$sbca_account['AccountNumber'],$total_sb_accounts);
 		}
 		
 	}

@@ -135,6 +135,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$scheme_join->addField('Interest');
 
 		$active_fd_accounts->addCondition('MaturedStatus',false);
+		$active_fd_accounts->addCondition('DefaultAC',false);
 		// $active_fd_accounts->addCondition('InterestToAnotherAccount',false);
 		$active_fd_accounts->addCondition('created_at','<',$on_date);
 		$active_fd_accounts->addCondition('branch_id',$branch->id);
@@ -147,6 +148,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 				try{
 					$active_fd_accounts->interstToAnotherAccountEntry($on_date);
 				}catch(Exception $e){
+					throw $e;
 					echo $active_fd_accounts['AccountNumber'].' errored <br/>';
 				}
 			}else{
@@ -154,6 +156,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 				try{
 					$active_fd_accounts->doInterestProvision($on_date);
 				}catch(Exception $e){
+					throw $e;
 					echo $active_fd_accounts['AccountNumber'].' errored <br/>';
 				}
 			}

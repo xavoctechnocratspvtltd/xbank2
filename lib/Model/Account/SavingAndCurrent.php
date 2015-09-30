@@ -93,7 +93,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 			return; //no need to save a new transaction of zero interest
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_SAVINGS, null, $till_date, "Interest posting in Saving Account",null,array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_SAVINGS, $this->ref('branch_id'), $till_date, "Interest posting in Saving Account",null,array('reference_id'=>$this->id));
 
 		$transaction->addCreditAccount($this,$current_interest);
 		$transaction->addDebitAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $current_interest);

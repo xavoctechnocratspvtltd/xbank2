@@ -248,22 +248,28 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_MIS_ACCOUNT, $this->ref('branch_id'), $on_date, "MIS monthly Interest Posting in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
-		$transaction->addDebitAccount('Interest Paid On'.SP.$this->ref('scheme_id')->get('name'), $interest);
+		$transaction->addDebitAccount($this['branch_code'].SP.'Interest Paid On'.SP.$this->ref('scheme_id')->get('name'), $interest);
 		$transaction->addCreditAccount($this, $interest);
 		
 		$transaction->execute();
 
 		// 
 
-		$creditAccount = $this->ref('intrest_to_account_id');
+		try{
 
-		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_MIS_ACCOUNT, $this->ref('branch_id'), $on_date, "MIS monthly Interest Deposited from ".$this['AccountNumber']." to " . $creditAccount['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
-		
-		$transaction->addDebitAccount($this, $interest);
-		$transaction->addCreditAccount($creditAccount, $interest);
-		
-		$transaction->execute();
+			$creditAccount = $this->ref('intrest_to_account_id');
+
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_MIS_ACCOUNT, $this->ref('branch_id'), $on_date, "MIS monthly Interest Deposited from ".$this['AccountNumber']." to " . $creditAccount['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$transaction->addDebitAccount($this, $interest);
+			$transaction->addCreditAccount($creditAccount, $interest);
+			
+			$transaction->execute();
+		}catch(\Exception $e){
+			echo $this['AccountNumber'];
+			throw $e;
+		}
 		
 		if($mark_matured) $this['MaturedStatus'] = true;
 		$this->saveAndUnload();

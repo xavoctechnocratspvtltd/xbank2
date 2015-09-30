@@ -94,7 +94,7 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 
 	}
 
-	function halfYearly( $branch=null, $on_date=null, $test_account=null ) {
+	function halfYearly( $branch=null, $on_date=null, $test_account=null, $last_halfyearly_closing=null ) {
 		if ( !$branch ) $branch=$this->api->current_branch;
 
 		$sbca_account = $this->add( 'Model_Account_SavingAndCurrent' );
@@ -104,9 +104,16 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 
 		if ( $test_account ) $sbca_account->addCondition( 'id', $test_account->id );
 
+		if(!$last_halfyearly_closing)
+			$last_halfyearly_closing = $branch->ref('Closing')->tryLoadAny()->get('halfyearly');
+		// throw new \Exception($last_halfyearly_closing);
+		
 		foreach ( $sbca_account as $accounts_array ) {
-			$sbca_account->applyHalfYearlyInterest( $on_date );
+			$sbca_account->applyHalfYearlyInterest( $on_date , null, $last_halfyearly_closing);
 		}
+
+		// throw new \Exception("Error Processing Request", 1);
+		
 	}
 
 	function yearly( $branch=null, $on_date=null, $test_account=null ) {

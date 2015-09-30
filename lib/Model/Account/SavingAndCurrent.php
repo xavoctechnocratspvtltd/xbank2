@@ -74,23 +74,57 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 	 * @param  boolean $return    if set true, no changes or trnsaction will be saved to database only interest will get calculate and returned 
 	 * @return number             returns interest as number if argument return is set true
 	 */
-	function applyHalfYearlyInterest($till_date=null,$return=false){
+	function applyHalfYearlyInterest($till_date=null,$return=false, $last_halfyearly_closing=null){
 		
 		if(!$till_date) $till_date = $this->api->today;
 		if(!$this->loaded()) throw $this->exception('Account must be loaded to apply monthly interest');
 
-		$this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date=$till_date ,$after_date_not_included=null,$on_amount=null, $at_interest_rate=null,$add_last_day=true);
+
+		/*
+			get all trasactions
+
+
+		*/
+
+		if(!$last_halfyearly_closing) $last_halfyearly_closing = $this->ref('branch_id')->ref('Closing')->tryLoadAny()->get('halfyearly');
+		
+		$after_date_not_included = $this['LastCurrentInterestUpdatedAt'];
+		if(!$after_date_not_included) $after_date_not_included = strtotime($this['created_at']) > strtotime($last_halfyearly_closing)?$this['created_at']:$last_halfyearly_closing;
+
+		$openning_balance = $this->getOpeningBalance($after_date_not_included);
+		$on_amount = ($openning_balance['CR'] - $openning_balance['DR']) > 0 ? ($openning_balance['CR'] - $openning_balance['DR']) :0;
+
+		// $msg = $this['AccountNumber'] . " from ". $after_date_not_included."  Last Half Yealry Closing Date ".$last_halfyearly_closing;
+
+		$current_interest=0;
+		$trans = $this->add('Model_TransactionRow')->addCondition('account_id',$this->id);
+		$trans->addCondition('created_at','>',$last_halfyearly_closing);
+		
+		foreach ($trans as $junk) {
+			// $msg .= "<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on ". $trans['created_at']." for amount ". $on_amount;
+			$current_interest += $this->getSavingInterest($trans['created_at'],$after_date_not_included,$on_amount,null, true);
+			if($trans['amountDr']!=0) $on_amount -= $trans['amountDr'];
+			if($trans['amountCr']!=0) $on_amount += $trans['amountCr'];
+			// $msg .= " interest till now " . $current_interest;
+			$after_date_not_included = $trans['created_at'];
+		}
+
+
+		// $msg .= "<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on ". $till_date." for amount ". $on_amount. "<br/>";
+
+		$current_interest +=  $this->getSavingInterest($on_date=$till_date ,$after_date_not_included ,$on_amount, $at_interest_rate=null,$add_last_day=true);
 		$this['LastCurrentInterestUpdatedAt'] = $this->api->nextDate($till_date);
 
 		$current_interest = $this['CurrentInterest'];
 
 		if($return) return $current_interest;
 
-		$this['CurrentInterest'] = 0;
 		$this->save();
 
 		if($current_interest == 0 ) 
 			return; //no need to save a new transaction of zero interest
+
+		// echo $msg;
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_SAVINGS, $this->ref('branch_id'), $till_date, "Interest posting in Saving Account",null,array('reference_id'=>$this->id));

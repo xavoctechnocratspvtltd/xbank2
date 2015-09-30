@@ -111,8 +111,6 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 		foreach ( $sbca_account as $accounts_array ) {
 			$sbca_account->applyHalfYearlyInterest( $on_date , null, $last_halfyearly_closing);
 		}
-
-		// throw new \Exception("Error Processing Request", 1);
 		
 	}
 

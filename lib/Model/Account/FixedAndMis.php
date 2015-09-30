@@ -120,7 +120,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 	// 	return $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days['days_total'] / 36500);
 	// }
 
-	function getAmountForInterest($on_date=null){
+	function getAmountForInterest($on_date=null,$calculate_remainig_days=true){
 		
 		if(!$on_date) $on_date = $this->api->today;
 
@@ -139,7 +139,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 			$on_amount += $interest;
 		}
 
-		if($remaining_days){
+		if($remaining_days and $calculate_remainig_days){
 			$interest = $on_amount * $interest_rate / 36500 * ($remaining_days);
 			$on_amount += $interest;
 		}
@@ -159,7 +159,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		// Deduct One Day from last day of maturity
 		if($maturity_day) $days['days_total']--;
 
-		$interest = $this->getAmountForInterest($on_date) * $this['Interest'] * $days['days_total'] / 36500;
+		$interest = $this->getAmountForInterest($on_date,false) * $this['Interest'] * $days['days_total'] / 36500;
 	
 	
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;

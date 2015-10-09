@@ -28,6 +28,10 @@ class Grid_Employee extends Grid_AccountsBase{
 					'basic_salary','other_allowance','society_contri','net_payable',
 					'net_salary','employee_image_photo','employee_image_signature','date_of_leaving',
 					'is_active','effective_cl_date','opening_cl','cl_allowed');
+		
+		$model->getElement('employee_image_photo_id')->caption('Employee Photo');
+		$model->getElement('employee_image_signature_id')->caption('Employee Signature');
+		
 		$m=parent::setModel($model,$field);
 		// $this->addTotals(array('pf_salary','ded','net_payable'));
 		$this->addSno();
@@ -55,13 +59,16 @@ class Grid_Employee extends Grid_AccountsBase{
     }
 
     function formatRow(){
-		$img_url ="";
-		if(!$this->model['employee_image_photo']){
-		 	// $img_url= "epan-components/xShop/templates/images/item_no_image.png";
-		}else{
-			$img_url=$this->model['employee_image_photo'];
-		}
-		$this->current_row_html['employee_image_photo']='<img style="max-width:70px;"  src="'.$img_url.'"></img>';
+		$emp_img_url ="";
+			$emp_img_url=$this->model['employee_image_photo'];
+		$this->current_row_html['employee_image_photo']='<img style="max-width:70px;"  src="'.$emp_img_url.'"></img>';
+
+
+		$emp_sig_img_url ="";
+			$emp_sig_img_url=$this->model['employee_image_signature'];
+		$this->current_row_html['employee_image_signature']='<img style="max-width:70px;"  src="'.$emp_sig_img_url.'"></img>';
+
+
 
 		parent::formatRow();		
 	}

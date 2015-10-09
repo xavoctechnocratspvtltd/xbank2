@@ -5,8 +5,8 @@ class Model_Employee extends Model_Table{
 		parent::init();
 
 		$this->hasOne('Branch','branch_id');
-		$this->add('filestore/Field_Image','employee_image_photo');
-		$this->add('filestore/Field_Image','employee_image_signature');
+		$this->add('filestore/Field_Image','employee_image_photo_id');
+		$this->add('filestore/Field_Image','employee_image_signature_id');
 
 		$this->addField('name')->mandatory(true)->caption('Employee Name');
 		$this->addField('emp_code')->caption('Emp. Code')->set($this->id);
@@ -86,7 +86,7 @@ class Model_Employee extends Model_Table{
 				);		
 		})->caption('CL Allowed (as on actual date)');
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function empSalary(){

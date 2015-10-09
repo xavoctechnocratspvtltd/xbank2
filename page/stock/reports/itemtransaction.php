@@ -24,7 +24,7 @@ class page_stock_reports_itemtransaction extends Page{
 		$grid=$v->add('Grid_AccountsBase');
 		$grid->addSno();
 		$transaction_model = $this->add('Model_Stock_Transaction');
-		// $transaction_model->addCondition('branch_id',$this->api->current_branch->id);
+		$transaction_model->addCondition($transaction_model->dsql()->orExpr()->where('branch_id',$this->api->currentBranch->id)->where('to_branch_id',$this->api->currentBranch->id));
 
 		if($_GET['filter']){
 			$transaction_model->addCondition('item_id',$_GET['item']);

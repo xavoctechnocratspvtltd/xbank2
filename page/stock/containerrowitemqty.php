@@ -7,6 +7,7 @@ class page_stock_containerrowitemqty extends Page {
 		$crud=$this->add('xCRUD',array('allow_del'=>false,'allow_edit'=>false));
 
 		$criq=$this->add('Model_Stock_ContainerRowItemQty');
+		$criq->addCondition('branch_id',$this->api->current_branch->id);
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false; // Always required to bypass the bellow code in editing crud mode

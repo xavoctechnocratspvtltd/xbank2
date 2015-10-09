@@ -317,7 +317,7 @@ class page_employee extends Page{
 			$crud->setModel($salary_model,array('branch','name','employee_code',
 												'CL','CCL','LWP','ABSENT',
 												'monthly_off','basic_salary','total_days','paid_days',
-												'leave','salary','pf_salary','ded',
+												'leave','salary','pf_salary','pf_amount','ded',
 												'other_allowance','allow_paid','net_payable','is_active',
 												'salary_date','narration','total_month_day'));
 		}

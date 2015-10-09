@@ -21,7 +21,11 @@ class page_stock_ledger_item extends Page {
 		if($_GET['filter']){						
 			if($_GET['item']){
 				$item_model->load($_GET['item']);
-				$transaction->addCondition('branch_id',$this->api->currentBranch->id);
+
+				// $transaction->addCondition('branch_id',$this->api->currentBranch->id);
+				//Add Condition for Transfer in transaction
+				$transaction->addCondition($transaction->dsql()->orExpr()->where('branch_id',$this->api->current_branch->id)->where('to_branch_id',$this->api->current_branch->id));
+				//transfer in not commimg 
 				$transaction->addCondition('item_id',$_GET['item']);
 			}
 			// if(!$_GET['include_dead'])
@@ -37,7 +41,7 @@ class page_stock_ledger_item extends Page {
 		$openning_bal = $item_model->getQty($_GET['from_date']?:'1970-01-01',$branch_id=$this->api->currentBranch->id);
 		$openning_bal += $item_model->getOpeningQty($_GET['item'],$_GET['from_date']?:'1970-01-01',$branch_id=$this->api->currentBranch->id);
 
-		$grid->setModel($transaction,array('item','narration','transaction_type','qty','created_at'));	
+		$grid->setModel($transaction,array('item','narration','transaction_type','qty','created_at','to_branch_id'));	
 
 		$grid->addColumn('text','DR');
 		$grid->addColumn('text','CR');
@@ -46,22 +50,27 @@ class page_stock_ledger_item extends Page {
 		$grid->addSno();
 
 		$grid->addHook('formatRow',function($grid){
-			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Transfer','Openning','DeadSubmit'))){
-				$fill='DR';
-				$no_fill='CR';
-			}else{
-				if($grid->model['transaction_type']=='Move')
-					return;
+			if($grid->model['transaction_type']=='Move')
+				return;
+
+			$fill='DR';
+			$no_fill='CR';
+			
+			if(in_array($grid->model['transaction_type'],array('Purchase','Submit','Openning','DeadSubmit'))){
 				$fill='CR';
 				$no_fill='DR';
+			}else{
+				if($grid->model['transaction_type'] == "Transfer"){
+					if($grid->model['to_branch_id'] == $grid->api->current_branch->id){
+						$fill = 'CR';
+						$no_fill = 'DR';
+					}
+				}
+						
 			}
 
-			if($grid->model['transaction_type']=='Transfer' and $grid->model['to_branch_id']!=$grid->api->currentBranch->id){
-				$fill='CR';
-				$no_fill='DR';
-			}
-				$grid->current_row[$fill] = $grid->model['qty'];
-				$grid->current_row[$no_fill] ='';
+			$grid->current_row[$fill] = $grid->model['qty'];
+			$grid->current_row[$no_fill] ='';
 		});
 
 

@@ -24,6 +24,7 @@ class page_stock_reports_itemtransaction extends Page{
 		$grid=$v->add('Grid_AccountsBase');
 		$grid->addSno();
 		$transaction_model = $this->add('Model_Stock_Transaction');
+		// $transaction_model->addCondition('branch_id',$this->api->current_branch->id);
 
 		if($_GET['filter']){
 			$transaction_model->addCondition('item_id',$_GET['item']);
@@ -33,6 +34,7 @@ class page_stock_reports_itemtransaction extends Page{
 					$transaction_model->addCondition('transaction_type','Transfer');
 					$transaction_model->addCondition('to_branch_id',$this->api->currentBranch->id);
 					// $transaction_model->addCondition('branch_id','<>',$this->api->currentBranch->id);
+					// throw new \Exception($transaction_model->count()->getOne());
 
 				}elseif($_GET['transaction_type'] == "TransferOut"){
 					$transaction_model->addCondition('transaction_type','Transfer');
@@ -48,7 +50,7 @@ class page_stock_reports_itemtransaction extends Page{
 			}
 
 			// $transaction_model->_dsql()->group('transaction_type');
-			$transaction_model->setOrder('transaction_type','desc');
+			// $transaction_model->setOrder('transaction_type','desc');
 			
 			$grid->addMethod('format_opening',function($g,$f){
 				//return opening stock + from_date opening
@@ -73,6 +75,7 @@ class page_stock_reports_itemtransaction extends Page{
 				// throw new Exception("Error Processing Request".$g->current_row['avgrate']);
 				$g->current_row[$f] = $g->current_row['qty'] * $g->current_row['avg_rate'];				 
 			});			
+
 
 			$grid->addColumn('opening','opening');
 			$grid->addColumn('qty','qty');

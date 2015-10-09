@@ -86,7 +86,7 @@ class Model_Employee extends Model_Table{
 				);		
 		})->caption('CL Allowed (as on actual date)');
 
-		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function empSalary(){

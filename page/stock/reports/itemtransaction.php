@@ -21,7 +21,7 @@ class page_stock_reports_itemtransaction extends Page{
 		$msg = "Item Wise Staff Report";
 		$msg_view = $v->add('View_Info')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 
-		$grid=$v->add('Grid_AccountsBase');
+		$grid=$v->add('Grid_AccountsBase');		
 		$grid->addSno();
 		$transaction_model = $this->add('Model_Stock_Transaction');
 		$transaction_model->addCondition($transaction_model->dsql()->orExpr()->where('branch_id',$this->api->currentBranch->id)->where('to_branch_id',$this->api->currentBranch->id));
@@ -29,6 +29,9 @@ class page_stock_reports_itemtransaction extends Page{
 		if($_GET['filter']){
 			$transaction_model->addCondition('item_id',$_GET['item']);
 			$transaction_model->addCondition('transaction_type','<>',array('Openning','move'));
+			// if($_GET['from_date'])
+				// $transaction_model->addCondition('created_at','>=',$_GET['from_date']);
+
 			if($_GET['transaction_type']){
 				if($_GET['transaction_type'] == "TransferIn"){
 					$transaction_model->addCondition('transaction_type','Transfer');
@@ -54,7 +57,7 @@ class page_stock_reports_itemtransaction extends Page{
 			
 			$grid->addMethod('format_opening',function($g,$f){
 				//return opening stock + from_date opening
-				$qty = $g->model->getTransactionOpeningQty($_GET['item'],$g->model['transaction_type'],$_GET['from_date'],$_GET['to_date']);
+				$qty = $g->model->getTransactionOpeningQty($_GET['item'],$g->model['transaction_type'],$_GET['from_date']?:$g->model['created_at'],$_GET['to_date']);
 				$g->current_row_html[$f]= $qty;
 			});
 

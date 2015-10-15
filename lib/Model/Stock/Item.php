@@ -221,11 +221,13 @@ class Model_Stock_Item extends Model_Table {
 	function getOpeningQty($item_id=0,$branch_id=null){
 		if(!$item_id)
 			return 0;
+		if(!$branch_id)
+			$branch_id = $this->api->currentBranch->id;
 		$opening_tra = $this->add('Model_Stock_Transaction');
 		$opening_tra->addCondition('item_id',$item_id);
 		$opening_tra->addCondition('transaction_type','Openning');
-		if($branch_id)
-			$opening_tra->addCondition('branch_id',$branch_id);
+		$opening_tra->addCondition('branch_id',$branch_id);
+				
 		$opening_tra_qty = ($opening_tra->sum('qty')->getOne())?:0;
 		return $opening_tra_qty;	
 	}

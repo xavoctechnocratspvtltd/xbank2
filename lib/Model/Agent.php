@@ -31,7 +31,9 @@ class Model_Agent extends Model_Table {
 		
 		$this->addExpression('code')->set($this->dsql()->concat($this->refSQL('account_id')->fieldQuery('branch_code'), ' ' , $this->getElement('id') ));
 
-		// $this->addExpression('sponsor_cadre')->set($this->refSQL('sponsor_id')->fieldQuery('cadre'));
+		$this->addExpression('sponsor_cadre')->set(function($m,$q){
+			return $m->refSQL('sponsor_id')->fieldQuery('cadre');
+		});
 
 		$this->addExpression('agent_member_name')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('name');

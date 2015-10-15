@@ -14,11 +14,55 @@ class page_reports_agent_crpb extends Page {
 		$form=$this->add('Form');
 		$agent=$form->addField('autocomplete/Basic','agent');
 		$agent->setModel('Agent');
-		$qrtr=$form->addField('autocomplete/Basic','qrtr');
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
 
 		$form->addSubmit('GET List');
 
+		$agent_model = $this->add('Model_Agent');
+
+		$m_m = $agent_model->getElement('member_id')->getModel();
+		$m_m->title_field="name";
+
+		$member_join=$agent_model->join('members','member_id');
+		// $member_join->addField('FatherName');
+		// $member_join->addField('PermanentAddress');
+		// $member_join->addField('PanNo');
+		$member_join->addField('PhoneNos');
+		// $member_join->addField('branch_id');
+
+		$agent_model->addExpression('self_crpb')->set(function($m,$q){
+			$acc = $m->add('Model_Account',array('self_crpb_account'));
+			$acc->addCondition('agent_id',$q->getField('id'));
+
+			if($_GET['from_date'])
+				$acc->addCondition('created_at','>=',$_GET['from_date']);
+			if($_GET['to_date'])
+				$acc->addCondition('created_at','<',$m->api->nextDate($_GET['to_date']));
+
+			return $acc->sum('crpb');
+
+		});
+
+		if($this->api->stickyGET('filter')){
+			$this->api->stickyGET('from_date');
+			$this->api->stickyGET('to_date');
+			if($agent_id = $this->api->stickyGET('agent')){
+				$agent_model->addCondition('id',$agent_id);
+			}
+
+
+		}
+
+
 		$grid=$this->add('Grid');
+		
+		$grid_1= $this->add('Grid');
+		$grid_1->setModel($agent_model,array('member','PhoneNos','account','self_crpb'));
+
+		$grid_1->addPaginator(20);
+
+
 		$grid->add('H3',null,'grid_buttons')->set('For Close '. date('d-M-Y',strtotime($till_date))); 
 		$data = array(
  					array( 's_no' => '1', 
@@ -52,8 +96,10 @@ class page_reports_agent_crpb extends Page {
 
 		$grid->setSource($data);
 
+
+
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
+			$grid_1->js()->reload(array('agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
 		}	
 
 	}

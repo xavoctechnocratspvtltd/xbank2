@@ -63,7 +63,7 @@ class page_reports_agent_detail extends Page {
 
 		$agent->addExpression('total_team_member')->set("'TODO'");
 		$agent->addExpression('team_business')->set("'TODO'");
-		$agent->addExpression('self_business')->set($this->add('Model_Account')->addCondition('agent_id',$agent->getElement('id'))->sum('Amount') );
+		$agent->addExpression('self_business')->set($this->add('Model_Account')->addCondition('agent_id',$agent->getElement('id'))->addCondition('SchemeType',array('DDS','FixedAndMis','Recurring'))->sum('Amount') );
 
 		if($_GET['team_sponsor_id']){
 			$agent->addCondition('sponsor_id',$_GET['team_sponsor_id']);

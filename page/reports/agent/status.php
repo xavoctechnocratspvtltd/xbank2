@@ -67,6 +67,27 @@ class page_reports_agent_status extends Page {
 			return $acc->fieldQuery('created_at');
 		});
 
+		$fy = $this->api->getFinancialYear();
+
+		$agent_model->addExpression('total_accounts')->set(function($m,$q)use($fy){
+			return $m->add('Model_Account',array('table_alias'=>'total_accounts'))
+						->addCondition('SchemeType',array('DDS','FixedAndMis','Recurring'))
+						->addCondition('agent_id',$q->getField('id'))
+						->addCondition('created_at','>=',$fy['start_date'])
+						->addCondition('created_at','<',$m->api->nextDate($fy['end_date']))
+						->count();
+		});
+
+		$agent_model->addExpression('total_amount')->set(function($m,$q)use($fy){
+			return $m->add('Model_Account',array('table_alias'=>'total_amount'))
+						->addCondition('SchemeType',array('DDS','FixedAndMis','Recurring'))
+						->addCondition('agent_id',$q->getField('id'))
+						->addCondition('created_at','>=',$fy['start_date'])
+						->addCondition('created_at','<',$m->api->nextDate($fy['end_date']))
+						->sum('Amount');
+
+		});
+
 		// $agent_model->addCondition('branch_id',$this->api->current_branch->id);
 
 		if($_GET['filter']){
@@ -83,8 +104,8 @@ class page_reports_agent_status extends Page {
 
 		$agent_model->add('Controller_Acl');
 
-		$grid->setModel($agent_model,array('code','agent_member_name','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','current_individual_crpb','last_account_date','sponsor','sponsor_phone','sponsor_cadre'));
-		$grid->addPaginator(50);
+		$grid->setModel($agent_model,array('code','agent_member_name','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','current_individual_crpb','last_account_date','sponsor','sponsor_phone','sponsor_cadre','total_accounts','total_amount'));
+		$grid->addPaginator(500);
 
 		$grid->addSno();
 		$grid->addFormatter('agent_member_name','wrap');

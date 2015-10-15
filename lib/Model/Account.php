@@ -101,6 +101,10 @@ class Model_Account extends Model_Table {
 					)';
 		});
 
+		$this->addExpression('crpb')->set(function($m,$q){
+			return $q->expr('[0]*[1] / 100.00',array($m->getElement('Amount'),$m->refSQL('scheme_id')->fieldQuery('CRPB')));
+		});
+
 		// $member_join = $this->leftJoin('members','member_id');
 		// $member_join->addField('member_name','name');
 		// $member_join->addField('FatherName');

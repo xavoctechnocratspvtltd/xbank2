@@ -65,6 +65,7 @@ class page_reports_daybook extends Page {
 			$this->js()->_selector('.atk-form')->toggle(),
 			);
 
-		$daybook_lister_grid->js('click',$js);
+		$pl = $daybook_lister_grid->addButton('Print List');
+		$pl->js('click',$js);
 	}
 }

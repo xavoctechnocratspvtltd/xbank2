@@ -1,3 +1,4 @@
+
 <?php
 
 class Model_Stock_Transaction extends Model_Table {
@@ -493,7 +494,7 @@ class Model_Stock_Transaction extends Model_Table {
 
 	}
 
-	function getTransactionOpeningQty($item,$transaction_type,$from_date,$to_date){
+	function getTransactionOpeningQty($item,$transaction_type,$from_date,$to_date){		
 		// if($this->loaded())
 		// 	throw new Exception("model be loaded".$this->api->currentBranch->id);
 		$tra_model = $this->add('Model_Stock_Transaction');		
@@ -503,15 +504,16 @@ class Model_Stock_Transaction extends Model_Table {
 		$tra_model->tryLoadAny();
 		$opening_qty = $tra_model->sum('qty')->getOne();
 
-		$tra2_model = $this->add('Model_Stock_Transaction');		
+		$tra2_model = $this->add('Model_Stock_Transaction');
 		$tra2_model->addCondition('branch_id',$this->api->currentBranch->id);
 		$tra2_model->addCondition('item_id',$item);
-		if($transaction_type)
+		if($transaction_type){			
 			$tra2_model->addCondition('transaction_type',$transaction_type);
-		if($from_date){
-			$from_date = $this->api->now;
-			$tra2_model->addCondition('created_at','<',$from_date);
 		}
+		if(!$from_date){	
+			$from_date = $this->api->now;
+		}
+		$tra2_model->addCondition('created_at','<',$from_date);		
 		$tra2_model->tryLoadAny();
 		$tra_qty = $tra2_model->sum('qty')->getOne();	
 		

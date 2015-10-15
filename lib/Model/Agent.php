@@ -6,7 +6,7 @@ class Model_Agent extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
-		$this->hasOne('Agent','sponsor_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Agent','sponsor_id')->display(array('form'=>'autocomplete/Basic'))->sortable(true);
 		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'));;
 		$this->hasOne('Cadre','cadre_id');
 		// $this->hasOne('Tree','tree_id');
@@ -30,6 +30,8 @@ class Model_Agent extends Model_Table {
 		$this->hasMany('Agent','sponsor_id');
 		
 		$this->addExpression('code')->set($this->dsql()->concat($this->refSQL('account_id')->fieldQuery('branch_code'), ' ' , $this->getElement('id') ));
+
+		// $this->addExpression('sponsor_cadre')->set($this->refSQL('sponsor_id')->fieldQuery('cadre'));
 
 		$this->addExpression('agent_member_name')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('name');
@@ -140,6 +142,10 @@ class Model_Agent extends Model_Table {
 			throw $this->exception('Sponsor is Advisor . Cannot Add','ValidityCheck')->setField('sponsor_id');
 		}
 
+		$this['updated_at'] = $this->api->now;
+
+		// throw new \Exception($this->api->now, 1);
+		
 		//Member ke is_agent field true 
 		$member  = $this->ref('member_id');
 		$member['is_agent'] = true;

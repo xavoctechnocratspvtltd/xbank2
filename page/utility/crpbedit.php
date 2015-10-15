@@ -3,13 +3,18 @@ class page_utility_crpbedit extends Page{
 	function init(){
 		parent::init();
 
-		$g = $this->add('Grid');
-		$g->setmodel('Agent',array('code','name','current_individual_crpb'));
-		$g->addPaginator(100);
+		$crud = $this->add('CRUD',array('allow_add'=>false,'allow_del'=>false));
+		$crud->setmodel('Agent',array('code','name','current_individual_crpb','updated_at'));
+		if(!$crud->isEditing()){
+			$g=  $crud->grid;
 
-		$g->addFormatter('current_individual_crpb','grid/inline');
+			$g->addPaginator(100);
 
-		$g->addQuickSearch(array('name'));
+			$g->addFormatter('current_individual_crpb','grid/inline');
+
+			$g->addQuickSearch(array('name'));
+			
+		}
 
 	}
 }

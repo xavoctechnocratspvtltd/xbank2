@@ -2,6 +2,9 @@
 class Model_Agent extends Model_Table {
 	var $table= "agents";
 
+	public $from_date=null;
+	public $to_date = null;
+
 	function init(){
 		parent::init();
 
@@ -55,12 +58,23 @@ class Model_Agent extends Model_Table {
 				$this->getElement('code'),' ', $this->getElement('agent_member_name_full')
 		));
 
+		$this->addExpression('self_crpb')->set(function($m,$q){
+			$acc = $m->add('Model_Account',array('self_crpb_account'));
+			$acc->addCondition('agent_id',$q->getField('id'));
 
+			if($m->from_date)
+				$acc->addCondition('created_at','>=',$m->from_date);
+			if($m->to_date)
+				$acc->addCondition('created_at','<',$m->api->nextDate($m->to_date));
+
+			return $acc->sum('crpb');
+
+		});
 
 		$this->addExpression('level_1_crpb')->set(function($m,$q){
 			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
 			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
-			return $ls1->sum($q->expr('IFNULL([0],0)',array($ls1->getElement('current_individual_crpb'))));
+			return $ls1->sum($q->expr('IFNULL([0],0)',array($ls1->getElement('self_crpb'))));
 		});
 
 		$this->addExpression('level_2_crpb')->set(function($m,$q){
@@ -75,7 +89,7 @@ class Model_Agent extends Model_Table {
 					)
 				)
 			);
-			return $ls2->sum($q->expr('IFNULL([0],0)',array($ls2->getElement('current_individual_crpb'))));
+			return $ls2->sum($q->expr('IFNULL([0],0)',array($ls2->getElement('self_crpb'))));
 		});
 
 		$this->addExpression('level_3_crpb')->set(function($m,$q){
@@ -100,7 +114,7 @@ class Model_Agent extends Model_Table {
 				)
 			);
 
-			return $ls3->sum($q->expr('IFNULL([0],0)',array($ls3->getElement('current_individual_crpb'))));
+			return $ls3->sum($q->expr('IFNULL([0],0)',array($ls3->getElement('self_crpb'))));
 		});
 
 		$this->addExpression('total_group_crpb')->set(
@@ -109,6 +123,130 @@ class Model_Agent extends Model_Table {
 					$this->getElement('level_1_crpb'), 
 					$this->getElement('level_2_crpb'),
 					$this->getElement('level_3_crpb')
+					)
+				)
+			);
+
+
+		$this->addExpression('level_1_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+			return $ls1->count();
+		});
+
+		$this->addExpression('level_2_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+			return $ls2->count();
+		});
+
+		$this->addExpression('level_3_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3c'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls3->count();
+		});
+
+		$this->addExpression('total_group_count')->set(
+			$this->dsql()->expr('IFNULL([0],0) + IFNULL([1],0) + IFNULL([2],0)',
+				array(
+					$this->getElement('level_1_count'), 
+					$this->getElement('level_2_count'),
+					$this->getElement('level_3_count')
+					)
+				)
+			);
+
+
+		$this->addExpression('self_business')->set(function($m,$q){
+			return $m->add('Model_Account',array('table_alias'=>'total_self_business'))
+						->addCondition('agent_id',$q->getField('id'))
+						->addCondition('SchemeType',array('DDS','FixedAndMis','Recurring'))
+						->addCondition('created_at','>=',$m->from_date)
+						->addCondition('created_at','<',$m->api->nextDate($m->to_date))
+						->sum('Amount');
+		});
+
+		$this->addExpression('level_1_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+			return $ls1->sum($q->expr('IFNULL([0],0)',array($ls1->getElement('self_business'))));
+		});
+
+		$this->addExpression('level_2_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+			return $ls2->sum($q->expr('IFNULL([0],0)',array($ls2->getElement('self_business'))));
+		});
+
+		$this->addExpression('level_3_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls3->sum($q->expr('IFNULL([0],0)',array($ls3->getElement('self_business'))));
+		});
+
+
+		$this->addExpression('total_team_business')->set(
+			$this->dsql()->expr('IFNULL([0],0) + IFNULL([1],0) + IFNULL([2],0)',
+				array(
+					$this->getElement('level_1_self_business'), 
+					$this->getElement('level_2_self_business'),
+					$this->getElement('level_3_self_business')
 					)
 				)
 			);

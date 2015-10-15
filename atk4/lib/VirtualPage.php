@@ -148,6 +148,7 @@ class VirtualPage extends AbstractController
                     // exception occured possibly due to a nested page. We
                     // are already executing from post-init, so
                     // it's fine to ignore it.
+                    throw $e;
                 }
 
                 //Imants: most likely forgetting is not needed, because we stop execution anyway

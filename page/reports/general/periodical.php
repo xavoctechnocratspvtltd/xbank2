@@ -93,25 +93,25 @@ class page_reports_general_periodical extends Page {
 				$account_model->addCondition('account_type',$p->id);
 
 				if($_GET['filter']){
-					$this->api->stickyGET("filter");
+					$p->api->stickyGET("filter");
 
 					if($_GET['from_date']){
-						$this->api->stickyGET("from_date");
+						$p->api->stickyGET("from_date");
 						$account_model->addCondition('created_at','>',$_GET['from_date']);
 					}
 
 					if($_GET['to_date']){
-						$this->api->stickyGET("to_date");
-						$account_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+						$p->api->stickyGET("to_date");
+						$account_model->addCondition('created_at','<',$p->api->nextDate($_GET['to_date']));
 					}
 
 					if($_GET['dealer']){
-						$this->api->stickyGET("dealer");
+						$p->api->stickyGET("dealer");
 						$account_model->addCondition('dealer_id',$_GET['dealer']);
 					}
 
 					if($_GET['agent']){
-						$this->api->stickyGET("agent");
+						$p->api->stickyGET("agent");
 						$account_model->addCondition('agent_id',$_GET['agent']);
 					}
 

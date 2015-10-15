@@ -48,9 +48,13 @@ class page_reports_agent_crpb extends Page {
 
 		$this->add('VirtualPage')->addColumn('team_members',"Team Members",null,$grid_1)->set(function($p){
 			$grid = $p->add('Grid');
-			$agent_level_1 = $p->add('Model_Agent');
+			$agent_level_1 = $p->add('Model_Agent',array('from_date'=>$_GET['from_date'],'to_date'=> $_GET['to_date']));
+			
+			$m_m = $agent_level_1->getElement('member_id')->getModel();
+			$m_m->title_field="name";
+			
 			$agent_level_1->addCondition('sponsor_id',$p->id);
-			$grid->setModel($agent_level_1,array('member','PhoneNos','account','created_at'));
+			$grid->setModel($agent_level_1,array('member','PhoneNos','account','created_at','self_crpb','self_business'));
 		});
 
 		if($form->isSubmitted()){

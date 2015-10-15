@@ -186,25 +186,28 @@ class Model_Agent extends Model_Table {
 
 
 		$this->addExpression('self_business')->set(function($m,$q){
-			return $m->add('Model_Account',array('table_alias'=>'total_self_business'))
+			$acc =  $m->add('Model_Account',array('table_alias'=>'total_self_business'))
 						->addCondition('agent_id',$q->getField('id'))
-						->addCondition('SchemeType',array('DDS','FixedAndMis','Recurring'))
-						->addCondition('created_at','>=',$m->from_date)
-						->addCondition('created_at','<',$m->api->nextDate($m->to_date))
-						->sum('Amount');
+						->addCondition('SchemeType',array('DDS','FixedAndMis','Recurring'));
+			if($m->from_date)
+				$acc->addCondition('created_at','>=',$m->from_date);
+			if($m->to_date)
+				$acc->addCondition('created_at','<',$m->api->nextDate($m->to_date));
+			
+			return $acc->sum('Amount');
 		});
 
 		$this->addExpression('level_1_self_business')->set(function($m,$q){
-			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
 			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
 			return $ls1->sum($q->expr('IFNULL([0],0)',array($ls1->getElement('self_business'))));
 		});
 
 		$this->addExpression('level_2_self_business')->set(function($m,$q){
-			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
 			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
 
-			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
 			$ls2->addCondition($q->expr('[0] in ([1])',
 				array(
 					$ls2->getElement('sponsor_id'),
@@ -216,10 +219,10 @@ class Model_Agent extends Model_Table {
 		});
 
 		$this->addExpression('level_3_self_business')->set(function($m,$q){
-			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
 			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
 
-			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
 			$ls2->addCondition($q->expr('[0] in ([1])',
 				array(
 					$ls2->getElement('sponsor_id'),
@@ -228,7 +231,7 @@ class Model_Agent extends Model_Table {
 				)
 			);
 
-			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3sb'));
 			$ls3->addCondition($q->expr('[0] in ([1])',
 				array(
 					$ls3->getElement('sponsor_id'),

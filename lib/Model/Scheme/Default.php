@@ -74,7 +74,7 @@ class Model_Scheme_Default extends Model_Scheme {
 				// array('under_scheme'=>BRANCH_TDS_ACCOUNT,'intermediate_text'=>"",'Group'=>BRANCH_TDS_ACCOUNT,'PAndLGroup'=>BRANCH_TDS_ACCOUNT),
 				// array('under_scheme'=>ADMISSION_FEE_ACCOUNT,'intermediate_text'=>"",'Group'=>'Admission Fees Received','PAndLGroup'=>'Admission Fees Received'),
 				array('under_scheme'=>'Adminssion Fee','intermediate_text'=>"",'Group'=>'Admission Fees Received','PAndLGroup'=>'Admission Fees Received'),
-				array('under_scheme'=>CASH_ACCOUNT_SCHEME,'intermediate_text'=>"",'Group'=>CASH_ACCOUNT,'PAndLGroup'=>CASH_ACCOUNT),
+				// array('under_scheme'=>CASH_ACCOUNT_SCHEME,'intermediate_text'=>"",'Group'=>CASH_ACCOUNT,'PAndLGroup'=>CASH_ACCOUNT),
 			);
 	}
 

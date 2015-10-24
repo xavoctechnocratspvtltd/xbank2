@@ -91,6 +91,7 @@ class page_reports_general_periodical extends Page {
 			->set(function($p){
 				$account_model=$p->add('Model_Account');
 				$account_model->addCondition('account_type',$p->id);
+				$account_model->add('Controller_Acl');
 
 				if($_GET['filter']){
 					$p->api->stickyGET("filter");

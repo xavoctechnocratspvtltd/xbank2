@@ -3,7 +3,8 @@
 class Menu_Base extends Menu {
 	function init(){
 		parent::init();
-
+		$this->add('View')->setElement('img')->setAttr('src','templates/images/logo.jpg')->setAttr('width','30px');
+		
 		$this->addMenuItem('utility_setdate',array('('.$this->api->current_branch['Code']. ') ' .date('d M Y',strtotime($this->api->today)),'swatch'=>(strtotime($this->api->today) != strtotime(date('Y-m-d')) ? 'red':null )));
 
 		$this->addMenuItem('index','Dashboard');
@@ -25,9 +26,8 @@ class Menu_Base extends Menu {
 		// $member_reports = 	$this->addMenuItem('reports_member','Member Reports');
 		// $deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
-
 		$this->addMenuItem('logout','Logout');
-
+		// $this->addMenuItem('index','Bhawani Credit Co.Operative Society')->setStyle('text-align','center');
 		// Popovers
 		if($this->api->currentStaff->isSuper())
 			$admin_sub_menus_popover=$this->add('View_Popover');

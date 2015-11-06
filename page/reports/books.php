@@ -1,6 +1,7 @@
 <?php
 
 class page_reports_books extends Page {
+	public $title="Book Reports";
 	function init(){
 		parent::init();
 

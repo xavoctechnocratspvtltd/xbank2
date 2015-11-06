@@ -2,9 +2,10 @@
 
 class page_reports_daybook extends Page {
 	public $title = "Day Book";
+	// public $title = 'Accounts Manager';
 	function init(){
 		parent::init();
-
+		
 		$form = $this->add('Form');
 		$form->addField('DatePicker','date')->validateNotNull();
 
@@ -25,6 +26,7 @@ class page_reports_daybook extends Page {
 		
 		$daybook_lister_grid = $this->add('Grid_DayBook');
 		$daybook_lister_grid->add('View',null,'grid_buttons')->set('Day Book');
+		$daybook_lister_grid->add('View',null,'grid_buttons')->set('Date :'. $_GET['date_selected'] )->addClass('pull-right');
 
 		if($_GET['date_selected']){			
 			$day_transaction_model->addCondition('created_at','>=',$_GET['date_selected']);

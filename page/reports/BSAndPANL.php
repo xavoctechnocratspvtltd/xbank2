@@ -114,6 +114,9 @@ class page_reports_BSAndPANL extends Page {
 	}
 
 	function page_group2scheme(){
+		$this->api->stickyGET('_id'); // bs id
+		$bs= $this->add('Model_BalanceSheet')->load($_GET['_id']);
+
 		$this->api->stickyGET('SchemeGroup');
 		$fy = $this->api->getFinancialYear();
 
@@ -136,12 +139,15 @@ class page_reports_BSAndPANL extends Page {
 		else
 			$for_branch = false;
 
-		$this->add('View_BSPLChunks_Schemes',array('under_scheme_group'=>$_GET['SchemeGroup'],'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+		$this->add('View_BSPLChunks_Schemes',array('under_balance_sheet_id'=>$bs->id,'under_scheme_group'=>$_GET['SchemeGroup'],'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
 
 
 	}
 
 	function page_scheme2accounts(){
+		$this->api->stickyGET('_id'); // bs id
+		$bs= $this->add('Model_BalanceSheet')->load($_GET['_id']);
+		
 		$this->api->stickyGET('Scheme');
 		$fy = $this->api->getFinancialYear();
 
@@ -164,7 +170,7 @@ class page_reports_BSAndPANL extends Page {
 		else
 			$for_branch = false;
 
-		$this->add('View_BSPLChunks_Accounts',array('under_scheme'=>$_GET['Scheme'],'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
+		$this->add('View_BSPLChunks_Accounts',array('under_balance_sheet_id'=>$bs->id,'under_scheme'=>$_GET['Scheme'],'from_date'=>$from_date,'to_date'=>$to_date,'branch'=>$for_branch));
 
 	}
 

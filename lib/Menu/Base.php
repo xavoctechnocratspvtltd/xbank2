@@ -5,7 +5,8 @@ class Menu_Base extends Menu {
 		parent::init();
 		$this->add('View')->setElement('img')->setAttr('src','templates/images/logo.jpg')->setAttr('width','30px');
 		
-		$this->addMenuItem('utility_setdate',array('('.$this->api->current_branch['Code']. ') ' .date('d M Y',strtotime($this->api->today)),'swatch'=>(strtotime($this->api->today) != strtotime(date('Y-m-d')) ? 'red':null )));
+		if($this->api->auth->model['AccessLevel']>=80)
+			$this->addMenuItem('utility_setdate',array('('.$this->api->current_branch['Code']. ') ' .date('d M Y',strtotime($this->api->today)),'swatch'=>(strtotime($this->api->today) != strtotime(date('Y-m-d')) ? 'red':null )));
 
 		$this->addMenuItem('index','Dashboard');
 		

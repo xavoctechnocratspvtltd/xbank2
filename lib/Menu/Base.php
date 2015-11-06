@@ -143,7 +143,7 @@ class Menu_Base extends Menu {
 		if($this->api->auth->model['AccessLevel']>=100)
 			$utilities_sub_menus->addMenuItem('documents','Documents Management');
 		
-		$utilities_sub_menus->addMenuItem('utility_setdate','Change Date');
+		// $utilities_sub_menus->addMenuItem('utility_setdate','Change Date');
 		$utilities_sub_menus->addMenuItem('utility_accwithoutimage','Accounts Without Images');
 		$utilities_sub_menus->addMenuItem('utility_fdaccount','F.D. Bond Accounts');
 		$utilities_sub_menus->addMenuItem('utility_sharecertificate','Share Certificate Print');

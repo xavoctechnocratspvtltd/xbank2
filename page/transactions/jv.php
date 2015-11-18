@@ -78,6 +78,9 @@ class page_transactions_jv extends Page {
 		$jv_type_field->js(true)->closest('div.atk-form-row')->appendTo($jv_type_col);
 		$form->addSubmit('Execute')->js(true)->closest('div.atk-actions')->appendTo($exec_btn);
 
+		if($this->api->auth->model['AccessLevel'] < 80)
+			$jv_type_field->js(true)->closest('div.atk-form-row')->hide();
+
 		if($form->isSubmitted()){
 			$this->validateJV($form);
 

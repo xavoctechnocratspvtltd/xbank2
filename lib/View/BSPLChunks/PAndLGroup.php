@@ -25,6 +25,8 @@ class View_BSPLChunks_PAndLGroup extends View {
 		$grid->addColumn('text,SchemeGroupToSchemeName','PAndLGroup');
 		$grid->addColumn('money','Amount');
 
+		$grid->removeColumn('id');
+
 		$grid->addTotals(array('Amount'));
 		
 	}

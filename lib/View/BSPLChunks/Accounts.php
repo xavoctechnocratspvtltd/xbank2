@@ -26,6 +26,8 @@ class View_BSPLChunks_Accounts extends View {
 	}
 
 	function from_balancesheet_to_accounts(){
+		// $this->add('View_Error')->set('Hello');
+		// return;
 		$bs= $this->add('Model_BalanceSheet')->load($this->under_balance_sheet_id);
 		$result= $this->add('Model_Scheme')->getOpeningBalanceByGroup($this->api->nextDate($this->to_date),$forPandL=$bs['is_pandl'],$this->branch,$bs,array('AccountNumber','account','AccountNumber'),null,$this->from_date);
 		$grid = $this->add('Grid_BalanceSheet');
@@ -35,6 +37,8 @@ class View_BSPLChunks_Accounts extends View {
 
 		$grid->addColumn('text,toAccountStatement','AccountNumber');
 		$grid->addColumn('money','Amount');
+
+		$grid->removeColumn('id');
 
 		$grid->addTotals(array('Amount'));
 	}
@@ -52,6 +56,8 @@ class View_BSPLChunks_Accounts extends View {
 
 		$grid->addColumn('text,toAccountStatement','AccountNumber');
 		$grid->addColumn('money','Amount');
+
+		$grid->removeColumn('id');
 
 		$grid->addTotals(array('Amount'));
 	}

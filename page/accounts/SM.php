@@ -10,6 +10,8 @@ class page_accounts_SM extends Page {
 
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_Default_model = $this->add('Model_Account_SM');
+
+		$account_Default_model->addExpression('father_name')->set($account_Default_model->refSQL('member_id')->fieldQuery('FatherName'));
 		
 		$account_Default_model->add('Controller_Acl');
 		$account_Default_model->setOrder('id','desc');
@@ -45,7 +47,7 @@ class page_accounts_SM extends Page {
 			$account_Default_model->hook('editing');
 		}
 
-		$crud->setModel($account_Default_model,array('AccountNumber','Amount','member_id','scheme_id','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','ActiveStatus','sig_image_id'),array('AccountNumber','created_at','member','scheme','ActiveStatus'));
+		$crud->setModel($account_Default_model,array('AccountNumber','Amount','member_id','scheme_id','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','ActiveStatus','sig_image_id'),array('AccountNumber','created_at','member','father_name','branch','scheme','ActiveStatus'));
 		
 		if(!$crud->isEditing()){
 			// $crud->grid->addOrder()->move('member','first')->now();

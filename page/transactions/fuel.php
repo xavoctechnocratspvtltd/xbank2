@@ -20,7 +20,7 @@ class page_transactions_fuel extends Page {
 
 		$form = $this->add('Form');
 		
-		$form->addField('autocomplete/Basic',array('name'=>'staff'))->validateNotNull()->setModel('Staff');
+		$form->addField('autocomplete/Basic',array('name'=>'staff'))->validateNotNull()->setModel('Employee')->addCondition('is_active',true);
 		$form->addField('Number','amount')->validateNotNull();
 		$form->addField('autocomplete/Basic','amount_from_account')->setModel($account_from_account_model,'AccountNumber');
 		$form->addField('Text','narration');

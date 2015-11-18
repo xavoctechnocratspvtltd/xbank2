@@ -20,6 +20,7 @@ class View_BSPLChunks_SchemeGroup extends View {
 
 		$grid->addColumn('text,SchemeGroupToSchemeName','SchemeGroup');
 		$grid->addColumn('money','Amount');
+		$grid->removeColumn('id');
 
 		$grid->addTotals(array('Amount'));
 

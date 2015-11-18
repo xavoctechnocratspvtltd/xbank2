@@ -179,7 +179,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$premiums->addCondition('branch_id',$branch->id);
 
 		// No Panelties for Loan Against Deposit Accounts
-		$premiums->addCondition('LoanAgainstAccount_id',null);
+		$premiums->addCondition($premiums->dsql()->expr('([0] is null or [0] = 0)',array($premiums->getElement('LoanAgainstAccount_id'))));
 
 		if($test_account) $premiums->addCondition('account_id',$test_account->id);
 

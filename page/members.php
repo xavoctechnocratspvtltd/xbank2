@@ -121,10 +121,11 @@ class page_members extends Page {
 
 			
 
-			$g->addColumn('button','active','Active/DeActive');
 
-			if($this->api->auth->model['AccessLevel'] >=80)
+			if($this->api->auth->model['AccessLevel'] >=80){
+				$g->addColumn('button','active','Active/DeActive');
 				$g->addColumn('button','defaulter','Defaulter/Normal');
+			}
 
 			$g->addColumn('expander','comment');
 			$g->addFormatter('edit','removeEdit');

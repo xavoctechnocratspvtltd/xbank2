@@ -199,7 +199,8 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addPaginator(10);
 			$crud->grid->addColumn('expander','edit_pendingDocument');
 			$crud->grid->addColumn('expander','edit_guarantor');
-			$crud->grid->addColumn('expander','action');
+			if($this->api->auth->model['AccessLevel']>=80)
+				$crud->grid->addColumn('expander','action');
 			$crud->grid->addQuickSearch(array('name'));
 		}
 

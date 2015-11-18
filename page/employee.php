@@ -13,6 +13,11 @@ class page_employee extends Page{
 	}
 
 	function page_addEmployee(){
+		if($this->api->auth->model['AccessLevel'] < 80 ){
+			$this->add('View_Error')->set('Not Authorized');
+			return;
+		}
+
 		$emp=$this->add('Model_Employee');
 		// $emp->addExpression('emp_code')->set(function($m,$q){
 		// 	return $m->id;//->fieldQuery('id');
@@ -32,10 +37,17 @@ class page_employee extends Page{
 					'net_salary','employee_image_photo_id','employee_image_signature_id','date_of_leaving',
 					'is_active','effective_cl_date','opening_cl'),array());
 		// $crud->addRef('EmployeeSalary');
+
+		$crud->add('Controller_Acl');
 	}
 
 
 	function page_manageSalary(){
+		if($this->api->auth->model['AccessLevel'] < 80 ){
+			$this->add('View_Error')->set('Not Authorized');
+			return;
+		}
+
 		$this->api->stickyGET('branch');
 		$this->api->stickyGET('month');
 		$this->api->stickyGET('year');
@@ -272,7 +284,11 @@ class page_employee extends Page{
 	}
 
 	function page_salaryRecord(){
-	
+		if($this->api->auth->model['AccessLevel'] < 80 ){
+			$this->add('View_Error')->set('Not Authorized');
+			return;
+		}
+		
 		$month=array( '01'=>"Jan",'02'=>"Feb",'03'=>"March",'04'=>"April",
 					'05'=>"May",'06'=>"Jun",'07'=>"July",'08'=>"Aug",'09'=>"Sep",
 					'10'=>"Oct",'11'=>"Nov",'12'=>"Dec");

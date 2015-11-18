@@ -24,7 +24,7 @@ class page_transactions_conveyance extends Page {
 		// $account_from_account_model->add('Controller_Acl');
 
 		$form = $this->add('Form');
-		$form->addField('autocomplete/Basic',array('name'=>'staff'))->validateNotNull()->setModel('Staff');
+		$form->addField('autocomplete/Basic',array('name'=>'staff'))->validateNotNull()->setModel('Employee')->addCondition('is_active',true);
 			$form->addField('Number','amount')->validateNotNull();
 		$amtfrmac = $form->addField('autocomplete/Basic','amount_from_account');
 		$amtfrmac->setModel($account_from_account_model,'AccountNumber');

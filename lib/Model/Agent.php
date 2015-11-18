@@ -281,6 +281,18 @@ class Model_Agent extends Model_Table {
 	}
 
 	function beforeSave(){
+
+		$old_agent_username = $this->add('Model_Agent');
+		$old_agent_username->addCondition('username',$this['username']);
+
+		if($this->loaded())
+			$old_agent_username->addCondition('id','<>',$this['id']);
+
+		$old_agent_username->tryLoadAny();
+
+		if($old_agent_username->loaded())
+			throw $this->exception('Username already taken','ValidityCheck')->setField('username');
+
 		if($this->sponsor() and $this->sponsor()->isAtLowestCader()){
 			throw $this->exception('Sponsor is Advisor . Cannot Add','ValidityCheck')->setField('sponsor_id');
 		}

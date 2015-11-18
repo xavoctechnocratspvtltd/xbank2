@@ -576,7 +576,8 @@ class Model_Account extends Model_Table {
 			$account_dr->createNewAccount($in_branch->getDefaultMember()->get('id'),$scheme->id,$in_branch,$in_branch['Code'].SP.'Conveyance Expenses',array('DefaultAC'=>true,'Group'=>'Conveyance Expenses','PAndLGroup'=>'Conveyance Expenses'));
 		}
 
-		$staff_model=$this->add('Model_Staff')->load($staff);
+		$staff_model=$this->add('Model_Employee')->load($staff);
+		
 		if(!$narration)
 			$narration = "Conveyance Amount paid to ";
 

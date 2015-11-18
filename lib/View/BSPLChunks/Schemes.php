@@ -40,6 +40,8 @@ class View_BSPLChunks_Schemes extends View {
 		$grid->addColumn('text,SchemeNameToAccounts','Scheme');
 		$grid->addColumn('money','Amount');
 
+		$grid->removeColumn('id');
+
 		$grid->addTotals(array('Amount'));
 	}
 

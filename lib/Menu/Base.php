@@ -84,7 +84,10 @@ class Menu_Base extends Menu {
 		$mad_sub_menus->addMenuItem('agents','Agents');
 		$mad_sub_menus->addMenuItem('dealers','Dealers');
 		$mad_sub_menus->addMenuItem('dsa','DSA');
-		$mad_sub_menus->addMenuItem('employee','Employees');
+		
+		if($this->api->auth->model['AccessLevel'] >= 80)
+			$mad_sub_menus->addMenuItem('employee','Employees');
+
 		$mad->js('click',$mad_sub_menus_popover->showJS());
 		
 		// $general_sub_menus = $general_sub_menus_popover->add('Menu_Vertical');

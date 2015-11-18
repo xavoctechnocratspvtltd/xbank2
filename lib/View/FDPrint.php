@@ -42,8 +42,8 @@ class View_FDPrint extends View{
 		$this->template->set('due_date_1',date("d-M-Y",strtotime($account['maturity_date'])));
 		$this->template->set('interest',$account->ref('scheme_id')->get('Interest')."%");
 		$this->template->set('interest_1',$account->ref('scheme_id')->get('Interest')."%");
-		$this->template->set('maturity_amount',round($account->getAmountForInterest($account['maturity_date'])));
-		$this->template->set('maturity_amount_1',round($account->getAmountForInterest($account['maturity_date'])));
+		$this->template->set('maturity_amount',$account['account_type']=='MIS'? $account['Amount'] : round($account->getAmountForInterest($account['maturity_date'])));
+		$this->template->set('maturity_amount_1',$account['account_type']=='MIS'? $account['Amount'] :  round($account->getAmountForInterest($account['maturity_date'])));
 		$this->template->set('maturity_amount_word',$account->convert_number_to_words(round($account->getAmountForInterest($account['maturity_date']))));
 		
 	}

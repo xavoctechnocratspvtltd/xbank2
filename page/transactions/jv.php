@@ -42,25 +42,35 @@ class page_transactions_jv extends Page {
 		// $account_dr_model->addCondition('branch_id',$this->api->currentBranch->id);
 		// $account_dr_model->filter(array($account_dr_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Branch & Divisions%')));
 
+		$j = 1;
+
 		for($i=1;$i<=$this->rows;$i++){
+			// echo $i."--cr<br/>";
+			$j = $j+$i*$i;
+
 			$account = $form->addField('autocomplete/Basic','account_cr_'.$i);
+			$account->other_field->setAttr('tabindex',$j);
 			$account->setModel($account_cr_model,'AccountNumber');
 			$account->setCaption(' ');
-			$amount = $form->addField('line','amount_cr_'.$i,'');
+			$amount = $form->addField('line','amount_cr_'.$i,'')->setAttr('tabindex',$j+1);
 
 			$account->js(true)->closest('div.atk-form-row')->appendTo($cr_account_col);
 			$amount->js(true)->closest('div.atk-form-row')->appendTo($cr_amount_col);
 		}
 
+		$j = 0;
 		for($i=1;$i<=$this->rows;$i++){
+			$j = $j+$i*$i;
+
 			$account = $form->addField('autocomplete/Basic','account_dr_'.$i);
+			$account->other_field->setAttr('tabindex',$j);
 			$account->setModel($account_dr_model,'AccountNumber');
-			$amount = $form->addField('line','amount_dr_'.$i,'');
+			$amount = $form->addField('line','amount_dr_'.$i,'')->setAttr('tabindex',$j + 1);
 
 			$account->setCaption(' ');
 			$account->js(true)->closest('div.atk-form-row')->appendTo($dr_account_col);
 			$amount->js(true)->closest('div.atk-form-row')->appendTo($dr_amount_col);
-		}		
+		}
 
 
 
@@ -68,7 +78,7 @@ class page_transactions_jv extends Page {
 		$jv_type_col = $bottom_cols->addColumn(3);		
 		$exec_btn = $bottom_cols->addColumn(6);
 		
-		$narration_field = $form->addField('Text','narration');
+		$narration_field = $form->addField('Text','narration')->setAttr('tabindex',100);
 		$narration_field->js(true)->closest('div.atk-form-row')->appendTo($jv_type_col);
 
 		$jv_type_field = $form->addField('DropDown','jv_type');

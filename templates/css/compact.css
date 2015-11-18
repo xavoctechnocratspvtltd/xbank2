@@ -6261,6 +6261,7 @@ a.atk-swatch-gray:hover,
 .atk-swatch-ink {
   background: #1c2933;
   background: #0095FF;
+  background: #0081D7;
   border-color: #1c2933;
 }
 .atk-swatch-ink a {
@@ -6732,4 +6733,12 @@ a.atk-swatch-blue:hover,
   .atk-col-3[class*=atk-col] {
     width: 100%;
   }
+}
+
+.mymenu{
+  width:100% !important;
+}
+
+.atk-menu-vertical a{
+  color:white !important;
 }

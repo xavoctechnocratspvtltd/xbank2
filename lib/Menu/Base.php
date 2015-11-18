@@ -3,10 +3,13 @@
 class Menu_Base extends Menu {
 	function init(){
 		parent::init();
-		$this->add('View')->setElement('img')->setAttr('src','templates/images/logo.jpg')->setAttr('width','30px');
-		
+		// $this->add('View')->setElement('img')->setAttr('src','templates/images/logo.jpg')->setAttr('width','30px');
 		if($this->api->auth->model['AccessLevel']>=80)
-			$this->addMenuItem('utility_setdate',array('('.$this->api->current_branch['Code']. ') ' .date('d M Y',strtotime($this->api->today)),'swatch'=>(strtotime($this->api->today) != strtotime(date('Y-m-d')) ? 'red':null )));
+			$this->addMenuItem('utility_setdate',array('('. date('d M Y',strtotime($this->api->today)).') ','swatch'=>(strtotime($this->api->today) != strtotime(date('Y-m-d')) ? 'red':null )));
+			// '('.$this->api->current_branch['Code']. ') ' .
+
+		$branch_v = $this->api->add('View',null,'BankBanner');
+		$branch_v->setHTML('Branch : '. $this->api->currentBranch['name'])->addStyle('margin-top:-5px;font-size:15px;');
 
 		$this->addMenuItem('index','Dashboard');
 		
@@ -27,7 +30,8 @@ class Menu_Base extends Menu {
 		// $member_reports = 	$this->addMenuItem('reports_member','Member Reports');
 		// $deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
 		$utilities = 	$this->addMenuItem('utilities','Utilities');
-		$this->addMenuItem('logout','Logout');
+
+		$this->addMenuItem('logout','Logout')->addClass('atk-swatch-red');
 		// $this->addMenuItem('index','Bhawani Credit Co.Operative Society')->setStyle('text-align','center');
 		// Popovers
 		if($this->api->currentStaff->isSuper())

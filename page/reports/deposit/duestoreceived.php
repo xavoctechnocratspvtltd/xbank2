@@ -114,7 +114,7 @@ class page_reports_deposit_duestoreceived extends Page {
 
 		// $grid->addColumn('balance','balance');
 
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

@@ -24,7 +24,7 @@ class Model_Employee extends Model_Table{
 		$this->addField('marital_status');
 		$this->addField('relation_with_nominee')->enum(array('Father','Mother','Wife','Husband','Son','Brother','Sister','Doughter'));
 		$this->addField('last_qualification');
-		$this->addField('contact_no')->type('int');
+		$this->addField('contact_no');
 		$this->addField('email_id');
 		$this->addField('permanent_address');
 		$this->addField('present_address');
@@ -95,7 +95,7 @@ class Model_Employee extends Model_Table{
 		return false;
 	}
 
-	function beforeSave(){
+	function beforeSave(){		
 		if(strlen($this['contact_no']) !=10){
 			throw $this->exception('Contact No must be 10 digits ','ValidityCheck')->setField('contact_no');
 		}

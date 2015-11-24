@@ -47,6 +47,11 @@ class Grid_AccountsBase extends Grid{
 		$this->current_row_html[$field] = '<img src="'.$this->current_row[$field].'" width="100px" class="grid_picture"/>';
 	}
 
+	function format_smallWrap($field){
+		$this->setTDParam($field, 'style', 'width:300px;text-wrap:suppress;');
+		// $this->current_row_html[$field] = '<div style="width:50px;">'.$this->current_row[$field].'</div>';
+	}
+
 	function recursiveRender(){
 		if($this->order) $this->order->now();
 		if($this->hasColumn('voucher_no')) $this->addFormatter('voucher_no','voucherNo');

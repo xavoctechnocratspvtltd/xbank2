@@ -69,7 +69,7 @@ class page_accounts_statement extends Page {
 		$grid->addSno();
 
 		$grid->addTotals(array('amountCr','amountDr'));
-		$grid->addFormatter('Narration','Wrap');
+		$grid->addFormatter('Narration','smallWrap');
 
 		if($form->isSubmitted()){
 			

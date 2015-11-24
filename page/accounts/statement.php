@@ -16,7 +16,8 @@ class page_accounts_statement extends Page {
 		$form->addField('DatePicker','to_date');
 		$form->addSubmit('Get Statement');
 
-		$grid = $this->add('Grid_AccountStatement');
+		$v = $this->add('View')->addStyle('width','100%');
+		$grid = $v->add('Grid_AccountStatement');
 		$transactions = $this->add('Model_TransactionRow');
 
 		if($_GET['account_id'] or $_GET['AccountNumber']){
@@ -69,7 +70,9 @@ class page_accounts_statement extends Page {
 		$grid->addSno();
 
 		$grid->addTotals(array('amountCr','amountDr'));
-		$grid->addFormatter('Narration','smallWrap');
+		$grid->addFormatter('Narration','Wrap');
+		// $grid->addFormatter('voucher_no','smallWrap');
+		// $grid->addFormatter('voucher_no','smallWrap');
 
 		if($form->isSubmitted()){
 			

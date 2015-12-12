@@ -20,6 +20,7 @@ class page_agent_duestoreceived extends Page {
 		$grid->add('H3',null,'grid_buttons')->set('Deposit Emi Due List As On ' . date('d-m-Y',strtotime($_GET['on_date']?:$this->api->today)) );
 		
 		$account_model=$this->add('Model_Active_Account_Recurring');
+		$account_model->addCondition('agent_id',$this->api->auth->model->id);
 		$member_join=$account_model->join('members','member_id');
 		$member_join->addField('member_name','name');
 		$member_join->addField('FatherName');
@@ -101,7 +102,7 @@ class page_agent_duestoreceived extends Page {
 			$account_model->addCondition('id',-1);
 
 		$account_model->addCondition('due_premium_count','>',0);
-		$account_model->add('Controller_Acl');
+		// $account_model->add('Controller_Acl');
 		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','due_premium_count','premium_amount','total','agent','agent_code','agent_phone'));
 		$grid->addSno();
 		// $grid->removeColumn('last_premium');

@@ -7,8 +7,8 @@ class page_agent_emiduelist extends Page {
 		parent::init();
 
 		$form=$this->add('Form');
-		$agent_field=$form->addField('autocomplete/Basic','agent')->validateNotNull();
-		$agent_field->setModel('Agent');
+		// $agent_field=$form->addField('autocomplete/Basic','agent')->validateNotNull();
+		// $agent_field->setModel('Agent');
 
 		$form->addField('DatePicker','on_date')->validateNotNull();
 		// $form->addField('DatePicker','on_date');
@@ -28,6 +28,7 @@ class page_agent_emiduelist extends Page {
 
 		$account_model->addCondition('DefaultAC',false);
 		$account_model->addCondition('MaturedStatus',false);
+		$account_model->addCondition('agent_id',$this->api->auth->model->id);
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q){
 			return $m->refSQL('Premium')
@@ -76,10 +77,10 @@ class page_agent_emiduelist extends Page {
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			// ALREADY IMPLEMENTED IN EXPRESSIONS
-			if($_GET['agent']){
-				$this->api->stickyGET('agent');
-				$account_model->addCondition('agent_id',$_GET['agent']);
-			}
+			// if($_GET['agent']){
+			// 	// $this->api->stickyGET('agent');
+			// 	// $account_model->addCondition('agent_id',$_GET['agent']);
+			// }
 
 			$this->api->stickyGET('report_type');
 			$this->api->stickyGET('on_date');
@@ -114,7 +115,7 @@ class page_agent_emiduelist extends Page {
 
 
 		$account_model->addCondition('due_premium_count','>',0);
-		$account_model->add('Controller_Acl');
+		// $account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
 		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','agent','agent_code','agent_phone'));
 		
@@ -145,7 +146,7 @@ class page_agent_emiduelist extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('agent'=>$form['agent'],'on_date'=>$form['on_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
+			$grid->js()->reload(array('on_date'=>$form['on_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
 		}	
 	}
 }

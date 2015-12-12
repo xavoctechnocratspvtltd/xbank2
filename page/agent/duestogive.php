@@ -23,6 +23,7 @@ class page_agent_duestogive extends Page {
 		$grid->add('H3',null,'grid_buttons')->set('Dues To Give Report From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 
 		$account=$this->add('Model_Account');
+		$account->addCondition('agent_id',$this->api->auth->model->id);
 		$member_join=$account->join('members','member_id');
 		$member_join->addField('member_name','name');
 		$member_join->addField('FatherName');
@@ -66,7 +67,7 @@ class page_agent_duestogive extends Page {
 			$account->addCondition('id',-1);
 
 		$account->addCondition('DefaultAC',false);
-		$account->add('Controller_Acl');
+		// $account->add('Controller_Acl');
 
 		$grid->setModel($account,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','due_date','Amount','agent_name','agent_phoneno','ActiveStatus','account_type'));
 		$grid->addPaginator(50);

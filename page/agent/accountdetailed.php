@@ -8,6 +8,7 @@ class page_agent_accountdetailed extends Page {
 		$form=$this->add('Form');
 		$accounts_no_field=$form->addField('autocomplete/Basic','accounts_no');
 		$accounts=$this->add('Model_Account');
+		$accounts->addCondition('agent_id',$this->api->auth->model->id);
 		$accounts_no_field->setModel($accounts);
 
 		$form->addSubmit('GET List');

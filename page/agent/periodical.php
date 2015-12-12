@@ -21,10 +21,10 @@ class page_agent_periodical extends Page {
 		}
 
 		$form=$this->add('Form');
-		$dealer_field=$form->addField('autocomplete/Basic','dealer');
-		$dealer_field->setModel('Dealer');
-		$agent_field=$form->addField('autocomplete/Basic','agent');
-		$agent_field->setModel('Agent');
+		// $dealer_field=$form->addField('autocomplete/Basic','dealer');
+		// $dealer_field->setModel('Dealer');
+		// $agent_field=$form->addField('autocomplete/Basic','agent');
+		// $agent_field->setModel('Agent');
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
@@ -37,6 +37,7 @@ class page_agent_periodical extends Page {
 		$grid->add('H3',null,'grid_buttons')->set('Periodical Accounts As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$account_model=$this->add('Model_Account');
+		$account_model->addCondition('agent_id',$this->api->auth->model->id);
 		$dealer_join = $account_model->leftJoin('dealers','dealer_id');
 		$agent_join = $account_model->leftJoin('agents','agent_id');
 		$scheme_join = $account_model->join('schemes','scheme_id');
@@ -54,19 +55,18 @@ class page_agent_periodical extends Page {
 				$account_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			}
 
-			if($_GET['dealer']){
-				$this->api->stickyGET("dealer");
-				$account_model->addCondition('dealer_id',$_GET['dealer']);
-			}
+			// if($_GET['dealer']){
+			// 	$this->api->stickyGET("dealer");
+			// 	$account_model->addCondition('dealer_id',$_GET['dealer']);
+			// }
 
-			if($_GET['agent']){
-				$this->api->stickyGET("agent");
-				$account_model->addCondition('agent_id',$_GET['agent']);
-			}
+			// if($_GET['agent']){
+			// 	$this->api->stickyGET("agent");
+			// }
 
 		}
 
-		$account_model->add('Controller_Acl');
+		// $account_model->add('Controller_Acl');
 
 		$account_model->addCondition('DefaultAC',false);
 		$account_model->addCondition('SchemeType',explode(',',ACCOUNT_TYPES));
@@ -90,8 +90,9 @@ class page_agent_periodical extends Page {
 			->addColumn('detail','details',array('icon'=>'plus'),$grid)
 			->set(function($p){
 				$account_model=$p->add('Model_Account');
+				$account_model->addCondition('agent_id',$this->api->auth->model->id);
 				$account_model->addCondition('account_type',$p->id);
-				$account_model->add('Controller_Acl');
+				// $account_model->add('Controller_Acl');
 
 				if($_GET['filter']){
 					$p->api->stickyGET("filter");
@@ -106,15 +107,14 @@ class page_agent_periodical extends Page {
 						$account_model->addCondition('created_at','<',$p->api->nextDate($_GET['to_date']));
 					}
 
-					if($_GET['dealer']){
-						$p->api->stickyGET("dealer");
-						$account_model->addCondition('dealer_id',$_GET['dealer']);
-					}
+					// if($_GET['dealer']){
+					// 	$p->api->stickyGET("dealer");
+					// 	$account_model->addCondition('dealer_id',$_GET['dealer']);
+					// }
 
-					if($_GET['agent']){
-						$p->api->stickyGET("agent");
-						$account_model->addCondition('agent_id',$_GET['agent']);
-					}
+					// if($_GET['agent']){
+					// 	$p->api->stickyGET("agent");
+					// }
 
 				}
 
@@ -150,7 +150,7 @@ class page_agent_periodical extends Page {
 		// $grid->js('click',$js);
 		
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
+			$grid->js()->reload(array(/*'dealer'=>$form['dealer'],'agent'=>$form['agent'],*/'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
 		}	
 
 	}
@@ -160,11 +160,10 @@ class page_agent_periodical extends Page {
 		$this->api->stickyGET('account_type');
 		$this->api->stickyGET("from_date");
 		$this->api->stickyGET("to_date");
-		$this->api->stickyGET("dealer");
-		$this->api->stickyGET("agent");
 	
 		$account_model = $this->add('Model_Account');
 		$account_model->addCondition('account_type',$p->id);
+		$account_model->addCondition('agent_id',$this->api->auth->model->id);
 
 		if($_GET['filter']){
 			$this->api->stickyGET("filter");
@@ -179,15 +178,14 @@ class page_agent_periodical extends Page {
 				$account_model->addCondition('created_at','<',$p->api->nextDate($_GET['to_date']));
 			}
 
-			if($_GET['dealer']){
-				$this->api->stickyGET("dealer");
-				$account_model->addCondition('dealer_id',$_GET['dealer']);
-			}
+			// if($_GET['dealer']){
+			// 	$this->api->stickyGET("dealer");
+			// 	$account_model->addCondition('dealer_id',$_GET['dealer']);
+			// }
 
-			if($_GET['agent']){
-				$this->api->stickyGET("agent");
-				$account_model->addCondition('agent_id',$_GET['agent']);
-			}
+			// if($_GET['agent']){
+			// 	$this->api->stickyGET("agent");
+			// }
 
 		}
 

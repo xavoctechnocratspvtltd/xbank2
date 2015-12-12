@@ -12,15 +12,15 @@ class page_agent_crpb extends Page {
 		}
 
 		$form=$this->add('Form');
-		$agent=$form->addField('autocomplete/Basic','agent');
-		$agent->setModel('Agent');
+		// $agent=$form->addField('autocomplete/Basic','agent');
+		// $agent->setModel('Agent');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
 		$form->addSubmit('GET List');
 
 		$agent_model = $this->add('Model_Agent',array('from_date'=>$_GET['from_date'],'to_date'=> $_GET['to_date']));
-
+		$agent_model->addCondition('id',$this->api->auth->model->id);
 		$m_m = $agent_model->getElement('member_id')->getModel();
 		$m_m->title_field="name";
 
@@ -34,9 +34,9 @@ class page_agent_crpb extends Page {
 		if($this->api->stickyGET('filter')){
 			$this->api->stickyGET('from_date');
 			$this->api->stickyGET('to_date');
-			if($agent_id = $this->api->stickyGET('agent')){
-				$agent_model->addCondition('id',$agent_id);
-			}
+			// if($agent_id = $this->api->stickyGET('agent')){
+			// 	$agent_model->addCondition('id',$agent_id);
+			// }
 
 
 		}

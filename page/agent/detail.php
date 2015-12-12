@@ -9,12 +9,11 @@ class page_agent_detail extends Page {
 		if($_GET['member_list']){
 			$this->js()->univ()->frameURL('MemberList',$this->api->url(null,array('team_sponsor_id'=>$_GET['member_list'])))->execute();
 		}
+		// $form=$this->add('Form');
+		// $agent_field=$form->addField('autocomplete/Basic','agent');
+		// $agent_field->setModel('Agent');
 
-		$form=$this->add('Form');
-		$agent_field=$form->addField('autocomplete/Basic','agent');
-		$agent_field->setModel('Agent');
-
-		$form->addSubmit('GET LIST');
+		// $form->addSubmit('GET LIST');
 		$agent_guarantor=$this->add('Model_AgentGuarantor');
 		$member_join=$agent_guarantor->join('members','member_id');
 		$member_join->addField('FatherName');
@@ -22,9 +21,10 @@ class page_agent_detail extends Page {
 		$member_join->addField('PhoneNos');
 		$member_join->addField('branch_id');
 
-		$agent_guarantor->addCondition('branch_id',$this->api->current_branch->id);
+		// $agent_guarantor->addCondition('branch_id',$this->api->current_branch->id);
 
 		$agent=$this->add('Model_Agent');
+		$agent->addCondition('id',$this->api->auth->model->id);
 		$member_join=$agent->join('members','member_id');
 		$member_join->addField('FatherName');
 		$member_join->addField('PermanentAddress');
@@ -32,7 +32,7 @@ class page_agent_detail extends Page {
 		$member_join->addField('PhoneNos');
 		$member_join->addField('branch_id');
 
-		$agent->add('Controller_Acl');
+		// $agent->add('Controller_Acl');
 		// $agent->addCondition('branch_id',$this->api->current_branch->id);
 
 		$agent->addExpression('is_default')->set(function($m,$q){
@@ -69,10 +69,10 @@ class page_agent_detail extends Page {
 			$agent->addCondition('sponsor_id',$_GET['team_sponsor_id']);
 		}
 
-		if($_GET['agent']){
-			$agent->addCondition('id',$_GET['agent']);
-			$agent_guarantor->addCondition('agent_id',$_GET['agent']);
-		}
+		// if($_GET['agent']){
+		// 	$agent->addCondition('id',$_GET['agent']);
+		// 	$agent_guarantor->addCondition('agent_id',$_GET['agent']);
+		// }
 
 		$agent->tryLoadAny();
 
@@ -103,10 +103,10 @@ class page_agent_detail extends Page {
 
 		$grid_agent->addPaginator(500);
 
-		if($form->isSubmitted()){
+		// if($form->isSubmitted()){
 
-			$view->js()->reload(array('agent'=>$form['agent']))->execute();
+		// 	$view->js()->reload(array('agent'=>$form['agent']))->execute();
 
-		}
+		// }
 	}
 }

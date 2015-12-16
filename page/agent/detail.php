@@ -15,6 +15,8 @@ class page_agent_detail extends Page {
 
 		// $form->addSubmit('GET LIST');
 		$agent_guarantor=$this->add('Model_AgentGuarantor');
+		$agent_guarantor->addCondition('agent_id',$this->api->auth->model->id);
+		
 		$member_join=$agent_guarantor->join('members','member_id');
 		$member_join->addField('FatherName');
 		$member_join->addField('PermanentAddress');

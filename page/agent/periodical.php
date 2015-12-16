@@ -85,12 +85,12 @@ class page_agent_periodical extends Page {
 		$grid->addColumn('text','account_type');
 		$grid->addColumn('text','count');
 		$grid->addColumn('text','amount');
-	
+		$self=$this;
 		$this->add('VirtualPage')
 			->addColumn('detail','details',array('icon'=>'plus'),$grid)
 			->set(function($p){
 				$account_model=$p->add('Model_Account');
-				$account_model->addCondition('agent_id',$this->api->auth->model->id);
+				$account_model->addCondition('agent_id',$self->api->auth->model->id);
 				$account_model->addCondition('account_type',$p->id);
 				// $account_model->add('Controller_Acl');
 

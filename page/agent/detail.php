@@ -26,7 +26,7 @@ class page_agent_detail extends Page {
 		// $agent_guarantor->addCondition('branch_id',$this->api->current_branch->id);
 
 		$agent=$this->add('Model_Agent');
-		$agent->addCondition('id',$this->api->auth->model->id);
+		// $agent->addCondition('id',$this->api->auth->model->id);
 		$member_join=$agent->join('members','member_id');
 		$member_join->addField('FatherName');
 		$member_join->addField('PermanentAddress');
@@ -69,17 +69,18 @@ class page_agent_detail extends Page {
 
 		if($_GET['team_sponsor_id']){
 			$agent->addCondition('sponsor_id',$_GET['team_sponsor_id']);
+		}else{
+			$agent->addCondition('id',$this->api->auth->model->id);
 		}
-
 		// if($_GET['agent']){
 		// 	$agent->addCondition('id',$_GET['agent']);
 		// 	$agent_guarantor->addCondition('agent_id',$_GET['agent']);
 		// }
 
-		$agent->tryLoadAny();
-
 		$view=$this->add('View');
 		$grid_agent=$view->add('Grid_AccountsBase');
+
+			$agent->tryLoadAny();
 
 		$grid_agent->add('H3',null,'grid_buttons')->set('Agent Detail As On '. date('d-M-Y'));
 		$grid_agent->setModel($agent,array('code','agent_member_name','level_1_crpb','level_2_crpb','level_3_crpb','total_group_crpb','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor','sponsor_cadre','sponsor_phone','self_business','team_business','self_crpb','total_team_business','total_group_crpb'));

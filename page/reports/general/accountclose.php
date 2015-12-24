@@ -44,6 +44,7 @@ class page_reports_general_accountclose extends Page {
 		
 		$account_model = $this->add('Model_Account',array('alias'=>'xx'));
 		$account_model->addCondition('branch_id',$this->api->current_branch->id);
+		$account_model->addCondition('ActiveStatus',false);
 		$account_model->addCondition('CurrentBalanceCr','>',0);
 		$account_model->addCondition('CurrentBalanceCr',$account_model->getField('CurrentBalanceDr'));
 		

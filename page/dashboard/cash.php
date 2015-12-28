@@ -38,7 +38,7 @@ class page_dashboard_cash extends Page {
 		$grid->addMethod('format_received',function($grid,$field){
 			$grid->receive_sum += round($grid->model->allDrCrSum('Dr'),2);
 			$grid->current_row[$field] = round($grid->model->allDrCrSum('Dr'),2);
-			$grid->receive_view->set("Total Received ".$grid->receive_sum);
+			$grid->receive_view->set("Total Received ".round($grid->receive_sum,2));
 		});
 
 		$grid->addColumn('received','todays_received');
@@ -46,7 +46,7 @@ class page_dashboard_cash extends Page {
 		$grid->addMethod('format_paid',function($grid,$field){
 			$grid->paid_sum += round($grid->model->allDrCrSum('Cr'),2);
 			$grid->current_row[$field] = round($grid->model->allDrCrSum('Cr'),2);
-			$grid->paid_view->set("Total Payment ".$grid->paid_sum);
+			$grid->paid_view->set("Total Payment ".round($grid->paid_sum,2));
 		});
 
 		$grid->addColumn('paid','todays_payment');
@@ -59,7 +59,7 @@ class page_dashboard_cash extends Page {
 			$grid->current_row[$field] = round($bal_fig,2) . ' ' . $bal_side;
 
 			$grid->balance_sum += ($bal['Dr'] - $bal['Cr']);
-			$grid->balance_view->set("Total Balance ".$grid->balance_sum);
+			$grid->balance_view->set("Total Balance ".round($grid->balance_sum,2));
 		});
 
 		$grid->addColumn('crbal','balance_on_date');
@@ -98,7 +98,7 @@ class page_dashboard_cash extends Page {
 		$grid->addMethod('format_received',function($grid,$field){
 			$grid->receive_sum1 += round($grid->model->allDrCrSum('Dr'),2);
 			$grid->current_row[$field] = round($grid->model->allDrCrSum('Dr'),2);
-			$grid->receive_view1->set("Total Received ".$grid->receive_sum1);
+			$grid->receive_view1->set("Total Received ".round($grid->receive_sum1,2));
 		});
 
 		$grid->addColumn('received','todays_received');
@@ -106,7 +106,7 @@ class page_dashboard_cash extends Page {
 		$grid->addMethod('format_paid',function($grid,$field){
 			$grid->paid_sum1 += round($grid->model->allDrCrSum('Cr'),2);
 			$grid->current_row[$field] = round($grid->model->allDrCrSum('Cr'),2);
-			$grid->paid_view1->set("Total Payment ".$grid->paid_sum1);
+			$grid->paid_view1->set("Total Payment ".round($grid->paid_sum1,2));
 		});
 
 		$grid->addColumn('paid','todays_payment');
@@ -118,7 +118,7 @@ class page_dashboard_cash extends Page {
 			$bal_fig = abs($bal['Cr'] - $bal['Dr']);
 			$grid->current_row[$field] = round($bal_fig,2) . ' ' . $bal_side;
 			$grid->balance_sum1 += ($bal['Dr'] - $bal['Cr']);
-			$grid->balance_view1->set("Total Balance ".$grid->balance_sum1);
+			$grid->balance_view1->set("Total Balance ".round($grid->balance_sum1,2));
 		});
 
 		$grid->addColumn('crbal','balance_on_date');
@@ -151,7 +151,7 @@ class page_dashboard_cash extends Page {
 		$grid2->addMethod('format_received',function($grid,$field){
 			$grid->receive_sum2 += round($grid->model->allDrCrSum('Dr'),2);
 			$grid->current_row[$field] = round($grid->model->allDrCrSum('Dr'),2);
-			$grid->receive_view2->set("Total Debit ".$grid->receive_sum2);
+			$grid->receive_view2->set("Total Debit ".round($grid->receive_sum2,2));
 		});
 
 		$grid2->addColumn('received','Debit');
@@ -159,7 +159,7 @@ class page_dashboard_cash extends Page {
 		$grid2->addMethod('format_paid',function($grid,$field){
 			$grid->paid_sum2 += round($grid->model->allDrCrSum('Cr'),2);
 			$grid->current_row[$field] = round($grid->model->allDrCrSum('Cr'),2);
-			$grid->paid_view2->set("Total Credit ".$grid->paid_sum2);
+			$grid->paid_view2->set("Total Credit ".round($grid->paid_sum2,2));
 		});
 
 		$grid2->addColumn('paid','Credit');
@@ -171,7 +171,7 @@ class page_dashboard_cash extends Page {
 			$bal_fig = abs($bal['Cr'] - $bal['Dr']);
 			$grid->current_row[$field] = round($bal_fig,2) . ' ' . $bal_side;
 			$grid->balance_sum2 += ($bal['Dr'] - $bal['Cr']);
-			$grid->balance_view2->set("Total Balance ".$grid->balance_sum2);
+			$grid->balance_view2->set("Total Balance ".round($grid->balance_sum2,2));
 		});
 
 		$grid2->addColumn('crbal','balance_on_date');

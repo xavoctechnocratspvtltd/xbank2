@@ -9,7 +9,7 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 	function setModel($model,$fields=null){
 		$this->current_financial_year = $this->api->getFinancialYear();
 
-		$model->getElement('SchemeType')->caption('Under Head');
+		$model->getElement('scheme_name');
 		parent::setModel($model,$fields);
 
 		$this->addSno();

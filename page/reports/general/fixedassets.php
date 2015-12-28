@@ -17,7 +17,7 @@ class page_reports_general_fixedassets extends Page {
 
 		$form=$this->add('Form');
 		$assets_type_field=$form->addField('DropDown','fixed_assets_type');
-		$assets_type_field->setValueList(array('Fixed Assets'=>'Fixed Assets','plant & machionary'=>'plant & machionary','computer & printer'=>'computer & printer','furniture & fix'=>'furniture & fix'));
+		$assets_type_field->setValueList(array('Fixed Assets'=>'Fixed Assets','plant & machionary'=>'plant & machionary','computer & printer'=>'computer & printer','furniture & fix'=>'furniture & fix','All'=>'All'));
 
 		$form->addField('DatePicker','as_on_date');
 		$form->addSubmit('GET List');
@@ -36,26 +36,33 @@ class page_reports_general_fixedassets extends Page {
 				$scheme_id = $this->api->stickyGET('scheme_id');
 			}
 		}
-		$account_model->addCondition('scheme_id',$scheme_id);
+		if($_GET['fix_assets_type']!='All'){
+			$account_model->addCondition('scheme_id',$scheme_id);
+		}else{
+			$account_model->addCondition('scheme_name',array('Fixed Assets','plant & machionary','computer & printer','furniture & fix'));
+
+		}
 
 		$financial_year = $this->api->getFinancialYear();
-
+		
+		$account_model->addExpression('created_at')->set(function($m,$q){
+			return $m->add('Model_Transaction')->getField('created_at');
+		});	
 		//Purchase Date: First Tranaction Date in the current financial year
-		$account_model->addExpression('purchase_date')->set(function($m,$q)use($financial_year){
-			$tra_model = $m->add('Model_Transaction');
-			$tra_model->addCondition('reference_id',$m->id);
-			$tra_model->addCondition('created_at','>=',$financial_year['start_date']);
-			$tra_model->setLimit(1);
-			return $tra_model->fieldQuery('created_at');
+		// $account_model->addExpression('purchase_date')->set(function($m,$q)use($financial_year){
+		// 	$tra_model = $m->add('Model_Transaction');
+		// 	$tra_model->addCondition('reference_id',$m->id);
+		// 	$tra_model->addCondition('created_at','>=',$financial_year['start_date']);
+		// 	$tra_model->setLimit(1);
+		// 	return $tra_model->fieldQuery('created_at');
 
-			// return $m->refSQL('RelatedTransactions')->addCondition('created_at','>=',$financial_year['start_date'])->addCondition('created_at','<=',$financial_year['end_date'])->setLimit(1)->fieldQuery('created_at');
-		});
+		// 	// return $m->refSQL('RelatedTransactions')->addCondition('created_at','>=',$financial_year['start_date'])->addCondition('created_at','<=',$financial_year['end_date'])->setLimit(1)->fieldQuery('created_at');
+		// });
 
 		//Uner Head: SchemeType		
 		//Closing Balance : DR Balance
 
-		$grid->setModel($account_model,array('AccountNumber','purchase_date','SchemeType'));
-
+		$grid->setModel($account_model,array('AccountNumber','created_at','scheme_name'));
 		if($form->isSubmitted()){
 			$scheme = $this->add('Model_Scheme');
 			$scheme->addCondition('SchemeGroup',$form['fixed_assets_type']);

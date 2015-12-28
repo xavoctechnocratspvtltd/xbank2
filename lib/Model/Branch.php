@@ -70,6 +70,18 @@ class Model_Branch extends Model_Table {
 			$this->createBranchAndDivisionAccount($new_branch,$other_branches);
 		}
 
+		$udr_branch_closing=$this->add('Model_Closing');
+		$udr_branch_closing->loadBy('branch_id',2);
+		$closing_model=$this->add('Model_Closing');
+		$closing_model['branch_id']=$id;
+		$closing_model['daily']=$udr_branch_closing['weekly'];
+		$closing_model['weekly']=$udr_branch_closing['weekly'];
+		$closing_model['monthly']=$udr_branch_closing['monthly'];
+		$closing_model['halfyearly']=$udr_branch_closing['halfyearly'];
+		$closing_model['yearly']=$udr_branch_closing['yearly'];
+
+		$closing_model->save();
+
 	}
 
 	function createBranchAndDivisionAccount($account_under_branch, $account_for_branch){

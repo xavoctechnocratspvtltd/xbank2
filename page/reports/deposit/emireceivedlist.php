@@ -86,7 +86,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','CurrentAddress','amountCr','agent_name','agent_account_number','created_at'));
 		// $grid->removeColumn('CurrentAddress');
 		$grid->addFormatter('CurrentAddress','wrap');
-		$grid->addPaginator(50);
+		// $grid->addPaginator(50);
 		$grid->addSno();
 
 		// $js=array(

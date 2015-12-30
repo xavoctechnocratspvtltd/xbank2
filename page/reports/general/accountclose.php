@@ -8,15 +8,6 @@ class page_reports_general_accountclose extends Page {
 		$from_date = '1970-01-02';
 		$to_date = $this->api->today;
 		
-		$filter = $this->api->stickyGET('filter');
-
-		if($_GET['from_date']){
-			$from_date = $this->api->stickyGET('from_date');
-		}
-
-		if($_GET['to_date']){
-			$to_date = $this->api->stickyGET('to_date');
-		}
 
 
 		$form=$this->add('Form');
@@ -53,17 +44,25 @@ class page_reports_general_accountclose extends Page {
 		$member_join->addField('PermanentAddress');
 		$member_join->addField('PhoneNos');
 
+		$filter = $this->api->stickyGET('filter');
+		$from_date = $this->api->stickyGET('from_date');
+		$to_date = $this->api->stickyGET('to_date');
 		if($_GET['filter']){
 			if($_GET['account_type']){
 				$selected_account_type = $this->api->stickyGET('account_type');
 				$account_model->addCondition('SchemeType',$selected_account_type);
 			}
-			// if($_GET['as_on_date'])
-				// $account_model->addCondition('created_at','<',$this->api->nextDate($_GET['as_on_date']));
+			if($_GET['from_date']){
+				$account_model->addCondition('created_at','>',$_GET['from_date']);
+			}
+
+			if($_GET['to_date']){
+				$account_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+			}
 		}
 		$account_model->setOrder('id','desc');
 		$account_model->add('Controller_Acl');
-		$grid->setModel($account_model,array('member','AccountNumber','SchemeType','FatherName','PermanentAddress','PhoneNos','ActiveStatus','updated_at'));
+		$grid->setModel($account_model,array('member','AccountNumber','SchemeType','FatherName','PermanentAddress','PhoneNos','ActiveStatus','created_at','updated_at'));
 		
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();

@@ -8,7 +8,7 @@ class page_accounts_statement extends Page {
 		
 		$this->add('Controller_Acl');
 
-		$form=$this->add('Form');
+		$form=$this->add('Form')->addClass('noneprintalbe');
 		$account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();
 		$account_field->setModel('Account');
 

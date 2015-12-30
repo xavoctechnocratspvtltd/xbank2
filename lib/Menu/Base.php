@@ -3,6 +3,7 @@
 class Menu_Base extends Menu {
 	function init(){
 		parent::init();
+		$this->addClass('noneprintalbe');
 		// $this->add('View')->setElement('img')->setAttr('src','templates/images/logo.jpg')->setAttr('width','30px');
 		if($this->api->auth->model['AccessLevel']>=80)
 			$this->addMenuItem('utility_setdate',array('('. date('d M Y',strtotime($this->api->today)).') ','swatch'=>(strtotime($this->api->today) != strtotime(date('Y-m-d')) ? 'red':null )));

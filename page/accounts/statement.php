@@ -1,5 +1,4 @@
 <?php
-
 class page_accounts_statement extends Page {
 	public $title = "Account Statement";
 
@@ -70,8 +69,8 @@ class page_accounts_statement extends Page {
 		$grid->addSno();
 
 		$grid->addTotals(array('amountCr','amountDr'));
-		// $grid->addFormatter('Narration','Wrap');
-		$grid->addFormatter('voucher_no','smallWrap');
+		$grid->addFormatter('Narration','smallWrap');
+		// $grid->addFormatter('voucher_no','smallWrap');
 		// $grid->addFormatter('voucher_no','smallWrap');
 
 		if($form->isSubmitted()){

@@ -43,7 +43,7 @@ class page_reports_general_accountclose extends Page {
 		// $account_model1 = $this->api->db->dsql($this->api->db->dsql()->expr($q))->execute();
 		
 		$account_model = $this->add('Model_Account',array('alias'=>'xx'));
-		$account_model->addCondition('branch_id',$this->api->current_branch->id);
+		// $account_model->addCondition('branch_id',$this->api->current_branch->id);
 		$account_model->addCondition('ActiveStatus',false);
 		$account_model->addCondition('CurrentBalanceCr','>',0);
 		$account_model->addCondition('CurrentBalanceCr',$account_model->getField('CurrentBalanceDr'));
@@ -62,7 +62,7 @@ class page_reports_general_accountclose extends Page {
 				// $account_model->addCondition('created_at','<',$this->api->nextDate($_GET['as_on_date']));
 		}
 		$account_model->setOrder('id','desc');
-
+		$account_model->add('Controller_Acl');
 		$grid->setModel($account_model,array('member','AccountNumber','SchemeType','FatherName','PermanentAddress','PhoneNos','ActiveStatus','updated_at'));
 		
 		if($form->isSubmitted()){

@@ -24,7 +24,7 @@ class page_reports_general_fixedassets extends Page {
 
 		$grid=$this->add('Grid_Report_FixedAssets',array('till_date' => $till_date,'fixed_assets_type'=>$fix_assets_type));
 
-		$account_model = $this->add('Model_Account')->addCondition('branch_id',$this->api->current_branch['id']);
+		$account_model = $this->add('Model_Account')->addCondition('ActiveStatus',true);
 		
 		$scheme_id = -1;
 		if($_GET['filter']){
@@ -61,7 +61,7 @@ class page_reports_general_fixedassets extends Page {
 
 		//Uner Head: SchemeType		
 		//Closing Balance : DR Balance
-
+		$account_model->add('Controller_Acl');
 		$grid->setModel($account_model,array('AccountNumber','created_at','scheme_name'));
 		if($form->isSubmitted()){
 			$scheme = $this->add('Model_Scheme');

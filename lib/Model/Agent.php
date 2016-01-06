@@ -64,10 +64,11 @@ class Model_Agent extends Model_Table {
 			$acc->addCondition('agent_id',$q->getField('id'));
 
 			if(!$m->from_date){
-				if(date('m',strtotime($this->api->today)) >= 6)
-				 $m->from_date = date('Y',strtotime($this->api->today))."-06-01";
-				else
-				 $m->from_date = date('Y',strtotime($this->api->today))."-01-01";
+				if(date('m',strtotime($this->api->today)) >= 6){
+				 	$m->from_date = date('Y',strtotime($this->api->today))."-06-01";
+				}else{
+				 	$m->from_date = date('Y',strtotime($this->api->today))."-01-01";
+				}
 			} 
 
 			if(!$m->to_date){

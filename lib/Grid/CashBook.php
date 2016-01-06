@@ -5,8 +5,10 @@ class Grid_CashBook extends Grid_AccountsBase{
 
 	function setModel($model,$fields=array()){
 		parent::setModel($model,$fields);
-		$this->addFormatter('voucher_no','Wrap');
+		// $this->addFormatter('voucher_no','smallWrap');
+		// $this->addFormatter('created_at','smallWrap');
 		$this->addFormatter('account','Wrap');
+		$this->addFormatter('Narration','Wrap');
 		$this->addTotals(array('amountDr','amountCr'));
 	}
 

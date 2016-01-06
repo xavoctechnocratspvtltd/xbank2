@@ -63,10 +63,21 @@ class Model_Agent extends Model_Table {
 			$acc = $m->add('Model_Account',array('self_crpb_account'));
 			$acc->addCondition('agent_id',$q->getField('id'));
 
-			if($m->from_date)
-				$acc->addCondition('created_at','>=',$m->from_date);
-			if($m->to_date)
-				$acc->addCondition('created_at','<',$m->api->nextDate($m->to_date));
+			if(!$m->from_date){
+				if(date('m',strtotime($this->api->today)) >= 6)
+				 $m->from_date = date('Y',strtotime($this->api->today))."-06-01";
+				else
+				 $m->from_date = date('Y',strtotime($this->api->today))."-01-01";
+			} 
+
+			if(!$m->to_date){
+				if(date('m',strtotime($this->api->today)) >= 6) 
+					$m->to_date = date('Y',strtotime($this->api->today))."-12-31";
+				else	
+					$m->to_date = date('Y',strtotime($this->api->today))."-05-30";	
+			}
+			$acc->addCondition('created_at','>=',$m->from_date);
+			$acc->addCondition('created_at','<',$m->api->nextDate($m->to_date));
 
 			return $acc->sum('crpb');
 

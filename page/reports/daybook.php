@@ -6,7 +6,7 @@ class page_reports_daybook extends Page {
 	function init(){
 		parent::init();
 		
-		$form = $this->add('Form');
+		$form = $this->add('Form')->addClass('noneprintalbe');
 		$form->addField('DatePicker','date')->validateNotNull();
 
 		$selectedVoucher = $form->addField('hidden','selected_voucher');
@@ -67,7 +67,7 @@ class page_reports_daybook extends Page {
 			$this->js()->_selector('.atk-form')->toggle(),
 			);
 
-		$pl = $daybook_lister_grid->addButton('Print List');
+		$pl = $daybook_lister_grid->addButton('Print List')->addClass('noneprintalbe');
 		$pl->js('click',$js);
 	}
 }

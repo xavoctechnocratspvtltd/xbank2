@@ -5,7 +5,7 @@ class Grid_DayBook extends Grid_AccountsBase{
 
 	function setModel($model,$fields=array()){
 		parent::setModel($model,$fields);
-		$this->addFormatter('voucher_no','Wrap');
+		$this->addFormatter('voucher_no','200Wrap');
 		$this->addFormatter('account','Wrap');
 		$this->addTotals(array('amountDr','amountCr'));
 	}

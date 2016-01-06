@@ -58,8 +58,8 @@ class Model_Agent extends Model_Table {
 		$this->addExpression('name')->set($this->dsql()->concat(
 				$this->getElement('code'),' ', $this->getElement('agent_member_name_full')
 		));
-
-		$this->addExpression('self_crpb')->set(function($m,$q){
+		$self=$this;
+		$this->addExpression('self_crpb')->set(function($m,$q)use($self){
 			$acc = $m->add('Model_Account',array('self_crpb_account'));
 			$acc->addCondition('agent_id',$q->getField('id'));
 

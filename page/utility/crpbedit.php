@@ -19,6 +19,8 @@ class page_utility_crpbedit extends Page{
 			if($form->isSubmitted()){
 				if($form['password']!=$pass)
 					$form->error('password','password not match');
+				$agent_model=
+				$this->api->db->dsql()->expr("UPDATE `agents` SET `current_individual_crpb_old` =`current_individual_crpb` ")->execute();
 				$this->api->db->dsql()->expr("UPDATE `agents` SET `current_individual_crpb` = 0")->execute();
 				$form->js()->univ()->location()->execute();				
 			}

@@ -6,8 +6,8 @@ class page_reports_cashbook extends Page {
 
 	function init(){
 		parent::init();
-
-		$form = $this->add('Form');
+		
+		$form = $this->add('Form')->addClass('noneprintalbe');
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
 		$form->addSubmit('Open Cash Book');

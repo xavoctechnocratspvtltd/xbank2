@@ -123,4 +123,5 @@ class Grid_BalanceSheet extends Grid_AccountsBase{
                 '.$this->current_row[$field].'
                 </a>';  
     }
+
 }

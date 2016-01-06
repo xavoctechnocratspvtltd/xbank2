@@ -53,7 +53,7 @@ class page_reports_BSAndPANL extends Page {
 
 		$bs = $this->add('View_AccountSheet',array('from_date'=>$from_date,'to_date'=>$to_date,'pandl'=>$pandl,'for_branch'=>$for_branch));
 
-		$form = $this->add('Form');
+		$form = $this->add('Form')->addClass('noneprintalbe');
 		$form->addField('DatePicker','from_date')->validateNotNull()->set($from_date);
 		$form->addField('DatePicker','to_date')->validateNotNull()->set($to_date);
 		$form->addField('Radio','book_type')->setValueList(array('bs'=>'Balance Sheet','pandl'=>'Profit And Loss','tb'=>'Trial balance'))->set($book_type);

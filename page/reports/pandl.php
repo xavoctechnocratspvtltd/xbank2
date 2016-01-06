@@ -26,7 +26,7 @@ class page_reports_pandl extends Page {
 		$for_branch= (!$this->api->current_staff->isSuper()?$this->api->current_staff->branch():false);
 		$bs = $this->add('View_AccountSheet',array('from_date'=>$from_date,'to_date'=>$to_date,'pandl'=>true,'for_branch'=>$for_branch));
 
-		$form = $this->add('Form');
+		$form = $this->add('Form')->addClass('noneprintalbe');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addSubmit('Go');

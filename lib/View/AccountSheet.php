@@ -34,7 +34,6 @@ class View_AccountSheet extends View {
 			$left_title = 'Expenses';
 			$right_title = 'Income';
 		}
-		
 		foreach ($bs as $key => $value) {
 			$op_bal = $bs->getOpeningBalance($this->api->nextDate($this->to_date),null,$this->pandl,$this->for_branch,($this->pandl?$this->from_date:null));
 			$subtract_from = $bs['subtract_from'];
@@ -70,15 +69,14 @@ class View_AccountSheet extends View {
 		for ($i=1; $i <= $no_of_rows; $i++) { 
 			${$to_fill_in}[] = array('id'=>$i+100,$field=>'-','Amount'=>0,'Details'=>'');
 		}
-
-		$left_grid = $left_col->add('Grid_BalanceSheet');
+		$left_grid = $left_col->add('Grid_BalanceSheet')->addClass('col-title-bold');
 		$left_grid->addColumn('text',$left_title);
 		$left_grid->addColumn('money','Amount');
 
 		$left_grid->setSource($left_array);
 		$left_grid->addTotals(array('Amount'));
 
-		$right_grid = $right_col->add('Grid_BalanceSheet');
+		$right_grid = $right_col->add('Grid_BalanceSheet')->addClass('col-title-bold');
 		$right_grid->addColumn('text',$right_title);
 		$right_grid->addColumn('money','Amount');
 

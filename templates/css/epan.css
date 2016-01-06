@@ -6110,7 +6110,9 @@ input[type=checkbox].css-checkbox + label.css-label {
 input[type=checkbox].css-checkbox:checked + label.css-label {
   background-position: 0 -14px !important;
 }
-
+.col-title-bold  table tr :nth-child(1){
+  font-weight: bold!important;
+}
 @media print {
   .noneprintalbe{
   display: none!important;
@@ -6118,4 +6120,7 @@ input[type=checkbox].css-checkbox:checked + label.css-label {
   .noneprintalbe-ul > ul.ui-tabs-nav{
     display: none!important;
   }
+  .col-title-bold  table tr :nth-child(1){
+  font-weight: bold!important;
+}
 }

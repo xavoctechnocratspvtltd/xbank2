@@ -9,6 +9,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		
 		$selected_account_type = $this->api->stickyGET('account_type');
 		$filter = $this->api->stickyGET('filter');
+		$this->api->stickyGET('status');
 
 		if($_GET['as_on_date']){
 			$this->api->stickyGET('as_on_date');
@@ -17,6 +18,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 
 		$form=$this->add('Form');
 		$form->addField('DatePicker','as_on_date');
+		$form->addField('DropDown','status')->setValueList(array('Active'=>'Active','InActive'=>'InActive'))->setEmptyText('Select Status');
 		$account_type=$form->addField('DropDown','account_type');
 		$array_value = $array_key = explode(',', ACCOUNT_TYPES);
 		$account_type->setValueList(array_combine($array_key, $array_value))->setEmptyText('Select Account type');
@@ -37,6 +39,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$tr_account_join->addField('DefaultAC');
 		$tr_account_join->addField('OpeningBalanceDr');
 		$tr_account_join->addField('OpeningBalanceCr');
+		$tr_account_join->addField('ActiveStatus');
 
 		$scheme_join = $tr_account_join->leftJoin('schemes','scheme_id');
 		$scheme_join->addField('SchemeType');
@@ -58,7 +61,12 @@ class page_reports_general_closingbalanceofaccount extends Page {
 			}
 			if($_GET['as_on_date'])
 				$tr_model->addCondition('created_at','<',$this->api->nextDate($_GET['as_on_date']));
-
+			
+			if($_GET['status']=='Active'){
+				$tr_model->addCondition('ActiveStatus',true);
+			}else{
+				$tr_model->addCondition('ActiveStatus',false);
+			}
 		}
 		
 		$tr_model->addCondition('DefaultAC',0);
@@ -70,7 +78,11 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$grid->setModel($tr_model,array('AccountNumber','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member'));
 		
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('as_on_date'=>$form['as_on_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();
+			$grid->js()->reload(
+								array('as_on_date'=>$form['as_on_date']?:0,
+									'account_type'=>$form['account_type'],
+									'status'=>$form['status'],
+									'filter'=>1))->execute();
 		}
 
 	}

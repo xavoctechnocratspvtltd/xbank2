@@ -85,6 +85,8 @@ class page_reports_general_periodical extends Page {
 		$grid->addColumn('text','account_type');
 		$grid->addColumn('text','count');
 		$grid->addColumn('text','amount');
+
+		$grid->addTotals(array('amount'));
 	
 		$this->add('VirtualPage')
 			->addColumn('detail','details',array('icon'=>'plus'),$grid)

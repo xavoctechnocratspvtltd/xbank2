@@ -89,7 +89,7 @@ class page_reports_member_depositinsurance extends Page {
 		$grid->skip_var = $paginator->skip_var;
 
 		$grid->addSno();
-		$grid->removeColumn('scheme');
+		// $grid->removeColumn('scheme');
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

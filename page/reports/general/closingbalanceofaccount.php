@@ -67,7 +67,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 
 		$tr_model->setOrder('account_id');
 		$tr_model->add('Controller_Acl');
-		$grid->setModel($tr_model,array('AccountNumber','name','FatherName','PermanentAddress','PhoneNos','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member'));
+		$grid->setModel($tr_model,array('AccountNumber','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member'));
 		
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('as_on_date'=>$form['as_on_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();

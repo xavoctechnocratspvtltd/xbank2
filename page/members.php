@@ -174,8 +174,13 @@ class page_members extends Page {
 		$member=$this->add('Model_Member');
 		$member->load($_GET['members_id']);
 
+		$show_comment_model=$this->add('Model_Comment');
+		$show_comment_model->addCondition('member_id',$member->id);
+		$show_comment_model->tryLoadAny();
+			
+		$show_comment=$show_comment_model->get('narration');
 		$form=$this->add('Form');
-		$form->addField('text','narration');
+		$form->addField('text','narration')->set($show_comment);
 		$form->addSubmit('Save');
 		$grid=$this->add('Grid');
 		$comment=$this->add('Model_Comment');

@@ -45,7 +45,7 @@ class Model_Account extends Model_Table {
 		$this->addField('CurrentInterest')->type('money')->defaultValue(0);
 		$this->addField('Nominee');
 		$this->addField('NomineeAge');
-		$this->addField('RelationWithNominee')->enum(array('Father','Mother','Husband','Wife','Brother','Sister','Son','Daughter'));
+		$this->addField('RelationWithNominee')->enum(array('Father','Mother','Husband','Wife','Brother','Sister','Son','Daughter','Other'));
 		$this->addField('MinorNomineeDOB');
 		$this->addField('MinorNomineeParentName')->type('text')->caption('Minor Nominee Parents Details');
 		$this->addField('DefaultAC')->type('boolean')->defaultValue(false);

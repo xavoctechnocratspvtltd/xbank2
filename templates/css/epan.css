@@ -6113,6 +6113,13 @@ input[type=checkbox].css-checkbox:checked + label.css-label {
 .col-title-bold  table tr :nth-child(1){
   font-weight: bold!important;
 }
+/*.report-margin{
+    margin: 0px!important;
+    padding-bottom: 0px !important;
+    padding-left: 0px!important;
+    padding-right: 0px!important;
+    padding-top: 0px!important;
+  }*/
 @media print {
   .noneprintalbe{
   display: none!important;
@@ -6123,4 +6130,14 @@ input[type=checkbox].css-checkbox:checked + label.css-label {
   .col-title-bold  table tr :nth-child(1){
   font-weight: bold!important;
 }
+  .report-font{
+    font-size: 8px!important;
+  }
+  .report-margin table tr td {
+    margin: 0px!important;
+    padding-bottom: 0px !important;
+    padding-left: 0px!important;
+    padding-right: 0px!important;
+    padding-top: 0px!important;
+  }
 }

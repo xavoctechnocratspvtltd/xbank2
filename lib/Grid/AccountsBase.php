@@ -50,6 +50,9 @@ class Grid_AccountsBase extends Grid{
 	function format_smallWrap($field){
 		$this->setTDParam($field, 'style', 'width:300px;text-wrap:suppress;');
 		// $this->current_row_html[$field] = '<div style="width:50px;">'.$this->current_row[$field].'</div>';
+	}function format_400Wrap($field){
+		$this->setTDParam($field, 'style', 'width:400px;text-wrap:suppress;');
+		// $this->current_row_html[$field] = '<div style="width:50px;">'.$this->current_row[$field].'</div>';
 	}
 	function format_200Wrap($field){
 		$this->setTDParam($field, 'style', 'width:200px;text-wrap:suppress;');
@@ -57,6 +60,10 @@ class Grid_AccountsBase extends Grid{
 	}
 	function format_100Wrap($field){
 		$this->setTDParam($field, 'style', 'width:100px;text-wrap:suppress;');
+		// $this->current_row_html[$field] = '<div style="width:50px;">'.$this->current_row[$field].'</div>';
+	}
+	function format_80Wrap($field){
+		$this->setTDParam($field, 'style', 'width:80px;text-wrap:suppress;');
 		// $this->current_row_html[$field] = '<div style="width:50px;">'.$this->current_row[$field].'</div>';
 	}
 

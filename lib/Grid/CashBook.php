@@ -2,10 +2,13 @@
 
 class Grid_CashBook extends Grid_AccountsBase{
 	public $voucher_no=0;
-
+	function init(){
+		parent::init();
+		$this->addClass('report-font report-margin');
+	}
 	function setModel($model,$fields=array()){
 		parent::setModel($model,$fields);
-		// $this->addFormatter('voucher_no','smallWrap');
+		$this->addFormatter('voucher_no','100Wrap');
 		$this->addFormatter('created_at','100Wrap');
 		// $this->addFormatter('account','Wrap');
 		$this->addFormatter('Narration','smallWrap');

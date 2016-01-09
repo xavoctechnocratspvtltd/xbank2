@@ -72,8 +72,25 @@ class page_reports_member_loaninsurance extends Page {
 		$accounts_model->addExpression('phone_nos')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
 		});
-
+		$accounts_model->getElement('CurrentBalanceDr')->caption('Current Balance');
 		$grid->setModel($accounts_model,array('AccountNumber','scheme','member_name','father_name','address','phone_nos','age','nominee','relation_with_nominee','Amount'));
+
+		$grid->addColumn('current_balance');
+		$grid->addMethod('format_current_balance',function($g,$f){
+			// throw new \Exception($g->model->id, 1);
+			$acc_model=$this->add('Model_Account')->load($g->model->id);	
+			$opening_array=$acc_model->getOpeningBalance($this->api->nextDate($this->api->today));
+			$opening_array['DR']-$opening_array['CR'];
+			if(($opening_array['DR'] - $opening_array['CR']) > 0){
+				$opening_amount = $opening_array['DR'] - $opening_array['CR'].  " DR" ;
+			}else{
+				$opening_amount = $opening_array['CR'] - $opening_array['DR']." CR";
+			}
+			$g->current_row[$f]=$opening_amount;
+		});
+		
+		$grid->addFormatter('current_balance','current_balance');
+		
 
 		$grid->addMethod('format_age',function($g,$f){
 			$age=array();

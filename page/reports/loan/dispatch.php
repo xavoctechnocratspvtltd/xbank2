@@ -149,7 +149,7 @@ class page_reports_loan_dispatch extends Page {
 			$schemename=$scheme->get('Interest');
 			// $grid->current_row[$field] = $schemename;
 			if(!$schemename==0){
-			$grid->current_row[$field] = round($grid->model['Amount']* 100 / $schemename  ,2);
+			$grid->current_row[$field] = round($grid->model['Amount']/ 100 * $schemename  ,2);
 			}
 		});
 		$grid->addColumn('file_charge','file_charge');

@@ -141,14 +141,36 @@ class page_reports_loan_dispatch extends Page {
 
 		$grid->setModel($account_model,$grid_array);
 
+		$grid->addColumn('file_charge');
+		$grid->addMethod('format_file_charge',function($grid, $field){
+			$scheme=$this->add('Model_Scheme');
+			$scheme->addCondition('id',$grid->model['scheme_id']);
+			$scheme->tryLoadAny();
+			$schemename=$scheme->get('Interest');
+			// $grid->current_row[$field] = $schemename;
+			if(!$schemename==0){
+			$grid->current_row[$field] = round($grid->model['Amount']* 100 / $schemename  ,2);
+			}
+		});
+		$grid->addColumn('file_charge','file_charge');
+
+		$grid->addColumn('cheque_amount');
+		$grid->addMethod('format_cheque_amount',function($grid, $field){
+			$grid->current_row[$field] = $grid->current_row['Amount']-$grid->current_row['file_charge'];
+		});
+		$grid->addColumn('cheque_amount','cheque_amount');
+
+
+		
 		$grid->addMethod('format_myTotal',function($grid, $field){
 			$grid->current_row[$field] = $grid->current_row['no_of_emi'] * $grid->current_row['emi'];
 		});
 
 		$grid->addColumn('myTotal','total');
 
-
-
+		$order=$grid->addOrder();//->move('deposit','before','dr_sum')->now();
+		$order->move('file_charge','after','Amount')->now();
+		$order->move('cheque_amount','after','file_charge')->now();
 
 		$grid->addPaginator(50);
 

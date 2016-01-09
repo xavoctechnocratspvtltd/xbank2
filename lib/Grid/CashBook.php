@@ -15,6 +15,18 @@ class Grid_CashBook extends Grid_AccountsBase{
 		$this->addTotals(array('amountDr','amountCr'));
 	}
 
+	// function addSno(){
+	// 	$this->addColumn('sno','s_no');
+	// 	$this->order->move('s_no','first');
+	// }
+
+	function format_sno($field){
+		// if($this->model->loaded())
+			$this->current_row_html[$field] = "<p class='atk-align-center'>".(($this->sno++) + ($_GET[$this->skip_var]));
+		
+		// $this->current_row[$field] = $this->skip_var;		
+	}
+
 	function format_voucherNo($field){
 		if($this->voucher_no==$this->model->get('voucher_no'))
 			$this->current_row[$field]=$this->model->get('Narration');

@@ -7,12 +7,14 @@ class page_reports_cashbook extends Page {
 	function init(){
 		parent::init();
 		
+		$this->api->stickyGET('from_date');
+		$this->api->stickyGET('to_date');
 		$form = $this->add('Form')->addClass('noneprintalbe');
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
 		$form->addSubmit('Open Cash Book');
-
 		$grid = $this->add('Grid_CashBook');
+		$grid->add('H3',null,'grid_buttons')->setHtml('Cash Book  <small class="atk-move-right"> From Date: '.$_GET['from_date']."&nbsp; &nbsp; &nbsp; To Date: ".$_GET['to_date']. '</small>' );	
 
 		$cash_transaction_model = $this->add('Model_Transaction');
 		$transaction_row=$cash_transaction_model->join('transaction_row.transaction_id');
@@ -28,8 +30,6 @@ class page_reports_cashbook extends Page {
 		$cash_transaction_model->add('Controller_Acl');
 
 		if($_GET['from_date']){
-			$this->api->stickyGET('from_date');
-			$this->api->stickyGET('to_date');
 			$cash_transaction_model->addCondition('created_at','>=',$_GET['from_date']);
 			$cash_transaction_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			
@@ -56,7 +56,7 @@ class page_reports_cashbook extends Page {
 			$cash_transaction_model->addCondition('id',-1);
 		}
 
-		$grid->setModel($cash_transaction_model,array('voucher_no','created_at','Narration','account','amountDr','amountCr'));
+		$grid->setModel($cash_transaction_model,array('voucher_no','created_at','Narration','amountDr','amountCr'));
 		$grid->addSno();
 
 		// $grid->addTotals(array('amountCr','amountDr'));

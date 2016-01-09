@@ -15,13 +15,13 @@ class View_AccountDetail extends View {
 
 	function recursiveRender(){
 		$ac_m=$this->account;
-
+		
 		if(!$ac_m->loaded()){
 			return parent::recursiveRender();
 		}
-		
+		// throw new \Exception($ac_m['member_id'], 1);
 		$ac_m_join=$ac_m->join('members','member_id');
-		$ac_m_join->addField('MemberID','id');
+		// $ac_m_join->addField('MemberID','id');
 		$ac_m_join->addField('memberName','name');
 		$ac_m_join->addField('FatherName','FatherName');
 		// $ac_m_join->addField('accountopeningdate','created_at');
@@ -36,6 +36,7 @@ class View_AccountDetail extends View {
 		$grid= $this->add('Grid',null,'guaranters');
 		$grid->setModel($guarenters);
 
+		$this->template->trySet('id',$ac_m['member_id']);
 		$this->template->trySet('amount_caption',$ac_m->getElement('Amount')->caption());
 
 		$schemes = $this->add('Model_Scheme');

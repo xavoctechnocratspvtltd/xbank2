@@ -353,6 +353,7 @@ class Model_Account extends Model_Table {
 	 * @return id New account model id
 	 */
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+		// if($this['account_type']!=createNewAccount)
 		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Muct be Loaded Object of Model_Branch');
 		if(!$created_at) $created_at = $this->api->now;
 		if(!$otherValues) $otherValues=array();

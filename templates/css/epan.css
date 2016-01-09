@@ -6137,7 +6137,7 @@ input[type=checkbox].css-checkbox:checked + label.css-label {
     margin: 0px!important;
     padding-top: 1px!important;
     padding-bottom: 0px !important;
-    padding-left: 0px!important;
+    padding-left: 2px!important;
     padding-right: 0px!important;
   }
 }

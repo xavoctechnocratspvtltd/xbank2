@@ -142,8 +142,9 @@ class page_reports_loan_dispatch extends Page {
 		$grid->setModel($account_model,$grid_array);
 
 		$grid->addColumn('file_charge');
-		$grid->addMethod('format_file_charge',function($grid, $field){
-			$scheme=$this->add('Model_Scheme');
+		$self=$this;
+		$grid->addMethod('format_file_charge',function($grid, $field)use($self){
+			$scheme=$self->add('Model_Scheme');
 			$scheme->addCondition('id',$grid->model['scheme_id']);
 			$scheme->tryLoadAny();
 			$schemename=$scheme->get('Interest');

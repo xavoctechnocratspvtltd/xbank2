@@ -147,17 +147,18 @@ class page_reports_loan_dispatch extends Page {
 			$scheme=$self->add('Model_Scheme');
 			$scheme->addCondition('id',$grid->model['scheme_id']);
 			$scheme->tryLoadAny();
-			$schemename=$scheme->get('Interest');
+			$schemename=$scheme->get('ProcessingFees');
 			// $grid->current_row[$field] = $schemename;
 			if(!$schemename==0){
-			$grid->current_row[$field] = round($grid->model['Amount']/ 100 * $schemename  ,2);
+			$grid->current_row[$field] = round($grid->model['Amount']/ 100 * $schemename ,2);
 			}
 		});
 		$grid->addColumn('file_charge','file_charge');
 
+		
 		$grid->addColumn('cheque_amount');
 		$grid->addMethod('format_cheque_amount',function($grid, $field){
-			$grid->current_row[$field] = $grid->current_row['Amount']-$grid->current_row['file_charge'];
+			$grid->current_row[$field] = $grid->model['Amount'] - $grid->current_row['file_charge'];
 		});
 		$grid->addColumn('cheque_amount','cheque_amount');
 

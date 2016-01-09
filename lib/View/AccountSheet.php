@@ -12,10 +12,10 @@ class View_AccountSheet extends View {
 		parent::init();
 
 		$this->add('H3')->set(date('d-M-Y',strtotime($this->from_date)) . ' to ' . date('d-M-Y',strtotime($this->to_date)))->setAttr('align','center');
-
+		$this->addClass('report-font');
 		$cols = $this->add('Columns');
-		$left_col = $cols->addColumn(6);
-		$right_col = $cols->addColumn(6);
+		$left_col = $cols->addColumn(6)->addClass('col-width');
+		$right_col = $cols->addColumn(6)->addClass('col-width');
 
 		$left_col->setStyle('vertical-align','top');
 		$right_col->setStyle('vertical-align','top');

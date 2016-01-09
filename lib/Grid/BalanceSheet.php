@@ -119,7 +119,7 @@ class Grid_BalanceSheet extends Grid_AccountsBase{
             throw $this->exception('Specify to_date as grid variable $grid->to_date =xyz', 'ValidityCheck')->setField('FieldName');
 
         $this->current_row_html[$field]=
-                '<a href="#" onclick="$(this).univ().frameURL(\'Account Statement '.$this->current_row[$field].' \',\''.$this->api->url("accounts_statement",array('AccountNumber'=>$this->current_row['AccountNumber'], 'from_date'=>$this->from_date,'to_date'=>$this->to_date)).'\')">
+                '<a class="col-width;" href="#" onclick="$(this).univ().frameURL(\'Account Statement '.$this->current_row[$field].' \',\''.$this->api->url("accounts_statement",array('AccountNumber'=>$this->current_row['AccountNumber'], 'from_date'=>$this->from_date,'to_date'=>$this->to_date)).'\')">
                 '.$this->current_row[$field].'
                 </a>';  
     }

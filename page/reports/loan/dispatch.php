@@ -28,7 +28,7 @@ class page_reports_loan_dispatch extends Page {
 
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->addSno(); 
-		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance Due List As On '. date('d-M-Y',strtotime($till_date))); 
+		$grid->add('H3',null,'grid_buttons')->set('Loan Dispatch Report As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$account_model=$this->add('Model_Account_Loan');
 

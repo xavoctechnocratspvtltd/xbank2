@@ -29,8 +29,8 @@ class Model_Account_Recurring extends Model_Account{
 		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber();
 		
 		parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form, $on_date);
-		
 		$this->createPremiums();
+		// return true;
 		
 		if($form['agent_id']){
 			$this->agent()->addCRPB($this->scheme()->get('CRPB'),$this['Amount']);

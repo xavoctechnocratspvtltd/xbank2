@@ -14,6 +14,12 @@ class page_Accounts_FixedAndMis extends Page {
 			if($crud->isEditing('edit')) return false;
 			
 			$fixedAndMis_account_model = $crud->add('Model_Account_FixedAndMis');
+			$sm_model=$this->add('Model_Account_SM');
+				$sm_model->addCondition('member_id',$form['member_id']);
+				$sm_model->tryLoadAny();
+				if($sm_model->loaded()){
+					$form->displayError('member',"Member Does not have SM Account");
+				}
 			try {
 				$crud->api->db->beginTransaction();
 
@@ -33,7 +39,9 @@ class page_Accounts_FixedAndMis extends Page {
 					if($form['intrest_to_account_id'] AND $intrest_to_account_model['member_id'] != $form['member_id']){
 						$form->displayError('intrest_to_account_id','Not for same member ');
 					}
-
+					if($form['NomineeAge'] And  $form['NomineeAge']<18){
+						$form->displayError('MinorNomineeParentName','mandatory field');
+					}
 					if($form['MaturityToAccount_id']){
 						$maturity_to_account_model = $crud->add('Model_Account');
 						$maturity_to_account_model->addCondition('id',$form['MaturityToAccount_id']);

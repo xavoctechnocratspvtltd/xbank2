@@ -12,8 +12,19 @@ class page_accounts_Recurring extends Page {
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
 
+			$sm_model=$this->add('Model_Account_SM');
+				$sm_model->addCondition('member_id',$form['member_id']);
+				$sm_model->tryLoadAny();
+				if(!$sm_model->loaded()){
+					$form->displayError('member',"Member Does not have SM Account");
+				}
+
 			if(!$form['sig_image_id'])
 				$form->displayError('sig_image_id','Signature File is must');
+			
+			if($form['NomineeAge'] And  $form['NomineeAge']<18){
+				$form->displayError('MinorNomineeParentName','mandatory field');
+			}
 
 			$new_account = $crud->add('Model_Account_Recurring');
 			try {

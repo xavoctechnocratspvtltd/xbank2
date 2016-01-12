@@ -8,11 +8,11 @@ class page_accounts_Recurring extends Page {
 		$account_recurring_model = $this->add('Model_Account_Recurring');
 		$account_recurring_model->add('Controller_Acl');
 		$account_recurring_model->setOrder('id','desc');
-		
-		$crud->addHook('myupdate',function($crud,$form){
+		$self=$this;				
+		$crud->addHook('myupdate',function($crud,$form)use($self){
 			if($crud->isEditing('edit')) return false;
 
-			$sm_model=$this->add('Model_Account_SM');
+			$sm_model=$self->add('Model_Account_SM');
 				$sm_model->addCondition('member_id',$form['member_id']);
 				$sm_model->tryLoadAny();
 				if(!$sm_model->loaded()){

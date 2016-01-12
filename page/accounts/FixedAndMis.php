@@ -9,12 +9,12 @@ class page_Accounts_FixedAndMis extends Page {
 		$account_fixedandmis_model = $this->add('Model_Account_FixedAndMis');
 		$account_fixedandmis_model->add('Controller_Acl');
 		$account_fixedandmis_model->setOrder('id','desc');
-		
-		$crud->addHook('myupdate',function($crud,$form){
+		$self=$this;
+		$crud->addHook('myupdate',function($crud,$form)use(){
 			if($crud->isEditing('edit')) return false;
 			
 			$fixedAndMis_account_model = $crud->add('Model_Account_FixedAndMis');
-			$sm_model=$this->add('Model_Account_SM');
+			$sm_model=$self->add('Model_Account_SM');
 				$sm_model->addCondition('member_id',$form['member_id']);
 				$sm_model->tryLoadAny();
 				if($sm_model->loaded()){

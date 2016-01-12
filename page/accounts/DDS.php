@@ -9,11 +9,11 @@ class page_accounts_DDS extends Page {
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_dds_model = $this->add('Model_Account_DDS');
 		$account_dds_model->setOrder('created_at','Desc');
-
-		$crud->addHook('myupdate',function($crud,$form){
+		$self=$this;
+		$crud->addHook('myupdate',function($crud,$form)use($self){
 			if($crud->isEditing('edit')) return false;
 				
-				$sm_model=$this->add('Model_Account_SM');
+				$sm_model=$self->add('Model_Account_SM');
 				$sm_model->addCondition('member_id',$form['member_id']);
 				$sm_model->tryLoadAny();
 				if($sm_model->loaded()){

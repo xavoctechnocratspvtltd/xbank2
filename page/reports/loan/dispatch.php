@@ -140,7 +140,7 @@ class page_reports_loan_dispatch extends Page {
 		$account_model->addCondition('DefaultAC',false);
 
 		$account_model->addExpression('file_charge')->set(function($m,$q){
-			$s = $m->add('Model_Scheme',['table_alias'=>'fcs']);
+			$s = $m->add('Model_Scheme',array('table_alias'=>'fcs'));
 			$s->addCondition('id',$q->getField('scheme_id'));
 			return $q->expr("[0]/100.0*[1]",[$m->getElement('Amount'),$s->fieldQuery('ProcessingFees')]);
 		});

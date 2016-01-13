@@ -10,7 +10,7 @@ class page_Accounts_FixedAndMis extends Page {
 		$account_fixedandmis_model->add('Controller_Acl');
 		$account_fixedandmis_model->setOrder('id','desc');
 		$self=$this;
-		$crud->addHook('myupdate',function($crud,$form)use(){
+		$crud->addHook('myupdate',function($crud,$form)use($self){
 			if($crud->isEditing('edit')) return false;
 			
 			$fixedAndMis_account_model = $crud->add('Model_Account_FixedAndMis');

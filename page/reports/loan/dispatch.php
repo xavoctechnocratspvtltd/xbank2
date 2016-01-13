@@ -142,39 +142,13 @@ class page_reports_loan_dispatch extends Page {
 		$account_model->addExpression('file_charge')->set(function($m,$q){
 			$s = $m->add('Model_Scheme',array('table_alias'=>'fcs'));
 			$s->addCondition('id',$q->getField('scheme_id'));
-			return $q->expr("[0]/100.0*[1]",[$m->getElement('Amount'),$s->fieldQuery('ProcessingFees')]);
+			return $q->expr("[0]/100.0*[1]",array($m->getElement('Amount'),$s->fieldQuery('ProcessingFees')));
 		});
 		$account_model->addExpression('cheque_amount')->set(function($m,$q){
-			// $s = $m->add('Model_Scheme',['table_alias'=>'cha']);
-			// $s->addCondition('id',$q->getField('scheme_id'));
-			return $q->expr("[0]-[1]",[$m->getElement('Amount'),$m->getElement('file_charge')]);
+			return $q->expr("[0]-[1]",array($m->getElement('Amount'),$m->getElement('file_charge')));
 		});
 
 		$grid->setModel($account_model,$grid_array);
-
-		// $grid->addColumn('file_charge');
-		// $self=$this;
-
-		// $grid->addMethod('format_file_charge',function($grid, $field)use($self){
-		// 	$scheme=$self->add('Model_Scheme');
-		// 	$scheme->addCondition('id',$grid->model['scheme_id']);
-		// 	$scheme->tryLoadAny();
-		// 	$schemename=$scheme->get('ProcessingFees');
-		// 	// $grid->current_row[$field] = $schemename;
-		// 	if(!$schemename==0){
-		// 	$grid->current_row[$field] = round($grid->model['Amount']/ 100 * $schemename ,2);
-		// 	}
-		// });
-		// $grid->addColumn('file_charge','file_charge');
-
-		
-		// $grid->addColumn('cheque_amount');
-		// $grid->addMethod('format_cheque_amount',function($grid, $field){
-		// 	$grid->current_row[$field] = $grid->model['Amount'] - $grid->current_row['file_charge'];
-		// });
-		// $grid->addColumn('cheque_amount','cheque_amount');
-
-
 		
 		$grid->addMethod('format_myTotal',function($grid, $field){
 			$grid->current_row[$field] = $grid->current_row['no_of_emi'] * $grid->current_row['emi'];

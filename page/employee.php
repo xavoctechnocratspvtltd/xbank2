@@ -123,7 +123,6 @@ class page_employee extends Page{
 
 		// $emp_model = $this->add('Model_EmployeeSalary');
 		$emp_model=$this->add('Model_Employee')->addCondition('is_active',true);
-		$emp_model->setLimit(2);
 		// $emp_salary_j->addField('month');
 		// $emp_salary_j->addField('year');
 		// $emp_salary_j->addField('paid_days');

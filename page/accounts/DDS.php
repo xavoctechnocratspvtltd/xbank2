@@ -16,7 +16,7 @@ class page_accounts_DDS extends Page {
 				$sm_model=$self->add('Model_Account_SM');
 				$sm_model->addCondition('member_id',$form['member_id']);
 				$sm_model->tryLoadAny();
-				if($sm_model->loaded()){
+				if(!$sm_model->loaded()){
 					$form->displayError('member',"Member Does not have SM Account");
 				}
 

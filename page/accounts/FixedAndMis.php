@@ -39,7 +39,7 @@ class page_Accounts_FixedAndMis extends Page {
 					if($form['intrest_to_account_id'] AND $intrest_to_account_model['member_id'] != $form['member_id']){
 						$form->displayError('intrest_to_account_id','Not for same member ');
 					}
-					if($form['NomineeAge'] And  $form['NomineeAge']<18){
+					if($form['NomineeAge'] And  $form['NomineeAge']<18 And $form['MinorNomineeParentName']==""){
 						$form->displayError('MinorNomineeParentName','mandatory field');
 					}
 					if($form['MaturityToAccount_id']){

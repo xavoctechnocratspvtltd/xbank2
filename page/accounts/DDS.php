@@ -24,7 +24,7 @@ class page_accounts_DDS extends Page {
 				$form->displayError('sig_image_id','Signature File is Must');
 			}
 
-			if($form['NomineeAge'] And  $form['NomineeAge']<18){
+			if($form['NomineeAge'] And  $form['NomineeAge']<18 And $form['MinorNomineeParentName']==""){
 				$form->displayError('MinorNomineeParentName','mandatory field');
 			}
 

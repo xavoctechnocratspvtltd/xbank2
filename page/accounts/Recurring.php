@@ -22,7 +22,7 @@ class page_accounts_Recurring extends Page {
 			if(!$form['sig_image_id'])
 				$form->displayError('sig_image_id','Signature File is must');
 			
-			if($form['NomineeAge'] And  $form['NomineeAge']<18){
+			if($form['NomineeAge'] And  $form['NomineeAge']<18 And $form['MinorNomineeParentName']==""){
 				$form->displayError('MinorNomineeParentName','mandatory field');
 			}
 

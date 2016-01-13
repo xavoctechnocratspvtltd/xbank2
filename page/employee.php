@@ -123,7 +123,7 @@ class page_employee extends Page{
 
 		// $emp_model = $this->add('Model_EmployeeSalary');
 		$emp_model=$this->add('Model_Employee')->addCondition('is_active',true);
-
+		$emp_model->setLimit(2);
 		// $emp_salary_j->addField('month');
 		// $emp_salary_j->addField('year');
 		// $emp_salary_j->addField('paid_days');
@@ -224,6 +224,7 @@ class page_employee extends Page{
 			$twf->js( 'change')->univ()->weeklyOff($wf,$twf);
 			$mid->js( 'change')->univ()->dayInMonth($tmd,$mid);
 			$f_year->js( 'change')->univ()->totalDayInMonth($wd,$f_month,$f_year,$td);
+			$pd->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);
 		}
 
 		$record_form->addSubmit('Go');

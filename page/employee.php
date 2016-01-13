@@ -180,8 +180,11 @@ class page_employee extends Page{
 			$ded_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ded=$ded_col->addField('line','ded_'.$emp_model['id'])->set($emp_salary['ded']);
 
-			$new_pf_amount =  round(($emp_salary['salary'] / 100) * 12);
-			
+			$new_pf_amount =0;
+			if($emp_model['pf_deduct']==='YES'){
+			  	$new_pf_amount=round(($emp_salary['salary'] / 100) * 12);
+			}	
+					
 			$pf_col=$col->addColumn(1)->addClass('bank-col-1');
 			$pf_amount=$pf_col->addField('line','pf_amount_'.$emp_model['id'])->set($new_pf_amount);
 			

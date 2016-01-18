@@ -39,7 +39,7 @@ class page_reports_member_defaulter extends Page{
 
 
 		$grid->setModel($member_model,$grid_column_array);
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 		$grid->addQuickSearch(array('id','name','PhoneNos'));
 
 		// $grid->add('Controller_DocumentsManager',array('doc_type'=>'MemberDocuments'));

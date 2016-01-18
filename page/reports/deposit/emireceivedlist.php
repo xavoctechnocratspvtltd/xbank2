@@ -37,11 +37,11 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$account_member_join->addField('phone_no','PhoneNos');
 		$account_member_join->addField('CurrentAddress','CurrentAddress');
 
-		$agent_join=$account_join->join('agents','agent_id');
-		$agent_member_join = $agent_join->join('members','member_id');
+		$agent_join=$account_join->leftJoin('agents','agent_id');
+		$agent_member_join = $agent_join->leftJoin('members','member_id');
 		$agent_member_join->addField('agent_name','name');
 
-		$agent_sb_join = $agent_join->join('accounts','account_id');
+		$agent_sb_join = $agent_join->leftJoin('accounts','account_id');
 		$agent_sb_join->addField('agent_account_number','AccountNumber');
 		$account_join->addField('AccountNumber');
 		$account_join->addField('account_type');

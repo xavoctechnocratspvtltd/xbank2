@@ -36,6 +36,7 @@ class page_reports_loan_noc extends Page {
 		}
 
 		$js=array(
+			$this->js()->_selector('.banner')->toggle(),
 			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
 			$this->js()->_selector('#header')->toggle(),
 			$this->js()->_selector('#footer')->toggle(),

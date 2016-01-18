@@ -139,6 +139,7 @@ class page_reports_general_periodical extends Page {
 				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','member','father_name','address','phone_no','agent','dealer','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee'));
 
 				$grid->addPaginator(500);
+				$grid->addTotals(array('Amount'));
 			});
 
 		// $js=array(

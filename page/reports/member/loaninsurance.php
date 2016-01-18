@@ -74,12 +74,12 @@ class page_reports_member_loaninsurance extends Page {
 		});
 		$accounts_model->getElement('CurrentBalanceDr')->caption('Current Balance');
 		$grid->setModel($accounts_model,array('AccountNumber','scheme','member_name','father_name','address','phone_nos','age','nominee','relation_with_nominee','Amount'));
-
+		$self=$this;
 		$grid->addColumn('current_balance');
-		$grid->addMethod('format_current_balance',function($g,$f){
+		$grid->addMethod('format_current_balance',function($g,$f)use($self){
 			// throw new \Exception($g->model->id, 1);
-			$acc_model=$this->add('Model_Account')->load($g->model->id);	
-			$opening_array=$acc_model->getOpeningBalance($this->api->nextDate($this->api->today));
+			$acc_model=$self->add('Model_Account')->load($g->model->id);	
+			$opening_array=$acc_model->getOpeningBalance($self->api->nextDate($self->api->today));
 			$opening_array['DR']-$opening_array['CR'];
 			if(($opening_array['DR'] - $opening_array['CR']) > 0){
 				$opening_amount = $opening_array['DR'] - $opening_array['CR'].  " DR" ;

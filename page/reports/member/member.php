@@ -13,7 +13,24 @@ class page_reports_member_member extends Page {
 		$grid->setModel($member_model,array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
 		$grid->addPaginator(50);
 		$grid->addQuickSearch(array('id','name','PhoneNos'));
+		$self=$this;
 
+		$self=$this;
+		$grid->addColumn('comment');
+		$grid->addMethod('format_comment',function($g,$f)use($self){
+			// throw new \Exception($g->model->id, 1);
+			$comment_model=$self->add('Model_Comment');//->load($g->model->id);
+			$comment_model->addCondition('member_id',$g->model->id);
+			$comment_model->setOrder('created_at','desc');
+			$comment_model->tryLoadAny();
+			$narration=$comment_model->get('narration');
+			$g->current_row[$f]=$narration;
+		});
+		
+		$grid->addFormatter('comment','comment');
+		
+
+		
 		$grid->addColumn('expander','details');
 		$grid->addColumn('expander','accounts');
 		$grid->addColumn('expander','guarantor_in');

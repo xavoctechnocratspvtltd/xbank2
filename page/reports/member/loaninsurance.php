@@ -103,7 +103,7 @@ class page_reports_member_loaninsurance extends Page {
 		$grid->addFormatter('age','age');
 		$grid->addColumn('text','insurance_amount');
 
-		$paginator = $grid->addPaginator(50);
+		$paginator = $grid->addPaginator(500);
 		$grid->skip_var = $paginator->skip_var;
 
 		$grid->addSno();

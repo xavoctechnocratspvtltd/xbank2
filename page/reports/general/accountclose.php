@@ -38,6 +38,10 @@ class page_reports_general_accountclose extends Page {
 		$account_model->addCondition('ActiveStatus',false);
 		$account_model->addCondition('CurrentBalanceCr','>',0);
 		$account_model->addCondition('CurrentBalanceCr',$account_model->getField('CurrentBalanceDr'));
+
+		$account_model->addExpression('last_transaction_date')->set(function($m,$q){
+			return $m->refSQL('RelatedTransactions')->setOrder('created_at','desc')->setLimit(1)->fieldQuery('created_at');
+		})->caption('Last Tr Date');
 		
 		$member_join = $account_model->leftJoin('members','member_id');
 		$member_join->addField('FatherName')->caption('Father/Husband Name');
@@ -53,16 +57,16 @@ class page_reports_general_accountclose extends Page {
 				$account_model->addCondition('SchemeType',$selected_account_type);
 			}
 			if($_GET['from_date']){
-				$account_model->addCondition('created_at','>',$_GET['from_date']);
+				$account_model->addCondition('last_transaction_date','>',$_GET['from_date']);
 			}
 
 			if($_GET['to_date']){
-				$account_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+				$account_model->addCondition('last_transaction_date','<',$this->api->nextDate($_GET['to_date']));
 			}
 		}
 		$account_model->setOrder('id','desc');
 		$account_model->add('Controller_Acl');
-		$grid->setModel($account_model,array('member','AccountNumber','SchemeType','FatherName','PermanentAddress','PhoneNos','ActiveStatus','created_at','updated_at'));
+		$grid->setModel($account_model,array('member','AccountNumber','SchemeType','FatherName','PermanentAddress','PhoneNos','ActiveStatus','created_at','last_transaction_date'));
 		
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();

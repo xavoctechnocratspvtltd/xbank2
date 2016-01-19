@@ -43,8 +43,10 @@ class page_dsa_emiduelist extends Page {
 
 		$account_model_j=$account_model->join('premiums.account_id','id');
 		$account_model_j->addField('DueDate');
-		// $account_model->addCondition('MaturedStatus',false); //???
-
+		$account_model->addCondition('MaturedStatus',false); //???
+		$dealer_j=$account_model->join('dealers','dealer_id');
+		$dsa_j=$dealer_j->join('dsa','dsa_id');
+		// $dsa_j->addField('dsa','name');
 		$grid_column_array = array('AccountNumber','created_at','maturity_date','DueDate','scheme','member_name','FatherName','PermanentAddress','PhoneNos','dealer','guarantor_name','guarantor_phno','last_premium','paid_premium_count','due_premium_count','emi_amount','due_panelty','other_charges','total');
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
@@ -191,7 +193,7 @@ class page_dsa_emiduelist extends Page {
 
 		// $grid->addColumn('text','openning_date');
 
-		$grid->addPaginator(50);
+		$grid->addPaginator(100);
 		$grid->addSno();
 		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount'));
 		$grid->removeColumn('last_premium');

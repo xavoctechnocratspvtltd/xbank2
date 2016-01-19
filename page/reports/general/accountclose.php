@@ -64,9 +64,9 @@ class page_reports_general_accountclose extends Page {
 				$account_model->addCondition('last_transaction_date','<',$this->api->nextDate($_GET['to_date']));
 			}
 		}
-		$account_model->setOrder('id','desc');
+		$account_model->setOrder('last_transaction_date','desc');
 		$account_model->add('Controller_Acl');
-		$grid->setModel($account_model,array('member','AccountNumber','SchemeType','FatherName','PermanentAddress','PhoneNos','ActiveStatus','created_at','last_transaction_date'));
+		$grid->setModel($account_model->debug(),array('member','AccountNumber','SchemeType','FatherName','PermanentAddress','PhoneNos','ActiveStatus','created_at','last_transaction_date'));
 		
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_type'=>$form['account_type'],'filter'=>1))->execute();

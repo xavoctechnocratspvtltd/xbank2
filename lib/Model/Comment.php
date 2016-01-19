@@ -22,7 +22,6 @@ class Model_Comment extends Model_Table{
 		if($account)
 			$this['account_id']=$account->id;
 		$this['narration']=$narration;
-		$this['narration']=$narration;
 		$this['created_at']=$this->api->now;
 		$this['updated_at']=$this->api->now;
 		$this->save();

@@ -7,7 +7,7 @@ class page_reports_deposit_emiduelist extends Page {
 		parent::init();
 
 		$form=$this->add('Form');
-		$agent_field=$form->addField('autocomplete/Basic','agent')->validateNotNull();
+		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 
 		$form->addField('DatePicker','on_date')->validateNotNull();

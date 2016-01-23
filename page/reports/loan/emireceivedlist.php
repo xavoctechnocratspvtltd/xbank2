@@ -30,13 +30,18 @@ class page_reports_loan_emireceivedlist extends Page {
 		$transaction_join = $transaction_row_model->join('transactions','transaction_id');
 		$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
 		$account_join = $transaction_row_model->join('accounts','account_id');
-		$member_join = $account_join->join('members','member_id');
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 		$scheme_join = $account_join->join('schemes','scheme_id');
+		
+		$member_join = $account_join->join('members','member_id');
+		$member_join->addField('member_id','id');
+		$member_join->addField('member_name','name');
+		$member_join->addField('member_landmark','landmark');
+		$member_join->addField('member_address','PermanentAddress');
+
+		$member_join->addField('FatherName');
 
 		$dealer_join->addField('dealer_name','name');
-		$member_join->addField('member_name','name');
-		$member_join->addField('FatherName');
 		$account_join->addField('AccountNumber');
 		$account_join->addField('dealer_id');
 		$scheme_join->addField('SchemeType');
@@ -85,8 +90,16 @@ class page_reports_loan_emireceivedlist extends Page {
 
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','FatherName','amountCr','Narration','created_at','dealer_name'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_id','member_address','member_landmark','FatherName','amountCr','Narration','created_at','dealer_name'));
 
+		$grid->addHook('formatRow',function($g){
+			// $this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));			
+			$g->current_row_html['member_name'] = $g->model['member_name']."[".$g->model['member_id']."]"." :: " . $g->model['member_address']."  [ " .$g->model['member_landmark' ]."]";
+		});
+
+		$grid->removeColumn('member_landmark');
+		$grid->removeColumn('member_address');
+		$grid->addFormatter('member_name','wrap');
 		$grid->addPaginator(500);
 		$grid->addSno();
 		$grid->addTotals(array('amountCr'));

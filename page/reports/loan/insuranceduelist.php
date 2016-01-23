@@ -28,7 +28,7 @@ class page_reports_loan_insuranceduelist extends Page {
 
 		$accounts_model=$this->add('Model_Active_Account_Loan');
 		$member_join=$accounts_model->join('members','member_id');
-		$member_join->addField('member_name','name');
+		// $member_join->addField('member_name','name');
 		$member_join->addField('FatherName');
 		$member_join->addField('PhoneNos');
 		$member_join->addField('PermanentAddress');
@@ -37,7 +37,7 @@ class page_reports_loan_insuranceduelist extends Page {
 		$accounts_model->addExpression('insurance_date')->set('(DAY(LoanInsurranceDate))');
 		$q = $accounts_model->dsql();
 
-		$grid_column_array = array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','LoanInsurranceDate','dealer','insurance_month','insurance_date','maturity_date');
+		$grid_column_array = array('AccountNumber','member','FatherName','PermanentAddress','PhoneNos','LoanInsurranceDate','dealer','insurance_month','insurance_date','maturity_date');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -103,6 +103,7 @@ class page_reports_loan_insuranceduelist extends Page {
 		});
 
 		$grid->addColumn('balance_on_date','amount');
+		$grid->addFormatter('member','wrap');
 
 		$grid->addPaginator(50);
 		$grid->addSno();

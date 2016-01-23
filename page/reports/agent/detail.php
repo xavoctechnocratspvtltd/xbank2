@@ -52,12 +52,14 @@ class page_reports_agent_detail extends Page {
 			$sponsor->addCondition('id',$m->getElement('sponsor_id'));
 			return $sponsor->fieldQuery('PhoneNos');
 		});
-
 		$agent->addExpression('sponsor_cadre')->set(function($m,$q){
-			$sponsor = $m->add('Model_Agent',array('table_alias'=>'sponsor_cadre'));
-			$sponsor->addCondition('id',$m->getElement('sponsor_id'));
-			return $sponsor->fieldQuery('cadre');
+			return $m->refSQL('sponsor_id')->fieldQuery('cadre');	
 		});
+		// $agent->addExpression('sponsor_cadre')->set(function($m,$q){
+		// 	$sponsor = $m->add('Model_Agent',array('table_alias'=>'sponsor_cadre'));
+		// 	$sponsor->addCondition('id',$m->getElement('sponsor_id'));
+		// 	return $sponsor->fieldQuery('cadre');
+		// });
 
 		$agent->getElement('created_at')->caption('Date Of Joining');
 
@@ -82,6 +84,7 @@ class page_reports_agent_detail extends Page {
 		$grid_agent->add('H3',null,'grid_buttons')->set('Agent Detail As On '. date('d-M-Y'));
 		$grid_agent->setModel($agent,array('code','agent_member_name','level_1_crpb','level_2_crpb','level_3_crpb','total_group_crpb','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor','sponsor_cadre','sponsor_phone','self_business','team_business','self_crpb','total_team_business','total_group_crpb'));
 		$grid_agent->addSno();
+		$grid_agent->addFormatter('sponsor','wrap');
 
 		$grid_agent->addColumn('Button','member_list');
 		

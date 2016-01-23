@@ -15,9 +15,17 @@ class page_agents extends Page{
 		if($crud->isEditing('edit')){
 			$agent->hook('editing');
 		}
+		$agent->addExpression('sponsor_name')->set(function($m,$q){
+			return $m->refSQL('sponsor_id')->fieldQuery('member');
+		});
 
+		$agent->addExpression('sponsor_cadre')->set(function($m,$q){
+			return $m->refSQL('sponsor_id')->fieldQuery('cadre');	
+		});
 
-		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus','username','password'),array('code','member','sponsor','sponsor_cadre','account','cadre','current_individual_crpb','ActiveStatus','username'));
+		$agent->addCondition('sponsor_id','>',0);
+
+		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus','username','password'),array('code','member','sponsor_name','sponsor_cadre','account','cadre','current_individual_crpb','ActiveStatus','username'));
 
 		if($crud and !$crud->isEditing('add') and ! $crud->isEditing('edit')){
 			$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));
@@ -30,6 +38,7 @@ class page_agents extends Page{
 
 			$crud->grid->addPaginator(50);
 			$crud->grid->addQuickSearch(array('member','account','code'));
+			$crud->grid->addFormatter('sponsor_name','Wrap');
 		}
 
 

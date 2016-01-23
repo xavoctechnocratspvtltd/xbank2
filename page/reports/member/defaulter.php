@@ -8,7 +8,7 @@ class page_reports_member_defaulter extends Page{
 		$member_model->setOrder('created_at','desc');
 		$member_model->addCondition('is_defaulter',true);
 		$form=$this->add('Form');
-		$grid=$this->add('Grid');
+		$grid=$this->add('Grid_AccountsBase');
 		$grid_column_array = array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active');
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
 
@@ -39,6 +39,7 @@ class page_reports_member_defaulter extends Page{
 
 
 		$grid->setModel($member_model,$grid_column_array);
+		$grid->addSno();
 		$grid->addPaginator(500);
 		$grid->addQuickSearch(array('id','name','PhoneNos'));
 

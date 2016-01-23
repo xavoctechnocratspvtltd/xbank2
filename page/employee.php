@@ -319,7 +319,7 @@ class page_employee extends Page{
 		if($this->api->stickyGET('filters')){
 			$salary_model=$this->add('Model_EmployeeSalary');
 			$crud = $v->add('CRUD',array('grid_class'=>'Grid_EmployeeRecord','allow_del'=>false,'allow_add'=>false,'allow_edit'=>false));
-			
+			$crud->grid->add('misc/Export');
 			if($_GET['branch']){
 				$salary_model->addCondition('branch_id',$_GET['branch']);
 			}

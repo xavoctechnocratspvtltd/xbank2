@@ -94,8 +94,9 @@ class page_reports_agent_tds extends Page {
 
 		$grid->add('View',null,'grid_buttons')->set('From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 		$grid->addPaginator(500);
-		$grid->addTotals(array('net_commission'));
+		$grid->addTotals(array('deposit','tds','dr_sum','net_commission'));
 		$grid->addSno();
+
 
 		$grid->addMethod('format_deposit',function($g,$f){
 			$g->current_row[$f] = $g->add('Model_TransactionRow')

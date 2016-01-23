@@ -67,8 +67,8 @@ class page_reports_deposit_duestogive extends Page {
 
 		$account->addCondition('DefaultAC',false);
 		$account->add('Controller_Acl');
-
-		$grid->setModel($account,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','due_date','Amount','agent_name','agent_phoneno','ActiveStatus','account_type'));
+		$account->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
+		$grid->setModel($account,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','due_date','Amount','MaturityAmount','agent_name','agent_phoneno','ActiveStatus','account_type'));
 		$grid->addPaginator(50);
 		$grid->addSno();
 		$grid->addFormatter('PermanentAddress','wrap');

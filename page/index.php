@@ -18,5 +18,6 @@ class page_index extends xPage{
 		$tab2=$tabs->addTabURL('dashboard_opened','Accounts Opened Today');
 		$tab2=$tabs->addTabURL('dashboard_cash','Cash / Bank Reports');
 		$tab2=$tabs->addTabURL('dashboard_insurance','Insurance Due List');
+		$tab2=$tabs->addTabURL('dashboard_scheme','Scheme');
 	}
 }

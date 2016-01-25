@@ -32,8 +32,8 @@ class page_transactions_deposit extends Page {
 
 		// IF MEMBER OF ACCOUNT IS NOT HAVING PAN CARD .. DISPLAY MESSAGE IF AMOUNT IS >= 50,000
 		$account_field = $form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull();
-		$account_field->other_field->js(true)->focus();
-
+		// $account_field->other_field->js(true)->focus();
+		$plus_btn=$account_field->other_field->afterField()->add('Button')->set(array('icon'=>'plus',''));
 		// $account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
 		$account_field->setModel($account_model,'AccountNumber');
 		$account_mode_view = $account_field->belowField()->add('View');
@@ -79,10 +79,10 @@ class page_transactions_deposit extends Page {
 				$account_info=$right_col->add('View');
 				switch ($account_selected['SchemeType']) {
 					case 'Loan':
-						$account_info->set('Over Due Premium : xxxx');
+						$account_info->set("Over Due Premiums ". $account_selected->ref('Premium')->addCondition('DueDate','<',$this->api->today)->addCondition('Paid',false)->count());
 						break;
 					case 'Recurring':
-						$account_info->set('No of Premium : yyyy');
+						$account_info->set("Paid Premiums ".$account_selected->ref('Premium')->addCondition('PaidOn','is not',null)->count());
 						break;	
 					default:
 						$account_info->set($account_selected['scheme_name']);
@@ -99,6 +99,8 @@ class page_transactions_deposit extends Page {
 		$js=array(
 				$right_col->js()->reload(array('account_selected'=>$account_field->js()->val())),
 			);
+		
+		$plus_btn->js('click',$js);
 		$account_field->other_field->js('change',$js);
 		$account_field->js('change',$js);
 		// removed cash from here as default account is taken to be self branch cash account

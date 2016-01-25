@@ -1,7 +1,7 @@
 <?php
 
-class page_reports_loan_dispatch extends Page {
-	public $title="Loan Dispatch Report";
+class page_dsa_dispatch extends Page {
+	public $title="DSA Loan Dispatch Report";
 	function init(){
 		parent::init();
 
@@ -10,10 +10,11 @@ class page_reports_loan_dispatch extends Page {
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
 		}
-
+		$active_dealer=$this->add('Model_ActiveDealer');
+		$active_dealer->addCondition('dsa_id',$this->api->auth->model->id);
 		$form=$this->add('Form');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
-		$dealer_field->setModel('ActiveDealer');
+		$dealer_field->setModel($active_dealer);
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
@@ -36,6 +37,10 @@ class page_reports_loan_dispatch extends Page {
 		$member_join->addField('FatherName');
 		$member_join->addField('CurrentAddress');
 		$member_join->addField('PhoneNos');
+
+		$dealer_j=$account_model->join('dealers','dealer_id');
+		$dealer_j->addField('dsa_id');
+		$account_model->addCondition('dsa_id',$this->api->auth->model->id);
 		
 		$account_model->addExpression('no_of_emi')->set(function($m,$q){
 			return $m->refSQL('Premium')->count();
@@ -88,7 +93,7 @@ class page_reports_loan_dispatch extends Page {
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PermanentAddress');
 		});
 
-		$grid_array = array('AccountNumber','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','created_at','dealer','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');

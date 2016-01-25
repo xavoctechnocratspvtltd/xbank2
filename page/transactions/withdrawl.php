@@ -28,8 +28,8 @@ class page_transactions_withdrawl extends Page {
 		$right_col = $cols->addColumn(6);
 		$form = $left_col->add('Form');
 		$account_field = $form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull();
-		$account_field->other_field->js(true)->focus();
-		
+		// $account_field->other_field->js(true)->focus();
+		$plus_btn=$account_field->other_field->afterField()->add('Button')->set(array('icon'=>'plus',''));	
 		// $account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
 		$account_field->setModel($account_model,'AccountNumber');
 		$account_mode_view = $account_field->belowField()->add('View');
@@ -81,6 +81,7 @@ class page_transactions_withdrawl extends Page {
 			);
 		$account_field->other_field->js('change',$js);
 		$account_field->js('change',$js);
+		$plus_btn->js('clikc',$js);
 
 		if($form->isSubmitted()){
 			try{		

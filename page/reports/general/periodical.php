@@ -25,7 +25,6 @@ class page_reports_general_periodical extends Page {
 		$dealer_field->setModel('Dealer');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
-
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		
@@ -136,8 +135,12 @@ class page_reports_general_periodical extends Page {
 
 				$grid = $p->add('Grid_AccountsBase');
 				$grid->addSno();
-				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','member','father_name','address','phone_no','agent','dealer','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee'));
-
+				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','member','father_name','address','phone_no','agent','dealer','mo','team','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee'));
+				$grid->addFormatter('agent','Wrap');
+				$grid->addFormatter('agent_saving_acc','Wrap');
+				$grid->addFormatter('team','Wrap');
+				$grid->addFormatter('address','Wrap');
+				$grid->addFormatter('member','Wrap');
 				$grid->addPaginator(500);
 				$grid->addTotals(array('Amount'));
 			});

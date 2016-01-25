@@ -15,6 +15,7 @@ class page_dsa_dashboard extends Page {
 		$tabs->addTabURl('dsa_rcduelist','R.C. Due List');
 		$tabs->addTabURl('dsa_dealerstatement','Dealer Statements');
 		$tabs->addTabURl('dsa_accountstatement','Account Statements');
+		$tabs->addTabURl('dsa_dispatch','Loan Dispatch');
 	}
 
 }

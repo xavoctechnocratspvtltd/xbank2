@@ -20,7 +20,7 @@ class View_DuesReceiveList extends View{
 		$account_j->addField('ActiveStatus');
 		$account_j->addField('branch_id');
 		$account_j->hasOne('Agent','agent_id');
-		$account_j->hasOne('Agent','dealer_id');
+		$account_j->hasOne('Dealer','dealer_id');
 
 		$scheme_j = $account_j->join('schemes','scheme_id');
 		$scheme_j->addField('SchemeType');

@@ -82,7 +82,7 @@ class page_transactions_deposit extends Page {
 						$account_info->set("Over Due Premiums ". $account_selected->ref('Premium')->addCondition('DueDate','<',$this->api->today)->addCondition('Paid',false)->count());
 						break;
 					case 'Recurring':
-						$account_info->set("Paid Premiums ".$account_selected->ref('Premium')->addCondition('Paid',true)->count());
+						$account_info->set("Paid Premiums ".$account_selected->ref('Premium')->addCondition('PaidOn','is not',null)->count());
 						break;	
 					default:
 						$account_info->set($account_selected['scheme_name']);

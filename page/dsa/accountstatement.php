@@ -65,7 +65,7 @@ class page_dsa_accountstatement extends Page{
 		// $transactions->add('Controller_Acl');
 		$transactions->setOrder('created_at');
 		$grid->setModel($transactions,array('voucher_no','created_at','Narration','amountDr','amountCr'));
-		// $grid->addPaginator(10);
+		$grid->addTotals(array('amountDr','amountCr'));
 
 		$grid->addSno();
 

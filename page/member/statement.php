@@ -1,69 +1,93 @@
 <?php
-
 class page_member_statement extends Page {
-	public $title = "Member Statement";
+	public $title = "Member Account Statement";
 
 	function init(){
 		parent::init();
 		
-		$account_id=$_GET['account_id'];
-		$member_id=$_GET['member_id'];
-		// throw new Exception($member_id, 1);
-		$this->api->stickyGET('member_id');
-		$this->api->stickyGET('account_id');
-		$this->api->stickyGET('from_date');
-		$this->api->stickyGET('to_date');
-		
-		$form=$this->add('Form');
-		$form->addField('hidden','account')->set($account_id);
-		$form->addField('hidden','member')->set($member_id);
+		// $this->add('Controller_Acl');
+		$account_model=$this->add('Model_Account');
+		$account_model->addCondition('member_id',$this->api->auth->model->id);
+
+		$form=$this->add('Form')->addClass('noneprintalbe');
+		$account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();
+		$account_field->setModel($account_model);
+
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addSubmit('Get Statement');
 
-		$grid = $this->add('Grid_AccountStatement');
-		$transactions_row = $this->add('Model_TransactionRow');
+		$v = $this->add('View')->addStyle('width','100%');
+		$grid = $v->add('Grid_AccountStatement');
+		$transactions = $this->add('Model_TransactionRow');
 
-		$transaction_j = $transactions_row->join('transactions','transaction_id');
-		$account_j = $transactions_row->join('accounts','account_id');
-		// $account_j->addField('id','account_id');
-		$account_j->addField('member_id');
-
-		$transactions_row->addCondition('account_id',$_GET['account_id']);
-		$transactions_row->addCondition('member_id',$_GET['member_id']);
-
-		
-		if($_GET['filter']){
-			$this->api->stickyGET('filter');
+		if($_GET['account_id'] or $_GET['AccountNumber']){
+			$this->api->stickyGET('account_id');
+			$this->api->stickyGET('AccountNumber');
+			$this->api->stickyGET('from_date');
+			$this->api->stickyGET('to_date');
 			if($_GET['account_id']){
-				$transactions_row->addCondition('account_id',$_GET['account_id']);
+				$transactions->addCondition('account_id',$_GET['account_id']);
 			}
-			if($_GET['from_date']){
-				$transactions_row->addCondition('created_at','>=',$_GET['from_date']);
+			if($_GET['AccountNumber']){
+				$transactions->join('accounts','account_id')->addField('AccountNumber');
+				$transactions->addCondition('AccountNumber',$_GET['AccountNumber']);
 			}
-			if($_GET['to_date']){
-				$transactions_row->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+
+			if($_GET['from_date'])
+				$transactions->addCondition('created_at','>=',$_GET['from_date']);
+			if($_GET['to_date'])
+				$transactions->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+			if($_GET['account_id']){
+				$opening_balance = $this->add('Model_Account')->load($_GET['account_id'])->getOpeningBalance($_GET['from_date']);
 			}
+
+			if($_GET['AccountNumber']){
+				$opening_balance = $this->add('Model_Account')->loadBy('AccountNumber',$_GET['AccountNumber'])->getOpeningBalance($_GET['from_date']);
+			}
+
+			if(($opening_balance['DR'] - $opening_balance['CR']) > 0){
+				$opening_column = 'amountDr';
+				$opening_amount = $opening_balance['DR'] - $opening_balance['CR'];
+				$opening_narration = "To Opening balace";
+				$opening_side = 'DR';
+			}else{
+				$opening_column = 'amountCr';
+				$opening_amount = $opening_balance['CR'] - $opening_balance['DR'];
+				$opening_narration = "By Opening balace";
+				$opening_side = 'CR';
+			}
+			$grid->addOpeningBalance($opening_amount,$opening_column,array('Narration'=>$opening_narration),$opening_side);
+			$grid->addCurrentBalanceInEachRow();
 		}else{
-			$transactions_row->addCondition('id',-1);
+			$transactions->addCondition('id',-1);
 		}
 
-		$transactions_row->setOrder('created_at');
-		$grid->setModel($transactions_row,array('account','created_at','Narration','amountDr','amountCr'));
-		// $grid->addPaginator(20);
+		// $transactions->add('Controller_Acl');
+		$transactions->setOrder('created_at');
+		$grid->setModel($transactions,array('voucher_no','created_at','Narration','amountDr','amountCr'));
+		// $grid->addPaginator(10);
 
 		$grid->addSno();
 
+		$grid->addTotals(array('amountCr','amountDr'));
+		$grid->addFormatter('Narration','smallWrap');
+		// $grid->addFormatter('voucher_no','smallWrap');
+		// $grid->addFormatter('voucher_no','smallWrap');
+
 		if($form->isSubmitted()){
+			
+			$a=$this->add('Model_Account');
 			$grid->js()->reload(
 					array(
 						'account_id'=>$form['account'],
-						'member_id'=>$form['member'],
-						'from_date'=>$form['from_date']?:0,
-						'to_date'=>$form['to_date']?:0,
-						'filter'=>1
+						'from_date'=>($form['from_date'])?:0,
+						'to_date'=>($form['to_date'])?:0,
 						)
 					)->execute();
+			$a->tryLoad($form['account']);
+			$open = $a->getOpeningBalance();
+			$form->displayError('accounts',($open['DR'] - $open['CR']));
 		}
 
 	}

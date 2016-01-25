@@ -23,7 +23,7 @@ class page_agents extends Page{
 			return $m->refSQL('sponsor_id')->fieldQuery('cadre');	
 		});
 
-		$agent->addCondition('sponsor_id','>',0);
+		// $agent->addCondition('sponsor_id','>',0);
 
 		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus','username','password'),array('code','member','sponsor_name','sponsor_cadre','account','cadre','current_individual_crpb','ActiveStatus','username'));
 

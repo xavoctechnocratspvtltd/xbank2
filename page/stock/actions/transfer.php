@@ -109,6 +109,7 @@ class page_stock_actions_transfer extends Page {
     		$grid->addMethod('format_to',function($g,$f){
     			$g->current_row[$f] = $g->add('Model_Branch')->addCondition('id',$g->current_row[$f])->tryLoadAny()->get('name');
     		});
+    		$crud->grid->addPaginator(10);
 		}
 
 		if($form->isSubmitted()){
@@ -143,8 +144,7 @@ class page_stock_actions_transfer extends Page {
 			$to_branch_model->load($form['to_branch']);
 			// Entry in Transaction
 			$transaction_model = $this->add('Model_Stock_Transaction');
-			
-			$transaction_model->transfer($form['from_branch'],$container_model,$row_model,$item_model,$form['from_qty'],$form['narration'],$to_branch_model,$form['is_used_submit']);
+			$transaction_model->transfer($form['from_branch'],$container_model,$row_model,$item_model,$form['from_qty'],$form['from_narration'],$to_branch_model,$form['is_used_submit']);
 			// remove item from cuurent branch stock
 			$criq_model = $this->add('Model_Stock_ContainerRowItemQty');	
 			$criq_model->removeStock($container_model,$row_model,$item_model,$form['from_qty']);
@@ -158,7 +158,7 @@ class page_stock_actions_transfer extends Page {
 			$js = array($crud->js()->reload(),
 					$form->js()->univ()->successMessage("Item ( ".$item_model['name']." ) From Branch ( ".$this->api->currentBranch['name']." ) To Branch ( ".$to_branch_model['name']." ) Transfer Successfully" )
 					);
-			$form->js()->reload(null,$js)->execute();	
+			$form->js()->reload(null,$js)->execute();
 		}
 
 

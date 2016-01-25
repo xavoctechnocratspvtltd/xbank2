@@ -142,8 +142,10 @@ class page_reports_loan_dispatch extends Page {
 		$account_model->addExpression('file_charge')->set(function($m,$q){
 			$s = $m->add('Model_Scheme',array('table_alias'=>'fcs'));
 			$s->addCondition('id',$q->getField('scheme_id'));
-			return $q->expr("[0]/100.0*[1]",array($m->getElement('Amount'),$s->fieldQuery('ProcessingFees')));
+			// return "'123'";
+			return $q->expr("if([0]=1,[1]/100.0*[2],[2])",array($s->fieldQuery('ProcessingFeesinPercent'),$m->getElement('Amount'),$s->fieldQuery('ProcessingFees')));
 		});
+
 		$account_model->addExpression('cheque_amount')->set(function($m,$q){
 			return $q->expr("[0]-[1]",array($m->getElement('Amount'),$m->getElement('file_charge')));
 		});

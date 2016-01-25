@@ -209,7 +209,7 @@ class page_accounts_Loan extends Page {
 			// Not editing
 			$crud->grid->addMethod('format_loan_from_account',function($g,$f){
 				$extra_info = json_decode($g->model['extra_info']);
-				$g->current_row[$f]= $this->add('Model_Account')->load($extra_info->loan_from_account)->get('AccountNumber');
+				$g->current_row[$f]= $m->add('Model_Account')->load($extra_info->loan_from_account)->get('AccountNumber');
 			});			
 
 			$crud->grid->addColumn('loan_from_account','loan_from_account');

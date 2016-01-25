@@ -37,6 +37,10 @@ class page_dsa_dispatch extends Page {
 		$member_join->addField('FatherName');
 		$member_join->addField('CurrentAddress');
 		$member_join->addField('PhoneNos');
+
+		$dealer_j=$account_model->join('dealers','dealer_id');
+		$dealer_j->addField('dsa_id');
+		$account_model->addCondition('dsa_id',$this->api->auth->model->id);
 		
 		$account_model->addExpression('no_of_emi')->set(function($m,$q){
 			return $m->refSQL('Premium')->count();
@@ -89,7 +93,7 @@ class page_dsa_dispatch extends Page {
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PermanentAddress');
 		});
 
-		$grid_array = array('AccountNumber','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','created_at','dealer','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');

@@ -31,7 +31,7 @@ class View_AccountDetail extends View {
 		$guarenters = $ac_m->ref('AccountGuarantor');
 		$g_m_join = $guarenters->join('members','member_id');
 		$g_m_join->addField('memberName','name');
-		$g_m_join->addField('memberMo','PhoneNos');
+		$g_m_join->addField('member_Mobile_no','PhoneNos');
 		// $g_m_join->addField('MemberID','id');
 
 		$grid= $this->add('Grid',null,'guaranters');

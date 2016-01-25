@@ -34,10 +34,11 @@ class page_reports_loan_emiduelist extends Page {
 		$q=$account_model->dsql();
 
 		$member_join=$account_model->join('members','member_id');
-		// $member_join->addField('member_name','name');
+		$member_join->addField('member_name','name');
 		$member_join->addField('FatherName');
 		$member_join->addField('PhoneNos');
-		$member_join->addField('PermanentAddress');
+		$member_join->addField('CurrentAddress');
+		$member_join->addField('landmark');
 
 		$account_model->addCondition('DefaultAC',false);
 
@@ -45,7 +46,7 @@ class page_reports_loan_emiduelist extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member','FatherName','PermanentAddress','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total');
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
@@ -253,7 +254,7 @@ class page_reports_loan_emiduelist extends Page {
 				->now();
 
 			$grid->addFormatter('guarantor_address','wrap');
-			$grid->addFormatter('PermanentAddress','wrap');
+			$grid->addFormatter('CurrentAddress','wrap');
 		}
 		// $grid->addColumn('text','openning_date');
 

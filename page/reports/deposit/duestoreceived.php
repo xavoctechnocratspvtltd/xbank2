@@ -25,6 +25,7 @@ class page_reports_deposit_duestoreceived extends Page {
 		$member_join->addField('FatherName');
 		$member_join->addField('PhoneNos');
 		$member_join->addField('CurrentAddress');
+		$member_join->addField('landmark');
 
 		$account_model->addCondition('DefaultAC',false);
 		$account_model->addCondition('MaturedStatus',false);
@@ -102,9 +103,9 @@ class page_reports_deposit_duestoreceived extends Page {
 
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');
-		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','due_premium_count','premium_amount','total','agent','agent_code','agent_phone'));
+		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','due_premium_count','premium_amount','total','agent','agent_code','agent_phone'));
 		$grid->addSno();
-		// $grid->removeColumn('last_premium');
+		$grid->addFormatter('CurrentAddress','Wrap');
 
 		// $grid->addMethod('format_balance',function($g,$f){
 		// 	$bal = $g->model->getOpeningBalance($on_date=$_GET['on_date']?:$g->api->today,$side='both',$forPandL=false);

@@ -7,7 +7,10 @@ class page_transactions_deposit extends Page {
 
 		$this->add('Controller_Acl');
 
-		$form = $this->add('Form');
+		$cols= $this->add('Columns');
+		$left_col = $cols->addColumn(6);
+		$right_col = $cols->addColumn(6);
+		$form = $left_col->add('Form');
 		$account_model=$this->add('Model_Active_Account');
 
 		// NO BANK FOR ANY BRANCH
@@ -28,16 +31,36 @@ class page_transactions_deposit extends Page {
 		$account_model->addCondition('SchemeType','<>',ACCOUNT_TYPE_FIXED);
 
 		// IF MEMBER OF ACCOUNT IS NOT HAVING PAN CARD .. DISPLAY MESSAGE IF AMOUNT IS >= 50,000
-
 		$account_field = $form->addField('autocomplete/Basic',array('name'=>'account'))->validateNotNull();
 		$account_field->other_field->js(true)->focus();
+
 		// $account_model->filter(array($account_model->scheme_join->table_alias.'.SchemeGroup'=>array('%Bank Accounts%','%Suspence Account%','%Cash Account%','%Branch & Divisions%'),$account_model->table_alias.'.account_type'=>array('%Saving%','%Current%')));
 		$account_field->setModel($account_model,'AccountNumber');
+		$account_mode_view = $account_field->belowField()->add('View');
 
 		// $account_field->model->debug();
-
 		$amount_field = $form->addField('Number','amount')->validateNotNull();
 		$pan_details = $amount_field->belowField()->add('View');
+
+		if($_GET['check_min']){
+			$acc_bal_temp = $this->add('Model_Account_SavingAndCurrent');
+			$acc_bal_temp->tryLoadBy('AccountNumber',$_GET['AccountNumber']);
+
+			if($acc_bal_temp->loaded()){
+				$bal = $acc_bal_temp->getOpeningBalance();
+				$bal_cr = $bal['Cr'] - $bal['Dr'];
+				if($bal_cr- $_GET['amount'] < 200 AND $bal_cr- $_GET['amount'] > 0 ) $pan_details->set('Bellow');
+			}
+
+		}
+		$amount_field->js('change',$pan_details->js()->reload(array('check_min'=>1,'amount_filled'=>$amount_field->js()->val(),'account_selected'=>$account_field->js()->val())));
+
+		$account_to_debit_model = $this->add('Model_Account');
+		$account_to_debit_model->addCondition('scheme_name','<>',CASH_ACCOUNT_SCHEME);
+		$form->addField('autocomplete/Basic','account_to_debit')->setModel($account_to_debit_model,'AccountNumber');
+		
+		$form->addField('Text','narration');
+		$form->addSubmit('Deposit');
 
 		if($_GET['account_selected']){
 			$account_selected =$this->add('Model_Account');
@@ -49,18 +72,36 @@ class page_transactions_deposit extends Page {
 			}else{
 				$pan_details->set('Pan Card Found');
 			}
-			return;
+			// return;
+			if($account_selected->loaded()){
+				// $right_col->add('H3')->set(array('Signature For - '));
+				$right_col->add('View')->set('Scheme Type: '.$account_selected['SchemeType']);
+				$account_info=$right_col->add('View');
+				switch ($account_selected['SchemeType']) {
+					case 'Loan':
+						$account_info->set('Over Due Premium : xxxx');
+						break;
+					case 'Recurring':
+						$account_info->set('No of Premium : yyyy');
+						break;	
+					default:
+						$account_info->set($account_selected['scheme_name']);
+						break;
+				}
+				// $right_col->add('View')->setHtml('Account Mode: ' . $account_selected['ModeOfOperation'] . ($account_selected['ModeOfOperation'] == 'Joint'? '<font color=red> Check All Signatures </font>':''));
+				$account_field->other_field->set($_GET['account_selected']);
+				$account_field->set($account_selected->id);
+			}else{
+				$right_col->add('View_Error')->set('Select Account for Deposit');
+			}
 		}
 
-		$amount_field->js('change',$pan_details->js()->reload(array('amount_filled'=>$amount_field->js()->val(),'account_selected'=>$account_field->js()->val())));
-
+		$js=array(
+				$right_col->js()->reload(array('account_selected'=>$account_field->js()->val())),
+			);
+		$account_field->other_field->js('change',$js);
+		$account_field->js('change',$js);
 		// removed cash from here as default account is taken to be self branch cash account
-		$account_to_debit_model = $this->add('Model_Account');
-		$account_to_debit_model->addCondition('scheme_name','<>',CASH_ACCOUNT_SCHEME);
-		
-		$form->addField('autocomplete/Basic','account_to_debit')->setModel($account_to_debit_model,'AccountNumber');
-		$form->addField('Text','narration');
-		$form->addSubmit('Deposit');
 
 		if($form->isSubmitted()){
 			

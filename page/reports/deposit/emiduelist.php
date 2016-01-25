@@ -25,6 +25,7 @@ class page_reports_deposit_emiduelist extends Page {
 		$member_join->addField('FatherName');
 		$member_join->addField('PhoneNos');
 		$member_join->addField('CurrentAddress');
+		$member_join->addField('landmark');
 
 		$account_model->addCondition('DefaultAC',false);
 		$account_model->addCondition('MaturedStatus',false);
@@ -116,8 +117,8 @@ class page_reports_deposit_emiduelist extends Page {
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
-		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','agent','agent_code','agent_phone'));
-		
+		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','agent','agent_code','agent_phone'));
+		$grid->addFormatter('CurrentAddress','Wrap');
 		if($_GET['agent']){
 			$grid->removeColumn('agent_code');
 		}

@@ -79,10 +79,10 @@ class page_transactions_deposit extends Page {
 				$account_info=$right_col->add('View');
 				switch ($account_selected['SchemeType']) {
 					case 'Loan':
-						$account_info->set('Over Due Premium : xxxx');
+						$account_info->set("Over Due Premiums ". $account_selected->ref('Premium')->addCondition('DueDate','<',$this->api->today)->addCondition('Paid',false)->count());
 						break;
 					case 'Recurring':
-						$account_info->set('No of Premium : yyyy');
+						$account_info->set("Paid Premiums ".$account_selected->ref('Premium')->addCondition('PaidOn','is not',null)->count());
 						break;	
 					default:
 						$account_info->set($account_selected['scheme_name']);

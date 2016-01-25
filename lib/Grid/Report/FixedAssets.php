@@ -30,30 +30,28 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 		
 		$cr = 0;
 		$dr = 0;
-		$array = $this->model->getOpeningBalance($this->api->nextDate($this->till_date));
-		$cr += $array['CR'];
-		$dr += $array['DR'];
+		$openning = $this->model->getOpeningBalance($this->api->getFinancialYear($this->till_date,'start'));
+		$cr = $openning['CR'];
+		$dr = $openning['DR'];
+
+		$amount = $cr-$dr;
+		$balance = $amount.' CR';
+		if($amount < 0)
+			$balance = abs($amount).' DR';
+	
+		$this->current_row['opening_amount'] = $balance;
+
+		$openning = $this->model->getOpeningBalance($this->api->nextDate($this->api->getFinancialYear($this->till_date,'end')));
+		$cr = $openning['CR'];
+		$dr = $openning['DR'];
 
 		$amount = $cr-$dr;
 		$balance = $amount.' CR';
 		if($amount < 0)
 			$balance = abs($amount).' DR';
 		
-		//Opening Amount: Current Financial Year ka opening Amount no according to as on date
-		
-		// if($this->model['SchemeType'] == "Loan"){
-			//OPENING BALANCE CALCULATION
-			$start_date = $this->current_financial_year['start_date'];
-			$opening_array = $this->model->getOpeningBalance($this->api->nextDate($start_date));
+		$this->current_row['closing_balance'] = $balance;
 
-			$this->current_row['opening_amount'] = $opening_array['CR'];
-			$this->current_row['closing_balance'] = $balance;
-		// }else{
-			// $this->current_row['closing_balance'] = $balance;
-		// }
-		
-		// throw new \Exception($this->fixed_assets_type);
-		
 		//Depretitaion at: Plane&Machinary: 15%, Computer and Printer: 60% , Funrinture and fix:10%, Fixed Assets: 10%;
 		switch ($this->fixed_assets_type) {
 			case 'Fixed Assets':

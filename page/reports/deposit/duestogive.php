@@ -34,7 +34,7 @@ class page_reports_deposit_duestogive extends Page {
 		$agen_member_join->addField('agent_name','name');
 		$agen_member_join->addField('agent_phoneno','PhoneNos');
 
-		$account->addExpression('due_date')->set(function($m,$q){
+		$account->addExpression('maturity_date')->set(function($m,$q){
 			return "(IF (".$q->getField('account_type')."='FD' OR ".$q->getField('account_type')."='MIS',(
 					DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +(".$m->scheme_join->table_alias.".MaturityPeriod + 0) DAY)
 				),(
@@ -59,16 +59,16 @@ class page_reports_deposit_duestogive extends Page {
 			
 
 			if($_GET['from_date'])
-				$account->_dsql()->having('due_date','>=',$_GET['from_date']);
+				$account->_dsql()->having('maturity_date','>=',$_GET['from_date']);
 			if($_GET['to_date'])
-				$account->_dsql()->having('due_date','<=',$_GET['to_date']);
+				$account->_dsql()->having('maturity_date','<=',$_GET['to_date']);
 		}else
 			$account->addCondition('id',-1);
 
 		$account->addCondition('DefaultAC',false);
 		$account->add('Controller_Acl');
 		$account->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
-		$grid->setModel($account,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','due_date','Amount','MaturityAmount','agent_name','agent_phoneno','ActiveStatus','account_type'));
+		$grid->setModel($account,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos','maturity_date','Amount','MaturityAmount','agent_name','agent_phoneno','ActiveStatus','account_type'));
 		$grid->addPaginator(50);
 		$grid->addSno();
 		$grid->addFormatter('PermanentAddress','wrap');

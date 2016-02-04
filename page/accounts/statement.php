@@ -17,6 +17,19 @@ class page_accounts_statement extends Page {
 
 		$v = $this->add('View')->addStyle('width','100%');
 		$grid = $v->add('Grid_AccountStatement');
+		$title_model=$this->add('Model_Account')->addCondition('id',$_GET['account_id']);
+		$title_model->tryLoadAny();
+		$title_model->getElement('created_at')->type('date');
+		$title_acc_name=$title_model->get('name');
+
+		$t_from_date="";
+		if($_GET['from_date']){
+			$t_from_date=$_GET['from_date'];
+		}else{
+			$t_from_date=date('Y-m-d',strtotime($title_model['created_at']));
+		}
+
+		$grid->add('View',null,'grid_buttons')->setHtml('<div style="text-align:center;font-size:20px">'.$title_acc_name.' <br> <small >From Date - '.$t_from_date." - " . "   To Date - ".($_GET['to_date']?:$this->api->today."</small></div>"));
 		$transactions = $this->add('Model_TransactionRow');
 
 		if($_GET['account_id'] or $_GET['AccountNumber']){

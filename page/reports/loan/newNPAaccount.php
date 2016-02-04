@@ -154,21 +154,21 @@ class page_reports_loan_newNPAaccount extends Page {
 				case 'three_month':
 					$account_model->addCondition('due_premium_count',3);
 					// $account_model->addCondition('due_premium_count','<=',4);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -2 MONTH"));
+					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -3 MONTH"));
 					break;
 				case 'four_month':
 					$account_model->addCondition('due_premium_count',4);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -2 MONTH"));
+					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -4 MONTH"));
 					break;
 
 				case 'five_month':
 					$account_model->addCondition('due_premium_count',5);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -2 MONTH"));
+					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -5 MONTH"));
 					// $account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$till_date)));
 					break;
 				case 'five_above':
 					$account_model->addCondition('due_premium_count','>=',5);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -2 MONTH"));
+					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -5 MONTH"));
 					// $account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$till_date)));
 					break;
 				

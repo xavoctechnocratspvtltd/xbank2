@@ -108,7 +108,7 @@ class page_members extends Page {
 				$g->js()->reload()->execute();
 			}
 
-			$g->addQuickSearch(array('id','branch','name','created_at','is_active','CurrentAddress','PermanentAddress','FatherName','PhoneNos','PanNo'));
+			$g->addQuickSearch(array('id','branch','name','created_at','is_active','CurrentAddress','landmark','PermanentAddress','FatherName','PhoneNos','PanNo'));
 			// $g->addQuickSearch(array('search_string'));
 			$g->addMethod('format_removeEdit',function($grid,$field){
 				if($grid->model['name'] == $grid->model->ref('branch_id')->get('Code').SP.'Default')
@@ -129,6 +129,7 @@ class page_members extends Page {
 
 			$g->addColumn('expander','comment');
 			$g->addFormatter('edit','removeEdit');
+			$g->addFormatter('landmark','wrap');
 			// $g->addFormatter('active','activeStatus');
 			$g->addFormatter('delete','removeDelete');
 			$g->addPaginator(10);

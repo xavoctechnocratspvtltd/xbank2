@@ -29,7 +29,7 @@ class Grid_Member extends Grid {
 		$this->removeColumn('RelationWithNominee');
 		$this->removeColumn('NomineeAge');
 		$this->removeColumn('search_string');
-		$this->removeColumn('landmark');
+		// $this->removeColumn('landmark');
 		$this->removeColumn('tehsil');
 		$this->removeColumn('city');
 		$this->removeColumn('state');

@@ -23,9 +23,9 @@ class View_VoucherPrint extends View{
 		$transaction = $this->add('Model_Transaction');
 		$transaction->load($this->transaction_id);
 		
-		$v = $this->add('View')->addClass('atk-padding');
-		$v->add('H1')->set('BHAWANI CREDIT CO OPERATIVE SOCIETY');
-		$v->add('H3')->set('Voucher No: '. $transaction['voucher_no'].' UUID : '.$transaction->id);
+		$v = $this->add('View')->addClass('atk-padding-small');
+		$v->add('H2')->set('BHAWANI CREDIT CO OPERATIVE SOCIETY')->setStyle('margin-bottom','-10px');
+		$v->add('H4')->set('Voucher No: '. $transaction['voucher_no'].' UUID : '.$transaction->id);
 		
 		$cols= $v->add('Columns');
 		$left=$cols->addColumn(6);
@@ -53,18 +53,18 @@ class View_VoucherPrint extends View{
 		$fcol_3 = $fcol->addColumn(3);
 		$fcol_4 = $fcol->addColumn(3)->addClass('atk-align-center');
 
-		$fcol_1->add('H4')->set('Cashier_________');
-		$fcol_1->add('H4')->set('B.m.____________');
+		$fcol_1->add('H4')->set('Cashier_________')->setStyle('margin-top','-10px');
+		$fcol_1->add('H4')->set('B.m.____________')/*->setStyle('margin-top','-10px')*/;
 
-		$fcol_2->add('H4')->set('Entry By________');
+		$fcol_2->add('H4')->set('Entry By________')->setStyle('margin-top','-10px');
 		$fcol_2->add('H4')->set('Auditor_________');
 		
-		$fcol_3->add('H4')->set('T. No___________');
+		$fcol_3->add('H4')->set('T. No___________')->setStyle('margin-top','-10px');
 
-		$fcol_4->add('H5')->set('Revenue Stamp')->addClass('atk-align-center')->setStyle(array('border'=>'1px solid black','width'=>"70px",'height'=>'80px','margin'=>'0 auto 0 auto'));
-		$fcol_4->add('H4')->set('Receiver\'s Stamp');
+		$fcol_4->add('H5')->set('Revenue Stamp')->addClass('atk-align-center')->setStyle(array('border'=>'1px solid black','width'=>"60px",'height'=>'70px','margin'=>'-30px auto 0 auto'));
+		$fcol_4->add('H4')->set('Receiver\'s Stamp')->setStyle('margin-top','-3px');
 
-		$v->add('HR')->addClass('atk-padding');
+		$v->add('HR')/*->addClass('atk-padding-small')*/;
 
 		parent::recursiveRender();
 	}

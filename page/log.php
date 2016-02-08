@@ -18,6 +18,9 @@ class page_log extends Page {
 		if($to_date_filter = $this->api->stickyGET('to_date')){
 			$model->addCondition('created_at','<',$this->api->nextDate($to_date_filter));
 		}
+		if($pk=$this->api->stickyGET('pk')){
+			$model->addCondition('pk_id',$pk);
+		}
 
 		$model->setOrder('created_at','desc');
 		
@@ -35,6 +38,7 @@ class page_log extends Page {
 		$form->addField('DropDown','model')->setValueList($mn_arr)->setEmptyText("All")->set('All');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
+		$form->addField('line','primary_key');
 
 		$form->addsubmit('Get Records');
 
@@ -60,6 +64,7 @@ class page_log extends Page {
 			$grid->js()->reload(array(
 				'from_date' => $form['from_date']?:0,
 				'to_date' => $form['to_date']?:0,
+				'pk' => $form['primary_key']?:0,
 				'model' => $form['model']?:0
 				))->execute();
 		}

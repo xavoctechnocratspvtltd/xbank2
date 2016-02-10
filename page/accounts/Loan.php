@@ -273,16 +273,17 @@ class page_accounts_Loan extends Page {
 
 
 
-		if($crud->isEditing('edit')){
-			$account_loan_model->hook('editing');
-		}
+		// if($crud->isEditing('edit')){
+		// 	// $account_loan_model->hook('editing');
+		// }
 		
-		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer'));
+		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id'/*,'scheme_id'*//*,'Amount'*/,'agent_id','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo'/*,'ModeOfOperation'*/,'loan_from_account_id'/*,'LoanInsurranceDate'*/,'LoanAgainstAccount_id','dealer_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','loan_from_account','LoanInsurranceDate','LoanAgainstAccount','dealer'));
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'LoanAccount'));
 		
 		if($crud->isEditing()){
 			if($crud->form->hasElement('account_type')) // Removed in editing hook so may not have here
 				$crud->form->getElement('account_type')->setEmptyText('Please Select');
+
 		}
 
 		if($crud->isEditing('add')){

@@ -12,7 +12,7 @@ class View_BSPLChunks_Accounts extends View {
 	function init(){
 		parent::init();
 		
-		if($this->under_balance_sheet_id)
+		if($this->under_balance_sheet_id and !$this->under_scheme)
 			return $this->from_balancesheet_to_accounts();
 
 		if($this->under_scheme)

@@ -121,7 +121,7 @@ class Model_Account_DDS extends Model_Account{
 		if(!$interest) return;
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_DDS,null,$on_date,"Interst posting in DDS Account " . $this['AccountNumber'],null, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_DDS,$this->ref('branch_id'),$on_date,"Interst posting in DDS Account " . $this['AccountNumber'],null, array('reference_id'=>$this->id));
 		
 		$transaction->addDebitAccount($this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $interest);
 		$transaction->addCreditAccount($this, $interest);

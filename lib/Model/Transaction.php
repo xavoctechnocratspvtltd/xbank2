@@ -145,11 +145,22 @@ class Model_Transaction extends Model_Table {
 		$this->senitizeTransaction();
 		
 		if(($msg=$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id'])) !== true)
+			$dr_info=[];
+			foreach ($this->dr_accounts as $acc_no => $details) {
+				$dr_info[$acc_no] = $details['account']['branch'];
+			}
+
+			$cr_info=[];
+			foreach ($this->cr_accounts as $acc_no => $details) {
+				$cr_info[$acc_no] = $details['account']['branch'];
+			}
+
 			throw $this->exception('Transaction is Not Valid')
 					->addMoreInfo('message',$msg)
 					->addMoreInfo('account',$this['reference'])
-					->addMoreInfo('dr_account',array_keys($this->dr_accounts))
-					->addMoreInfo('cr_account',array_keys($this->cr_accounts))
+					->addMoreInfo('dr_account',print_r($dr_info,true))
+					->addMoreInfo('cr_account',print_r($cr_info,true))
+					->addMoreInfo('my_branch',$this['branch'])
 					;
 
 

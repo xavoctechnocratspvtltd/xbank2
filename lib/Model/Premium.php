@@ -28,6 +28,7 @@ class Model_Premium extends Model_Table {
 	}
 
 	function payNowForRecurring($on_date=null){
+		
 		if(!$on_date) $on_date = $this->api->now;
 		
 		$this['PaidOn'] = $on_date;
@@ -44,6 +45,7 @@ class Model_Premium extends Model_Table {
 	}
 
 	function giveAgentCommission($on_date = null){
+		
 		if(!$on_date) $on_date = $this->api->now;
 
 		if(!$this->account()->agent()) return ;
@@ -147,7 +149,7 @@ class Model_Premium extends Model_Table {
 	}
 
 	function reAdjustPaidValue($on_date=null){
-		if(!$on_date) $on_date = $this->api->today;
+		if(!$on_date) $on_date = $this->api->now;
 		$premiums_to_affect = $this->ref('account_id')->ref('Premium');
 		$premiums_to_affect->_dsql()->where("(DueDate <='$on_date' or PaidOn is not null) and Paid = 0");
 		$premiums_to_affect->setOrder('id');
@@ -155,7 +157,8 @@ class Model_Premium extends Model_Table {
 		foreach ($premiums_to_affect as $junk) {
 			$paid_premiums_before_date = $this->add('Model_Premium');
 			$paid_premiums_before_date->addCondition('account_id',$premiums_to_affect['account_id']);
-			$paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
+			// $paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
+			$paid_premiums_before_date->addCondition('PaidOn','<=',$on_date);
 			$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);
 
 			$premiums_to_affect['Paid'] = $paid_premiums_before_date->count()->getOne();

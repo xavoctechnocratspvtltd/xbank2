@@ -149,7 +149,7 @@ class Model_Account_Recurring extends Model_Account{
 
 		$premiumsSubmitedInThisAmount = number_format(floor(($AmountForPremiums / $this['Amount'])));
 
-		throw new Exception($premiumsSubmitedInThisAmount, 1);
+		// throw new Exception($premiumsSubmitedInThisAmount, 1);
 		
 
 		$unpaid_premiums = $this->ref('Premium');

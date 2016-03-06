@@ -112,7 +112,6 @@ class Model_Transaction extends Model_Table {
 		}
 
 		$amount = round($amount,3);
-		
 		if($account['branch_id'] != $this['branch_id']){
 			$this->all_debit_accounts_are_mine = false;
 			$this->other_branches_involved[$account['branch_id']] = $account->ref('branch_id');
@@ -144,7 +143,7 @@ class Model_Transaction extends Model_Table {
 		
 		$this->senitizeTransaction();
 		
-		if(($msg=$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id'])) !== true)
+		if(($msg=$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id'])) !== true){	
 			$dr_info=array();
 			foreach ($this->dr_accounts as $acc_no => $details) {
 				$dr_info[$acc_no] = $details['account']['branch'];
@@ -160,8 +159,9 @@ class Model_Transaction extends Model_Table {
 					->addMoreInfo('account',$this['reference'])
 					->addMoreInfo('dr_account',print_r($dr_info,true))
 					->addMoreInfo('cr_account',print_r($cr_info,true))
-					->addMoreInfo('my_branch',$this['branch'])
+					->addMoreInfo('my_branch',$this['branch_id'])
 					;
+		}
 
 
 		if($this->all_debit_accounts_are_mine and $this->all_credit_accounts_are_mine)

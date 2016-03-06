@@ -126,6 +126,9 @@ class Model_Account_DDS extends Model_Account{
 		$transaction->addDebitAccount($this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $interest);
 		$transaction->addCreditAccount($this, $interest);
 
+		throw new \Exception($this->ref('branch_id')->get('name'), 1);
+		
+
 		$transaction->execute();
 	}
 

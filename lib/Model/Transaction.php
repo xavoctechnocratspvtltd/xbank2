@@ -145,7 +145,12 @@ class Model_Transaction extends Model_Table {
 		$this->senitizeTransaction();
 		
 		if(($msg=$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id'])) !== true)
-			throw $this->exception('Transaction is Not Valid')->addMoreInfo('message',$msg);
+			throw $this->exception('Transaction is Not Valid')
+					->addMoreInfo('message',$msg)
+					->addMoreInfo('account',$this['reference'])
+					->addMoreInfo('dr_account',array_keys($this->dr_accounts))
+					->addMoreInfo('cr_account',array_keys($this->cr_accounts))
+					;
 
 
 		if($this->all_debit_accounts_are_mine and $this->all_credit_accounts_are_mine)

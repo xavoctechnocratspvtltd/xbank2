@@ -145,12 +145,12 @@ class Model_Transaction extends Model_Table {
 		$this->senitizeTransaction();
 		
 		if(($msg=$this->isValidTransaction($this->dr_accounts,$this->cr_accounts, $this['transaction_type_id'])) !== true)
-			$dr_info=[];
+			$dr_info=array();
 			foreach ($this->dr_accounts as $acc_no => $details) {
 				$dr_info[$acc_no] = $details['account']['branch'];
 			}
 
-			$cr_info=[];
+			$cr_info=array();
 			foreach ($this->cr_accounts as $acc_no => $details) {
 				$cr_info[$acc_no] = $details['account']['branch'];
 			}

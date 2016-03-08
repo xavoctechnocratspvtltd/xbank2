@@ -231,7 +231,7 @@ class Model_Account_Recurring extends Model_Account{
 		$transactions->addCondition('account_id',$this->id);
 		$transactions->addCondition('created_at','<',$as_on_date);
 
-		return $transactions->sum('amountCr')->getOne();
+		return $transactions->sum($transactions->dsql()->expr('IFNULL([0],0)',[$transactions->getElement('amountCr')]))->getOne();
 
 	}
 
@@ -247,7 +247,7 @@ class Model_Account_Recurring extends Model_Account{
 
 		$interest_paid = $this->interestPaid($on_date);
 
-		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum((Paid*Amount)+'.$interest_paid.')')->getOne();
+		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum((Paid*Amount)+'.($interest_paid?:0).')')->getOne();
 
 		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
 

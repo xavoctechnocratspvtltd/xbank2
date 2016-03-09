@@ -62,7 +62,7 @@ class page_accounts_Recurring extends Page {
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'RDandDDSAccount'));
 		
 		if(!$crud->isEditing()){
-			$crud->grid->addPaginator(50);
+			$crud->grid->addPaginator(500);
 			$crud->grid->addQuickSearch(array('AccountNumber','member','scheme','agent'));
 			
 			$nominee_age_field = $crud->form->getElement('NomineeAge');			

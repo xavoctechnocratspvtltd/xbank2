@@ -22,7 +22,7 @@ class Grid_Account extends Grid {
 		$this->removeColumn('RelationWithNominee');
 
 
-		$this->addPaginator(50);
+		$this->addPaginator(500);
 	}
 
 	function formatRow(){

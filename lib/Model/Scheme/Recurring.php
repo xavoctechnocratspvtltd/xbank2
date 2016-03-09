@@ -122,8 +122,11 @@ class Model_Scheme_Recurring extends Model_Scheme {
 
 		if($test_account) $all_accounts_paid_in_this_year->addCondition('id',$test_account->id);
 
+		$total_rd_accounts = $all_accounts_paid_in_this_year->count()->getOne();
+
 		foreach ($all_accounts_paid_in_this_year as $junk) {
-			$all_accounts_paid_in_this_year->payInterest();						
+			$all_accounts_paid_in_this_year->payInterest();
+			$this->api->markProgress('Doing_Recurring_Interest',$i++,$all_accounts_paid_in_this_year['AccountNumber'],$total_rd_accounts);
 		}
 
 	}

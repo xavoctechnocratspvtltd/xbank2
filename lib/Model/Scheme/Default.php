@@ -127,7 +127,6 @@ class Model_Scheme_Default extends Model_Scheme {
             
             $transaction->addDebitAccount($account['branch_code'] . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
             $transaction->addCreditAccount($account, round($depAmt,COMMISSION_ROUND_TO));
-            echo $depAmt;
             $transaction->execute();
 		}
 	}

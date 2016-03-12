@@ -168,20 +168,26 @@ class Model_Account_Recurring extends Model_Account{
 	function reAdjustPaidValue($on_date=null){
 		// TODOS: Performance can be increased if this all done by joining query
 		
-		if(!$on_date) $on_date = $this->api->today;
-		$premiums_to_affect = $this->ref('Premium');
-		$premiums_to_affect->_dsql()->where("(DueDate <='$on_date' or PaidOn is not null) and Paid = 0");
-		$premiums_to_affect->setOrder('id');
 
-		foreach ($premiums_to_affect as $junk) {
-			$paid_premiums_before_date = $this->add('Model_Premium');
-			$paid_premiums_before_date->addCondition('account_id',$premiums_to_affect['account_id']);
-			$paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
-			$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);
+		// more accurate method in Premiums so calling it 
 
-			$premiums_to_affect['Paid'] = $paid_premiums_before_date->count()->getOne();
-			$premiums_to_affect->saveAs('Model_Premium');
-		}
+		$this->ref('Premium')->reAdjustPaidValue($on_date);
+
+
+		// if(!$on_date) $on_date = $this->api->today;
+		// $premiums_to_affect = $this->ref('Premium');
+		// $premiums_to_affect->_dsql()->where("(DueDate <='$on_date' or PaidOn is not null) and Paid = 0");
+		// $premiums_to_affect->setOrder('id');
+
+		// foreach ($premiums_to_affect as $junk) {
+		// 	$paid_premiums_before_date = $this->add('Model_Premium');
+		// 	$paid_premiums_before_date->addCondition('account_id',$premiums_to_affect['account_id']);
+		// 	$paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
+		// 	$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);
+
+		// 	$premiums_to_affect['Paid'] = $paid_premiums_before_date->count()->getOne();
+		// 	$premiums_to_affect->saveAs('Model_Premium');
+		// }
 
 	}
 
@@ -240,16 +246,27 @@ class Model_Account_Recurring extends Model_Account{
 
 		$fy = $this->api->getFinancialYear($on_date);
 
-		$non_interest_paid_premiums_till_now = $this->ref('Premium');
-		$non_interest_paid_premiums_till_now->addCondition('Paid',true);
-		$non_interest_paid_premiums_till_now->addCondition('PaidOn','>=',$fy['start_date']);
-		$non_interest_paid_premiums_till_now->addCondition('PaidOn','<',$this->api->nextDate($fy['end_date']));
+		$non_interest_paid_premiums_till_now = $this->add('Model_Premium');
+		$non_interest_paid_premiums_till_now->addCondition('account_id',$this->id);
+		$non_interest_paid_premiums_till_now->addCondition('Paid','>=',1);
+		$non_interest_paid_premiums_till_now->addExpression('EffectivePaidDate')->set('IFNULL(PaidOn,DueDate)');
+
+		$non_interest_paid_premiums_till_now->addCondition('EffectivePaidDate','>=',$fy['start_date']);
+		$non_interest_paid_premiums_till_now->addCondition('EffectivePaidDate','<',$this->api->nextDate($fy['end_date']));
+		$non_interest_paid_premiums_till_now->addCondition('DueDate','>=',$fy['start_date']);
+		$non_interest_paid_premiums_till_now->addCondition('DueDate','<',$this->api->nextDate($fy['end_date']));
 
 		$interest_paid = $this->interestPaid($on_date);
 
+		// echo "interest paid $interest_paid <br/>";
+
 		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum((Paid*Amount)+'.($interest_paid?:0).')')->getOne();
 
+		// echo "product $product <br/>";
+
 		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
+		// echo "interest $interest <br/>";
+
 
 		// Interest ... TDS Deduct ????? :: asumed as not to give as too long time has done ... 
 
@@ -266,7 +283,7 @@ class Model_Account_Recurring extends Model_Account{
 
 	function markMatured($on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
-		
+
 		$this->payInterest();
 
 		$this->revertAccessInterest();

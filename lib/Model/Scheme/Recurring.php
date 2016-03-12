@@ -92,7 +92,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		if($test_account) $allaccounts_with_thismonth_duedate->addCondition('id',$test_account->id);
 
 		foreach ($allaccounts_with_thismonth_duedate as $junk) {
-			// $allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
+			$allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
 		}
 	}
 
@@ -110,7 +110,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 
 		$fy = $this->api->getFinancialYear($on_date);
 
-		$all_accounts_paid_in_this_year = $this->add('Model_Active_Account_Recurring');
+		$all_accounts_paid_in_this_year = $this->add('Model_Active_Account_Recurring',array('table_alias'=>'acc_main'));
 		$premium_join = $all_accounts_paid_in_this_year->join('premiums.account_id');
 		$premium_join->addField('PaidOn');
 
@@ -119,12 +119,21 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$all_accounts_paid_in_this_year->addCondition('PaidOn','<',$this->api->nextDate($fy['end_date']));
 		$all_accounts_paid_in_this_year->addCondition('MaturedStatus',false);
 		$all_accounts_paid_in_this_year->addCondition('branch_id',$branch->id);
+		$all_accounts_paid_in_this_year->_dsql()->group('acc_main.id');
 
 		if($test_account) $all_accounts_paid_in_this_year->addCondition('id',$test_account->id);
 
 		$total_rd_accounts = $all_accounts_paid_in_this_year->count()->getOne();
 
+		
+		$i=1;
 		foreach ($all_accounts_paid_in_this_year as $junk) {
+			$all_accounts_paid_in_this_year->ref('Premium')->reAdjustPaidValue($on_date);
+
+			// foreach ($all_accounts_paid_in_this_year->ref('Premium') as $prm) {
+			// 	echo $prm['account_id'] . " " . date('Y-m-d',strtotime($prm['DueDate'])) ." ". ($prm['PaidOn']?:'00/00/00 00:00:00'). " ". $prm['Paid'] . "<br/>";
+			// }
+			
 			$all_accounts_paid_in_this_year->payInterest();
 			$this->api->markProgress('Doing_Recurring_Interest',$i++,$all_accounts_paid_in_this_year['AccountNumber'],$total_rd_accounts);
 		}

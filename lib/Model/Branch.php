@@ -245,7 +245,8 @@ class Model_Branch extends Model_Table {
 		foreach ($schemeTypes as $st) {
 			if($test_scheme and $test_scheme['SchemeType'] != $st) continue;
 
-			$schemes = $this->add('Model_Scheme_'.$st)->setLimit(1);
+			$schemes = $this->add('Model_Scheme_'.$st)
+				->setLimit(1); // We just need Model once to fire regarding functions, no need of traversing here
 
 			foreach($schemes as $schm){
 				$this->api->markProgress('schemes',$s++,null,$st);

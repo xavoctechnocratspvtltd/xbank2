@@ -98,33 +98,36 @@ class Model_Scheme_Default extends Model_Scheme {
 	}
 
 	function yearly( $branch=null, $on_date=null, $test_account=null ) {
-		
-		if(!$this['isDepriciable']) return;
 
 		// Put Deprecations 
-		$accounts = $this->ref('Account');
+		$accounts = $this->add('Model_Account_Default');
 		$accounts->addCondition('ActiveStatus',true);
 		$accounts->addCondition('created_at','<',$on_date);
 		$accounts->addCondition('branch_id',$branch->id);
+		$accounts->addExpression('isDepriciable')->set($accounts->refSQL('scheme_id')->fieldQuery('isDepriciable'));
+		$accounts->addExpression('DepriciationPercentAfterSep')->set($accounts->refSQL('scheme_id')->fieldQuery('DepriciationPercentAfterSep'));
+		$accounts->addExpression('DepriciationPercentBeforeSep')->set($accounts->refSQL('scheme_id')->fieldQuery('DepriciationPercentBeforeSep'));
+		$accounts->addCondition('isDepriciable',true);
 
 		if($test_account) $accounts->addCondition('id',$test_account->id);
 
-		foreach ($accounts as $accounts_array) {
-			if (strtotime($accounts['created_at']) > strtotime(date('Y',strtotime($on_date)) - 1 . "-09-30")) {
-                $depr = $deperecation_schemes['DepriciationPercentAfterSep'];
+		foreach ($accounts as $account) {
+			
+			if (strtotime($account['created_at']) > strtotime(date('Y',strtotime($on_date)) - 1 . "-09-30")) {
+                $depr = $account['DepriciationPercentAfterSep'];
             } else {
-                $depr = $deperecation_schemes['DepriciationPercentBeforeSep'];
+                $depr = $account['DepriciationPercentBeforeSep'];
             }
 
-            $depAmt = ($accounts['CurrentBalanceDr'] - $accounts['CurrentBalanceCr']) * $depr / 100;
+            $depAmt = ($account['CurrentBalanceDr'] - $account['CurrentBalanceCr']) * $depr / 100;
 //                    echo $depAmt;
 
             $transaction = $this->add('Model_Transaction');
             $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated", $only_transaction=null, array('reference_id'=>$accounts->id));
             
-            $transaction->addDebitAccount($b->Code . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
-            $transaction->addCreditAccount($accounts, round($depAmt,COMMISSION_ROUND_TO));
-            
+            $transaction->addDebitAccount($account['branch_code'] . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
+            $transaction->addCreditAccount($account, round($depAmt,COMMISSION_ROUND_TO));
+            echo $depAmt;
             $transaction->execute();
 		}
 	}

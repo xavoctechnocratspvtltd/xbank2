@@ -82,17 +82,23 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 		if(!$last_halfyearly_closing) $last_halfyearly_closing = $this->ref('branch_id')->ref('Closing')->tryLoadAny()->get('halfyearly');
 		
+		// echo $last_halfyearly_closing . "<br/>";
 		// $after_date_not_included = $this['LastCurrentInterestUpdatedAt'];
-		$after_date_not_included = strtotime($this['created_at']) > strtotime($last_halfyearly_closing)?$this['created_at']:$last_halfyearly_closing;
-		$after_date_not_included = $this->api->nextDate($after_date_not_included);
+		if(strtotime($this['created_at']) > strtotime($last_halfyearly_closing)){
+			$after_date_not_included = $this['created_at'];
+		}else{
+			$after_date_not_included = $this->api->nextDate($last_halfyearly_closing);
+		}
 
 		$openning_balance = $this->getOpeningBalance($after_date_not_included);
 		$on_amount = ($openning_balance['CR'] - $openning_balance['DR']) > 0 ? ($openning_balance['CR'] - $openning_balance['DR']) :0;
 
+		// echo "on_amount $on_amount <br/>";
+		// echo "after_date_not_included $after_date_not_included <br/>";
 
 		$current_interest=0;
 		$trans = $this->add('Model_TransactionRow')->addCondition('account_id',$this->id);
-		$trans->addCondition('created_at','>=',$this->api->nextDate($last_halfyearly_closing));
+		$trans->addCondition('created_at','>=',$after_date_not_included);
 		$trans->setOrder('created_at');
 		
 		foreach ($trans as $junk) {
@@ -111,6 +117,9 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		// $this['LastCurrentInterestUpdatedAt'] = $this->api->nextDate($till_date);
 
 		// $current_interest = $this['CurrentInterest'];
+
+		// echo $this['AccountNumber']. " " . $current_interest . "<br/>";
+		
 
 		if($return) return $current_interest;
 

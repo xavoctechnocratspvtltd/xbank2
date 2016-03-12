@@ -155,13 +155,16 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
 
 		// Count One more day when FD is openned
-		if($this['LastCurrentInterestUpdatedAt'] == $this['created_at']) $days['days_total']++;
+		if(strtotime(date('Y-m-d',strtotime($this['LastCurrentInterestUpdatedAt']))) == strtotime(date('Y-m-d',strtotime($this['created_at'])))) 
+			$days['days_total']+=2;
 		// Deduct One Day from last day of maturity
-		if($maturity_day) $days['days_total']--;
+		
+		// bellow cond removed as now we are closing this account a day before in daily closing
+		// if($maturity_day) $days['days_total']--;
+
 
 		$interest = $this->getAmountForInterest($on_date,false) * $this['Interest'] * $days['days_total'] / 36500;
-	
-	
+			
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 
 		$this['CurrentInterest'] = $this['CurrentInterest'] + $interest;
@@ -214,8 +217,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 		
 		$debitAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . SP. $this['scheme_name'];
 		
-		$transaction->addDebitAccount($debitAccount, $this['CurrentInterest']);
-		$transaction->addCreditAccount($this, $this['CurrentInterest']);
+		$transaction->addDebitAccount($debitAccount, round($this['CurrentInterest'],0));
+		$transaction->addCreditAccount($this, round($this['CurrentInterest'],0));
 		
 		$transaction->execute();
 

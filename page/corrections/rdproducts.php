@@ -31,19 +31,20 @@ class page_corrections_rdproducts extends \Page {
 				$acc->ref('Premium')->_dsql()->set('Paid',0)->update();
 				$dd = $this->api->my_date_diff($form['as_on_date'],$acc['created_at']);
 				$months_total = $dd['months_total'];
-
+				// echo $months_total. "<br/>";
 				$date_carbon = new MyDateTime($acc['created_at']);
 				// echo date('Y-m-t',strtotime($acc['created_at'])) . "<br/>";
 				$acc->reAdjustPaidValue(date('Y-m-t',strtotime($acc['created_at'])));
 				
 				for($i=1;$i<=$months_total;$i++){
+					$date_carbon = new MyDateTime($acc['created_at']);
 					$date_carbon->add(new \DateInterval('P'.$i.'M'));
 					// echo date('Y-m-t',strtotime($date_carbon->format('Y-m-d'))) . "<br/>";
 					$acc->reAdjustPaidValue(date('Y-m-t',strtotime($date_carbon->format('Y-m-d'))));
 				}
 				// echo $form['as_on_date']."<br/>";
 
-				$acc->reAdjustPaidValue($form['as_on_date']);
+				// $acc->reAdjustPaidValue($form['as_on_date']);
 				// var_dump($dd);
 				// exit;
 

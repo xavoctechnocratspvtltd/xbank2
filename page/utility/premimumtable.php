@@ -24,6 +24,12 @@ class Page_utility_premimumtable extends Page{
 		$grid->addFormatter('AgentCommissionSend','grid/inline');
 		$grid->addFormatter('AgentCollectionChargesSend','grid/inline');
 
+		$grid->addOrder()
+			->move('DueDate','before','PaidOn')
+			->move('updated_at','last')
+			->move('created_at','last')
+			->now();
+
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('account_id'=>$form['account']))->execute();
 		}

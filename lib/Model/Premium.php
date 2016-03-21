@@ -151,7 +151,7 @@ class Model_Premium extends Model_Table {
 	function reAdjustPaidValue($on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
 		$premiums_to_affect = $this->ref('account_id')->ref('Premium');
-		$premiums_to_affect->_dsql()->where("(DueDate <='$on_date' or PaidOn is not null) and Paid = 0");
+		$premiums_to_affect->_dsql()->where("(DueDate <='$on_date') and Paid = 0");
 		$premiums_to_affect->setOrder('id');
 
 		foreach ($premiums_to_affect as $junk) {
@@ -159,14 +159,13 @@ class Model_Premium extends Model_Table {
 			$paid_premiums_before_date->addCondition('account_id',$premiums_to_affect['account_id']);
 			// $paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
 			$paid_premiums_before_date->addCondition('PaidOn','<=',$on_date);
-			$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);
-
+			$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);			
 			$premiums_to_affect['Paid'] = $paid_premiums_before_date->count()->getOne();
-			$premiums_to_affect->saveAs('Model_Premium');
+			$premiums_to_affect->saveAndUnload();
 		}
 	}
 
-    // function reAdjustPaidValues($on_date=null){
+    // function reAdjustPaidValues($on_date=null){ udrrd1005
 
     // 	if(!$on_date) $on_date=$this->api->now;
     // 	$tilldate = $on_date;

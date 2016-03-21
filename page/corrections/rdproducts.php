@@ -26,6 +26,7 @@ class page_corrections_rdproducts extends \Page {
 			$account  = $this->add('Model_Active_Account_Recurring');
 			$account->addCondition('created_at','>=',$form['from_date']);
 			$account->addCondition('created_at','<',$this->api->nextDate($form['to_date']));
+			// $account->addCondition('id',68522);
 
 			foreach ($account as $acc) {
 				$acc->ref('Premium')->_dsql()->set('Paid',0)->update();

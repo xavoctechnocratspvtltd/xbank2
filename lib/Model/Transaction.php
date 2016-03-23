@@ -170,6 +170,7 @@ class Model_Transaction extends Model_Table {
 			$this->executeInterBranch();
 
 		$this->executed=true;
+		$this->destroy();
 	}
 
 	function senitizeTransaction(){

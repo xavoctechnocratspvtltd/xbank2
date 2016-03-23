@@ -259,7 +259,7 @@ class Frontend extends ApiFrontend {
         
         if($running !== null or $running !== "") $data[$what] = array('running'=>$running);
         if($detail) $data[$what] += array('detail'=>$detail);
-        if($total) $data[$what] += array('total'=>$total);
+        if($total) $data[$what] += array('total'=>$total. ' ' . (memory_get_peak_usage(true)/1024/1024) . "MiB" );
 
         if($running === null and isset($data[$what]))
             unset($data[$what]);

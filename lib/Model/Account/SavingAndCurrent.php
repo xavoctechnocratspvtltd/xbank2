@@ -136,6 +136,12 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		$transaction->addCreditAccount($this,$current_interest);
 		$transaction->addDebitAccount($this->ref('branch_id')->get('Code') . SP . INTEREST_PAID_ON . SP. $this['scheme_name'], $current_interest);
 		$transaction->execute();
+
+		$transaction=null;
+		unset($transaction);
+
+		$trans = null;
+		unset($trans);
 	}
 
 	function isMinBalanceChargeAppliedInThisQuarter($on_date=null){

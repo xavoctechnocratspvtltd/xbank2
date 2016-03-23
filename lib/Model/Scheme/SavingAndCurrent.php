@@ -111,6 +111,9 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 		$i=1;
 		$total_sb_accounts = $sbca_account->count()->getOne();
 		foreach ( $sbca_account as $accounts_array ) {
+
+			if($i%100 ==0) gc_collect_cycles();
+			
 			$sbca_account->applyHalfYearlyInterest( $on_date , null, $last_halfyearly_closing);
 			$this->api->markProgress('Doing_Saving_Interest',$i++,$sbca_account['AccountNumber'],$total_sb_accounts);
 		}

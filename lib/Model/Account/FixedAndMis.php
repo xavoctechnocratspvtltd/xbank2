@@ -183,6 +183,9 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$this->api->markProgress('Doing_Provision',$this['AccountNumber'],$on_date,5);
 
 		$this->save();
+
+		$transaction = null;
+		unset($transaction);
 	}
 
 	function markMature($on_date=null){
@@ -224,6 +227,9 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		$this['CurrentInterest'] = 0;
 		$this->save();
+
+		$transaction = null;
+		unset($transaction);
 
 	}
 

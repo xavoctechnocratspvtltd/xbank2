@@ -73,8 +73,11 @@ class Model_Scheme_Recurring extends Model_Scheme {
 
 		if($test_account) $all_todays_matured_Accounts->addCondition('id',$test_account->id);
 
+		$i=1;
+		$all_todays_matured_Accounts_count = $all_todays_matured_Accounts->count()->getOne();
 		foreach ($all_todays_matured_Accounts as $acc_array) {
 			$all_todays_matured_Accounts->markMatured($on_date); // peying interest in there as well
+			$this->api->markProgress('Recurring_Mark_Mature',$i++,$acc_array['AccountNumber'],$all_todays_matured_Accounts_count);
 		}
 
 	}
@@ -85,15 +88,22 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$premium_join = $allaccounts_with_thismonth_duedate->join('premiums.account_id');
 		$premium_join->addField('Paid');
 		$premium_join->addField('DueDate');
-		$allaccounts_with_thismonth_duedate->addCondition('Paid',false);
+		// $allaccounts_with_thismonth_duedate->addCondition('Paid','0');
 		$allaccounts_with_thismonth_duedate->addCondition('DueDate','<=',$on_date);
+		$allaccounts_with_thismonth_duedate->addCondition('branch_id',$branch->id);
+		
+		// Don't take all premiums rows , just accounts by grouping
 		$allaccounts_with_thismonth_duedate->_dsql()->group('AccountNumber');
 
 		if($test_account) $allaccounts_with_thismonth_duedate->addCondition('id',$test_account->id);
 
-		foreach ($allaccounts_with_thismonth_duedate as $junk) {
+		$allaccounts_with_thismonth_duedate_count = $allaccounts_with_thismonth_duedate->count()->getOne();
+		$i=1;
+		foreach ($allaccounts_with_thismonth_duedate as $junk) {			
 			$allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
+			$this->api->markProgress('Recurring_Month_PaidOn_Calculate',$i++,$junk['AccountNumber'],$allaccounts_with_thismonth_duedate_count);
 		}
+		// echo "recurring monthly done <br/>";
 	}
 
 	function quarterly( $branch=null, $on_date=null, $test_account=null ) {
@@ -124,11 +134,11 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		if($test_account) $all_accounts_paid_in_this_year->addCondition('id',$test_account->id);
 
 		$total_rd_accounts = $all_accounts_paid_in_this_year->count()->getOne();
-
 		
 		$i=1;
 		foreach ($all_accounts_paid_in_this_year as $junk) {
-			$all_accounts_paid_in_this_year->ref('Premium')->reAdjustPaidValue($on_date);
+			// Bellow line is commented as now this is in monthly
+			// $all_accounts_paid_in_this_year->ref('Premium')->reAdjustPaidValue($on_date);
 
 			// foreach ($all_accounts_paid_in_this_year->ref('Premium') as $prm) {
 			// 	echo $prm['account_id'] . " " . date('Y-m-d',strtotime($prm['DueDate'])) ." ". ($prm['PaidOn']?:'00/00/00 00:00:00'). " ". $prm['Paid'] . "<br/>";

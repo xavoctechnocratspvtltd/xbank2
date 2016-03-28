@@ -125,8 +125,10 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$premium_join->addField('PaidOn');
 
 
-		$all_accounts_paid_in_this_year->addCondition('PaidOn','>=',$fy['start_date']);
-		$all_accounts_paid_in_this_year->addCondition('PaidOn','<',$this->api->nextDate($fy['end_date']));
+		// As RD which were not receiving payment in year were not taken in account
+		// $all_accounts_paid_in_this_year->addCondition('PaidOn','>=',$fy['start_date']);
+		// $all_accounts_paid_in_this_year->addCondition('PaidOn','<',$this->api->nextDate($fy['end_date']));
+		
 		$all_accounts_paid_in_this_year->addCondition('MaturedStatus',false);
 		$all_accounts_paid_in_this_year->addCondition('branch_id',$branch->id);
 		$all_accounts_paid_in_this_year->_dsql()->group('acc_main.id');

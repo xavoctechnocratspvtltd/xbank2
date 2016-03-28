@@ -4,16 +4,20 @@ class page_closing extends Page {
 	function page_index(){
 		ini_set('memory_limit', '2048M');
 		set_time_limit(0);
+		gc_enable();
 		
 		if($_GET['do']){
 			$this->api->forget('progress_data');
 			try{
 				$this->api->db->dsql()->owner->beginTransaction();
 				$this->api->closing_running =true;
-				foreach ($b=$this->add('Model_Branch')->addCondition('PerformClosings',true) as $branch_array) 
+				foreach ($b=$this->add('Model_Branch')->addCondition('PerformClosings',true) as $branch_array) {
 					$b->performClosing($this->api->today);
-				// $this->api->db->dsql()->owner->rollBack();
+				}
 				$this->api->markProgress('COMMITING IN DB',0,'ALL BRANCHES CLOSED',1);
+				// throw new \Exception("Error Processing Request", 1);
+				
+				// $this->api->db->dsql()->owner->rollBack();
 				$this->api->db->dsql()->owner->commit();
 			}catch(Exception $e){
 				$this->api->db->dsql()->owner->rollBack();

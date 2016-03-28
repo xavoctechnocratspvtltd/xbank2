@@ -790,6 +790,9 @@ class Model_Account extends Model_Table {
 		if(!$forPandL) $dr = $dr + $this['OpeningBalanceDr'];
 		if(strtolower($side) =='dr') return $dr;
 
+		$transaction_row = null;
+		unset($transaction_row);
+
 		return array('CR'=>$cr,'DR'=>$dr,'cr'=>$cr,'dr'=>$dr,'Cr'=>$cr,'Dr'=>$dr);
 	}
 

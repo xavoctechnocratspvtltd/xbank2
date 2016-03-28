@@ -144,8 +144,10 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 		if($test_account) $time_over_accounts_with_panelty->addCondition('id',$test_account->id);
 
+		$i=1;
 		foreach ($time_over_accounts_with_panelty as $junk) {
 			$time_over_accounts_with_panelty->postPanelty($on_date);
+			$this->api->markProgress('Loan_Post_Panelty',$i++,$junk['AccountNumber'],"ALL");
 		}
 
 		// Shifted to post Penalty Function for each account

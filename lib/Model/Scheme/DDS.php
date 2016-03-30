@@ -27,6 +27,9 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$this->getElement('AccountOpenningCommission')->group('d~12~Commission')->mandatory(true);
 		$this->getElement('CollectorCommissionRate')->group('d~12~Commission')->mandatory(true);
 
+		$this->getElement('percent_loan_on_deposit')->group('e~6~Loan Against Scheme');
+		$this->getElement('no_loan_on_deposit_till')->group('e~6~Loan Against Scheme')->hint('in months');
+		
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();

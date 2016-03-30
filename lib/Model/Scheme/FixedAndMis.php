@@ -27,6 +27,8 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$this->getElement('MinLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(0);
 		$this->getElement('MaxLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(-1);
 
+		$this->getElement('percent_loan_on_deposit')->group('e~6~Loan Against Scheme');
+		$this->getElement('no_loan_on_deposit_till')->group('e~6~Loan Against Scheme')->hint('in days');
 
 
 		$this->getElement('type')->setValueList(array('FD'=>'FD','MIS'=>'MIS'));

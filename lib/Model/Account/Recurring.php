@@ -19,6 +19,8 @@ class Model_Account_Recurring extends Model_Account{
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
 
+		$this->scheme_join->addField('percent_loan_on_deposit');
+
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
 
 		//$this->add('dynamic_model/Controller_AutoCreator');

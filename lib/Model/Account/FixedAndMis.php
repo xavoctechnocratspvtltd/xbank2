@@ -21,6 +21,11 @@ class Model_Account_FixedAndMis extends Model_Account{
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod DAY)";
 		});
 
+		$this->addExpression('locked_to_loan_till')->set(function($m,$q){
+			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".no_loan_on_deposit_till DAY)";
+		});
+
+
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
 
 		// $this->scheme_join->addField('Interest');

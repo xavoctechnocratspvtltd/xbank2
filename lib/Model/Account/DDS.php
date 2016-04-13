@@ -18,6 +18,11 @@ class Model_Account_DDS extends Model_Account{
 			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
 
+		$this->addExpression('locked_to_loan_till')->set(function($m,$q){
+			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".no_loan_on_deposit_till MONTH)";
+		});
+
+
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
 
 		//$this->add('dynamic_model/Controller_AutoCreator');

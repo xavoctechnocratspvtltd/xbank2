@@ -30,12 +30,21 @@ class page_accounts_Loan extends Page {
 				
 				$account=$crud->add('Model_Account');
 				$account->load($form['LoanAgainstAccount_id']);
+
+				$account = $crud->add('Model_Account_'.$account['SchemeType']);
+				$account->load($form['LoanAgainstAccount_id']);
+				$account->scheme_join->addField('percent_loan_on_deposit');
+
 				$amount_on = $account['Amount'];
 				if($account->isDDS() or $account->isRecurring()){
 					$amount_on = $account->creditedAmount();
 				}
 
-				$amount_allowed = $amount_on*80/100;
+				if(strtotime($crud->app->now) >= strtotime($account['locked_to_loan_till'])){
+					$form->displayError('LoanAgainstAccount_id','You can loan against this account before ' . $account['locked_to_loan_till']);
+				}
+
+				$amount_allowed = $amount_on*$account['percent_loan_on_deposit']/100;
 				$loan_amount=$form['Amount'];
 
 				if($form['NomineeAge'] And  $form['NomineeAge']<18){

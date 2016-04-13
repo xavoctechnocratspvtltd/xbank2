@@ -76,6 +76,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$i=1;
 		$all_todays_matured_Accounts_count = $all_todays_matured_Accounts->count()->getOne();
 		foreach ($all_todays_matured_Accounts as $acc_array) {
+			$all_todays_matured_Accounts->reAdjustPaidValue($on_date);
 			$all_todays_matured_Accounts->markMatured($on_date); // peying interest in there as well
 			$this->api->markProgress('Recurring_Mark_Mature',$i++,$acc_array['AccountNumber'],$all_todays_matured_Accounts_count);
 		}

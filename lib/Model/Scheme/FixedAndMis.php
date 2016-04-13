@@ -29,7 +29,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 
 		$this->getElement('percent_loan_on_deposit')->group('e~6~Loan Against Scheme');
 		$this->getElement('no_loan_on_deposit_till')->group('e~6~Loan Against Scheme')->hint('in days');
-
+		$this->getElement('pre_mature_interests')->group('f~12~Pre Maturity Options')->hint('days:interest,days:interest like 180:12,365:8,1095:7');
 
 		$this->getElement('type')->setValueList(array('FD'=>'FD','MIS'=>'MIS'));
 

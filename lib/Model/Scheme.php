@@ -41,6 +41,7 @@ class Model_Scheme extends Model_Table {
 		$this->addExpression('published')->set('ActiveStatus');
 		$this->addField('percent_loan_on_deposit')->type('number')->defaultValue('80')->sortable(true);
 		$this->addField('no_loan_on_deposit_till')->type('number')->defaultValue('0')->sortable(true);
+		$this->addField('pre_mature_interests');
 
 		
 		$this->addField('SchemePoints')->caption('Scheme Points')->system(true);

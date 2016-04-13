@@ -30,7 +30,7 @@ class page_schemes_Recurring extends Page{
 			$scheme_Recurring_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_Recurring_model,array('name','Interest','PremiumMode','NumberOfPremiums','MaturityPeriod','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','ActiveStatus','balance_sheet','balance_sheet_id','SchemeGroup','total_accounts','total_active_accounts','percent_loan_on_deposit','no_loan_on_deposit_till'));
+		$crud->setModel($scheme_Recurring_model,array('name','Interest','PremiumMode','NumberOfPremiums','MaturityPeriod','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','ActiveStatus','balance_sheet','balance_sheet_id','SchemeGroup','total_accounts','total_active_accounts','percent_loan_on_deposit','no_loan_on_deposit_till','pre_mature_interests'));
 
 		
 		if($crud->grid){

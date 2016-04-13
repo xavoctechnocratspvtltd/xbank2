@@ -154,10 +154,9 @@ class Model_Account_Recurring extends Model_Account{
 		$PremiumAmountAdjusted = $this->paidPremiums() * $this['Amount'];
 		$AmountForPremiums = ($this['CurrentBalanceCr'] + $amount) - ($PremiumAmountAdjusted + $this->interestPaid($on_date));
 
-		$premiumsSubmitedInThisAmount = number_format(floor(($AmountForPremiums / $this['Amount'])));
+		$premiumsSubmitedInThisAmount = number_format(floor(($AmountForPremiums / (int)$this['Amount'])));
+		$premiumsSubmitedInThisAmount = round($AmountForPremiums / (int)$this['Amount'],0);
 
-		// throw new Exception($premiumsSubmitedInThisAmount, 1);
-		
 
 		$unpaid_premiums = $this->ref('Premium');
 		// $unpaid_premiums->addCondition('Paid',false);

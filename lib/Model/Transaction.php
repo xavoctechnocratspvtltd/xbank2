@@ -61,7 +61,12 @@ class Model_Transaction extends Model_Table {
 		$old_tra->tryLoadAny();
 
 		if($old_tra->loaded()){
-			throw $this->exception('Voucher No '. $this['voucher_no']. ' already used');
+			throw $this->exception('Voucher No '. $this['voucher_no']. ' already used')
+					->addMoreInfo('branch',$this['branch'])
+					->addMoreInfo('voucher_no',$this['voucher_no'])
+					->addMoreInfo('start_date',$start_date)
+					->addMoreInfo('end_date',$this->api->nextDate($start_date))
+					;
 		}
 
 	}

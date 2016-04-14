@@ -66,6 +66,8 @@ class Model_Transaction extends Model_Table {
 					->addMoreInfo('voucher_no',$this['voucher_no'])
 					->addMoreInfo('start_date',$start_date)
 					->addMoreInfo('end_date',$this->api->nextDate($start_date))
+					->addMoreInfo('transaction_date',$this['created_at'])
+					->addMoreInfo('related_account',$this['reference'])
 					;
 		}
 

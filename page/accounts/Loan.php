@@ -40,8 +40,8 @@ class page_accounts_Loan extends Page {
 					$amount_on = $account->creditedAmount();
 				}
 
-				if(strtotime($crud->app->now) >= strtotime($account['locked_to_loan_till'])){
-					$form->displayError('LoanAgainstAccount_id','You can loan against this account before ' . $account['locked_to_loan_till']);
+				if(strtotime($crud->app->now) < strtotime($account['locked_to_loan_till'])){
+					$form->displayError('LoanAgainstAccount_id','You can not loan against this account before ' . $account['locked_to_loan_till']);
 				}
 
 				$amount_allowed = $amount_on*$account['percent_loan_on_deposit']/100;

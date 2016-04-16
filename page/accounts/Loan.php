@@ -51,7 +51,7 @@ class page_accounts_Loan extends Page {
 					$form->displayError('MinorNomineeParentName','mandatory field');
 				}
 				if($loan_amount > $amount_allowed)
-					$form->displayError('Amount',"Amount is grater than ".$account['percent_loan_on_deposit']."% of  FD Amount");
+					$form->displayError('Amount',"Amount is grater than ".$account['percent_loan_on_deposit']."% of  FD Amount (".$amount_allowed.")");
 			}
 
 			if($crud->isEditing('edit')) {

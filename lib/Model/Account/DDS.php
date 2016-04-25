@@ -22,6 +22,9 @@ class Model_Account_DDS extends Model_Account{
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".no_loan_on_deposit_till MONTH)";
 		});
 
+		$this->scheme_join->addField('percent_loan_on_deposit');
+		$this->scheme_join->addField('no_loan_on_deposit_till');
+
 
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
 

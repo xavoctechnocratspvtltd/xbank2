@@ -25,6 +25,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".no_loan_on_deposit_till DAY)";
 		});
 
+		$this->scheme_join->addField('percent_loan_on_deposit');
+		$this->scheme_join->addField('no_loan_on_deposit_till');
 
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
 

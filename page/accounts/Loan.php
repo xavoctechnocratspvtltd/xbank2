@@ -32,7 +32,7 @@ class page_accounts_Loan extends Page {
 				$account->load($form['LoanAgainstAccount_id']);
 
 				$account = $crud->add('Model_Account_'.$account['SchemeType']);
-				$account->scheme_join->addField('percent_loan_on_deposit');
+				// $account->scheme_join->addField('percent_loan_on_deposit');
 				$account->load($form['LoanAgainstAccount_id']);
 
 				$amount_on = $account['Amount'];

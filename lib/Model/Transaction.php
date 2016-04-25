@@ -68,6 +68,7 @@ class Model_Transaction extends Model_Table {
 					->addMoreInfo('end_date',$this->api->nextDate($start_date))
 					->addMoreInfo('transaction_date',$this['created_at'])
 					->addMoreInfo('related_account',$this['reference'])
+					->addMoreInfo('transaction_type',$this['transaction_type'])
 					;
 		}
 

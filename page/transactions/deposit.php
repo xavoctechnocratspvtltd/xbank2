@@ -115,6 +115,7 @@ class page_transactions_deposit extends Page {
 
 			$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
 			$account_model->loadBy('AccountNumber',$form['account']);
+			
 
 			try {
 				$this->api->db->beginTransaction();
@@ -124,6 +125,12 @@ class page_transactions_deposit extends Page {
 			   	$this->api->db->rollBack();
 			   	throw $e;
 			}
+			$member=$account_model->ref('member_id');
+			$mobile_no=explode(',', $member['PhoneNos']);
+			$msg="Dear Member, your account ".$account_model['AccountNumber']." has been credited with amount ".$form['amount'].".";
+
+			$sms=$this->add('Controller_Sms');
+			$sms->sendMessage($mobile_no[0],$msg);
 			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- deposited in " . $form['account'])->execute();
 		}
 	}

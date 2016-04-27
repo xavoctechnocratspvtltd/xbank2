@@ -51,8 +51,8 @@ class Model_Premium extends Model_Table {
 		if(!$this->account()->agent()) return ;
 
 		$all_paid_noncommissioned_preimums = $this->ref('account_id')->ref('Premium');
-		$all_paid_noncommissioned_preimums->addCondition('Paid','<>',0);
-		$all_paid_noncommissioned_preimums->addCondition('PaidOn',$on_date);
+		// $all_paid_noncommissioned_preimums->addCondition('Paid','<>',0);
+		$all_paid_noncommissioned_preimums->addCondition('PaidOn','<>',null);
 		$all_paid_noncommissioned_preimums->addCondition('AgentCommissionSend',0);
 
 		$commission = 0;
@@ -62,6 +62,8 @@ class Model_Premium extends Model_Table {
 			$all_paid_noncommissioned_preimums['AgentCommissionSend'] = true;
 			$all_paid_noncommissioned_preimums->saveAndUnload();			
 		}
+
+		
 
 		$commissionForThisAgent = $this->account()->agent()->cadre()->selfEfectivePercentage() * $commission / 100.00;
 
@@ -92,8 +94,8 @@ class Model_Premium extends Model_Table {
 
 		$all_paid_noncollected_preimums = $this->ref('account_id')->ref('Premium');
 		$all_paid_noncollected_preimums->addCondition('AgentCollectionChargesSend',0);
-		$all_paid_noncollected_preimums->addCondition('Paid','<>',0);
-		$all_paid_noncollected_preimums->addCondition('PaidOn',$on_date);
+		// $all_paid_noncollected_preimums->addCondition('Paid','<>',0);
+		$all_paid_noncollected_preimums->addCondition('PaidOn','<>',null);
 
 		$commission = 0;
 		$account = $this->account();

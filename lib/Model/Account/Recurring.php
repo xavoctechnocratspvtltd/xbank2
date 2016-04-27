@@ -19,6 +19,13 @@ class Model_Account_Recurring extends Model_Account{
 			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".MaturityPeriod MONTH)";
 		});
 
+		$this->addExpression('locked_to_loan_till')->set(function($m,$q){
+			return "DATE_ADD(DATE(".$m->dsql()->getField('created_at')."), INTERVAL +".$m->scheme_join->table_alias.".no_loan_on_deposit_till MONTH)";
+		});
+
+		$this->scheme_join->addField('percent_loan_on_deposit');
+		$this->scheme_join->addField('no_loan_on_deposit_till');
+
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
@@ -147,10 +154,9 @@ class Model_Account_Recurring extends Model_Account{
 		$PremiumAmountAdjusted = $this->paidPremiums() * $this['Amount'];
 		$AmountForPremiums = ($this['CurrentBalanceCr'] + $amount) - ($PremiumAmountAdjusted + $this->interestPaid($on_date));
 
-		$premiumsSubmitedInThisAmount = number_format(floor(($AmountForPremiums / $this['Amount'])));
+		$premiumsSubmitedInThisAmount = number_format(floor(($AmountForPremiums / (int)$this['Amount'])));
+		$premiumsSubmitedInThisAmount = round($AmountForPremiums / (int)$this['Amount'],0);
 
-		// throw new Exception($premiumsSubmitedInThisAmount, 1);
-		
 
 		$unpaid_premiums = $this->ref('Premium');
 		// $unpaid_premiums->addCondition('Paid',false);

@@ -26,6 +26,10 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$this->getElement('AccountOpenningCommission')->group('d~12~bl')->mandatory(true);
 		$this->getElement('CollectorCommissionRate')->group('d~12~bl')->mandatory(true);
 
+		$this->getElement('percent_loan_on_deposit')->group('e~6~Loan Against Scheme');
+		$this->getElement('no_loan_on_deposit_till')->group('e~6~Loan Against Scheme')->hint('in months');
+		$this->getElement('pre_mature_interests')->group('f~12~Pre Maturity Options')->hint('month:interest,month:interest like 6:12,12:8,24:7');
+
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
@@ -76,6 +80,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$i=1;
 		$all_todays_matured_Accounts_count = $all_todays_matured_Accounts->count()->getOne();
 		foreach ($all_todays_matured_Accounts as $acc_array) {
+			$all_todays_matured_Accounts->reAdjustPaidValue($on_date);
 			$all_todays_matured_Accounts->markMatured($on_date); // peying interest in there as well
 			$this->api->markProgress('Recurring_Mark_Mature',$i++,$acc_array['AccountNumber'],$all_todays_matured_Accounts_count);
 		}

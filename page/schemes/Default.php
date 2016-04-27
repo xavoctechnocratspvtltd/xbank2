@@ -12,11 +12,11 @@ class page_schemes_Default extends Page{
 						
 			$default_scheme_model = $crud->add('Model_Scheme_Default');
 			try {
-				$this->api->db->beginTransaction();
+				$crud->api->db->beginTransaction();
 			    $default_scheme_model->createNewScheme($form['name'],$form['balance_sheet_id'], ACCOUNT_TYPE_DEFAULT, ACCOUNT_TYPE_DEFAULT, $is_loanType=true, $other_values=$form->getAllFields(),$form,$form->api->now);
-			    $this->api->db->commit();
+			    $crud->api->db->commit();
 			} catch (Exception $e) {
-			   	$this->api->db->rollBack();
+			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
 			return true;

@@ -129,13 +129,9 @@ class page_transactions_deposit extends Page {
 			$msg="Dear Member, your account ".$account_model['AccountNumber']." has been credited with amount ".$form['amount'].".";
 			
 			$mobile_no=explode(',', $member['PhoneNos']);
-			// $mobile_no="9784954128";
-			if(strlen(trim($mobile_no[0])) != 10){
-				$form->displayError('account','Incorrect Mobile no.'.$mobile_no[0]);
-			}else{
+			if(strlen(trim($mobile_no[0])) == 10){
 				$sms=$this->add('Controller_Sms');
 				$sms->sendMessage($mobile_no[0],$msg);
-				$sms=$this->add('Controller_Sms');
 			}
 					
 

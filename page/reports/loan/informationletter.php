@@ -25,7 +25,7 @@ class page_reports_loan_informationletter extends Page {
 			
 			$letter->setModel($account_model);
 
-			$permium=$this->add('Model_Premium',['table_alias'=>'loan_acc_memb'])
+			$permium=$this->add('Model_Premium',array('table_alias'=>'loan_acc_memb'))
 						->addCondition('account_id',$account_model->id)
 						->tryLoadAny();
 

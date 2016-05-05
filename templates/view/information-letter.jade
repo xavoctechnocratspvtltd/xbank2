@@ -1,14 +1,14 @@
-div(id="{$_name}")
+div(id="{$_name}" )
 	style.
 		.hindi{
-			font-size:25px;
+			font-size:22px;
 		}
-	table(width="900px" align="center" style="margin-top:150px; font-size:18px")
+	table(class="information-div" width="900px" align="center" style="margin-top:150px; font-size:18px")
 		tr
-			td(style="width:15px")
-				img(src="templates/images/logo.jpg" style="width: 130px")
+			td( style="width:15px")
+				img(class="xbank-logo" src="templates/images/logo.jpg" style="width: 130px")
 			td(style="vertical-align:top; font-size:18px;")
-				h1(style="font-size:30px")|BHAWANI CREDIT CO. OPERATIVE SOCIETY LTD
+				h1(style="font-size:25px")|BHAWANI CREDIT CO. OPERATIVE SOCIETY LTD
 				span|Central office: 7, Amrit shree plaza, Dudhiya ganesh ji,
 				br
 				span|Sajjangarh road, udaipur, Rajasthan
@@ -35,25 +35,39 @@ div(id="{$_name}")
 				p|Account No. <b>{$account_no}</b>
 		tr(style="height:330px")
 			td(colspan="2" class='hindi')
-				|Jheku <b class="english">{$member_name}</b> iq++= Jh <b class="english">{$father_name}</b>] fuoklh& <b class="english">{$address}</b>  vki }kjk  Hkokuh ØsfMV dks- vksijsfVo lkslkbVh fy- >kMksy¼Q½ ls _.k<br/>
-				|<b>{$total_amount}</b> ds fy, vkosnu fd;k x;k FkkA Hkokuh ØsfMV dks- vksijsfVo lkslkbVh fy- >kMksy¼Q½ }kjk<br/>
-				|vkidk _.k vkosnu i= Lohdkj dj ds bl _.k eSa vkidks _.k jkf’k ds :Ik esa <b>{$total_amount}</b> dk _.k<br/>
-				|Lohd`r fd;k x;k FkkA vkidks C;kt lfgr <b>{$total_installment}</b> fd'rksa es :i;k tek djuk FkkA vki }kjk fdLr dk<br/>
-				|Hkqxrku le; ij ugh fd;k x;k gSaA blfy, vkidks i= }kjk lwfpr fd;k tkrk gSa fd vki ij<br/>
+				|Jheku <b class="english">{$member_name}</b> iq++= Jh <b class="english">{$father_name}</b>] fuoklh& <b class="english">{$address}</b>  vki }kjk  Hkokuh ØsfMV dks- vksijsfVo lkslkbVh fy- >kMksy¼Q½ ls _.k 
+				|<b>{$total_amount}</b> ds fy, vkosnu fd;k x;k FkkA Hkokuh ØsfMV dks- vksijsfVo lkslkbVh fy- >kMksy¼Q½ }kjk 
+				|vkidk _.k vkosnu i= Lohdkj dj ds bl _.k eSa vkidks _.k jkf”k ds :Ik esa <b>{$total_amount}</b> dk _.k 
+				|Lohd`r fd;k x;k FkkA vkidks C;kt lfgr <b>{$total_installment}</b> fd'rksa es :i;k tek djuk FkkA vki }kjk fdLr dk 
+				|Hkqxrku le; ij ugh fd;k x;k gSaA blfy, vkidks i= }kjk lwfpr fd;k tkrk gSa fd vki ij 
 				|lkslkbVh dh cdk;k jkf'k e; C;kt tek djkosaaA<br/>
-				|¼1½ fdLr dh la[;k<br/>
+				|¼1½ cdk;k fdLr dh la[;k<br/>
 				|¼2½ isuYVh<br/>
 				|¼3½ vU; [kpZ<br/>
 				|¼4½ dqy ;ksx<br/>
-		tr(style="height:150px")
+		tr(style="height:100px")
 			td(colspan="2" class='hindi')
-				|vki 7 fnu eas  Hkokuh ØsfMV dks- vksijsfVo lkslkbVh fy- ds 'kk[kk  esa tek djkdj 8003597805<br/>
-				|uEcj ij lqfpr djs  vU;Fkk vkids fo:+} mfpr dk;Zokgh dh tk;sxhA<br/>
-				b(style="border-bottom:3px solid black")|vf/kd tkudkjh ds fy;s 8003597805 uEcj ij lEidZ djs
-		tr
+				|vki 7 fnu eas  Hkokuh ØsfMV dks- vksijsfVo lkslkbVh fy- ds 'kk[kk  esa ;k fuEukafdr cSad [kkrksa esa ls<br/>
+				|fdlh ,d esa tek djkdj 8003597805 uEcj ij lqfpr djs  vU;Fkk vkids fo:+} mfpr dk;Zokgh<br/>
+				|dh tk;sxhA<br/>
+		tr(style="height:100px; ")
+			td(colspan="2" class="english" style="font-size:16x")
+				|S.B.B.J -  61097150947
+				br
+				|S.B.I.- 34007419625
+				br
+				|I.D.B.I- 1166102000002004
+				br
+				|M.A.G.B.- 11347045265
+				br
+				|B.O.B.- 39830200000207
+		tr(style=style="height:100px")
 			td(colspan="2" style="text-align: right!important")
-				span( class='hindi')|Hkokuh ØsfMV dks- vksijsfVo lkslkbVh fy- >kMksy¼Q½<br/>
-				span( class='hindi')|7] ve`r Jh Iyktk]<br/>
+				span( class='hindi' style="text-align:left!important")|Hkokuh ØsfMV dks- vksijsfVo lkslkbVh fy- >kMksy¼Q½<br/>
+				span( class='hindi' style="text-align:left!important")|7] ve`r Jh Iyktk]<br/>
 				span( class='hindi')|nqfËk;k x.ks'k th efUnj dsa ikl lTtux< 	jksM mn;iqj<br/>
-				span( class='hindi')|¼jkt.½<br/>
+				span( class='hindi')|¼jkt-½<br/>
 				|Ph.02942431461 Mob. 8003597805<br/>
+		tr
+			td(colspan="2" class="hindi" style="font-size:14px")
+				cite <b>uksV%& ;fn vkids }kjk cdk;k jkf”k tek djok nh xbZ gSa rks bl uksfVl dks Lor% fujLr le>sA</b>

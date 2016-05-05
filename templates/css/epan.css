@@ -242,6 +242,29 @@ table {
   .table-bordered td {
     border: 1px solid #ddd !important;
   }
+  .ui-tabs-nav{
+    display: none!important;
+  }
+  .banner{
+    display: none!important;
+  }
+  .atk-form{
+    display: none!important;
+  }
+  h2{
+    display: none!important;
+  }
+  .information-div{
+    margin: auto!important;
+    width: auto!important;
+  }
+  img.xbank-logo{
+    min-width:130px!important;
+    width: 200px!important;
+  }
+  .atk-layout-row{
+    display: list-item!important;
+  }
 }
 *,
 *:before,

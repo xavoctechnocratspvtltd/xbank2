@@ -37,6 +37,7 @@ class page_reports_loan_informationletter extends Page {
 			$letter->template->trySet('account_no',$account_model['AccountNumber']);
 			$letter->template->trySet('total_amount',$account_model['Amount']);
 			$letter->template->trySet('total_installment',$account_model->ref('Premium')->count()->getOne());
+			$letter->template->trySet('date',date('d-m-Y',strtotime($this->api->today)));
 
 		}
 

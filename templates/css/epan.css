@@ -251,9 +251,9 @@ table {
   .atk-form{
     display: none!important;
   }
-  h2{
+  /*h2{
     display: none!important;
-  }
+  }*/
   .information-div{
     margin: auto!important;
     width: auto!important;

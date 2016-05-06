@@ -1,7 +1,7 @@
 <?php
 
 $config['atk']['base_path']='./atk4/';
-$config['dsn']='mysql://root:winserver@127.0.0.1/bhawani_xbank';
+$config['dsn']='mysql://root:winserver@127.0.0.1_bank';
 
 $config['js']['versions']['jquery']='1.8.2.min';
 

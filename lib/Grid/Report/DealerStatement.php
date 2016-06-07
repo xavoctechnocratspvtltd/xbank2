@@ -24,12 +24,12 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 	}
 
 	function formatRow(){
-		//Code
-		$transactions = $this->add('Model_Transaction')->addCondition('reference_id',$this->model->id)->setLimit(1)->tryLoadAny();
+		// First transaction of this account
+		$transactions = $this->add('Model_Transaction')->addCondition('reference_id',$this->model->id)->setLimit(1)->setOrder('id','asc')->tryLoadAny();
 		$transactions_row = $this->add('Model_TransactionRow')->addCondition('transaction_id',$transactions->id)->setOrder('id','asc');
 		$i = 1;
 		foreach ($transactions_row as $tr) {
-			if($i == 1)
+			if($i == 1) // first row of this transaction
 				$this->current_row['loan_amount'] = $tr['amountDr'];
 			if($i == 3)
 				$this->current_row['net_amount'] = $tr['amountCr'];

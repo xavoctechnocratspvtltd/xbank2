@@ -57,7 +57,7 @@ class page_reports_loan_dealerstatement extends Page {
 
 		$account_model->addCondition('dealer_id',$dealer_id);
 
-		$grid_column_array = array('AccountNumber','scheme','name','FatherName','CurrentAddress','PhoneNos','dealer_id','ActiveStatus');
+		$grid_column_array = array('AccountNumber','created_at','scheme','name','member_name_only','FatherName','CurrentAddress','PhoneNos','dealer_id','ActiveStatus');
 		if($this->api->stickyGET('filter')){
 			$account_model->addCondition('created_at','>=',$from_date);
 			$account_model->addCondition('created_at','<=',$this->api->nextDate($to_date));
@@ -100,7 +100,8 @@ class page_reports_loan_dealerstatement extends Page {
 		$grid->setModel($account_model,$grid_column_array);
 		if(isset($gridOrder)) $gridOrder->now();
 		// $move fileds at and 
-
+		$grid->addTotals(array('loan_amount','net_amount','file_charge'));
+		$grid->removeColumn('name');
 		if($form->isSubmitted()){
 			$send = array('dealer'=>$form['dealer'],'status'=>$form['status'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'loan_type'=>$form['loan_type'],'filter'=>1);
 			foreach ($document as $junk) {

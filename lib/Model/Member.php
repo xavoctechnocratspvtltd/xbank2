@@ -56,7 +56,9 @@ class Model_Member extends Model_Table {
 		$this->addExpression('age')->set(function($m,$q){
 			return $q->expr('TIMESTAMPDIFF(YEAR, [0], CURDATE())',array('DOB'));
 		});
-
+		$this->addExpression('member_name_only')->set(function($m,$q){
+			return $q->expr('[0]',[$m->getElement('name')]);
+		})->caption('Member Name');
 		$this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));
 
 		$this->addExpression('search_string')->set("CONCAT(name,' ',FatherName,' ',PanNo)");

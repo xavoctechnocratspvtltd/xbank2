@@ -105,7 +105,7 @@ class Model_Account_Loan extends Model_Account{
 		$AccountCredit = $this['Amount'] - $ProcessingFees;
 		
 		if($scheme['ProcessingFeesinPercent']){
-			$ProcessingFees = $ProcessingFees * $this['Amount'] / 100;
+			$ProcessingFees = $this['Amount']* $ProcessingFees / 100;
 			$AccountCredit = $this['Amount'] - $ProcessingFees;
 		}
 

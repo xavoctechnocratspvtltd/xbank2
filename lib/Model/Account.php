@@ -75,7 +75,7 @@ class Model_Account extends Model_Table {
 		$this->addExpression('branch_code')->set(function($m,$q){
 			return $m->refSQL('branch_id')->fieldQuery('Code');
 		});
-
+		$this->addExpression('member_name_only')->set($this->refSQL('member_id')->fieldQuery('member_name_only'))->caption('Member Name');
 		$this->addExpression('name')->set(function($m,$q){
 			
 			$member = $m->add('Model_Member',array('table_alias'=>'account_holder'));

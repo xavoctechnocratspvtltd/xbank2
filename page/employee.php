@@ -81,7 +81,7 @@ class page_employee extends Page{
 		$mid=$mid_col->addField('line','monthly_in_day');	
 		$pg_col=$col1->addColumn(2);
 		$pg=$pg_col->addField('Dropdown','page_no')
-			->setValueList(array('0'=>'1','50'=>'2','100'=>'3','150'=>"4"))->setEmptyText('Select');
+			->setValueList(array('0'=>'1','50'=>'2','100'=>'3','150'=>"4"))->setEmptyText('Select Page')->validateNotNull(true);
 		$form->addSubmit('Click Here')->addClass('atk-swatch-red atk-padding');
 		$form->add('View')->setHtml('&nbsp;<br/><br/>')->addClass('');
 

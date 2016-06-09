@@ -172,12 +172,12 @@ class page_employee extends Page{
 			$new_salary_amount=round(($emp_model['basic_salary']/$total_days * $emp_salary['paid_days'])); 
 			
 			$s_c=$salary=$col->addColumn(1)->addClass('bank-col-1');
-			$salary_f = $s_c->addField('hidden','salary_'.$emp_model['id'])->set($new_salary_amount);
-			$s_c->add('View')->setHtml(round($new_salary_amount).'&nbsp')->addClass('value-text');
+			$salary_f = $s_c->addField('hidden','salary_'.$emp_model['id'])->set($emp_salary['salary']);
+			$s_c->add('View')->setHtml(round($emp_salary['salary']).'&nbsp')->addClass('value-text');
 			
 			$p_c=$col->addColumn(1)->addClass('bank-col-1');
-			$pf=$p_c->addField('hidden','pf_salary_'.$emp_model['id'])->set($new_salary_amount);
-			$p_c->add('View')->setHtml(round($new_salary_amount).'&nbsp')->addClass('value-text');
+			$pf=$p_c->addField('hidden','pf_salary_'.$emp_model['id'])->set($emp_salary['salary']);
+			$p_c->add('View')->setHtml(round($emp_salary['salary']).'&nbsp')->addClass('value-text');
 
 			$ded_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ded=$ded_col->addField('line','ded_'.$emp_model['id'])->set($emp_salary['ded']);
@@ -199,7 +199,7 @@ class page_employee extends Page{
 			$ap_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ap=$ap_col->addField('line','allow_paid_'.$emp_model['id'])->set(round($emp_salary['allow_paid']));
 			
-			$new_nt_amount= (round($new_salary_amount + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']));			
+			$new_nt_amount= (round($emp_salary['salary'] + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']));			
 
 			$n_c=$col->addColumn(1)->addClass('bank-col-1');
 			$nt=$n_c->addField('hidden','net_payable_'.$emp_model['id'])->set($new_nt_amount);

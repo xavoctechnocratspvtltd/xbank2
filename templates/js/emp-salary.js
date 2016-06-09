@@ -61,6 +61,12 @@ $.each({
      salary_value = parseFloat(salary_value).toFixed(0);
     }
     $(pf_amount).val(salary_value);
+  },
+
+  Incentive:function(netpayable,salary=0,allow_paid=0,ded=0,pf_amount=0,incentive=0){
+    $(netpayable).val(parseInt($(salary).val()) + parseInt($(allow_paid).val()) - parseInt($(ded).val()) - parseInt($(pf_amount).val()) + parseInt($(incentive).val()) );
+    $(netpayable).parent('.atk-col-1').find('.value-text').text(parseInt($(salary).val()) + parseInt($(allow_paid).val()) - parseInt($(ded).val()) - parseInt($(pf_amount).val()) + parseInt($(incentive).val()) );
+    // $(net_salary).val(parseInt($(incentive).val()) + parseInt($(net_Amount).val())  );    
   }
 
 

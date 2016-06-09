@@ -69,9 +69,9 @@ class page_employee extends Page{
 		// $record_form->addStyle(array('border'=>'2px solid black'));
 		$col1=$form->add('Columns');
 		// $col1->addColumn(3)->addField('Dropdown','branch')->setEmptyText('Please Select Branch')->validateNotNull(true)->setModel($branch);
-		$month_col=$col1->addColumn(3);
+		$month_col=$col1->addColumn(2);
 		$f_month=$month_col->addField('Dropdown','month')->setValueList($month)->setEmptyText('Please Select Month')->validateNotNull(true);
-		$year_col=$col1->addColumn(3);
+		$year_col=$col1->addColumn(2);
 		$f_year=$year_col->addField('Dropdown','year')->setValueList($years)->setEmptyText('Please Select Year')->validateNotNull(true);
 		$wd_col=$col1->addColumn(2);
 		$wd=$wd_col->addField('line','working_day','Total Day In Month');
@@ -79,6 +79,9 @@ class page_employee extends Page{
 		$twf=$twf_col->addField('line','monthly_off');
 		$mid_col=$col1->addColumn(2);
 		$mid=$mid_col->addField('line','monthly_in_day');	
+		$pg_col=$col1->addColumn(2);
+		$pg=$pg_col->addField('Dropdown','page_no')
+			->setValueList(array('0'=>'1','50'=>'2','100'=>'3','150'=>"4"))->setEmptyText('Select');
 		$form->addSubmit('Click Here')->addClass('atk-swatch-red atk-padding');
 		$form->add('View')->setHtml('&nbsp;<br/><br/>')->addClass('');
 
@@ -89,12 +92,14 @@ class page_employee extends Page{
 		$record_form=$this->add('Form',null,null,array('form/empty'));
 
 		if($form->isSubmitted()){
+			$this->app->memorize('page_no',$form['page_no']);
 			$record_form->js()->reload(array(
 										'month'=>$form['month'],
 										'year'=>$form['year'],
 										'working_day'=>$form['working_day'],
 										'monthly_off'=>$form['monthly_off'],
 										'monthly_in_day'=>$form['monthly_in_day'],
+										'page_no'=>$form['page_no'],
 										'filter'=>1
 										)
 			)->execute();
@@ -111,7 +116,7 @@ class page_employee extends Page{
 		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('DED.');
 		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('PF AMT');
 		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Other ALW.');
-		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Incentive.');
+		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Incetive');
 		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('ALW. Paid');
 		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Net Payable');
 		$lable_c->addColumn(1)->addClass('bank-col-1')->add('H5')->set('Narrtion');
@@ -124,22 +129,10 @@ class page_employee extends Page{
 
 		// $emp_model = $this->add('Model_EmployeeSalary');
 		$emp_model=$this->add('Model_Employee')->addCondition('is_active',true);
-		// $emp_salary_j->addField('month');
-		// $emp_salary_j->addField('year');
-		// $emp_salary_j->addField('paid_days');
-		// $emp_salary_j->addField('total_days');
-		// $emp_salary_j->addField('leave');
-		// $emp_salary_j->addField('salary');
-		// $emp_salary_j->addField('ded');
-		// $emp_salary_j->addField('pf_amount');
-		// $emp_salary_j->addField('allow_paid');
-		// $emp_salary_j->addField('narration');
-		// $emp_salary_j->addField('CL');
-		// $emp_salary_j->addField('CCL');
-		// $emp_salary_j->addField('LWP');
-		// $emp_salary_j->addField('ABSENT');
-
-		// $emp_model->setLimit(10);
+		if($this->app->recall('page_no')!==null){
+			$page_no = $this->app->recall('page_no');
+			$emp_model->setLimit(50,$page_no);
+		}
 
 		foreach ($emp_model as  $junk) {
 
@@ -172,7 +165,7 @@ class page_employee extends Page{
 			$new_salary_amount=round(($emp_model['basic_salary']/$total_days * $emp_salary['paid_days'])); 
 			
 			$s_c=$salary=$col->addColumn(1)->addClass('bank-col-1');
-			$salary_f = $s_c->addField('hidden','salary_'.$emp_model['id'])->set($emp_salary['salary']);
+			$salary_f = $s_c->addField('hidden','salary_'.$emp_model['id'])->set($new_salary_amount);
 			$s_c->add('View')->setHtml(round($emp_salary['salary']).'&nbsp')->addClass('value-text');
 			
 			$p_c=$col->addColumn(1)->addClass('bank-col-1');
@@ -193,8 +186,9 @@ class page_employee extends Page{
 			$o_c=$col->addColumn(1)->addClass('bank-col-1');
 			$other_allw=$o_c->addField('hidden','other_allowance_'.$emp_model['id'])->set($emp_model['other_allowance']);
 			$o_c->add('View')->setHtml($emp_model['other_allowance'].'&nbsp');
-			$incentive_col=$col->addColumn(1)->addClass('bank-col-1');
-			$incentive_field=$incentive_col->addField('line','incentive_'.$emp_model['id']);
+			$incetive_col=$col->addColumn(1)->addClass('bank-col-1');
+			$incetive=$incetive_col->addField('line','incentive_'.$emp_model['id']);
+			
 
 			$ap_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ap=$ap_col->addField('line','allow_paid_'.$emp_model['id'])->set(round($emp_salary['allow_paid']));
@@ -230,14 +224,18 @@ class page_employee extends Page{
 			$mid->js( 'change')->univ()->dayInMonth($tmd,$mid);
 			$f_year->js( 'change')->univ()->totalDayInMonth($wd,$f_month,$f_year,$td);
 			$pd->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);
-			$incentive_field->js('change')->univ()->Incentive($nt,$salary_f,$ap,$ded,$pf_amount,$incentive_field);
+			$incetive->js( 'change')->univ()->Incentive($nt,$salary_f,$ap,$pf_amount,$ded,$incetive);
+
 		}
 
 		$record_form->addSubmit('Go');
 
 		if($record_form->isSubmitted()){
-			
-				
+			// ini_set('xdebug.var_display_max_depth', -1);
+			// ini_set('xdebug.var_display_max_children', -1);
+			// ini_set('xdebug.var_display_max_data', -1);
+			// var_dump($_POST);				
+			// exit;
 			foreach ($emp_model as  $junk) {
 			
 				if($record_form['paid_days_'.$emp_model['id']] > $record_form['total_days_'.$emp_model['id']]){
@@ -347,6 +345,7 @@ class page_employee extends Page{
 
 		
 		if($form->isSubmitted()){
+			// throw new \Exception($_GET['year'], 1);
 			$v->js()->reload(array(
 								'branch'=>$form['branch']?:0,
 								'month'=>$form['month']?:0,
@@ -373,5 +372,5 @@ class page_employee extends Page{
 		// $this->api->jquery->addStylesheet('xShop-js');
 		// 	$this->api->template->appendHTML('js_include','<script src="epan-components/xShop/templates/js/xShop-js.js"></script>'."\n");
 		parent::render();	
-}
+	}
 }

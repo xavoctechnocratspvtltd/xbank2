@@ -20,6 +20,9 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 
 		$this->removeColumn('ActiveStatus');
 		$this->removeColumn('dealer_id');
+		
+		$order=$this->addOrder();
+		$order->move('file_charge', 'after','loan_amount')->now();
 
 	}
 
@@ -31,12 +34,19 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 		foreach ($transactions_row as $tr) {
 			if($i == 1) // first row of this transaction
 				$this->current_row['loan_amount'] = $tr['amountDr'];
-			if($i == 3)
-				$this->current_row['net_amount'] = $tr['amountCr'];
 			if($i == 2)
 				$this->current_row['file_charge'] = $tr['amountCr'];
+			if($i == 3)
+				$this->current_row['net_amount'] = $tr['amountCr'];
 			$i++;
 		}
+
+		if(!$this->current_row['net_amount']){
+			// Looks like there was no file charge and may be even 3rd transaction row does not exists
+			$this->current_row['net_amount'] = $this->current_row['file_charge'];
+			$this->current_row['file_charge'] = 0;
+		}
+
 		parent::formatRow();
 	}
 }

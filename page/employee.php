@@ -187,13 +187,13 @@ class page_employee extends Page{
 			$other_allw=$o_c->addField('hidden','other_allowance_'.$emp_model['id'])->set($emp_model['other_allowance']);
 			$o_c->add('View')->setHtml($emp_model['other_allowance'].'&nbsp');
 			$incetive_col=$col->addColumn(1)->addClass('bank-col-1');
-			$incetive=$incetive_col->addField('line','incentive_'.$emp_model['id']);
+			$incetive=$incetive_col->addField('line','incentive_'.$emp_model['id'])->set($emp_salary['incentive']);
 			
 
 			$ap_col=$col->addColumn(1)->addClass('bank-col-1');
 			$ap=$ap_col->addField('line','allow_paid_'.$emp_model['id'])->set(round($emp_salary['allow_paid']));
 			
-			$new_nt_amount= (round($emp_salary['salary'] + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']));			
+			$new_nt_amount= (round($emp_salary['salary'] + $emp_salary['allow_paid'] - $emp_salary['ded']-$emp_salary['pf_amount']+$emp_salary['incentive']));			
 
 			$n_c=$col->addColumn(1)->addClass('bank-col-1');
 			$nt=$n_c->addField('hidden','net_payable_'.$emp_model['id'])->set($new_nt_amount);
@@ -264,6 +264,7 @@ class page_employee extends Page{
 				$salary['ded']=$record_form['ded_'.$emp_model['id']];
 				$salary['pf_amount']=$record_form['pf_amount_'.$emp_model['id']];
 				$salary['other_allowance']=$record_form['other_allowance_'.$emp_model['id']];
+				$salary['incentive']=$record_form['incentive_'.$emp_model['id']];
 				$salary['allow_paid']=$record_form['allow_paid_'.$emp_model['id']];
 				$salary['net_payable']=$record_form['net_payable_'.$emp_model['id']];
 				$salary['narration']=$record_form['narration_'.$emp_model['id']];
@@ -339,7 +340,7 @@ class page_employee extends Page{
 												'CL','CCL','LWP','ABSENT',
 												'monthly_off','basic_salary','total_days','paid_days',
 												'leave','salary','pf_salary','pf_amount','ded',
-												'other_allowance','allow_paid','net_payable','is_active',
+												'other_allowance','incentive','allow_paid','net_payable','is_active',
 												'salary_date','narration','total_month_day'));
 		}
 

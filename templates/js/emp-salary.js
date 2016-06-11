@@ -1,8 +1,8 @@
 $.each({
-  netpayable: function (netpayable,salary=0,allow_paid=0,ded=0,pf_amount=0){
+  netpayable: function (netpayable,salary=0,allow_paid=0,ded=0,pf_amount=0,incentive_amount){
     // alert();
-    $(netpayable).val(parseInt($(salary).val()) + parseInt($(allow_paid).val()) - parseInt($(ded).val()) - parseInt($(pf_amount).val())  );
-  	$(netpayable).parent('.atk-col-1').find('.value-text').text(parseInt($(salary).val()) + parseInt($(allow_paid).val()) - parseInt($(ded).val()) - parseInt($(pf_amount).val()));
+    $(netpayable).val(parseInt($(salary).val()) + parseInt($(allow_paid).val()) - parseInt($(ded).val()) - parseInt($(pf_amount).val()) + parseInt($(incentive_amount).val())  );
+    $(netpayable).parent('.atk-col-1').find('.value-text').text(parseInt($(salary).val()) + parseInt($(allow_paid).val()) - parseInt($(ded).val()) - parseInt($(pf_amount).val()) + parseInt($(incentive_amount).val()) );
   },
 
   salary: function (salary,basic_salary,total_days,paid_days){
@@ -61,13 +61,13 @@ $.each({
      salary_value = parseFloat(salary_value).toFixed(0);
     }
     $(pf_amount).val(salary_value);
-  },
+  }/*,
 
   Incentive: function (netpayable,salary=0,allow_paid=0,ded=0,pf_amount=0,incentive_amount){
     // alert();
     $(netpayable).val(parseInt($(salary).val()) + parseInt($(allow_paid).val()) - parseInt($(ded).val()) - parseInt($(pf_amount).val()) + parseInt($(incentive_amount).val())  );
     $(netpayable).parent('.atk-col-1').find('.value-text').text(parseInt($(salary).val()) + parseInt($(allow_paid).val()) - parseInt($(ded).val()) - parseInt($(pf_amount).val()) + parseInt($(incentive_amount).val()) );
-  }
+  }*/
 
 
 },$.univ._import);

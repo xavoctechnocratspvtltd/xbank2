@@ -212,9 +212,9 @@ class page_employee extends Page{
 			$tmd_col=$col->addColumn(1)->addClass('bank-col-2');
 			$tmd=$tmd_col->addField('line','total_month_day_'.$emp_model['id'])->set($emp_salary['total_month_day']?:$_GET['monthly_in_day']);
 
-			$ded->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$ded,$pf_amount);
-			$ap->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);
-			$pf_amount->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);
+			$ded->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$ded,$pf_amount,$incetive);
+			$ap->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded,$incetive);
+			$pf_amount->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded,$incetive);
 			$pd->js( 'change')->univ()->salary($salary_f,$basic_salary,$td,$pd);
 			$pd->js( 'change')->univ()->allowPaid($ap,$pd,$td,$other_allw);
 			$wd->js( 'change')->univ()->workingDays($td,$wd);
@@ -223,8 +223,8 @@ class page_employee extends Page{
 			$twf->js( 'change')->univ()->weeklyOff($wf,$twf);
 			$mid->js( 'change')->univ()->dayInMonth($tmd,$mid);
 			$f_year->js( 'change')->univ()->totalDayInMonth($wd,$f_month,$f_year,$td);
-			$pd->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded);
-			$incetive->js( 'change')->univ()->Incentive($nt,$salary_f,$ap,$pf_amount,$ded,$incetive);
+			$pd->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded,$incetive);
+			$incetive->js( 'change')->univ()->netpayable($nt,$salary_f,$ap,$pf_amount,$ded,$incetive);
 
 		}
 

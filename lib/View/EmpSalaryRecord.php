@@ -24,13 +24,14 @@ class View_EmpSalaryRecord extends View{
 		$this->template->set('pan_no',$emp->ref('employee_id')->get('pan_no'));
 		$this->template->set('basic_salary',$emp->ref('employee_id')->get('basic_salary'));
 		$this->template->set('other_allowance',$emp->ref('employee_id')->get('other_allowance'));
+		$this->template->set('incentive',$emp['incentive']);
 		$this->template->set('net_salary',$emp['net_payable']);
 		$this->template->set('department',$emp->ref('employee_id')->get('department'));
 		
-		$total=round($emp->ref('employee_id')->get('basic_salary') + $emp->ref('employee_id')->get('other_allowance'));
+		$total=round($emp->ref('employee_id')->get('basic_salary') + $emp->ref('employee_id')->get('other_allowance')+$emp['incentive']);
 		$this->template->set('total',$total);
 
-		$total_payable_amount=round($emp['salary']+$emp['allow_paid']);
+		$total_payable_amount=round($emp['salary']+$emp['allow_paid']+$emp['incentive']);
 		$this->template->set('total_payable_amount',$total_payable_amount);
 
 		$this->template->set('pay_salary',round($emp['salary']));

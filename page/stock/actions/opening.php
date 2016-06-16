@@ -31,7 +31,7 @@ class page_stock_actions_opening extends Page {
 
 		// $crud=$this->add('crud');
 		$v = $this->add('View_Info')->set('Opening Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>true));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 		$openning_transaction=$this->add('Model_Stock_Transaction');
 		$openning_transaction->addCondition('transaction_type','Openning');
 		$openning_transaction->addCondition('branch_id',$this->api->currentBranch->id);

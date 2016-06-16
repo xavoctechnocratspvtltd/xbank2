@@ -36,7 +36,7 @@ class page_stock_actions_dead extends Page {
 		$form->js(true)->hide();
 
 		$this->add('View_Info')->set('Dead Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>true));
+		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false,'allow_edit'=>false));
 
 		$dead_transaction=$this->add('Model_Stock_Transaction');
 		$dead_transaction->addCondition('transaction_type','DeadSubmit');

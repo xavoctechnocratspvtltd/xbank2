@@ -125,8 +125,8 @@ class Model_Scheme_DDS extends Model_Scheme {
 
         	$accounts_to_work_on->postAgentCommissionEntry($on_date);
         	$accounts_to_work_on->giveCollectionCharges($on_date);
-        	$this->add('Model_Active_Account_DDS')->load($id)->markMatured($on_date); // Unloading account as well
-        	$this->add('Model_Active_Account_DDS')->load($id)->deActivate($on_date);
+        	// $this->add('Model_Active_Account_DDS')->load($id)->markMatured($on_date); // Unloading account as well
+        	// $this->add('Model_Active_Account_DDS')->load($id)->deActivate($on_date);
         }
 
 		$matured_dds_accounts = $this->add('Model_Account_DDS');

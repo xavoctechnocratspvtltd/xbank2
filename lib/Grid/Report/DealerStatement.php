@@ -6,12 +6,18 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 	public $account_type;
 	public $account_status;
 
+	public $loan_amount_sum=0;
+	public $net_amount_sum=0;
+	public $file_charge_sum=0;
+
+	public $formating_totals=false;
+
 	function setModel($model,$fields=null){
 		parent::setModel($model,$fields);
 
-		$this->addColumn('loan_amount');
-		$this->addColumn('net_amount');
-		$this->addColumn('file_charge');
+		$this->addColumn('calcColumns','loan_amount');
+		$this->addColumn('calcColumns','net_amount');
+		$this->addColumn('calcColumns','file_charge');
 
 		$this->addFormatter('name','Wrap');
 		$this->addSno();
@@ -25,6 +31,16 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 		$order->move('file_charge', 'after','loan_amount')->now();
 
 	}
+
+	function format_calcColumns($field){
+
+	}
+
+	function format_totals_calcColumns($field){
+		$this->formating_totals=true;
+		$this->current_row[$field] = $this->{$field.'_sum'};
+	}
+	
 
 	function formatRow(){
 		// First transaction of this account
@@ -45,6 +61,12 @@ class Grid_Report_DealerStatement extends Grid_AccountsBase{
 			// Looks like there was no file charge and may be even 3rd transaction row does not exists
 			$this->current_row['net_amount'] = $this->current_row['file_charge'];
 			$this->current_row['file_charge'] = 0;
+		}
+
+		if($this->current_row['AccountNumber']){
+			$this->loan_amount_sum += $this->current_row['loan_amount'];
+			$this->net_amount_sum += $this->current_row['net_amount'];
+			$this->file_charge_sum += $this->current_row['file_charge'];
 		}
 
 		parent::formatRow();

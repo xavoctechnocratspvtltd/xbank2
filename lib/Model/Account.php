@@ -69,8 +69,11 @@ class Model_Account extends Model_Table {
 		$this->scheme_join->addField('SchemeType');
 		$this->scheme_join->addField('scheme_name','name');
 
-		$this->add('filestore/Field_Image','doc_image_id')->type('image')->mandatory(true);
-		$this->add('filestore/Field_Image','sig_image_id')->type('image')->mandatory(true);
+		$doc_field = $this->add('filestore/Field_Image','doc_image_id')->type('image')->mandatory(true);
+		$sig_field = $this->add('filestore/Field_Image','sig_image_id')->type('image')->mandatory(true);
+
+		$doc_field->getModel()->setLimit(1);
+		$sig_field->getModel()->setLimit(1);
 
 		$this->addExpression('branch_code')->set(function($m,$q){
 			return $m->refSQL('branch_id')->fieldQuery('Code');

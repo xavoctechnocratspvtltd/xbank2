@@ -318,6 +318,10 @@ class Frontend extends ApiFrontend {
 
             return $result["Commission"];
         }
+        
+        function addSharedLocations(){
+        
+        }
 
         function defaultTemplate(){
             return array('shared');

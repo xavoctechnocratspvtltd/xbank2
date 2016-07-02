@@ -220,7 +220,7 @@ class page_reports_loan_emiduelist extends Page {
 				if($_GET['doc_'.$document->id]){
 					$this->api->stickyGET('doc_'.$document->id);
 					$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
-						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
+						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->setLimit(1)->fieldQuery('Description');
 					});
 					$grid_column_array[] = $this->api->normalizeName($document['name']);
 				}

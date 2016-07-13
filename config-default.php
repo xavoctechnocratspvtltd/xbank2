@@ -128,6 +128,7 @@ define('TRA_VISIT_CHARGE',  'VisitCharge');
 define('TRA_FORCLOSE_CHARGE',  'ForCloseTransaction');
 define('TRA_BANK_DEPOSIT',  'BANK DEPOSIT');
 define('TRA_BANK_WITHDRAWL',  'BANK WITHDRAWL');
+define('TRA_EXCESS_AMOUNT_REVERT',  'EXCESS AMOUNT REVERT');
 
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')

@@ -865,6 +865,32 @@ class Model_Account extends Model_Table {
 		}
 	}
 
+	function pre_mature_info($on_date = null ){
+		if(!$on_date) $on_date = $this->app->today;
+		$info = [];
+		$this_scheme = $this->ref('scheme_id');
+		$per_string = $info['pre_maturity_percentages_string'] = $this_scheme['pre_mature_interests'];
+		$percentages = $info['pre_maturity_percentages'] = explode(",", trim($info['pre_maturity_percentages_string']));
+		$info['no_of_days'] = ($this->app->my_date_diff(date('Y-m-d',strtotime($this['created_at'])),$on_date)['days_total']);
+		$info['applicable_percentage'] = $this_scheme['Interest'];
+		$info['can_premature']=false;
+		foreach ($percentages as $day_percent_pair) {
+			$array = explode(":", $day_percent_pair);
+			if(count($array)!=2) break;
+			if($info['no_of_days'] >= (float)$array[0]){
+				$info['applicable_percentage'] = $array[1];
+				$info['can_premature']=true;
+				break;
+			}
+		}
+
+		return $info;
+	}
+
+	function pre_mature($on_date=null,$return_amount = false){
+		throw new \Exception("Please define 'pre_mature' function in child class", 1);
+	}
+
 	
 
 	function addAgent($agent, $replace_existing=false){

@@ -127,7 +127,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 	// 	return $this['CurrentInterest'] + ($this['CurrentBalanceCr'] * $this['Interest'] * $days['days_total'] / 36500);
 	// }
 
-	function getAmountForInterest($on_date=null,$calculate_remainig_days=true){
+	function getAmountForInterest($on_date=null,$calculate_remainig_days=true, $interest_rate_provided = null){
 		
 		if(!$on_date) $on_date = $this->api->today;
 
@@ -138,8 +138,12 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$years_completed = (int) (($days['days_total']) / 365) ;
 		$remaining_days = ($days['days_total'] % 365) ;
 		
-		$interest_rate = $this['Interest'];
-		if(!$interest_rate) $interest_rate = $this->ref('scheme_id')->get('Interest');
+		if(!$interest_rate_provided){
+			$interest_rate = $this['Interest'];
+			if(!$interest_rate) $interest_rate = $this->ref('scheme_id')->get('Interest');
+		}else{
+			$interest_rate = $interest_rate_provided;
+		}
 
 		for ($i=0; $i < $years_completed; $i++) { 
 			$interest = $on_amount * $interest_rate / 100;
@@ -220,10 +224,12 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 	}
 
-	function revertProvision($on_date){
+	function revertProvision($on_date, $narration=null){
+
+		if(!$narration) $narration = "Yearly/Maturity Interest posting to ". $this['AccountNumber'];
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date	, "Yearly/Maturity Interest posting to ". $this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date	, $narration, $only_transaction=null, array('reference_id'=>$this->id));
 		
 		$debitAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . SP. $this['scheme_name'];
 		
@@ -348,6 +354,85 @@ class Model_Account_FixedAndMis extends Model_Account{
 		// $provision_transactions_rows->_dsql()->group('transaction_id');
 
 		return $provision_transactions_rows;
+	}
+
+	function pre_mature($on_date=null, $return_amount = false,$account_to_credit=null ,$other_charges=[], $other_bonus=[]){
+		if(!$on_date) $on_date = $this->app->today;
+		$info = $this->pre_mature_info($on_date);
+		if(!$info['can_premature'])
+			throw new \Exception("You cannot pre mature this account", 1);
+			
+		$amount_to_give = $this->getAmountForInterest($on_date,$calculate_remainig_days=true, $interest_rate_provided = $info['applicable_percentage']);
+		if($return_amount){
+			return $amount_to_give;
+		}
+
+		if(!$account_to_credit) throw new \Exception("Please provide account to credit", 1);
+		
+		
+		$this->revertProvision($on_date,'Pre mature provision interest posting till date in '. $this['AccountNumber']);
+
+		$transactions = $this->add('Model_TransactionRow');
+		$transactions->addCondition('account_id',$this->id);
+		$cr_sum = $transactions->sum('amountCr')->getOne();
+
+		$difference = round($amount_to_give,0) - $cr_sum;
+
+		if($difference > 0) {
+			// amount to give is more and more payment need to be given now (Aur paisa dena hai)
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, 'Pre mature remaining interest posting till date in '. $this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
+			$transaction->addDebitAccount($debitAccount, $difference);
+			$transaction->addCreditAccount($this, $difference);
+			$transaction->execute();
+
+		}else{
+			// amount to give already given more and rverse calculation needed for payment adjustments (Pisa katna hai)
+			$difference = abs($difference);
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_EXCESS_AMOUNT_REVERT, $this->ref('branch_id'), $on_date, "Excess amount reverted in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$transaction->addDebitAccount($this, $difference);
+			$creditAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
+			$transaction->addCreditAccount($creditAccount, $difference);
+			$transaction->execute();	
+
+		}
+
+		
+
+		$transactions = $this->add('Model_TransactionRow');
+		$transactions->addCondition('account_id',$this->id);
+		$cr_sum = $transactions->sum('amountCr')->getOne();
+		$dr_sum = $transactions->sum('amountDr')->getOne();
+
+		$final_debit_amount = $cr_sum - $dr_sum;
+		
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction(TRA_FD_ACCOUNT_AMOUNT_WITHDRAWL, $this->ref('branch_id'), $on_date, "FD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+		
+		$final_credit_amount = $final_debit_amount;
+
+		$transaction->addDebitAccount($this, $final_debit_amount);
+		if(count($other_charges)){
+			$transaction->addCreditAccount($other_charges['Account'], $other_charges['Amount']);
+			$final_credit_amount -= $other_charges['Amount'];
+		}
+
+		if(count($other_bonus)){
+			$transaction->addDebitAccount($other_bonus['Account'], $other_bonus['Amount']);
+			$final_credit_amount += $other_bonus['Amount'];
+		}
+
+		$transaction->addCreditAccount($account_to_credit, $final_credit_amount);
+		$transaction->execute();
+
+		// mark mature and deactivate
+		$this['MaturedStatus']=true;
+		$this['ActiveStatus']=false;
+		$this->saveAndUnload();
 
 	}
 }

@@ -414,7 +414,7 @@ class Model_Account_Recurring extends Model_Account{
 		}
 		
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "FD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "RD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
 		$final_credit_amount = $amount_to_give;
 

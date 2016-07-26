@@ -338,7 +338,7 @@ class Model_Account_Recurring extends Model_Account{
 	}
 
 	function pre_mature($on_date=null,$return_amount = false,$account_to_credit=null ,$other_charges=[], $other_bonus=[]){
-		if(!$on_date) $on_date = $this->app->today;
+		if(!$on_date) $on_date = $this->app->now;
 		$info = $this->pre_mature_info($on_date);
 		if(!$info['can_premature'])
 			throw new \Exception("You cannot pre mature this account", 1);
@@ -436,8 +436,7 @@ class Model_Account_Recurring extends Model_Account{
 		$this['MaturedStatus']=true;
 		$this['ActiveStatus']=false;
 		$this->saveAndUnload();
-		
-		
+
 	}
 
 

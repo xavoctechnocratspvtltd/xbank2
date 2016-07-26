@@ -416,9 +416,9 @@ class Model_Account_Recurring extends Model_Account{
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "FD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
-		$final_credit_amount = $final_debit_amount;
+		$final_credit_amount = $amount_to_give;
 
-		$transaction->addDebitAccount($this, $final_debit_amount);
+		$transaction->addDebitAccount($this, $amount_to_give);
 		if(count($other_charges)){
 			$transaction->addCreditAccount($other_charges['Account'], $other_charges['Amount']);
 			$final_credit_amount -= $other_charges['Amount'];

@@ -28,7 +28,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 
 		$this->getElement('percent_loan_on_deposit')->group('e~6~Loan Against Scheme');
 		$this->getElement('no_loan_on_deposit_till')->group('e~6~Loan Against Scheme')->hint('in months');
-		$this->getElement('pre_mature_interests')->group('f~12~Pre Maturity Options')->hint('month:interest,month:interest like 6:12,12:8,24:7');
+		$this->getElement('pre_mature_interests')->group('f~12~Pre Maturity Options')->hint('No Product Percentage,month:interest,month:interest like 6:12,12:8,24:7');
 
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
@@ -53,6 +53,10 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$this->getElement('MaturityPeriod')->caption('Maturity (Months)');
 
 		$this->addCondition('SchemeType',$this->schemeType);
+
+		// $this->is([
+		// 		'pre_mature_interests|regex|(\d,(\d:\d)+)'
+		// 	]);
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}

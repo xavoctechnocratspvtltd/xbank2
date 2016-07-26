@@ -306,5 +306,139 @@ class Model_Account_Recurring extends Model_Account{
 		return $this->add('Model_Premium')->addCondition('account_id',$this->id);
 	}
 
+	function pre_mature_info($on_date = null ){
+		if(!$on_date) $on_date = $this->app->today;
+		$info = [];
+		$this_scheme = $this->ref('scheme_id');
+		$per_string = $info['pre_maturity_percentages_string'] = $this_scheme['pre_mature_interests'];
+		$percentages = $info['pre_maturity_percentages'] = explode(",", trim($info['pre_maturity_percentages_string']));
+		
+		$non_product_interst_percent = $percentages[0];
+		unset($percentages[0]);
+		
+		$info['days_months_total'] = ($this->app->my_date_diff(date('Y-m-d',strtotime($this['created_at'])),$on_date)['months_total']);
+
+		$info['applicable_percentage'] = $this_scheme['Interest'];
+		$info['can_premature']=false;
+		$info['premiums_paid']=$this->paidPremiums();
+		foreach ($percentages as $day_percent_pair) {
+			$array = explode(":", $day_percent_pair);
+			if(count($array)!=2) break;
+			if($info['days_months_total'] >= (float)$array[0]){
+				if($this->paidPremiums() >= $info['days_months_total'])
+					$info['applicable_percentage'] = $array[1];
+				else
+					$info['applicable_percentage'] = $non_product_interst_percent;
+				$info['can_premature']=true;
+				break;
+			}
+		}
+
+		return $info;
+	}
+
+	function pre_mature($on_date=null,$return_amount = false,$account_to_credit=null ,$other_charges=[], $other_bonus=[]){
+		if(!$on_date) $on_date = $this->app->today;
+		$info = $this->pre_mature_info($on_date);
+		if(!$info['can_premature'])
+			throw new \Exception("You cannot pre mature this account", 1);
+		// throw new \Exception("YES", 1);
+
+		$given_interest = $this->interestPaid($on_date);
+
+		$new_applicable_percentage = $info['applicable_percentage'];
+		$months_to_check = $info['days_months_total'];
+
+		$years_completed = (int) ($months_to_check / 12) ;
+		$uncompleted_months = $months_to_check - ( 12 * $years_completed);
+		
+
+		$product = 0;
+		$interest = 0;
+		// $interest_total=0;
+
+		$loop = $years_completed + ($uncompleted_months>0?1:0);
+
+		for($i=1;$i<=$loop;$i++){
+
+			$non_interest_paid_premiums_till_now = $this->add('Model_Premium');
+			$non_interest_paid_premiums_till_now->addCondition('account_id',$this->id);
+			$non_interest_paid_premiums_till_now->addCondition('Paid','>=',1);
+
+			$limit_sql = clone $non_interest_paid_premiums_till_now->_dsql()->limit(12,(12*($i-1)));
+
+			$product += $non_interest_paid_premiums_till_now->dsql()
+									->expr('select sum((Paid*Amount)+'.$interest.') from (select Paid, Amount from premiums WHERE account_id='.$this->id.' and Paid>=1 limit '.(12*($i-1)).', 12) as temp')
+									// ->debug()
+									->getOne();
+			$interest = ($product * $info['applicable_percentage'])/1200;
+			// echo $product ." - " ;
+			// echo $interest ." - <br/>" ;
+			// $interest_total += $interest;
+		}
+
+		$amount_to_give  = $this->paidPremiums() * $this['Amount'] + $interest;
+
+		if($return_amount){
+			return $amount_to_give;
+		}
+
+		$transactions = $this->add('Model_TransactionRow');
+		$transactions->addCondition('account_id',$this->id);
+		$cr_sum = $transactions->sum('amountCr')->getOne();
+
+		$difference = round($amount_to_give,0) - $cr_sum;
+		$final_debit_amount = $difference;
+
+		if($difference > 0) {
+			// amount to give is more and more payment need to be given now (Aur paisa dena hai)
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_RECURRING, $this->ref('branch_id'), $on_date, 'Pre mature remaining interest posting till date in '. $this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
+			$transaction->addDebitAccount($debitAccount, $difference);
+			$transaction->addCreditAccount($this, $difference);
+			$transaction->execute();
+
+		}else{
+			// amount to give already given more and rverse calculation needed for payment adjustments (Pisa katna hai)
+			$difference = abs($difference);
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_EXCESS_AMOUNT_REVERT, $this->ref('branch_id'), $on_date, "Excess amount reverted in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$transaction->addDebitAccount($this, $difference);
+			$creditAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
+			$transaction->addCreditAccount($creditAccount, $difference);
+			$transaction->execute();	
+
+		}
+		
+		$transaction = $this->add('Model_Transaction');
+		$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "FD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+		
+		$final_credit_amount = $final_debit_amount;
+
+		$transaction->addDebitAccount($this, $final_debit_amount);
+		if(count($other_charges)){
+			$transaction->addCreditAccount($other_charges['Account'], $other_charges['Amount']);
+			$final_credit_amount -= $other_charges['Amount'];
+		}
+
+		if(count($other_bonus)){
+			$transaction->addDebitAccount($other_bonus['Account'], $other_bonus['Amount']);
+			$final_credit_amount += $other_bonus['Amount'];
+		}
+
+		$transaction->addCreditAccount($account_to_credit, $final_credit_amount);
+		$transaction->execute();
+
+		// mark mature and deactivate
+		$this['MaturedStatus']=true;
+		$this['ActiveStatus']=false;
+		$this->saveAndUnload();
+		
+		
+	}
+
 
 }

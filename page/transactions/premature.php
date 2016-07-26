@@ -74,14 +74,15 @@ class page_transactions_premature extends Page {
 				$right_col->add('View')->setHtml('Account Mode: ' . $account['ModeOfOperation'] . ($account['ModeOfOperation'] == 'Joint'? '<font color=red> Check All Signatures </font>':''));
 
 				// Show Pre-mature financial information
-				$p_info = $account->pre_mature_info();
+				$p_info = $account_model->pre_mature_info();
 
 				$right_col->add('View')->setHTML("<b>Amount</b> : " . $account['Amount']);
 				$right_col->add('View')->setHTML("<b>Scheme Pre Mature Percentage</b> : " . $p_info['pre_maturity_percentages_string']);
 				$right_col->add('View')->setHTML('<b>Account Opening Date </b> : '.$account['created_at']);
-				$right_col->add('View')->setHTML('<b>No Of Days </b> : '. $p_info['no_of_days']);
+				$right_col->add('View')->setHTML('<b>No Of Days/Month </b> : '. $p_info['days_months_total']);
 				$right_col->add('View')->setHTML('<b>Applicable Percentage </b> : '. $p_info['applicable_percentage'].'%');
-				$right_col->add('View')->setHTML('<b>Pre Maturitu </b> : '. ($p_info['can_premature']?'<font color="green">YES</font>':'<font color="red">NO</font>') );
+				$right_col->add('View')->setHTML('<b>Pre Maturity </b> : '. ($p_info['can_premature']?'<font color="green">YES</font>':'<font color="red">NO</font>') );
+				$right_col->add('View')->setHTML('<b>Premium Paid (IF RD) </b> : '. ($p_info['premiums_paid']) );
 
 				// Show Signature image
 				// $img=$right_col->add('View')->setElement('img')->setAttr('src','../signatures/sig_'.$account->ref('member_id')->get('id').'.JPG');

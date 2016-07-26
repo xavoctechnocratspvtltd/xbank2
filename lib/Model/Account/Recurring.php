@@ -387,7 +387,7 @@ class Model_Account_Recurring extends Model_Account{
 		$transactions->addCondition('account_id',$this->id);
 		$cr_sum = $transactions->sum('amountCr')->getOne();
 
-		$difference = round($amount_to_give,0) - $cr_sum;
+		$difference = $amount_to_give - $cr_sum;
 		$final_debit_amount = $difference;
 
 		if($difference > 0) {

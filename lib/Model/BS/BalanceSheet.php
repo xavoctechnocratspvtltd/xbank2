@@ -1,9 +1,7 @@
 <?php
 
 
-namespace xepan\accounts;
-
-class Model_BSBalanceSheet extends Model_BalanceSheet{
+class Model_BS_BalanceSheet extends Model_BalanceSheet{
 
 	public $from_date=null;
 	public $to_date=null;
@@ -12,38 +10,38 @@ class Model_BSBalanceSheet extends Model_BalanceSheet{
 		parent::init();
 
 		$this->addExpression('OpeningBalanceDr')->set(function($m,$q){
-			$ledger = $m->add('xepan\accounts\Model_Ledger');
+			$ledger = $m->add('Model_BS_Ledger');
 			return $ledger->addCondition('balance_sheet_id',$q->getField('id'))
 						->sum($q->expr('IFNULL([0],0)',[$ledger->getElement('OpeningBalanceDr')]));
 		});
 		$this->addExpression('OpeningBalanceCr')->set(function($m,$q){
-			$ledger = $m->add('xepan\accounts\Model_Ledger');
+			$ledger = $m->add('Model_BS_Ledger');
 			return $ledger->addCondition('balance_sheet_id',$q->getField('id'))
 						->sum($q->expr('IFNULL([0],0)',[$ledger->getElement('OpeningBalanceCr')]));
 		});
 
 		$this->addExpression('PreviousTransactionsDr')->set(function($m,$q){
-			$transaction =  $m->add('xepan\accounts\Model_TransactionRow');
+			$transaction =  $m->add('Model_BS_TransactionRow');
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
 								->addCondition('created_at','<',$this->from_date)
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountDr')]));
 		});
 		$this->addExpression('PreviousTransactionsCr')->set(function($m,$q){
-			$transaction =  $m->add('xepan\accounts\Model_TransactionRow');
+			$transaction =  $m->add('Model_BS_TransactionRow');
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
 								->addCondition('created_at','<',$this->from_date)
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountCr')]));
 		});
 
 		$this->addExpression('TransactionsDr')->set(function($m,$q){
-			$transaction =  $m->add('xepan\accounts\Model_TransactionRow');
+			$transaction =  $m->add('Model_BS_TransactionRow');
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
 								->addCondition('created_at','>=',$this->from_date)
 								->addCondition('created_at','<',$this->app->nextDate($this->to_date))
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountDr')]));
 		});
 		$this->addExpression('TransactionsCr')->set(function($m,$q){
-			$transaction =  $m->add('xepan\accounts\Model_TransactionRow');
+			$transaction =  $m->add('Model_BS_TransactionRow');
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
 								->addCondition('created_at','>=',$this->from_date)
 								->addCondition('created_at','<',$this->app->nextDate($this->to_date))
@@ -52,7 +50,7 @@ class Model_BSBalanceSheet extends Model_BalanceSheet{
 
 		$this->addExpression('ClosingBalanceDr')->set(function($m,$q){
 			return $q->expr('
-				IF(report_name="BalanceSheet",
+				IF(is_pandl=0,
 				IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0),
 				IFNULL([2],0))',[
 					$m->getElement('OpeningBalanceDr'),
@@ -62,7 +60,7 @@ class Model_BSBalanceSheet extends Model_BalanceSheet{
 		});
 		$this->addExpression('ClosingBalanceCr')->set(function($m,$q){
 			return $q->expr('
-				IF(report_name="BalanceSheet",
+				IF(is_pandl=0,
 				IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0),
 				IFNULL([2],0))',[
 					$m->getElement('OpeningBalanceCr'),

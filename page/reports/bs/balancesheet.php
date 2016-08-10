@@ -44,8 +44,9 @@ class page_reports_bs_balancesheet extends Page{
 		*/
 
 		$op_balances_q='select s.balance_sheet_id, sum(OpeningBalanceDr), sum(OpeningBalanceCr)
-						from accounts a join schemes s on a.scheme_id= s.id
-						group by s.balance_sheet_id';
+						from accounts a join schemes s on a.scheme_id= s.id';
+		if($branch_id) $op_balances_q .= ' WHERE a.branch_id = ' . $branch_id;
+		$op_balances_q .= ' group by s.balance_sheet_id';
 
 		$op_balances = $this->api->db->dsql()->expr($op_balances_q)->get();
 
@@ -53,16 +54,20 @@ class page_reports_bs_balancesheet extends Page{
 
 		$prev_transactions_q  = 'select balance_sheet_id, sum(amountDr), sum(amountCr)
 								from transaction_row tr 
-								where tr.created_at < "'.$from_date.'"
-								group by balance_sheet_id';
+								join accounts a on tr.account_id = a.id
+								where tr.created_at < "'.$from_date.'"';
+		if($branch_id) $prev_transactions_q .= ' and a.branch_id = ' . $branch_id;
+		$prev_transactions_q .=	' group by balance_sheet_id';
 		$prev_transactions = $this->api->db->dsql()->expr($prev_transactions_q)->get();
 
 		// var_dump($prev_transactions);
 
 		$curr_trans_q='select balance_sheet_id, sum(amountDr), sum(amountCr)
-		from transaction_row tr 
-		where tr.created_at >= "'.$from_date.'" and tr.created_at < "'.$this->app->nextDate($to_date).'"
-		group by balance_sheet_id';
+					from transaction_row tr 
+					join accounts a on tr.account_id = a.id
+					where tr.created_at >= "'.$from_date.'" and tr.created_at < "'.$this->app->nextDate($to_date).'"';
+		if($branch_id) $curr_trans_q .= ' and a.branch_id = ' . $branch_id;
+		$curr_trans_q.=' group by balance_sheet_id';
 		
 		$curr_trans = $this->api->db->dsql()->expr($curr_trans_q)->get();
 

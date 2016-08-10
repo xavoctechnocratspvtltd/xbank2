@@ -15,8 +15,6 @@ class Model_TransactionRow extends Model_Table {
 		$this->addField('side');
 		$this->addField('accounts_in_side')->type('int');
 		
-		$this->addField('scheme_id')->type('int');
-		$this->addField('balance_sheet_id')->type('int');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->app->now);
 
 		$this->transaction_join = $join_transaction = $this->join('transactions','transaction_id');

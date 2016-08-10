@@ -1,6 +1,6 @@
 <?php
 
-class page_reports_bs_bstogroup extends Page{
+class page_reports_bs_bstoschemegroup extends Page{
 	public $title = "Balance Sheet Groups";
 	function init(){
 		parent::init();

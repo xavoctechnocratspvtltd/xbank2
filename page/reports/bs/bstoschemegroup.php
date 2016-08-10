@@ -64,7 +64,7 @@ class page_reports_bs_bstoschemegroup extends Page{
 			$data['TransactionsDr'] = 0;
 			$data['TransactionsCr'] = 0;
 
-			$data['id']=$scheme_m->id;
+			$data['id']=$scheme_m['SchemeGroup'];
 			$data['name'] = $scheme_m['SchemeGroup'];
 			foreach ($op_balances as $opb) {
 				if($opb['id']==$scheme_m['SchemeGroup']){
@@ -116,6 +116,6 @@ class page_reports_bs_bstoschemegroup extends Page{
 		$grid->template->trySet('to_date',$to_date);
 
 		// $grid->addTotals(['ClosingBalanceDr','ClosingBalanceCr']);
-        $this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Groups And Ledger',[$this->api->url('groupdig'),'group_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
+        $this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Groups And Ledger',[$this->api->url('reports_bs_schemegrouptoaccounts'),'scheme_group'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
 	}
 }

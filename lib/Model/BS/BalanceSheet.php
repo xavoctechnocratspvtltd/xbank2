@@ -24,6 +24,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 		});
 
 		$this->addExpression('PreviousTransactionsDr')->set(function($m,$q){
+			// return '"0"';
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
@@ -31,6 +32,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountDr')]));
 		});
 		$this->addExpression('PreviousTransactionsCr')->set(function($m,$q){
+			// return '"0"';
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
@@ -39,6 +41,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 		});
 
 		$this->addExpression('TransactionsDr')->set(function($m,$q){
+			// return '"0"';
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
@@ -47,6 +50,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountDr')]));
 		});
 		$this->addExpression('TransactionsCr')->set(function($m,$q){
+			// return '"0"';
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
@@ -76,14 +80,14 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 				]);
 		})->type('money');
 
-		$this->addExpression('is_left')->set(function($m,$q){
-			return $q->expr('IF(([0]-[1])>=0 AND [2]="LT",1,0)',[
-					$m->getElement('ClosingBalanceDr'),
-					$m->getElement('ClosingBalanceCr'),
-					$m->getElement('positive_side'),
+		// $this->addExpression('is_left')->set(function($m,$q){
+		// 	return $q->expr('IF(([0]-[1])>=0 AND [2]="LT",1,0)',[
+		// 			$m->getElement('ClosingBalanceDr'),
+		// 			$m->getElement('ClosingBalanceCr'),
+		// 			$m->getElement('positive_side'),
 
-				]);
-		})->type('money');
+		// 		]);
+		// })->type('money');
 
 		$this->setOrder('order');
 

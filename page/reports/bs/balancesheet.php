@@ -43,7 +43,7 @@ class page_reports_bs_balancesheet extends Page{
 
 		*/
 
-		$op_balances_q='select s.balance_sheet_id, sum(OpeningBalanceDr), sum(OpeningBalanceCr)
+		$op_balances_q='select s.balance_sheet_id balance_sheet_id, sum(OpeningBalanceDr) DR, sum(OpeningBalanceCr) CR
 						from accounts a join schemes s on a.scheme_id= s.id';
 		if($branch_id) $op_balances_q .= ' WHERE a.branch_id = ' . $branch_id;
 		$op_balances_q .= ' group by s.balance_sheet_id';
@@ -52,7 +52,7 @@ class page_reports_bs_balancesheet extends Page{
 
 		// var_dump($op_balances);
 
-		$prev_transactions_q  = 'select balance_sheet_id, sum(amountDr), sum(amountCr)
+		$prev_transactions_q  = 'select balance_sheet_id, sum(amountDr) DR, sum(amountCr) CR
 								from transaction_row tr 
 								join accounts a on tr.account_id = a.id
 								where tr.created_at < "'.$from_date.'"';
@@ -62,7 +62,7 @@ class page_reports_bs_balancesheet extends Page{
 
 		// var_dump($prev_transactions);
 
-		$curr_trans_q='select balance_sheet_id, sum(amountDr), sum(amountCr)
+		$curr_trans_q='select balance_sheet_id, sum(amountDr) DR, sum(amountCr) CR
 					from transaction_row tr 
 					join accounts a on tr.account_id = a.id
 					where tr.created_at >= "'.$from_date.'" and tr.created_at < "'.$this->app->nextDate($to_date).'"';
@@ -77,30 +77,49 @@ class page_reports_bs_balancesheet extends Page{
 
 		foreach ($this->add('Model_BalanceSheet') as $bs_m) {
 			$data=[];
+			$data['OpeningBalanceDr'] = 0;
+			$data['OpeningBalanceCr'] = 0;
+			$data['PreviousTransactionsDr'] = 0;
+			$data['PreviousTransactionsCr'] = 0;
+			$data['TransactionsDr'] = 0;
+			$data['TransactionsCr'] = 0;
+
 			$data['id']=$bs_m->id;
 			$data['name'] = $bs_m['name'];
 			foreach ($op_balances as $opb) {
 				if($opb['balance_sheet_id']==$bs_m->id){
-					$data['OpeningBalanceDr'] = $opb['sum(OpeningBalanceDr)'];
-					$data['OpeningBalanceCr'] = $opb['sum(OpeningBalanceCr)'];
+					$data['OpeningBalanceDr'] = $opb['DR'];
+					$data['OpeningBalanceCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($prev_transactions as $opb) {
 				if($opb['balance_sheet_id']==$bs_m->id){
-					$data['PreviousTransactionsDr'] = $opb['sum(amountDr)'];
-					$data['PreviousTransactionsCr'] = $opb['sum(amountCr)'];
+					$data['PreviousTransactionsDr'] = $opb['DR'];
+					$data['PreviousTransactionsCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($curr_trans as $opb) {
 				if($opb['balance_sheet_id']==$bs_m->id){
-					$data['TransactionsDr'] = $opb['sum(amountDr)'];
-					$data['TransactionsCr'] = $opb['sum(amountCr)'];
+					$data['TransactionsDr'] = $opb['DR'];
+					$data['TransactionsCr'] = $opb['CR'];
 				}
 			}
 
 			$data['is_pandl'] = $bs_m['is_pandl'];
+			$data['subtract_from'] = $bs_m['subtract_from'];
+			$data['positive_side'] = $bs_m['positive_side'];
+
+			if(!$bs_m['is_pandl']){
+				$data['ClosingBalanceDr'] = $data['OpeningBalanceDr']+$data['PreviousTransactionsDr']+$data['TransactionsDr'];
+				$data['ClosingBalanceCr'] = $data['OpeningBalanceCr']+$data['PreviousTransactionsCr']+$data['TransactionsCr'];
+			}else{
+				$data['ClosingBalanceDr'] = $data['TransactionsDr'];
+				$data['ClosingBalanceCr'] = $data['TransactionsCr'];
+			}
+
+			if($data['ClosingBalanceCr']==0 && $data['ClosingBalanceCr']==0) continue;
 
 			$bs_array [] = $data;
 
@@ -120,12 +139,13 @@ class page_reports_bs_balancesheet extends Page{
 			$dr_sum = $bs['OpeningBalanceDr']+$bs['PreviousTransactionsDr']+$bs['TransactionsDr'];
 			$cr_sum = $bs['OpeningBalanceCr']+$bs['PreviousTransactionsCr']+$bs['TransactionsCr'];
 
-			if($bs['subtract_from']=='CR'){
+			if(strtolower($bs['subtract_from'])=='cr'){
 				$amount  = $cr_sum - $dr_sum;
 			}else{
 				$amount  = $dr_sum - $cr_sum;
 			}
-			if($amount >=0 && $bs['positive_side']=='LT'){
+			// echo $amount. ' -- '. $bs['positive_side'] . ' -- ' . ($amount >=0 && strtolower($bs['positive_side'])=='lt'?'true':'false') . '<br/>';
+			if($amount >=0 && strtolower($bs['positive_side'])=='lt'){
 				$left[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
 				$left_sum += abs($amount);
 			}else{
@@ -166,6 +186,9 @@ class page_reports_bs_balancesheet extends Page{
 			$right[] = ['name'=>'Loss','amount'=>abs($loss)];
 		}
 
+		// var_dump($left);
+		// var_dump($right);
+		// return;
 
 		$grid_l = $view->add('Grid_Template',null,'balancesheet_liablity',['view\grid\balancesheet-liablity']);
 		$grid_l->setSource($left);
@@ -178,6 +201,6 @@ class page_reports_bs_balancesheet extends Page{
 		$view->template->trySet('ltotal',$left_sum);
 		$view->template->trySet('atotal',$right_sum);
 
-  //       $view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('xepan_accounts_bstogroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
+        $view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_bs_bstogroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
 	}
 }

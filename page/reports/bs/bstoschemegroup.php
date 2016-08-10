@@ -97,7 +97,15 @@ class page_reports_bs_bstoschemegroup extends Page{
 				$data['ClosingBalanceCr'] = $data['TransactionsCr'];
 			}
 
-			if($data['ClosingBalanceCr']==0 && $data['ClosingBalanceDr']==0) continue;
+			if(($data['ClosingBalanceCr']==0 && $data['ClosingBalanceDr']==0) || ($data['ClosingBalanceCr']==$data['ClosingBalanceDr'] )) continue;
+
+			if($data['ClosingBalanceCr'] > $data['ClosingBalanceDr']){
+				$data['ClosingBalanceCr'] -= $data['ClosingBalanceDr'];
+				$data['ClosingBalanceDr']=0;
+			}else{
+				$data['ClosingBalanceDr'] -= $data['ClosingBalanceCr'];
+				$data['ClosingBalanceCr']=0;
+			}
 
 			$bs_array [] = $data;
 

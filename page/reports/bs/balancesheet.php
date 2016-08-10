@@ -4,11 +4,17 @@ class page_reports_bs_balancesheet extends Page{
 	function init(){
 		parent::init();
 		
-		$fy=$this->app->getFinancialYear();
+		// $fy=$this->app->getFinancialYear();
 		
-		$from_date = $this->api->stickyGET('from_date')?:$fy['start_date'];
-		$to_date = $this->api->stickyGET('to_date')?:$fy['end_date'];
+		$from_date = $this->api->stickyGET('from_date');
+		$to_date = $this->api->stickyGET('to_date');
 		$branch_id = $this->app->current_branch->id;
+
+		if(!$from_date){
+			$this->add('View')->set('Please select date range');
+			return;
+		}
+
 
 		$f=$this->add('Form',null,null,['form/stacked']);
 		$c=$f->add('Columns')->addClass('row xepan-push');
@@ -21,7 +27,7 @@ class page_reports_bs_balancesheet extends Page{
 		$view = $this->add('View',null,null,['page/balancesheet']);
 
 		if($f->isSubmitted()){
-			return $view->js()->reload(['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0])->execute();
+			return $this->app->redirect($this->app->url(null,['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0]));
 		}
 
 
@@ -144,7 +150,7 @@ class page_reports_bs_balancesheet extends Page{
 			}else{
 				$amount  = $dr_sum - $cr_sum;
 			}
-			// echo $amount. ' -- '. $bs['positive_side'] . ' -- ' . ($amount >=0 && strtolower($bs['positive_side'])=='lt'?'true':'false') . '<br/>';
+			// echo $amount. ' -- '. $bs['positive_side'] . ' -- ' . (($amount >=0 && strtolower($bs['positive_side'])=='lt')?'true':'false') . '<br/>';
 			if($amount >=0 && strtolower($bs['positive_side'])=='lt'){
 				$left[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
 				$left_sum += abs($amount);
@@ -163,13 +169,13 @@ class page_reports_bs_balancesheet extends Page{
 			$dr_sum = $pl['TransactionsDr'];
 			$cr_sum = $pl['TransactionsCr'];
 
-			if($bs['subtract_from']=='CR'){
+			if(strtolower($bs['subtract_from'])=='cr'){
 				$amount  = $cr_sum - $dr_sum;
 			}else{
 				$amount  = $dr_sum - $cr_sum;
 			}
 
-			if($amount >=0 && $pl['positive_side']=='LT'){
+			if($amount >=0 && strtolower($pl['positive_side'])=='lt'){
 				$left_sum += abs($amount);
 				$profit += abs($amount);
 			}else{
@@ -178,7 +184,15 @@ class page_reports_bs_balancesheet extends Page{
 			}
 		}
 
-		if($profit >= 0){
+		if($profit > $loss){
+			$profit -= $loss;
+			$loss=0;
+		}else{
+			$loss -= $profit;
+			$profit=0;
+		}
+
+		if($profit > 0){
 			$left[] = ['name'=>'Profit','amount'=>abs($profit)];	
 		}
 
@@ -200,7 +214,7 @@ class page_reports_bs_balancesheet extends Page{
 
 		$view->template->trySet('ltotal',$left_sum);
 		$view->template->trySet('atotal',$right_sum);
-
+		
         $view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_bs_bstoschemegroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
 	}
 }

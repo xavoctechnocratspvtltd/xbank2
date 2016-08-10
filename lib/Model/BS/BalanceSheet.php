@@ -41,6 +41,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 			// return '"0"';
 			$query = '(select sum(tr.amountDr)
 							from transaction_row tr 
+							join accounts a on tr.account_id=a.id
 							where tr.balance_sheet_id = [0]
 							and tr.created_at < "[1]"
 							';
@@ -53,6 +54,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 		$this->addExpression('PreviousTransactionsCr')->set(function($m,$q){
 			$query = '(select sum(tr.amountCr)
 							from transaction_row tr 
+							join accounts a on tr.account_id=a.id
 							where tr.balance_sheet_id = [0]
 							and tr.created_at < "[1]"
 							';
@@ -67,6 +69,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 		$this->addExpression('TransactionsDr')->set(function($m,$q){
 			$query = '(select sum(tr.amountDr)
 							from transaction_row tr 
+							join accounts a on tr.account_id=a.id
 							where tr.balance_sheet_id = [0]
 							and tr.created_at >= "[1]" and tr.created_at < "[2]"
 							';
@@ -80,6 +83,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 		$this->addExpression('TransactionsCr')->set(function($m,$q){
 			$query = '(select sum(tr.amountCr)
 							from transaction_row tr 
+							join accounts a on tr.account_id=a.id
 							where tr.balance_sheet_id = [0]
 							and tr.created_at >= "[1]" and tr.created_at < "[2]"
 							';

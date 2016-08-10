@@ -43,7 +43,7 @@ class page_reports_bs_balancesheet extends Page{
 
 		*/
 
-		$op_balances_q='select s.balance_sheet_id balance_sheet_id, sum(OpeningBalanceDr) DR, sum(OpeningBalanceCr) CR
+		$op_balances_q='select s.balance_sheet_id id, sum(OpeningBalanceDr) DR, sum(OpeningBalanceCr) CR
 						from accounts a join schemes s on a.scheme_id= s.id';
 		if($branch_id) $op_balances_q .= ' WHERE a.branch_id = ' . $branch_id;
 		$op_balances_q .= ' group by s.balance_sheet_id';
@@ -52,7 +52,7 @@ class page_reports_bs_balancesheet extends Page{
 
 		// var_dump($op_balances);
 
-		$prev_transactions_q  = 'select balance_sheet_id, sum(amountDr) DR, sum(amountCr) CR
+		$prev_transactions_q  = 'select balance_sheet_id id, sum(amountDr) DR, sum(amountCr) CR
 								from transaction_row tr 
 								join accounts a on tr.account_id = a.id
 								where tr.created_at < "'.$from_date.'"';
@@ -62,7 +62,7 @@ class page_reports_bs_balancesheet extends Page{
 
 		// var_dump($prev_transactions);
 
-		$curr_trans_q='select balance_sheet_id, sum(amountDr) DR, sum(amountCr) CR
+		$curr_trans_q='select balance_sheet_id id, sum(amountDr) DR, sum(amountCr) CR
 					from transaction_row tr 
 					join accounts a on tr.account_id = a.id
 					where tr.created_at >= "'.$from_date.'" and tr.created_at < "'.$this->app->nextDate($to_date).'"';
@@ -87,21 +87,21 @@ class page_reports_bs_balancesheet extends Page{
 			$data['id']=$bs_m->id;
 			$data['name'] = $bs_m['name'];
 			foreach ($op_balances as $opb) {
-				if($opb['balance_sheet_id']==$bs_m->id){
+				if($opb['id']==$bs_m->id){
 					$data['OpeningBalanceDr'] = $opb['DR'];
 					$data['OpeningBalanceCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($prev_transactions as $opb) {
-				if($opb['balance_sheet_id']==$bs_m->id){
+				if($opb['id']==$bs_m->id){
 					$data['PreviousTransactionsDr'] = $opb['DR'];
 					$data['PreviousTransactionsCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($curr_trans as $opb) {
-				if($opb['balance_sheet_id']==$bs_m->id){
+				if($opb['id']==$bs_m->id){
 					$data['TransactionsDr'] = $opb['DR'];
 					$data['TransactionsCr'] = $opb['CR'];
 				}

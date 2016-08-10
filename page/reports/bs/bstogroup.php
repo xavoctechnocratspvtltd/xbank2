@@ -11,7 +11,18 @@ class page_reports_bs_bstogroup extends Page{
 		$branch_id = $this->api->stickyGET('branch_id');
 
 
-		$op_balances_q='select a.scheme_id id, sum(OpeningBalanceDr), sum(OpeningBalanceCr)
+		// $st=$this->add('Model_Scheme');
+		// $st->addCondition('balance_sheet_id',$bs_id);
+
+		// foreach ($st as $s) {
+		// 	echo $s['name']. '</br>';
+		// }
+
+		// return;
+
+		// var_dump($this->api->db->dsql()->expr('select * from schemes where balance_sheet_id=2')->get());
+		// exit;
+		$op_balances_q='select a.scheme_id id, sum(IFNULL(OpeningBalanceDr,0)) DR, sum(IFNULL(OpeningBalanceCr,0)) CR
 						from accounts a
 						join schemes s on a.scheme_id = s.id
 						WHERE s.balance_sheet_id = '.$bs_id.'
@@ -23,7 +34,7 @@ class page_reports_bs_bstogroup extends Page{
 
 		// var_dump($op_balances);
 
-		$prev_transactions_q  = 'select a.scheme_id id, sum(amountDr), sum(amountCr)
+		$prev_transactions_q  = 'select a.scheme_id id, sum(IFNULL(amountDr,0)) DR, sum(IFNULL(amountCr,0)) CR
 								from transaction_row tr 
 								join accounts a on tr.account_id = a.id
 								join schemes s on a.scheme_id = s.id
@@ -36,7 +47,7 @@ class page_reports_bs_bstogroup extends Page{
 
 		// var_dump($prev_transactions);
 
-		$curr_trans_q='select a.scheme_id id, sum(amountDr), sum(amountCr)
+		$curr_trans_q='select a.scheme_id id, sum(IFNULL(amountDr,0)) DR, sum(IFNULL(amountCr,0)) CR
 					from transaction_row tr 
 					join accounts a on tr.account_id = a.id
 					join schemes s on a.scheme_id = s.id
@@ -49,9 +60,13 @@ class page_reports_bs_bstogroup extends Page{
 		$curr_trans = $this->api->db->dsql()->expr($curr_trans_q)->get();
 
 		$st=$this->add('Model_Scheme');
+		$st->addCondition('balance_sheet_id',$bs_id);
 		$st->join('balance_sheet','balance_sheet_id')->addField('is_pandl');
 
+		$bs_array=[];
+
 		foreach ($st as $scheme_m) {
+
 			$data=[];
 			$data['OpeningBalanceDr'] = 0;
 			$data['OpeningBalanceCr'] = 0;
@@ -64,24 +79,26 @@ class page_reports_bs_bstogroup extends Page{
 			$data['name'] = $scheme_m['name'];
 			foreach ($op_balances as $opb) {
 				if($opb['id']==$scheme_m->id){
-					$data['OpeningBalanceDr'] = $opb['sum(OpeningBalanceDr)'];
-					$data['OpeningBalanceCr'] = $opb['sum(OpeningBalanceCr)'];
+					$data['OpeningBalanceDr'] = $opb['DR'];
+					$data['OpeningBalanceCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($prev_transactions as $opb) {
-				if($opb['balance_sheet_id']==$scheme_m->id){
-					$data['PreviousTransactionsDr'] = $opb['sum(amountDr)'];
-					$data['PreviousTransactionsCr'] = $opb['sum(amountCr)'];
+				if($opb['id']==$scheme_m->id){
+					$data['PreviousTransactionsDr'] = $opb['DR'];
+					$data['PreviousTransactionsCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($curr_trans as $opb) {
-				if($opb['balance_sheet_id']==$scheme_m->id){
-					$data['TransactionsDr'] = $opb['sum(amountDr)'];
-					$data['TransactionsCr'] = $opb['sum(amountCr)'];
+				if($opb['id']==$scheme_m->id){
+					$data['TransactionsDr'] = $opb['DR'];
+					$data['TransactionsCr'] = $opb['CR'];
 				}
 			}
+
+			// echo $scheme_m['name']. ' -- '.  $scheme_m['is_pandl'] . '<br/>';
 
 			if(!$scheme_m['is_pandl']){
 				$data['ClosingBalanceDr'] = $data['OpeningBalanceDr']+$data['PreviousTransactionsDr']+$data['TransactionsDr'];
@@ -91,7 +108,7 @@ class page_reports_bs_bstogroup extends Page{
 				$data['ClosingBalanceCr'] = $data['TransactionsCr'];
 			}
 
-			if($data['ClosingBalanceCr']==0 && $data['ClosingBalanceCr']==0) continue;
+			if($data['ClosingBalanceCr']==0 && $data['ClosingBalanceDr']==0) continue;
 
 			$bs_array [] = $data;
 

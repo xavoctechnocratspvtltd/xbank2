@@ -1,16 +1,19 @@
 div(id="{$_name}")
-	.row
-		.col-md-6
+	.atk-row.atk-padding
+	.atk-row
+		.atk-col-6
 			{$balancesheet_liablity}
-		.col-md-6 	
+		.atk-col-6
 			{$balancesheet_assets}
-	.row
-		.col-md-6
+	.atk-row.atk-swatch-gray.atk-padding-small
+		.atk-col-6
 			strong Total 
-			span.pull-right {$ltotal}		
-		.col-md-6
-			Strong Total 
-			span.pull-right {$atotal}		
+			strong
+				span.pull-right {$ltotal}		
+		.atk-col-6
+			strong Total 
+			strong
+				span.pull-right {$atotal}		
 style.
 	.atk-cells {
 	  display: table;

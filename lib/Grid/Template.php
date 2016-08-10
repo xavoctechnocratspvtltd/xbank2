@@ -101,7 +101,7 @@ class Grid_Template extends \Grid{
         }
     }
     function render(){
-        $this->js(true)->_load('footable')->_css('libs/footable.core')->find('table')->footable();
+        // $this->js(true)->_load('footable')->_css('libs/footable.core')->find('table')->footable();
         parent::render();
     }
 

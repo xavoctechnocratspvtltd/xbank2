@@ -10,19 +10,19 @@ class page_reports_bs_bstogroup extends Page{
 		$to_date = $this->api->stickyGET('to_date');
 		$branch_id = $this->api->stickyGET('branch_id');
 
-		$op_balances_q='select a.SchemeGroup id, sum(IFNULL(OpeningBalanceDr,0)) DR, sum(IFNULL(OpeningBalanceCr,0)) CR
+		$op_balances_q='select s.SchemeGroup id, sum(IFNULL(OpeningBalanceDr,0)) DR, sum(IFNULL(OpeningBalanceCr,0)) CR
 						from accounts a
 						join schemes s on a.scheme_id = s.id
 						WHERE s.balance_sheet_id = '.$bs_id.'
 						';
 		if($branch_id) $op_balances_q .= ' AND a.branch_id = ' . $branch_id;
-		$op_balances_q .= ' group by a.SchemeGroup';
+		$op_balances_q .= ' group by s.SchemeGroup';
 
 		$op_balances = $this->api->db->dsql()->expr($op_balances_q)->get();
 
 		// var_dump($op_balances);
 
-		$prev_transactions_q  = 'select a.SchemeGroup id, sum(IFNULL(amountDr,0)) DR, sum(IFNULL(amountCr,0)) CR
+		$prev_transactions_q  = 'select s.SchemeGroup id, sum(IFNULL(amountDr,0)) DR, sum(IFNULL(amountCr,0)) CR
 								from transaction_row tr 
 								join accounts a on tr.account_id = a.id
 								join schemes s on a.scheme_id = s.id
@@ -30,12 +30,12 @@ class page_reports_bs_bstogroup extends Page{
 								and s.balance_sheet_id = '.$bs_id.'
 								';
 		if($branch_id) $prev_transactions_q .= ' and a.branch_id = ' . $branch_id;
-		$prev_transactions_q .=	' group by a.SchemeGroup';
+		$prev_transactions_q .=	' group by s.SchemeGroup';
 		$prev_transactions = $this->api->db->dsql()->expr($prev_transactions_q)->get();
 
 		// var_dump($prev_transactions);
 
-		$curr_trans_q='select a.SchemeGroup id, sum(IFNULL(amountDr,0)) DR, sum(IFNULL(amountCr,0)) CR
+		$curr_trans_q='select s.SchemeGroup id, sum(IFNULL(amountDr,0)) DR, sum(IFNULL(amountCr,0)) CR
 					from transaction_row tr 
 					join accounts a on tr.account_id = a.id
 					join schemes s on a.scheme_id = s.id
@@ -43,13 +43,14 @@ class page_reports_bs_bstogroup extends Page{
 					and s.balance_sheet_id = '.$bs_id.'
 					';
 		if($branch_id) $curr_trans_q .= ' and a.branch_id = ' . $branch_id;
-		$curr_trans_q.=' group by a.SchemeGroup';
+		$curr_trans_q.=' group by s.SchemeGroup';
 		
 		$curr_trans = $this->api->db->dsql()->expr($curr_trans_q)->get();
 
 		$st=$this->add('Model_Scheme');
 		$st->addCondition('balance_sheet_id',$bs_id);
 		$st->join('balance_sheet','balance_sheet_id')->addField('is_pandl');
+		$st->_dsql()->group('SchemeGroup');
 
 		$bs_array=[];
 
@@ -64,23 +65,23 @@ class page_reports_bs_bstogroup extends Page{
 			$data['TransactionsCr'] = 0;
 
 			$data['id']=$scheme_m->id;
-			$data['name'] = $scheme_m['name'];
+			$data['name'] = $scheme_m['SchemeGroup'];
 			foreach ($op_balances as $opb) {
-				if($opb['id']==$scheme_m->id){
+				if($opb['id']==$scheme_m['SchemeGroup']){
 					$data['OpeningBalanceDr'] = $opb['DR'];
 					$data['OpeningBalanceCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($prev_transactions as $opb) {
-				if($opb['id']==$scheme_m->id){
+				if($opb['id']==$scheme_m['SchemeGroup']){
 					$data['PreviousTransactionsDr'] = $opb['DR'];
 					$data['PreviousTransactionsCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($curr_trans as $opb) {
-				if($opb['id']==$scheme_m->id){
+				if($opb['id']==$scheme_m['SchemeGroup']){
 					$data['TransactionsDr'] = $opb['DR'];
 					$data['TransactionsCr'] = $opb['CR'];
 				}

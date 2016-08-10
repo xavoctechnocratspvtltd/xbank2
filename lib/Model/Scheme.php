@@ -54,6 +54,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('ReducingOrFlatRate')->caption('Interest Type')->enum(array('Flat','Reducing'))->defaultValue('Flat');
 
 		$this->hasMany('Account','scheme_id');
+		$this->hasMany('TransactionRow','transaction_row_id');
 
 		$this->addExpression('total_accounts')->set($this->refSQL('Account')->count())->caption('Accounts')->sortable(true);
 		$this->addExpression('total_active_accounts')->set($this->refSQL('Account')->addCondition('ActiveStatus',true)->count())->caption('Active Accounts')->sortable(true);
@@ -61,6 +62,7 @@ class Model_Scheme extends Model_Table {
 
 		$this->addHook('editing',array($this,'defaultEditing'));
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
+		$this->addHook('beforeSave',array($this,'updateTransactionRows'));
 		$this->addHook('afterInsert',array($this,'defaultAfterInsert'));
 		$this->addHook('beforeDelete',array($this,'defaultBeforeDelete'));
 
@@ -72,6 +74,18 @@ class Model_Scheme extends Model_Table {
 
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function updateTransactionRows(){
+		if($this->isDirty($balance_sheet_id)){
+			$old = $this->add('Model_Scheme')->load($this->id);
+			$tr = $this->add('Model_TransactionRow');
+			$tr->addCondition('account_id',$old['balance_sheet_id']);
+			$tr->addCondition('scheme_id',$this->id);
+
+			$tr->set('balance_sheet_id',$this['balance_sheet_id']);
+			$tr->_dsql()->update();
+		}
 	}
 
 	function defaultEditing(){

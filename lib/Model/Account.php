@@ -124,11 +124,25 @@ class Model_Account extends Model_Table {
 		$this->hasMany('Comment','account_id');
 
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
+		$this->addHook('beforeSave',array($this,'updateTransactionRows'));
 		$this->addHook('beforeDelete',array($this,'defaultBeforeDelete'));
 		$this->addHook('editing',array($this,'editing_default'));
 
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function updateTransactionRows(){
+		if($this->isDirty($scheme_id)){
+			$old = $this->add('Model_Account')->load($this->id);
+			$tr = $this->add('Model_TransactionRow');
+			$tr->addCondition('account_id',$this->id);
+			$tr->addCondition('scheme_id',$old['schedme_id']);
+
+			$tr->set('scheme_id',$this['scheme_id']);
+			$tr->_dsql()->update();
+		}
+
 	}
 
 	function editing_default(){

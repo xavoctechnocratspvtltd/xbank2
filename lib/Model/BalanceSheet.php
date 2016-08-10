@@ -12,7 +12,6 @@ class Model_BalanceSheet extends Model_Table {
 		$this->addField('order');
 
 		$this->addHook('beforeDelete',$this);
-		$this->addHook('beforeSave',$this);
 
 		$this->hasMany('Scheme','balance_sheet_id');
 		$this->hasMany('TransactionRow','transaction_row_id');

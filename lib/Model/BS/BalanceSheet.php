@@ -24,7 +24,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 		});
 
 		$this->addExpression('PreviousTransactionsDr')->set(function($m,$q){
-			// return '"0"';
+			return '"0"';
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
@@ -32,7 +32,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountDr')]));
 		});
 		$this->addExpression('PreviousTransactionsCr')->set(function($m,$q){
-			// return '"0"';
+			return '"0"';
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
@@ -41,7 +41,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 		});
 
 		$this->addExpression('TransactionsDr')->set(function($m,$q){
-			// return '"0"';
+			return '"0"';
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))
@@ -50,7 +50,7 @@ class Model_BS_BalanceSheet extends Model_BalanceSheet{
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountDr')]));
 		});
 		$this->addExpression('TransactionsCr')->set(function($m,$q){
-			// return '"0"';
+			return '"0"';
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('balance_sheet_id',$q->getField('id'))

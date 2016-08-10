@@ -25,6 +25,7 @@ class Model_BS_scheme extends Model_Scheme{
 		});
 
 		$this->addExpression('PreviousTransactionsDr')->set(function($m,$q){
+			return "'0'";
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('scheme_id',$q->getField('id'))
@@ -32,6 +33,7 @@ class Model_BS_scheme extends Model_Scheme{
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountDr')]));
 		});
 		$this->addExpression('PreviousTransactionsCr')->set(function($m,$q){
+			return "'0'";
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			return $transaction->addCondition('scheme_id',$q->getField('id'))
 								->addCondition('created_at','<',$this->from_date)
@@ -39,6 +41,7 @@ class Model_BS_scheme extends Model_Scheme{
 		});
 
 		$this->addExpression('TransactionsDr')->set(function($m,$q){
+			return "'0'";
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('scheme_id',$q->getField('id'))
@@ -47,6 +50,7 @@ class Model_BS_scheme extends Model_Scheme{
 								->sum($q->expr('IFNULL([0],0)',[$transaction->getElement('amountDr')]));
 		});
 		$this->addExpression('TransactionsCr')->set(function($m,$q){
+			return "'0'";
 			$transaction =  $m->add('Model_BS_TransactionRow');
 			if($this->branch_id) $transaction->addCondition('branch_id',$this->branch_id);
 			return $transaction->addCondition('scheme_id',$q->getField('id'))

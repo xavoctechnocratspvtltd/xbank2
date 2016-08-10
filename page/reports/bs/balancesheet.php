@@ -15,7 +15,7 @@ class page_reports_bs_balancesheet extends Page{
 		$r=$c->addColumn(6)->addClass('col-md-6');
 		$l->addField('DatePicker','from_date')->set($from_date);
 		$r->addField('DatePicker','to_date')->set($to_date);
-		$f->addSubmit('Filter');
+		$f->addSubmit('Filter')->addClass('atk-swatch-gray atk-button-small btn-block atk-padding-small');
 
 		$view = $this->add('View',null,null,['page/balancesheet']);
 
@@ -50,7 +50,7 @@ class page_reports_bs_balancesheet extends Page{
 		// Add P&L
 		$profit = 0;
 		$loss = 0;
-		$pandl = $view->add('xepan\accounts\Model_BS_BalanceSheet',['from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date']]);
+		$pandl = $view->add('Model_BS_BalanceSheet',['from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date']]);
 		$pandl->addCondition('is_pandl',true);
 
 		foreach ($pandl as $pl) {
@@ -77,17 +77,17 @@ class page_reports_bs_balancesheet extends Page{
 		}
 
 
-		$grid_l = $view->add('Grid',null,'balancesheet_liablity',['view\grid\balancesheet-liablity']);
+		$grid_l = $view->add('Grid_Template',null,'balancesheet_liablity',['view\grid\balancesheet-liablity']);
 		$grid_l->setSource($left);
 		$grid_l->template->trySet('lheading','Liablities');
 		
-		$grid_a = $view->add('xepan\hr\Grid',null,'balancesheet_assets',['view\grid\balancesheet-assets']);
+		$grid_a = $view->add('Grid_Template',null,'balancesheet_assets',['view\grid\balancesheet-assets']);
 		$grid_a->template->trySet('rheading','Assets');
 		$grid_a->setSource($right);
 
 		$view->template->trySet('ltotal',$left_sum);
 		$view->template->trySet('atotal',$right_sum);
 
-  //       $view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('xepan_accounts_bstogroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
+        $view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('bstogroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
 	}
 }

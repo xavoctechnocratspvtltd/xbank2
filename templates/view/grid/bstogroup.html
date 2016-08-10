@@ -1,0 +1,41 @@
+
+<div id="{$_name}" class="xepan-grid main-box clearfix atk-table atk-table-zebra atk-table-bordered {$class}">{Pannel}
+  <header class="main-box-header clearfix atk-actions  {$class} ">
+    <div class="row atk-padding atk-swatch-gray">
+      <div class="col-md-4"><strong>BalanceSheet Head : </strong><span>{$head} </span></div>
+      <div class="col-md-4"><strong>From Date : </strong><span>{$from_date} </span></div>
+      <div class="col-md-4"><strong>To Date : </strong><span>{$to_date} </span></div>
+    </div>
+    <div style="100%" class="filter-block">
+      <div class="pull-right">{$grid_buttons} </div>
+    </div>
+  </header>{/Pannel}
+  <div class="main-box-body clearfix table">
+    <table style="width:100%" class="atk-table atk-table-bordered">{header}
+      <thead>{cols}{col}
+        <th><span>Group Name  </span></th>
+        <th><span>Amount DR  </span></th>
+        <th><span>Amount CR</span></th>{/}{/}
+      </thead>{/}
+      {$subheader}
+      <tbody>{rows}{row}
+        <tr data-id="{$id}" class="{$odd_even}">{cols}
+          <td><span data-id="{$id}" style="cursor:pointer; cursor: hand; max-width:600px;" class="xepan-accounts-bs-subgroup">{$name}</span></td>
+          <td><span>{$ClosingBalanceDr}                          </span></td>
+          <td><span>{$ClosingBalanceCr}                      	  </span></td>{/}
+        </tr>{/}{/}
+        {not_found}
+        <div class="row">
+          <div role="alert" class="col-md-12 text-center alert alert-warning"><span class="icon-attention fa fa-exclamation-triangle"> &nbsp;{$not_found_message}</span></div>
+        </div>{/}
+      </tbody>{totals}
+      <tfoot>
+        <tr class="totals">{cols}
+          <td> </td>
+          <td>{$ClosingBalanceDr}</td>
+          <td>{$ClosingBalanceCr}</td>{/}{/}
+        </tr>
+      </tfoot>{/}
+    </table>{$Paginator} 
+  </div>
+</div>

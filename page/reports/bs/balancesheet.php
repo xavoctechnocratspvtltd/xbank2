@@ -193,16 +193,14 @@ class page_reports_bs_balancesheet extends Page{
 		}
 
 		if($profit > 0){
-			$left[] = ['name'=>'Profit','amount'=>abs($profit)];	
+			$left[] = ['name'=>'Profit','amount'=>abs($profit),'id'=>'profit'];	
 		}
 
 		if($loss > 0){
-			$right[] = ['name'=>'Loss','amount'=>abs($loss)];
+			$right[] = ['name'=>'Loss','amount'=>abs($loss),'id'=>'loss'];
 		}
 
 		// var_dump($left);
-		// var_dump($right);
-		// return;
 
 		$grid_l = $view->add('Grid_Template',null,'balancesheet_liablity',['view\grid\balancesheet-liablity']);
 		$grid_l->setSource($left);

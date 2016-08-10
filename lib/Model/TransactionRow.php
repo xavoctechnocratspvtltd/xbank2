@@ -7,10 +7,14 @@ class Model_TransactionRow extends Model_Table {
 
 		$this->hasOne('Transaction','transaction_id');
 		$this->hasOne('Account','account_id');
+		$this->hasOne('Scheme','transaction_row_id');
+		$this->hasOne('BalanceSheet','transaction_row_id');
+		
 		$this->addField('amountDr')->caption('Debit')->type('money');
 		$this->addField('amountCr')->caption('Credit')->type('money');
 		$this->addField('side');
 		$this->addField('accounts_in_side')->type('int');
+
 
 		$this->transaction_join = $join_transaction = $this->leftJoin('transactions','transaction_id');
 		$join_transaction->addField('voucher_no');

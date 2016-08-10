@@ -1,0 +1,32 @@
+
+<div id="{$_name}">
+  <div class="row">
+    <div class="col-md-6">{$balancesheet_liablity}</div>
+    <div class="col-md-6">
+      	
+      {$balancesheet_assets}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6"><strong>Total </strong><span class="pull-right">{$ltotal}		</span></div>
+    <div class="col-md-6">
+      <Strong>Total </Strong><span class="pull-right">{$atotal}		</span>
+    </div>
+  </div>
+</div>
+<style>
+  .atk-cells {
+    display: table;
+    width: 100%;
+  }
+  .atk-cells > .atk-cell {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .atk-cells.atk-cells-justified {
+    table-layout: fixed;
+  }
+  .atk-cells[class*=atk-move] {
+    width: auto;
+  }
+</style>

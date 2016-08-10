@@ -1,0 +1,28 @@
+div(id="{$_name}")
+	.row
+		.col-md-6
+			{$balancesheet_liablity}
+		.col-md-6 	
+			{$balancesheet_assets}
+	.row
+		.col-md-6
+			strong Total 
+			span.pull-right {$ltotal}		
+		.col-md-6
+			Strong Total 
+			span.pull-right {$atotal}		
+style.
+	.atk-cells {
+	  display: table;
+	  width: 100%;
+	}
+	.atk-cells > .atk-cell {
+	  display: table-cell;
+	  vertical-align: middle;
+	}
+	.atk-cells.atk-cells-justified {
+	  table-layout: fixed;
+	}
+	.atk-cells[class*=atk-move] {
+	  width: auto;
+	}

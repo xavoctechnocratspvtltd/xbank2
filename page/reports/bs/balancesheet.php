@@ -3,7 +3,7 @@ class page_reports_bs_balancesheet extends Page{
 	public $title="Balance Sheet";
 	function init(){
 		parent::init();
-
+		
 		$fy=$this->app->getFinancialYear();
 		
 		$from_date = $this->api->stickyGET('from_date')?:$fy['start_date'];
@@ -23,8 +23,7 @@ class page_reports_bs_balancesheet extends Page{
 			return $view->js()->reload(['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0])->execute();
 		}
 
-		$bsbalancesheet = $view->add('Model_BS_BalanceSheet',['from_date'=>$from_date,'to_date'=>$to_date]);
-		$bsbalancesheet->addCondition('is_pandl',false);
+
 
 		$left=[];
 		$right=[];
@@ -32,39 +31,48 @@ class page_reports_bs_balancesheet extends Page{
 		$left_sum=0;
 		$right_sum=0;
 
-		foreach ($bsbalancesheet as $bs) {
-			if($bs['subtract_from']=='CR'){
-				$amount  = $bs['ClosingBalanceCr'] - $bs['ClosingBalanceDr'];
-			}else{
-				$amount  = $bs['ClosingBalanceDr'] - $bs['ClosingBalanceCr'];
-			}
-			if($amount >=0 && $bs['positive_side']=='LT'){
-				$left[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
-				$left_sum += abs($amount);
-			}else{
-				$right[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
-				$right_sum += abs($amount);
+		foreach ($this->add('Model_BalanceSheet')->addCondition('is_pandl',false) as $bs) {
+			
+			$bsbalancesheet = $this->add('Model_BS_BalanceSheet',['balance_sheet_id'=>$bs->id,'from_date'=>$from_date,'to_date'=>$to_date]);
+
+			foreach ($bsbalancesheet as $bs) {
+				if($bs['subtract_from']=='CR'){
+					$amount  = $bs['ClosingBalanceCr'] - $bs['ClosingBalanceDr'];
+				}else{
+					$amount  = $bs['ClosingBalanceDr'] - $bs['ClosingBalanceCr'];
+				}
+				if($amount >=0 && $bs['positive_side']=='LT'){
+					$left[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
+					$left_sum += abs($amount);
+				}else{
+					$right[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
+					$right_sum += abs($amount);
+				}
 			}
 		}
 
 		// Add P&L
 		$profit = 0;
 		$loss = 0;
-		$pandl = $view->add('xepan\accounts\Model_BS_BalanceSheet',['from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date']]);
-		$pandl->addCondition('is_pandl',true);
 
-		foreach ($pandl as $pl) {
-			if($pl['subtract_from']=='CR'){
-				$amount  = $pl['ClosingBalanceCr'] - $pl['ClosingBalanceDr'];
-			}else{
-				$amount  = $pl['ClosingBalanceDr'] - $pl['ClosingBalanceCr'];
-			}
-			if($amount >=0 && $pl['positive_side']=='LT'){
-				$left_sum += abs($amount);
-				$profit += abs($amount);
-			}else{
-				$right_sum += abs($amount);
-				$loss += abs($amount);
+		foreach ($this->add('Model_BalanceSheet')->addCondition('is_pandl',true) as $bs) {
+
+			$pandl = $view->add('Model_BS_BalanceSheet',['balance_sheet_id'=>$bs->id,'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date']]);
+			$pandl->addCondition('is_pandl',true);
+
+			foreach ($pandl as $pl) {
+				if($pl['subtract_from']=='CR'){
+					$amount  = $pl['ClosingBalanceCr'] - $pl['ClosingBalanceDr'];
+				}else{
+					$amount  = $pl['ClosingBalanceDr'] - $pl['ClosingBalanceCr'];
+				}
+				if($amount >=0 && $pl['positive_side']=='LT'){
+					$left_sum += abs($amount);
+					$profit += abs($amount);
+				}else{
+					$right_sum += abs($amount);
+					$loss += abs($amount);
+				}
 			}
 		}
 
@@ -77,11 +85,11 @@ class page_reports_bs_balancesheet extends Page{
 		}
 
 
-		$grid_l = $view->add('Grid',null,'balancesheet_liablity',['view\grid\balancesheet-liablity']);
+		$grid_l = $view->add('Grid_Template',null,'balancesheet_liablity',['view\grid\balancesheet-liablity']);
 		$grid_l->setSource($left);
 		$grid_l->template->trySet('lheading','Liablities');
 		
-		$grid_a = $view->add('xepan\hr\Grid',null,'balancesheet_assets',['view\grid\balancesheet-assets']);
+		$grid_a = $view->add('Grid_Template',null,'balancesheet_assets',['view\grid\balancesheet-assets']);
 		$grid_a->template->trySet('rheading','Assets');
 		$grid_a->setSource($right);
 

@@ -134,7 +134,7 @@ class Model_Account extends Model_Table {
 	}
 
 	function updateTransactionRows(){
-		if($this->isDirty($scheme_id)){
+		if($this->isDirty($this['scheme_id'])){
 			$old = $this->add('Model_Account')->load($this->id);
 			$tr = $this->add('Model_TransactionRow');
 			$tr->addCondition('account_id',$this->id);

@@ -55,6 +55,8 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 		$acc->addCondition('balance_sheet_id',$bs_id);
 		$acc->_dsql()->group('PAndLGroup');
 
+		$total_dr = 0; 
+		$total_cr = 0; 
 		$bs_array=[];
 
 		foreach ($acc as $ac) {
@@ -111,14 +113,15 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 			}
 
 			$bs_array [] = $data;
-
+			$total_dr += $data['ClosingBalanceDr'];
+			$total_cr += $data['ClosingBalanceCr'];
 		}
 
 
 		// $bs_group = $this->add('Model_BS_Scheme',['from_date'=>$from_date,'to_date'=>$to_date]);
 		// $bs_group->addCondition('balance_sheet_id',$bs_id);
 
-		$grid = $this->add('Grid_Template',null,null,['view\grid\bstogroup']);
+		$grid = $this->add('Grid_Template',null,'grid',['view\grid\bstogroup']);
 		$grid->setSource($bs_array);
 
 		$bs = $this->add('Model_BalanceSheet')->load($bs_id);
@@ -126,10 +129,17 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 		$grid->template->trySet('from_date',$from_date);
 		$grid->template->trySet('to_date',$to_date);
 
+		$this->template->trySet('dr_total',$total_dr);
+		$this->template->trySet('cr_total',$total_cr);
+
 		// $grid->addTotals(['ClosingBalanceDr','ClosingBalanceCr']);
         if($branch_id)
         	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Groups And Ledger',[$this->api->url('reports_pandl_pandlgrouptoaccounts'),'pandl_group'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
 		else
         	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Groups And Ledger',[$this->api->url('reports_pandl_pandlgrouptoaccounts'),'pandl_group'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
+	}
+
+	function defaultTemplate(){
+		return['page\bstoscheme'];
 	}
 }

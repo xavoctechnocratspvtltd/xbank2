@@ -68,6 +68,7 @@ class Model_Account extends Model_Table {
 		$this->scheme_join = $this->leftJoin('schemes','scheme_id');
 		$this->scheme_join->addField('SchemeType');
 		$this->scheme_join->addField('scheme_name','name');
+		$this->scheme_join->addField('balance_sheet_id');
 
 		$doc_field = $this->add('filestore/Field_Image','doc_image_id')->type('image')->mandatory(true);
 		$sig_field = $this->add('filestore/Field_Image','sig_image_id')->type('image')->mandatory(true);
@@ -214,6 +215,8 @@ class Model_Account extends Model_Table {
 		$transaction_row['side']='DR';
 		$transaction_row['transaction_id']=$transaction_id;
 		$transaction_row['account_id']=$this->id;
+		$transaction_row['scheme_id']=$this['scheme_id'];
+		$transaction_row['balance_sheet_id']=$this['balance_sheet_id'];
 		// $transaction_row['accounts_in_side']=$no_of_accounts_in_side;
 		$transaction_row->save();
 
@@ -229,6 +232,8 @@ class Model_Account extends Model_Table {
 		$transaction_row['side']='CR';
 		$transaction_row['transaction_id']=$transaction_id;
 		$transaction_row['account_id']=$this->id;
+		$transaction_row['scheme_id']=$this['scheme_id'];
+		$transaction_row['balance_sheet_id']=$this['balance_sheet_id'];
 		// $transaction_row['accounts_in_side']=$no_of_accounts_in_side;
 		$transaction_row->save();
 

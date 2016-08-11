@@ -10,7 +10,6 @@ class page_reports_bs_balancesheet extends Page{
 		$to_date = $this->api->stickyGET('to_date');
 		$branch_id = $this->app->current_branch->id == 1 ? null:$this->app->current_branch->id;
 
-
 		$f=$this->add('Form',null,null,['form/stacked']);
 		$c=$f->add('Columns')->addClass('row xepan-push');
 		$l=$c->addColumn(6)->addClass('col-md-6');
@@ -212,6 +211,9 @@ class page_reports_bs_balancesheet extends Page{
 		$view->template->trySet('ltotal',$left_sum);
 		$view->template->trySet('atotal',$right_sum);
 		
-        $view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_bs_bstoschemegroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
+		if($branch_id)
+        	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_bs_bstoschemegroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
+        else
+        	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_bs_bstoschemegroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
 	}
 }

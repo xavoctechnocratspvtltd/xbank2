@@ -10,11 +10,6 @@ class page_reports_bs_balancesheet extends Page{
 		$to_date = $this->api->stickyGET('to_date');
 		$branch_id = $this->app->current_branch->id;
 
-		if(!$from_date){
-			$this->add('View')->set('Please select date range');
-			return;
-		}
-
 
 		$f=$this->add('Form',null,null,['form/stacked']);
 		$c=$f->add('Columns')->addClass('row xepan-push');
@@ -30,7 +25,11 @@ class page_reports_bs_balancesheet extends Page{
 			return $this->app->redirect($this->app->url(null,['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0]));
 		}
 
-
+		if(!$from_date){
+			$this->add('View')->set('Please select date range');
+			return;
+		}
+		
 		/*
 	
 		select balance_sheet_id, sum(amountDr), sum(amountCr)

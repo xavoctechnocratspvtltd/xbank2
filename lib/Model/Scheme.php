@@ -77,7 +77,7 @@ class Model_Scheme extends Model_Table {
 	}
 
 	function updateTransactionRows(){
-		if($this->isDirty($this['balance_sheet_id'])){
+		if($this->isDirty('balance_sheet_id')){
 			$old = $this->add('Model_Scheme')->load($this->id);
 			$tr = $this->add('Model_TransactionRow');
 			$tr->addCondition('account_id',$old['balance_sheet_id']);

@@ -8,7 +8,7 @@ class page_reports_bs_balancesheet extends Page{
 		
 		$from_date = $this->api->stickyGET('from_date');
 		$to_date = $this->api->stickyGET('to_date');
-		$branch_id = $this->app->current_branch->id;
+		$branch_id = $this->app->current_branch->id == 1 ? null:$this->app->current_branch->id;
 
 
 		$f=$this->add('Form',null,null,['form/stacked']);
@@ -29,7 +29,7 @@ class page_reports_bs_balancesheet extends Page{
 			$this->add('View')->set('Please select date range');
 			return;
 		}
-		
+
 		/*
 	
 		select balance_sheet_id, sum(amountDr), sum(amountCr)

@@ -159,32 +159,12 @@ class page_reports_bs_pandl extends Page{
 		$gross_profit = 0;
 		$gross_loss = 0;
 
-		foreach ($bs_array as $pl) {
-			if(!$pl['is_pandl']) continue;
-			$dr_sum = $pl['TransactionsDr'];
-			$cr_sum = $pl['TransactionsCr'];
-
-			if(strtolower($bs['subtract_from'])=='cr'){
-				$amount  = $cr_sum - $dr_sum;
-			}else{
-				$amount  = $dr_sum - $cr_sum;
-			}
-
-			if($amount >=0 && strtolower($pl['positive_side'])=='lt'){
-				$left_sum += abs($amount);
-				$gross_profit += abs($amount);
-			}else{
-				$right_sum += abs($amount);
-				$gross_loss += abs($amount);
-			}
-		}
-
-		if($gross_profit > $gross_loss){
-			$gross_profit -= $gross_loss;
-			$gross_loss=0;
+		if($left_sum > $right_sum ){
+			$gross_loss = $left_sum - $right_sum;
+			$right_sum += $gross_loss;
 		}else{
-			$gross_loss -= $gross_profit;
-			$gross_profit=0;
+			$gross_profit = $right_sum - $left_sum;
+			$left_sum += $gross_profit;
 		}
 
 		if($gross_profit > 0){

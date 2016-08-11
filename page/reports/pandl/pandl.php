@@ -1,6 +1,8 @@
 <?php
-class page_reports_bs_pandl extends Page{
+class page_reports_pandl_pandl extends Page{
+	
 	public $title="Profit And Loss";
+	
 	function init(){
 		parent::init();
 		
@@ -115,7 +117,10 @@ class page_reports_bs_pandl extends Page{
 			$data['subtract_from'] = $bs_m['subtract_from'];
 			$data['positive_side'] = $bs_m['positive_side'];
 
-			if($bs_m['is_pandl']){
+			if(!$bs_m['is_pandl']){
+				$data['ClosingBalanceDr'] = $data['OpeningBalanceDr']+$data['PreviousTransactionsDr']+$data['TransactionsDr'];
+				$data['ClosingBalanceCr'] = $data['OpeningBalanceCr']+$data['PreviousTransactionsCr']+$data['TransactionsCr'];
+			}else{
 				$data['ClosingBalanceDr'] = $data['TransactionsDr'];
 				$data['ClosingBalanceCr'] = $data['TransactionsCr'];
 			}
@@ -137,8 +142,8 @@ class page_reports_bs_pandl extends Page{
 		foreach ($bs_array as $bs) {
 			if(!$bs['is_pandl']) continue;
 
-			$dr_sum = $bs['OpeningBalanceDr']+$bs['PreviousTransactionsDr']+$bs['TransactionsDr'];
-			$cr_sum = $bs['OpeningBalanceCr']+$bs['PreviousTransactionsCr']+$bs['TransactionsCr'];
+			$dr_sum = $bs['TransactionsDr'];
+			$cr_sum = $bs['TransactionsCr'];
 
 			if(strtolower($bs['subtract_from'])=='cr'){
 				$amount  = $cr_sum - $dr_sum;
@@ -189,8 +194,8 @@ class page_reports_bs_pandl extends Page{
 		$view->template->trySet('atotal',$right_sum);
 		
 		if($branch_id)
-        	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_bs_bstoschemegroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
+        	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_pandl_pandltopandlgroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
         else
-        	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_bs_bstoschemegroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
+        	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_pandl_pandltopandlgroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
 	}
 }

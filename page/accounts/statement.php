@@ -4,7 +4,7 @@ class page_accounts_statement extends Page {
 
 	function init(){
 		parent::init();	
-
+		
 		echo $_GET['from_date'].'<br>';
 		echo $_GET['to_date'].'<br>';
 		echo $_GET['AccountNumber'].'<br>';

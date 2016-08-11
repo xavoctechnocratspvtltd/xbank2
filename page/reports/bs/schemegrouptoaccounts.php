@@ -128,7 +128,9 @@ class page_reports_bs_schemegrouptoaccounts extends Page{
 		$grid->template->trySet('to_date',$to_date);
 
 		// $grid->addTotals(['ClosingBalanceDr','ClosingBalanceCr']);
-        $this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Account',[$this->api->url('accounts_statement'),'AccountNumber'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id',$branch_id]);
-
+        if($branch_id)
+        	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Account',[$this->api->url('accounts_statement'),'AccountNumber'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id',$branch_id]);
+        else
+        	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Account',[$this->api->url('accounts_statement'),'AccountNumber'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
 	}
 }

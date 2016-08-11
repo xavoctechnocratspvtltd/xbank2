@@ -185,19 +185,15 @@ class page_reports_bs_balancesheet extends Page{
 
 			if($amount >=0){
 				if(strtolower($pl['positive_side'])=='lt'){
-					$left_sum += abs($amount);
-					$profit += abs($amount);
-				}else{
-					$right_sum += abs($amount);
 					$loss += abs($amount);
+				}else{
+					$profit += abs($amount);
 				}
 			}else{
 				if(strtolower($pl['positive_side'])=='rt'){
-					$left_sum += abs($amount);
-					$loss += abs($amount);
-				}else{
-					$right_sum += abs($amount);
 					$profit += abs($amount);
+				}else{
+					$loss += abs($amount);
 				}
 			}
 		}
@@ -205,9 +201,11 @@ class page_reports_bs_balancesheet extends Page{
 		if($profit > $loss){
 			$profit -= $loss;
 			$loss=0;
+			$left_sum += abs($profit);
 		}else{
 			$loss -= $profit;
 			$profit=0;
+			$right_sum += abs($loss);
 		}
 
 		if($profit > 0){

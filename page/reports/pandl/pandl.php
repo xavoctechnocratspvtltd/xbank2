@@ -23,7 +23,7 @@ class page_reports_pandl_pandl extends Page{
 		$view = $this->add('View',null,null,['page/balancesheet']);
 
 		if($f->isSubmitted()){
-			return $this->app->redirect($this->app->url(null,['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0]));
+			$view->js()->reload(['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0])->execute();
 		}
 
 		if(!$from_date){

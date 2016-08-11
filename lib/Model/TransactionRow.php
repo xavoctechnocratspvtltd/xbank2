@@ -7,8 +7,8 @@ class Model_TransactionRow extends Model_Table {
 
 		$this->hasOne('Transaction','transaction_id');
 		$this->hasOne('Account','account_id');
-		$this->hasOne('Scheme','transaction_row_id');
-		$this->hasOne('BalanceSheet','transaction_row_id');
+		$this->hasOne('Scheme','scheme_id');
+		$this->hasOne('BalanceSheet','balance_sheet_id');
 		
 		$this->addField('amountDr')->caption('Debit')->type('money');
 		$this->addField('amountCr')->caption('Credit')->type('money');

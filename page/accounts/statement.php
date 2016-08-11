@@ -3,8 +3,13 @@ class page_accounts_statement extends Page {
 	public $title = "Account Statement";
 
 	function init(){
-		parent::init();
-		
+		parent::init();	
+
+		echo $_GET['from_date'].'<br>';
+		echo $_GET['to_date'].'<br>';
+		echo $_GET['AccountNumber'].'<br>';
+		echo $_GET['branch_id'].'<br>';
+		return;
 		$this->add('Controller_Acl');
 
 		$form=$this->add('Form')->addClass('noneprintalbe');
@@ -28,7 +33,6 @@ class page_accounts_statement extends Page {
 		}else{
 			$t_from_date=date('Y-m-d',strtotime($title_model['created_at']));
 		}
-
 		$grid->add('View',null,'grid_buttons')->setHtml('<div style="text-align:center;font-size:20px">'.$title_acc_name.' <br> <small >From Date - '.$t_from_date." - " . "   To Date - ".($_GET['to_date']?:$this->api->today."</small></div>"));
 		$transactions = $this->add('Model_TransactionRow');
 

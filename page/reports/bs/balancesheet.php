@@ -149,12 +149,22 @@ class page_reports_bs_balancesheet extends Page{
 				$amount  = $dr_sum - $cr_sum;
 			}
 			// echo $amount. ' -- '. $bs['positive_side'] . ' -- ' . (($amount >=0 && strtolower($bs['positive_side'])=='lt')?'true':'false') . '<br/>';
-			if($amount >=0 && strtolower($bs['positive_side'])=='lt'){
-				$left[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
-				$left_sum += abs($amount);
+			if($amount >=0){
+				if(strtolower($bs['positive_side'])=='lt'){
+					$left[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
+					$left_sum += abs($amount);
+				}else{
+					$right[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
+					$right_sum += abs($amount);
+				}
 			}else{
-				$right[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
-				$right_sum += abs($amount);
+				if(strtolower($bs['positive_side'])=='rt'){
+					$left[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
+					$left_sum += abs($amount);
+				}else{
+					$right[] = ['name'=>$bs['name'],'amount'=>abs($amount),'id'=>$bs['id']];
+					$right_sum += abs($amount);
+				}
 			}
 		}
 
@@ -173,12 +183,22 @@ class page_reports_bs_balancesheet extends Page{
 				$amount  = $dr_sum - $cr_sum;
 			}
 
-			if($amount >=0 && strtolower($pl['positive_side'])=='lt'){
-				$left_sum += abs($amount);
-				$profit += abs($amount);
+			if($amount >=0){
+				if(strtolower($pl['positive_side'])=='lt'){
+					$left_sum += abs($amount);
+					$profit += abs($amount);
+				}else{
+					$right_sum += abs($amount);
+					$loss += abs($amount);
+				}
 			}else{
-				$right_sum += abs($amount);
-				$loss += abs($amount);
+				if(strtolower($pl['positive_side'])=='rt'){
+					$left_sum += abs($amount);
+					$loss += abs($amount);
+				}else{
+					$right_sum += abs($amount);
+					$profit += abs($amount);
+				}
 			}
 		}
 

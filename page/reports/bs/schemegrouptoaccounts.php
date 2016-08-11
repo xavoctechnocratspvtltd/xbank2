@@ -43,8 +43,9 @@ class page_reports_bs_schemegrouptoaccounts extends Page{
 		$curr_trans_q.=' group by tr.account_id';
 		$curr_trans = $this->api->db->dsql()->expr($curr_trans_q)->get();
 
+		$total_dr = 0; 
+		$total_cr = 0;
 		$data_array=[];
-
 		// $accounts=$this->add('Model_Account');
 		// $s_j = $accounts->join('schemes','scheme_id');
 		// $s_j->addField('SchemeGroup');
@@ -109,6 +110,9 @@ class page_reports_bs_schemegrouptoaccounts extends Page{
 				$data['ClosingBalanceDr'] -= $data['ClosingBalanceCr'];
 				$data['ClosingBalanceCr']=0;
 			}
+
+			$total_dr += $data['ClosingBalanceDr'];
+			$total_cr += $data['ClosingBalanceCr'];
 		}
 
 		// echo "<pre>";
@@ -119,7 +123,7 @@ class page_reports_bs_schemegrouptoaccounts extends Page{
 		// var_dump($data_array);
 		// return;
 
-		$grid = $this->add('Grid_Template',null,null,['view\grid\bstogroup']);
+		$grid = $this->add('Grid_Template',null,'grid',['view\grid\bstogroup']);
 		$grid->setSource($data_array);
 
 		$bs = $this->add('Model_Scheme')->loadBy('SchemeGroup',$scheme_group);
@@ -127,10 +131,17 @@ class page_reports_bs_schemegrouptoaccounts extends Page{
 		$grid->template->trySet('from_date',$from_date);
 		$grid->template->trySet('to_date',$to_date);
 
+		$this->template->trySet('dr_total',$total_dr);
+		$this->template->trySet('cr_total',$total_cr);
+
 		// $grid->addTotals(['ClosingBalanceDr','ClosingBalanceCr']);
         if($branch_id)
         	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Account',[$this->api->url('accounts_statement'),'AccountNumber'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id',$branch_id]);
         else
         	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Account',[$this->api->url('accounts_statement'),'AccountNumber'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
+	}
+
+	function defaultTemplate(){
+		return ['page\bstoscheme'];
 	}
 }

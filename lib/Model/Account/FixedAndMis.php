@@ -107,7 +107,7 @@ class Model_Account_FixedAndMis extends Model_Account{
         $agent_saving_account = $this->ref('agent_id')->ref('account_id');
         $tds_account = $this->add('Model_Account')->loadBy('AccountNumber',$this['branch_code'].SP.BRANCH_TDS_ACCOUNT);
 
-        $tds_amount = round((strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * 10 /100 : $commissionForThisAgent * 20 /100,2);
+        $tds_amount = round((strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * TDS_PERCENTAGE_WITH_PAN /100 : $commissionForThisAgent * TDS_PERCENTAGE_WITHOUT_PAN /100,2);
 		
 		$saving_amount = $commissionForThisAgent - $tds_amount;        
 

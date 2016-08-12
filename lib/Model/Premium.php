@@ -69,7 +69,7 @@ class Model_Premium extends Model_Table {
 
 		if(!$commissionForThisAgent) return;
 
-		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?10:20;
+		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?TDS_PERCENTAGE_WITH_PAN:TDS_PERCENTAGE_WITHOUT_PAN;
 		$tds = $commissionForThisAgent * $tds_percentage / 100;
 
 

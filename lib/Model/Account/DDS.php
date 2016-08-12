@@ -162,7 +162,7 @@ class Model_Account_DDS extends Model_Account{
         $agentAccount = $this->ref('agent_id')->ref('account_id');
         $branch_code =$this->ref('branch_id')->get('Code');
 
-        $tds_percentage = $this->ref('agent_id')->ref('member_id')->hasPanNo()? 10 : 20 ;
+        $tds_percentage = $this->ref('agent_id')->ref('member_id')->hasPanNo()? TDS_PERCENTAGE_WITH_PAN : TDS_PERCENTAGE_WITHOUT_PAN ;
 //            $amount = $ac->amountCr;
 
         $int_amt = $this->interestGiven($this->api->previousMonth($on_date),$this->api->nextDate($on_date));
@@ -183,8 +183,8 @@ class Model_Account_DDS extends Model_Account{
         $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
         
         $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
-        $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - ($commissionForThisAgent * TDS_PERCENTAGE / 100)));
-        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($commissionForThisAgent * TDS_PERCENTAGE / 100)));
+        $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - ($commissionForThisAgent * $tds_percentage / 100)));
+        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($commissionForThisAgent * $tds_percentage / 100)));
         
         $transaction->execute();
 

@@ -88,7 +88,7 @@ class page_accounts_DDS extends Page {
 		}
 
 		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
-		
+		$crud->addRef('JointMember');
 		if(!$crud->isEditing()){
 			$crud->grid->addPaginator(10);
 			$crud->grid->addQuickSearch(array('AccountNumber'));

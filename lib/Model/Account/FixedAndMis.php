@@ -178,7 +178,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 			
 		$this['LastCurrentInterestUpdatedAt'] = $on_date;
 
-		$this['CurrentInterest'] = $this['CurrentInterest'] + $interest;
+		$this['CurrentInterest'] = $this['CurrentInterest'] + round($interest,2);
 
 	    $debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
 		$creditAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . SP. $this['scheme_name'];
@@ -233,8 +233,8 @@ class Model_Account_FixedAndMis extends Model_Account{
 		
 		$debitAccount = $this['branch_code'] . SP . INTEREST_PROVISION_ON . SP. $this['scheme_name'];
 		
-		$transaction->addDebitAccount($debitAccount, round($this['CurrentInterest'],0));
-		$transaction->addCreditAccount($this, round($this['CurrentInterest'],0));
+		$transaction->addDebitAccount($debitAccount, round($this['CurrentInterest'],2));
+		$transaction->addCreditAccount($this, round($this['CurrentInterest'],2));
 		
 		$transaction->execute();
 
@@ -433,6 +433,42 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$this['MaturedStatus']=true;
 		$this['ActiveStatus']=false;
 		$this->saveAndUnload();
+
+	}
+
+	function settleAccessOrLess($on_date){
+		if(!$on_date) $on_date = $this->app->today;
+		$amount_to_give = $this->getAmountForInterest($on_date,$calculate_remainig_days=true);
+
+		$transactions = $this->add('Model_TransactionRow');
+		$transactions->addCondition('account_id',$this->id);
+		$cr_sum = $transactions->sum('amountCr')->getOne();
+
+		$difference = round($amount_to_give,0) - $cr_sum;
+
+		if($difference > 0) {
+			// amount to give is more and more payment need to be given now (Aur paisa dena hai)
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT, $this->ref('branch_id'), $on_date, 'Maturity remaining interest posting till date in '. $this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
+			$transaction->addDebitAccount($debitAccount, $difference);
+			$transaction->addCreditAccount($this, $difference);
+			$transaction->execute();
+
+		}else{
+			// amount to give already given more and rverse calculation needed for payment adjustments (Pisa katna hai)
+			$difference = abs($difference);
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction(TRA_EXCESS_AMOUNT_REVERT, $this->ref('branch_id'), $on_date, "Excess amount reverted in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$transaction->addDebitAccount($this, $difference);
+			$creditAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
+			$transaction->addCreditAccount($creditAccount, $difference);
+			$transaction->execute();	
+
+		}
+
 
 	}
 }

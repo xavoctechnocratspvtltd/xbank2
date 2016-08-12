@@ -110,7 +110,11 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		foreach ($active_fd_accounts as $active_fd_accounts_array) {
 			if($active_fd_accounts['InterestToAnotherAccount']){
 				// This is MIS
-				$active_fd_accounts->interstToAnotherAccountEntry($on_date);
+				$maturity_day=false;
+				if(strtotime(date('Y-m-d',strtotime($on_date))) == strtotime(date('Y-m-d',strtotime($this->api->previousDate($active_fd_accounts['maturity_date'])))) ){
+					$maturity_day=true;
+				}
+				$active_fd_accounts->interstToAnotherAccountEntry($on_date,$maturity_day,$minus_one_day=true);
 			}else{
 				// This is FD
 				$maturity_day=false;

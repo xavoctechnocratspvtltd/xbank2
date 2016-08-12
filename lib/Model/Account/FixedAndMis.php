@@ -254,11 +254,13 @@ class Model_Account_FixedAndMis extends Model_Account{
 			return false;
 	}
 
-	function interstToAnotherAccountEntry($on_date,$mark_matured=false){
+	function interstToAnotherAccountEntry($on_date,$mark_matured=false,$minus_one_day=false){
 		$days = $this->api->my_date_diff($on_date,$this->app->previousDate($this['LastCurrentInterestUpdatedAt']));
 		
 
 		$days_to_count = $days['days_total'];
+
+		if($minus_one_day) $days_to_count--;
 
 		if(date('m',strtotime($on_date))==2){
 			// Its february

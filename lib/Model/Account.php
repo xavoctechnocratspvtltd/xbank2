@@ -1086,11 +1086,12 @@ class Model_Account extends Model_Table {
 	        90                  => 'ninety',
 	        100                 => 'hundred',
 	        1000                => 'thousand',
-	        1000000             => 'million',
-	        1000000000          => 'billion',
-	        1000000000000       => 'trillion',
-	        1000000000000000    => 'quadrillion',
-	        1000000000000000000 => 'quintillion'
+	        10000               => 'ten thousand',
+	        100000              => 'one lakh',
+	        1000000             => 'ten lakh',
+	        10000000            => 'one crore',
+	        100000000           => 'ten crore',
+	        1000000000          => 'one arab'
 	    );
 
 	    if (!is_numeric($number)) {

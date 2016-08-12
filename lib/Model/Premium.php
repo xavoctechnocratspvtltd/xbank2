@@ -70,7 +70,7 @@ class Model_Premium extends Model_Table {
 		if(!$commissionForThisAgent) return;
 
 		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?TDS_PERCENTAGE_WITH_PAN:TDS_PERCENTAGE_WITHOUT_PAN;
-		$tds = $commissionForThisAgent * $tds_percentage / 100;
+		$tds = round($commissionForThisAgent * $tds_percentage / 100,2);
 
 
 		$account = $this->ref('account_id');
@@ -82,8 +82,10 @@ class Model_Premium extends Model_Table {
 		
 		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commissionForThisAgent - $tds);
 		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
-		
+
 		$transaction->execute();
+
+		
 
 		$this->account()->propogateAgentCommission($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'], $total_commission_amount = $commission, $on_date);
 		

@@ -65,7 +65,7 @@ class Model_Premium extends Model_Table {
 
 		
 
-		$commissionForThisAgent = $this->account()->agent()->cadre()->selfEfectivePercentage() * $commission / 100.00;
+		$commissionForThisAgent = round($this->account()->agent()->cadre()->selfEfectivePercentage() * $commission / 100.00,3);
 
 		if(!$commissionForThisAgent) return;
 
@@ -80,7 +80,7 @@ class Model_Premium extends Model_Table {
 		
 		$transaction->addDebitAccount($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'] , $commissionForThisAgent);
 		
-		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commissionForThisAgent -$tds);
+		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commissionForThisAgent - $tds);
 		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
 		
 		$transaction->execute();

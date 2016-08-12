@@ -13,7 +13,8 @@ class page_reports_loan_rcduelist extends Page {
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
 
-		$form->addField('DatePicker','as_on_date');
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
 		$form->addField('dropdown','loan_type')->setValueList(array('vl'=>'VL','fvl'=>'FVL','other'=>'Other'));
 		$form->addField('dropdown','status')->setValueList(array('1'=>'Active','0'=>'De Activated'));
 		// $form->addField('DropDown','document')->setModel($this->add('Model_Document')->loanDocuments());
@@ -33,7 +34,8 @@ class page_reports_loan_rcduelist extends Page {
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
-			$this->api->stickyGET('as_on_date');
+			$this->api->stickyGET('from_date');
+			$this->api->stickyGET('to_date');
 			$this->api->stickyGET('loan_type');
 			$this->api->stickyGET('status');
 			$this->api->stickyGET('document');
@@ -69,7 +71,10 @@ class page_reports_loan_rcduelist extends Page {
 				$accounts_model->addCondition($q->orExpr()->where('Description',"")->where('Description is null'));
 			// }
 			// $accounts_model->addCondition($q->orExpr()->where('documents_id',$_GET['document'])->where('documents_id is null'));
-			$accounts_model->addCondition('created_at','<',$this->api->nextDate($as_on_date));
+			if($_GET['from_date'])
+				$accounts_model->addCondition('created_at','>=',$_GET['from_date']);
+			if($_GET['to_date'])
+				$accounts_model->addCondition('created_at','<',$this->api->nextDate($$_GET['to_date']));
 			// $accounts_model->addCondition($q->orExpr()->where('submitted_on','>=',$this->api->nextDate($as_on_date))->where('submitted_on is null'));
 
 		}else{
@@ -97,7 +102,8 @@ class page_reports_loan_rcduelist extends Page {
 			$grid->js()->reload(
 					array(
 						'filter'=>1,
-						'as_on_date'=>$form['as_on_date']?:0,
+						'from_date'=>$form['from_date']?:0,
+						'to_date'=>$form['to_date']?:0,
 						'loan_type'=>$form['loan_type'],
 						'status'=>$form['status'],
 						'document'=>$form['document'],

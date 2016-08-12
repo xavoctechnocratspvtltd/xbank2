@@ -74,7 +74,7 @@ class page_reports_loan_rcduelist extends Page {
 			if($_GET['from_date'])
 				$accounts_model->addCondition('created_at','>=',$_GET['from_date']);
 			if($_GET['to_date'])
-				$accounts_model->addCondition('created_at','<',$this->api->nextDate($$_GET['to_date']));
+				$accounts_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			// $accounts_model->addCondition($q->orExpr()->where('submitted_on','>=',$this->api->nextDate($as_on_date))->where('submitted_on is null'));
 
 		}else{
@@ -89,7 +89,7 @@ class page_reports_loan_rcduelist extends Page {
 		$accounts_model->add('Controller_Acl');
 
 		$accounts_model->setOrder('Description','asc');
-		$grid->setModel($accounts_model,array('AccountNumber','scheme','member','father_name','address','phone_nos','maturity_date','dealer','Description','submitted_on'));
+		$grid->setModel($accounts_model,array('AccountNumber','created_at','scheme','member','father_name','address','phone_nos','maturity_date','dealer','Description','submitted_on'));
 
 		$grid->addPaginator(50);
 		$grid->addSno();

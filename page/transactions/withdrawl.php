@@ -94,6 +94,8 @@ class page_transactions_withdrawl extends Page {
 				$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
 				$account_model->loadBy('AccountNumber',$form['account']);
 
+				if($account_model['LockingStatus']) $form->displayError('account','This account is locked, contact admin');
+
 				try {
 					$this->api->db->beginTransaction();
 				    	$account_model->withdrawl($form['amount'],$form['narration'],$form['account_to_credit']?array(array($form['account_to_credit']=>$form['amount'])):array(),$form);

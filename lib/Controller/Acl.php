@@ -60,6 +60,8 @@ class Controller_Acl extends AbstractController{
 		if(!$acl->allowEdit()){
 			$this->owner->allow_edit=false;
 			$this->owner->grid->removeColumn('edit');
+			if($this->owner->grid->hasColumn('JointMember'))
+				$this->owner->grid->removeColumn('JointMember');
 		}
 
 		if(!$acl->allowDelete()){

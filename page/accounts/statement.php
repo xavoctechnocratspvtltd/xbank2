@@ -49,13 +49,14 @@ class page_accounts_statement extends Page {
 			$title_model->tryLoadAny();
 			$title_model->getElement('created_at')->type('date');
 			$title_acc_name=$title_model->get('name');
-			$joint_memebrs = "";
+			$joint_memebrs = [];
 			if($title_model['ModeOfOperation']=='Joint'){
 				$joint_model = $title_model->ref('JointMember');
 				foreach ($joint_model as $jm) {
-					$joint_memebrs .= $jm['member']. " ";
+					$joint_memebrs[] = $jm['member'];
 				}
 			}
+			$joint_memebrs=implode(", ", $joint_memebrs);
 		}
 		elseif($_GET['AccountNumber']){
 			$title_model=$this->add('Model_Account')->addCondition('AccountNumber',$_GET['AccountNumber']);

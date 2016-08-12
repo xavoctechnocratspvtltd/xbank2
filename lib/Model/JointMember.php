@@ -5,7 +5,7 @@ class Model_JointMember extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Account','account_id')->display(['form'=>'autocomplete/Basic']);
-		$this->hasOne('Member','member_id')->display(['form'=>'autocomplete/Basic']);
+		$this->hasOne('Member','member_id','name')->display(['form'=>'autocomplete/Basic']);
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

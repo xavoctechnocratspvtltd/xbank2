@@ -436,9 +436,10 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 	}
 
-	function settleAccessOrLess($on_date){
+	function settleAccessOrLess($on_date,$for_date=null){
 		if(!$on_date) $on_date = $this->app->today;
-		$amount_to_give = $this->getAmountForInterest($on_date,$calculate_remainig_days=true);
+		if(!$for_date) $for_date = $this->app->today;
+		$amount_to_give = $this->getAmountForInterest($for_date,$calculate_remainig_days=true);
 
 		$transactions = $this->add('Model_TransactionRow');
 		$transactions->addCondition('account_id',$this->id);

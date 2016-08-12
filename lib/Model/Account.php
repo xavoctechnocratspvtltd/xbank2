@@ -399,11 +399,17 @@ class Model_Account extends Model_Table {
 				$this[$field] = $value;
 		}
 
+		
+
 		$this->save();
 		for($k=2;$k<=4;$k++) {
-		    if($j_m_id=$otherValues['member_ID'.$k])
+		    if($j_m_id=$otherValues['member_ID_'.$k]){
+		    	// echo $j_m_id. ' ';
 		    	$this->jointAccountMember($j_m_id);
+		    }
 		}
+		// var_dump($otherValues);
+		// throw new \Exception("Error Processing Request", 1);
 		return $this->id;
 	}
 
@@ -412,10 +418,12 @@ class Model_Account extends Model_Table {
 		$member = $this->add('Model_Member')->load($j_m_id);
 		$joint_member = $this->ref('JointMember')->addCondition('member_id',$j_m_id);
 		$joint_member->tryLoadAny();
+
 		if($joint_member->loaded())
 			throw $this->exception($member['name'].' Already Joint with account '. $this['AccountNumber']);
-		else
+		else{
 			$joint_member->save();
+		}
 	}
 
 	function updateDocument($document,$value){

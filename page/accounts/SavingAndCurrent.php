@@ -34,7 +34,7 @@ class page_accounts_SavingAndCurrent extends Page {
 		if($crud->isEditing("add")){
 		    $o=$crud->form->add('Order');
 			for($k=2;$k<=4;$k++) {
-			    $f=$crud->form->addField('autocomplete/Basic','member_ID'.$k, 'Joint Member '.$k);
+			    $f=$crud->form->addField('autocomplete/Basic','member_ID_'.$k, 'Joint Member '.$k);
 			   	$f->setModel('Member');
 			   	$o->move($f->other_field,'before','Nominee');
 			}

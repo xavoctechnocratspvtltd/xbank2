@@ -27,6 +27,8 @@ class page_Accounts_FixedAndMis extends Page {
 						$form->displayError('intrest_to_account_id','Field is must for MIS type accounts');
 					}
 
+					if(!$form['debit_account']) $form->displayError('debit_account','Please specify account');
+
 					$account = $crud->add('Model_Account');
 					$account->loadBy('AccountNumber',$form['debit_account']);
 					if($account['SchemeType']==ACCOUNT_TYPE_SAVING and $account['member_id'] != $form['member_id']){

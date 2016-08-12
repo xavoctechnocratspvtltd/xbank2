@@ -49,6 +49,12 @@ class page_accounts_statement extends Page {
 			$title_model->tryLoadAny();
 			$title_model->getElement('created_at')->type('date');
 			$title_acc_name=$title_model->get('name');
+			if($title_model['ModeOfOperation']=='Joint'){
+				$joint_model = $title_model->ref('JointMember');
+				foreach ($joint_model as $jm) {
+					$title_acc_name .= " ". $jm['member'];
+				}
+			}
 		}
 		elseif($_GET['AccountNumber']){
 			$title_model=$this->add('Model_Account')->addCondition('AccountNumber',$_GET['AccountNumber']);

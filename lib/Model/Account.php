@@ -565,7 +565,7 @@ class Model_Account extends Model_Table {
 	        $agent_saving_account = $sponsor->ref('account_id');
 	        $tds_account = $this->add('Model_Account')->loadBy('AccountNumber',$this['branch_code'].SP.BRANCH_TDS_ACCOUNT);
 
-	        $tds_amount = (strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * 10 /100 : $commissionForThisAgent * 20 /100;
+	        $tds_amount = (strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * TDS_PERCENTAGE_WITH_PAN /100 : $commissionForThisAgent * TDS_PERCENTAGE_WITHOUT_PAN /100;
 			
 			$saving_amount = $commissionForThisAgent - $tds_amount;
 

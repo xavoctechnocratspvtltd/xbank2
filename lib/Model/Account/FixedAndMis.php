@@ -107,7 +107,7 @@ class Model_Account_FixedAndMis extends Model_Account{
         $agent_saving_account = $this->ref('agent_id')->ref('account_id');
         $tds_account = $this->add('Model_Account')->loadBy('AccountNumber',$this['branch_code'].SP.BRANCH_TDS_ACCOUNT);
 
-        $tds_amount = round((strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * 10 /100 : $commissionForThisAgent * 20 /100,2);
+        $tds_amount = round((strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * TDS_PERCENTAGE_WITH_PAN /100 : $commissionForThisAgent * TDS_PERCENTAGE_WITHOUT_PAN /100,2);
 		
 		$saving_amount = $commissionForThisAgent - $tds_amount;        
 
@@ -254,11 +254,13 @@ class Model_Account_FixedAndMis extends Model_Account{
 			return false;
 	}
 
-	function interstToAnotherAccountEntry($on_date,$mark_matured=false){
-		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
+	function interstToAnotherAccountEntry($on_date,$mark_matured=false,$minus_one_day=false){
+		$days = $this->api->my_date_diff($on_date,$this->app->previousDate($this['LastCurrentInterestUpdatedAt']));
 		
 
 		$days_to_count = $days['days_total'];
+
+		if($minus_one_day) $days_to_count--;
 
 		if(date('m',strtotime($on_date))==2){
 			// Its february

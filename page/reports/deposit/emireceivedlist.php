@@ -13,6 +13,11 @@ class page_reports_deposit_emireceivedlist extends Page {
 		}
 
 		$form=$this->add('Form');
+
+		$agent_field=$form->addField('autocomplete/Basic','agent');
+		$agent_field->setModel('Agent');
+		
+		$form->addField('Checkbox','without_agent');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addField('dropdown','account_type')->setValueList(array('%'=>'All','Recurring'=>'RD','DDS'=>'DDS'));
@@ -27,6 +32,8 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$transaction_join = $transaction_row_model->join('transactions','transaction_id');
 		$transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
 		$account_join = $transaction_row_model->join('accounts','account_id');
+		$account_join->addField('agent_id');
+		
 		$account_member_join = $account_join->join('members','member_id');
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 		$scheme_join = $account_join->join('schemes','scheme_id');
@@ -76,6 +83,16 @@ class page_reports_deposit_emireceivedlist extends Page {
 				$transaction_row_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			}
 
+			if($_GET['agent_id']){
+				$this->api->stickyGET("agent_id");
+				$transaction_row_model->addCondition('agent_id',$_GET['agent_id']);
+			}
+
+			if($_GET['without_agent']){
+				$this->api->stickyGET("without_agent");
+				$transaction_row_model->addCondition('agent_id',null);
+			}
+
 			if($_GET['account_type'])
 				$transaction_row_model->addCondition('account_type','like',$_GET['account_type']);
 
@@ -84,7 +101,9 @@ class page_reports_deposit_emireceivedlist extends Page {
 
 		$transaction_row_model->add('Controller_Acl');
 		$transaction_row_model->setOrder('created_at','desc');
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','CurrentAddress','landmark','amountCr','agent_name','agent_account_number','created_at'));
+		$transaction_row_model->getElement('created_at')->caption('Deposited On');
+
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','CurrentAddress','landmark','amountCr','agent_name','agent_account_number','created_at','Narration'));
 		// $grid->removeColumn('CurrentAddress');
 		$grid->addFormatter('CurrentAddress','Wrap');
 		$grid->addFormatter('FatherName','100Wrap');
@@ -102,7 +121,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('account_type'=>$form['account_type'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
+			$grid->js()->reload(array('account_type'=>$form['account_type'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'agent_id'=>$form['agent'],'without_agent'=>$form['without_agent']?:0,'filter'=>1))->execute();
 		}
 	}
 }

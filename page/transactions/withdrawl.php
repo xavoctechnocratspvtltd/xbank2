@@ -51,7 +51,7 @@ class page_transactions_withdrawl extends Page {
 
 		$amount_field->js('change',$amount_field_view->js()->reload(array('check_min'=>1,'AccountNumber'=>$account_field->js()->val(),'amount'=>$amount_field->js()->val())));
 
-		$account_to_credit_model = $this->add('Model_Account');
+		$account_to_credit_model = $this->add('Model_Active_Account');
 		$account_to_credit_model->addCondition('scheme_name','<>',CASH_ACCOUNT_SCHEME);
 		$form->addField('autocomplete/Basic','account_to_credit')->setFieldHint('sdfsd')->setModel($account_to_credit_model,'AccountNumber');
 

@@ -49,10 +49,11 @@ class page_accounts_statement extends Page {
 			$title_model->tryLoadAny();
 			$title_model->getElement('created_at')->type('date');
 			$title_acc_name=$title_model->get('name');
+			$joint_memebrs = "";
 			if($title_model['ModeOfOperation']=='Joint'){
 				$joint_model = $title_model->ref('JointMember');
 				foreach ($joint_model as $jm) {
-					$title_acc_name .= " ". $jm['member'];
+					$joint_memebrs .= $jm['member']. " ";
 				}
 			}
 		}
@@ -72,7 +73,7 @@ class page_accounts_statement extends Page {
 		}else{
 			$t_from_date=date('Y-m-d',strtotime($title_model['created_at']));
 		}
-		$grid->add('View',null,'grid_buttons')->setHtml('<div style="text-align:center;font-size:20px">'.$title_acc_name.' <br> <small >From Date - '.$t_from_date." - " . "   To Date - ".($_GET['to_date']?:$this->api->today."</small></div>"));
+		$grid->add('View',null,'grid_buttons')->setHtml('<div style="text-align:center;font-size:20px">'.$title_acc_name.' <br><small>'. $joint_memebrs .'</small> <br/> <small >From Date - '.$t_from_date." - " . "   To Date - ".($_GET['to_date']?:$this->api->today."</small></div>"));
 		$transactions = $this->add('Model_TransactionRow');
 
 		if($_GET['account_id'] or $_GET['AccountNumber']){

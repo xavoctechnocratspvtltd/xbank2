@@ -16,7 +16,7 @@ class page_reports_loan_emireceivedlist extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
-		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','other'=>'Other'));
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','other'=>'Other'));
 		$document=$this->add('Model_Document');
 		$form->addSubmit('GET List');
 
@@ -79,6 +79,11 @@ class page_reports_loan_emireceivedlist extends Page {
 				case 'pl':
 					$transaction_row_model->addCondition('AccountNumber','like','___pl%');
 					break;
+
+				case 'fvl':
+					$transaction_row_model->addCondition('AccountNumber','like','___fvl%');
+					break;
+
 				case 'other':
 					$transaction_row_model->addCondition('AccountNumber','not like','%PL%');
 					$transaction_row_model->addCondition('AccountNumber','not like','%VL%');

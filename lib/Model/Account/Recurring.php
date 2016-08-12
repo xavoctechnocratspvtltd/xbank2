@@ -159,7 +159,7 @@ class Model_Account_Recurring extends Model_Account{
 		// this way but in case of 0.5 it is rounded to 1 so premium paid if even half or more amount submitted but not full
 		$premiumsSubmitedInThisAmount = round($AmountForPremiums / (int)$this['Amount'],0);
 		// Now trying this
-		$premiumsSubmitedInThisAmount = (int)($AmountForPremiums / (int)$this['Amount'];
+		$premiumsSubmitedInThisAmount = (int)($AmountForPremiums / (int)$this['Amount']);
 
 		$unpaid_premiums = $this->ref('Premium');
 		// $unpaid_premiums->addCondition('Paid',false);

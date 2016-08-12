@@ -255,7 +255,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 	}
 
 	function interstToAnotherAccountEntry($on_date,$mark_matured=false){
-		$days = $this->api->my_date_diff($on_date,$this['LastCurrentInterestUpdatedAt']);
+		$days = $this->api->my_date_diff($on_date,$this->app->previousDate($this['LastCurrentInterestUpdatedAt']));
 		
 
 		$days_to_count = $days['days_total'];

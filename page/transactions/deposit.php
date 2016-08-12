@@ -55,7 +55,7 @@ class page_transactions_deposit extends Page {
 		}
 		$amount_field->js('change',$pan_details->js()->reload(array('check_min'=>1,'amount_filled'=>$amount_field->js()->val(),'account_selected'=>$account_field->js()->val())));
 
-		$account_to_debit_model = $this->add('Model_Account');
+		$account_to_debit_model = $this->add('Model_Active_Account');
 		$account_to_debit_model->addCondition('scheme_name','<>',CASH_ACCOUNT_SCHEME);
 		$form->addField('autocomplete/Basic','account_to_debit')->setModel($account_to_debit_model,'AccountNumber');
 		

@@ -55,7 +55,7 @@ class page_transactions_premature extends Page {
 		// $c3->add($credit_account_field->other_field);
 		// $c4->add($credit_amount_field);
 
-		$account_to_credit_model = $this->add('Model_Account');
+		$account_to_credit_model = $this->add('Model_Active_Account');
 		$account_to_credit_model->addCondition('branch_id',$this->app->current_branch->id);
 		$account_to_credit_model->addCondition('scheme_name',[CASH_ACCOUNT_SCHEME,BANK_ACCOUNTS_SCHEME,BANK_OD_SCHEME,SAVING_ACCOUNT_SCHEME]);
 		$account_to_credit_field = $form->addField('autocomplete/Basic','account_to_credit')->validateNotNull();

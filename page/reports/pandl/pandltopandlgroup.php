@@ -49,7 +49,7 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 
 		$acc=$this->add('Model_Account');
 		$scheme_j = $acc->join('schemes','scheme_id');
-		$scheme_j->addField('balance_sheet_id');
+		// $scheme_j->addField('balance_sheet_id');
 		$bs_j = $scheme_j->join('balance_sheet','balance_sheet_id');
 		$bs_j->addField('is_pandl');
 		$acc->addCondition('balance_sheet_id',$bs_id);

@@ -44,6 +44,7 @@ class page_accounts_statement extends Page {
 
 		$grid = $v->add('Grid_AccountStatement');
 		
+		$joint_memebrs = "";
 		if($_GET['account_id']){
 			$title_model=$this->add('Model_Account')->addCondition('id',$_GET['account_id']);
 			$title_model->tryLoadAny();

@@ -74,10 +74,13 @@ class page_reports_pandl_pandl extends Page{
 					where tr.created_at >= "'.$from_date.'" and tr.created_at < "'.$this->app->nextDate($to_date).'"';
 		if($branch_id) $curr_trans_q .= ' and a.branch_id = ' . $branch_id;
 		$curr_trans_q.=' group by balance_sheet_id';
+
+		// echo $curr_trans_q;
 		
 		$curr_trans = $this->api->db->dsql()->expr($curr_trans_q)->get();
 
 		// var_dump($curr_trans);
+
 
 		$bs_array=[];
 
@@ -125,7 +128,10 @@ class page_reports_pandl_pandl extends Page{
 				$data['ClosingBalanceCr'] = $data['TransactionsCr'];
 			}
 
-			if($data['ClosingBalanceCr']==0 && $data['ClosingBalanceCr']==0) continue;
+			if($data['ClosingBalanceCr']===0 && $data['ClosingBalanceCr']===0){
+				// echo $data['name']. ' - ' . $data['ClosingBalanceCr'] . ' ' . $data['ClosingBalanceDr']. '<br/>';
+				continue;
+			}
 
 			$bs_array [] = $data;
 

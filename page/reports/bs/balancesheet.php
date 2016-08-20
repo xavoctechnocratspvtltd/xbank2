@@ -123,7 +123,7 @@ class page_reports_bs_balancesheet extends Page{
 				$data['ClosingBalanceCr'] = $data['TransactionsCr'];
 			}
 
-			if($data['ClosingBalanceCr']==0 && $data['ClosingBalanceCr']==0) continue;
+			if($data['ClosingBalanceCr']===0 && $data['ClosingBalanceCr']===0) continue;
 
 			$bs_array [] = $data;
 

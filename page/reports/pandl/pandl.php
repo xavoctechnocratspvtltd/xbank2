@@ -199,9 +199,15 @@ class page_reports_pandl_pandl extends Page{
 		$view->template->trySet('ltotal',$left_sum);
 		$view->template->trySet('atotal',$right_sum);
 		
-		if($branch_id)
-        	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_pandl_pandltopandlgroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
-        else
-        	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_pandl_pandltopandlgroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
+		$grid_l->addColumn('name');
+		$grid_l->addFormatter('name','ExpanderPlain',['page'=>$this->api->url('reports_bs_bstoschemegroup',['branch_id'=>$branch_id])]);
+
+		$grid_a->addColumn('name');
+		$grid_a->addFormatter('name','ExpanderPlain',['page'=>$this->api->url('reports_bs_bstoschemegroup',['branch_id'=>$branch_id])]);
+
+		// if($branch_id)
+  //       	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_pandl_pandltopandlgroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
+  //       else
+  //       	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_pandl_pandltopandlgroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
 	}
 }

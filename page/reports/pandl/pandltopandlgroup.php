@@ -5,7 +5,7 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 	function init(){
 		parent::init();
 				
-		$bs_id = $this->api->stickyGET('bs_id');
+		$bs_id = $this->api->stickyGET('_id');
 		$from_date = $this->api->stickyGET('from_date');
 		$to_date = $this->api->stickyGET('to_date');
 		$branch_id = $this->api->stickyGET('branch_id');

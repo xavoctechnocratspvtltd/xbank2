@@ -1,16 +1,16 @@
 .xepan-grid.main-box.clearfix.atk-table.atk-table-zebra.atk-table-bordered(id="{$_name}" class="{$class}")
     {Pannel}
     header.main-box-header.clearfix.atk-actions(class=" {$class} ")
-        .row.atk-padding.atk-swatch-gray
-            .col-md-4
-                strong BalanceSheet Head : 
-                span {$head} 
-            .col-md-4
-                strong From Date : 
-                span {$from_date} 
-            .col-md-4
-                strong To Date : 
-                span {$to_date} 
+        //- .row.atk-padding.atk-swatch-gray
+        //-     .col-md-4
+        //-         strong BalanceSheet Head : 
+        //-         span {$head} 
+        //-     .col-md-4
+        //-         strong From Date : 
+        //-         span {$from_date} 
+        //-     .col-md-4
+        //-         strong To Date : 
+        //-         span {$to_date} 
         div.filter-block( style="100%")
             .pull-right {$grid_buttons} 
     {/Pannel}
@@ -20,7 +20,7 @@
             thead
                 {cols}{col}
                 th
-                    span Group Name  
+                    span 
                 th
                     span Amount DR  
                 th

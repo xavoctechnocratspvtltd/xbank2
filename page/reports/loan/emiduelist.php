@@ -9,17 +9,30 @@ class page_reports_loan_emiduelist extends Page {
 
 		$form=$this->add('Form');
 		$grid=$this->add('Grid_AccountsBase'); 
-		$till_date = $this->api->today;
+		$from_date = null;
+		$to_date = $this->api->today;
 
-		if($_GET['till_date']){
-			$till_date=$this->api->stickyGET('till_date');
+		if($_GET['to_date']){
+			$to_date=$this->api->stickyGET('to_date');
 		}
-		$grid->add('H3',null,'grid_buttons')->set('Loan EMI '.$_GET['report_type'].' As On '. date('d-M-Y',strtotime($till_date)));
+
+		if($_GET['from_date']){
+			$from_date=$this->api->stickyGET('from_date');
+		}
+
+		if(!$from_date && $to_date){
+			$grid->add('H3',null,'grid_buttons')->set('Loan EMI '.$_GET['report_type'].' As On '. date('d-M-Y',strtotime($to_date)));
+		}
+
+		if($from_date && $to_date){
+			$grid->add('H3',null,'grid_buttons')->set('Loan EMI '.$_GET['report_type'].' From '.date('d-M-Y',strtotime($from_date)).' To '. date('d-M-Y',strtotime($to_date)));
+		}
 
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
 
-		$form->addField('DatePicker','till_date');
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
 		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
 		$document=$this->add('Model_Document');
@@ -48,20 +61,24 @@ class page_reports_loan_emiduelist extends Page {
 
 		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total');
 		
-		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
-			return $m->refSQL('Premium')
-						->addCondition('PaidOn','<>',null)
-						->addCondition('DueDate','<',$m->api->nextDate($till_date))
-						->count();
-			return "'paid_premium_count'";
+		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($from_date,$to_date){
+			$p_m=$m->refSQL('Premium')
+						->addCondition('PaidOn','<>',null);
+			if($from_date)
+				$p_m->addCondition('DueDate','>=',$from_date);
+			if($to_date)
+				$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+			return $p_m->count();
 		})->sortable(true);
 
-		$account_model->addExpression('due_premium_count')->set(function($m,$q)use($till_date){
-			return $m->refSQL('Premium')
-						->addCondition('PaidOn',null)
-						->addCondition('DueDate','<',$m->api->nextDate($till_date))
-						->count();
-			return "'due_premium_count'";
+		$account_model->addExpression('due_premium_count')->set(function($m,$q)use($from_date, $to_date){
+			$p_m = $m->refSQL('Premium')
+						->addCondition('PaidOn',null);
+			if($from_date)
+				$p_m->addCondition('DueDate','>=',$from_date);
+			if($to_date)
+				$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+			return $p_m->count();
 		});
 
 		$account_model->addExpression('due_date')->set(function($m,$q){
@@ -80,9 +97,13 @@ class page_reports_loan_emiduelist extends Page {
 			return "'emi_amount'";
 		});
 
-		$account_model->addExpression('due_panelty')->set(function($m,$q)use($till_date){
-			return $m->refSQL('Premium')->addCondition('DueDate','<',$till_date)->sum($m->dsql()->expr('IFNULL(PaneltyCharged,0)'));
-			return "'due_panelty'";
+		$account_model->addExpression('due_panelty')->set(function($m,$q)use($from_date,$to_date){
+			$p_m = $m->refSQL('Premium');
+			if($from_date)
+				$p_m->addCondition('DueDate','>=',$from_date);
+			if($to_date)
+				$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+			return $p_m->sum($m->dsql()->expr('IFNULL(PaneltyCharged,0)'));
 		});
 
 		$account_model->addExpression('other_charges')->set(function($m,$q){
@@ -134,7 +155,8 @@ class page_reports_loan_emiduelist extends Page {
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('dealer');
 			$this->api->stickyGET('report_type');
-			$this->api->stickyGET('till_date');
+			$this->api->stickyGET('to_date');
+			$this->api->stickyGET('from_date');
 			$this->api->stickyGET('loan_type');
 			$this->api->stickyGET('report_type');
 
@@ -148,20 +170,20 @@ class page_reports_loan_emiduelist extends Page {
 				case 'duelist':
 					$account_model->addCondition('due_premium_count','>',0);
 					$account_model->addCondition('due_premium_count','<=',2);
-					$account_model->addCondition('last_premium','>=',$till_date);
+					$account_model->addCondition('last_premium','>=',$to_date);
 					break;
 				case 'hardlist':
 					$account_model->addCondition('due_premium_count','>',2);
 					$account_model->addCondition('due_premium_count','<=',4);
-					$account_model->addCondition('last_premium','>=',$till_date);
+					$account_model->addCondition('last_premium','>=',$to_date);
 					break;
 				case 'npa':
 					$account_model->addCondition('due_premium_count','>=',5);
-					$account_model->addCondition('last_premium','>=',$till_date);
+					$account_model->addCondition('last_premium','>=',$to_date);
 					break;
 
 				case 'time_collapse':
-					$account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$till_date)));
+					$account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$to_date)));
 					break;
 				
 				default:
@@ -261,7 +283,7 @@ class page_reports_loan_emiduelist extends Page {
 		$grid->addPaginator(500);
 		$grid->addSno();
 		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty'));
-		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ,'output_filename'=>$_GET['report_type'].' lilst_as_on '. $till_date.".csv"));
+		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ,'output_filename'=>$_GET['report_type'].' lilst_as_on '. $to_date.".csv"));
 
 		$grid->removeColumn('last_premium');
 		// $js=array(
@@ -277,7 +299,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		if($form->isSubmitted()){
 
-			$send = array('dealer'=>$form['dealer'],'till_date'=>$form['till_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
+			$send = array('dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

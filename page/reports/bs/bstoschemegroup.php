@@ -5,7 +5,7 @@ class page_reports_bs_bstoschemegroup extends Page{
 	function init(){
 		parent::init();
 				
-		$bs_id = $this->api->stickyGET('bs_id');
+		$bs_id = $this->api->stickyGET('_id');
 		$from_date = $this->api->stickyGET('from_date');
 		$to_date = $this->api->stickyGET('to_date');
 		$branch_id = $this->api->stickyGET('branch_id');
@@ -120,13 +120,13 @@ class page_reports_bs_bstoschemegroup extends Page{
 		$grid = $this->add('Grid_Template',null,'grid',['view\grid\bstogroup']);
 		$grid->setSource($bs_array);
 
-		$bs = $this->add('Model_BalanceSheet')->load($bs_id);
-		$grid->template->trySet('head',$bs['name']);
-		$grid->template->trySet('from_date',$from_date);
-		$grid->template->trySet('to_date',$to_date);
+		// $bs = $this->add('Model_BalanceSheet')->load($bs_id);
+		// $grid->template->trySet('head',$bs['name']);
+		// $grid->template->trySet('from_date',$from_date);
+		// $grid->template->trySet('to_date',$to_date);
 		
-		$this->template->trySet('dr_total',$total_dr);
-		$this->template->trySet('cr_total',$total_cr);
+		// $this->template->trySet('dr_total',$total_dr);
+		// $this->template->trySet('cr_total',$total_cr);
 
 		// $grid->addTotals(['ClosingBalanceDr','ClosingBalanceCr']);
         if($branch_id)

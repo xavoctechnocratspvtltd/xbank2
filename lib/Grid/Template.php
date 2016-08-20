@@ -100,6 +100,88 @@ class Grid_Template extends \Grid{
             $row_template->trySet("tdparam_$field", trim($tdparam_str));
         }
     }
+
+
+    function init_expanderplain($field)
+    {
+        // set column style
+        @$this->columns[$field]['thparam'] .= ' style="width:40px; text-align:center"';
+
+        // set column refid - referenced model table for example
+        if (!isset($this->columns[$field]['refid'])) {
+
+            if ($this->model) {
+                $refid = $this->model->table;
+            } elseif ($this->dq) {
+                $refid = $this->dq->args['table'];
+            } else {
+                $refid = preg_replace('/.*_/', '', $this->api->page);
+            }
+
+            $this->columns[$field]['refid'] = $refid;
+        }
+
+        // initialize button widget on page load
+        $class = $this->name.'_'.$field.'_expander';
+        // $this->js(true)->find('.'.$class)->button();
+
+        // initialize expander
+        $this->js(true)
+            ->_selector('.'.$class)
+            ->_load('ui.atk4_expander2')
+            ->atk4_expander();
+    }
+
+    /**
+     * Format expander
+     *
+     * @param string $field field name
+     * @param array $column column configuration
+     *
+     * @return void
+     */
+    function format_expanderplain($field, $column)
+    {
+
+        $class = $this->columns[$field]['button_class'].' button_'.$field;
+        $icon = isset($this->columns[$field]['icon'])
+                    ? $this->columns[$field]['icon']
+                    : '';
+        // if($icon)
+        //     $icon = "<i class='icon-$icon'></i> ";
+
+        if (!@$this->current_row[$field]) {
+            $this->current_row[$field] = $column['descr'];
+        }
+
+        // TODO:
+        // reformat this using Button, once we have more advanced system to
+        // bypass rendering of sub-elements.
+        // $this->current_row[$field] = $this->add('Button',null,false)
+        $key   = $this->name . '_' . $field . '_';
+        $id    = $key . $this->api->normalizeName($this->model->id);
+        $class = $key . 'expander';
+
+        @$this->current_row_html[$field] =
+            '<div '.
+                'class="'.$class.'" '.
+                'id="'.$id.'" '.
+                'rel="'.$this->api->url(
+                    $column['page'] ?: './'.$field,
+                    array(
+                        'expander' => $field,
+                        'expanded' => $this->name,
+                        'cut_page' => 1,
+                        // TODO: id is obsolete
+                        //'id' => $this->model->id,
+                        $this->columns[$field]['refid'].'_id' => $this->model->id
+                    )
+                ).'" '.
+            '>'.
+            $icon. (!isset($this->columns[$field]['icon_only'])? $this->current_row[$field]:'') .
+            '</div>';
+    }
+
     function render(){
         // $this->js(true)->_load('footable')->_css('libs/footable.core')->find('table')->footable();
         parent::render();

@@ -21,7 +21,7 @@ class page_reports_pandl_pandl extends Page{
 		$f->addSubmit('Filter');
 
 		$view = $this->add('View',null,null,['page/balancesheet']);
-
+		$view->add('View',null,'pndl_caption')->setHtml('<div><h2 class="text-center">Profit & Loss </h2></div><div class="text-center atk-text-dimmed">( From Date:'.$_GET['from_date'].'&nbsp;&nbsp To Date: '.$_GET['to_date'].')</div>');
 		if($f->isSubmitted()){
 			$view->js()->reload(['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0])->execute();
 		}

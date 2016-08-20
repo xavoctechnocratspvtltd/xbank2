@@ -13,6 +13,7 @@ class page_stock_ledger_deaditem extends Page{
 		$form->addSubmit('GET');
 		$transaction=$this->add('Model_Stock_Transaction');
 		$transaction->addCondition('transaction_type',array('DeadSubmit','DeadSold'));
+		$transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		
 		$msg ="Dead Item Leadger";
 		$v = $this->add('View');

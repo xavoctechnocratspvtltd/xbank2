@@ -1,4 +1,5 @@
 div(id="{$_name}")
+	{$balancesheet_caption}
 	.atk-row.atk-padding
 	.atk-row
 		.atk-col-6
@@ -15,17 +16,51 @@ div(id="{$_name}")
 			strong
 				span.pull-right {$atotal}		
 style.
+	@media print { 
+		/* All your print styles go here */
+		#header, #footer, #nav { display: none !important; } 
+		.atk-cells {
+			display: table;
+			width: 100%;
+		}
+		.atk-table{
+			width:100%;
+		}
+		.atk-col-12{
+			width: 100%;
+			margin: 0px!important
+		}
+		.atk-col-6{
+			width:50%!important;
+		}
+		.atk-cells > .atk-cell {
+			display: table-cell;
+			vertical-align: middle;
+		}
+		.atk-cells.atk-cells-justified {
+			table-layout: fixed;
+		}
+		.atk-cells[class*=atk-move] {
+			width: auto;
+		}
+		.date-range-view{
+			display:none;
+		}
+		h2.atk-push-small{
+			display:none;
+		}
+	}
 	.atk-cells {
 	  display: table;
 	  width: 100%;
 	}
 	.atk-cells > .atk-cell {
-	  display: table-cell;
-	  vertical-align: middle;
+		display: table-cell;
+		vertical-align: middle;
 	}
 	.atk-cells.atk-cells-justified {
-	  table-layout: fixed;
+		table-layout: fixed;
 	}
 	.atk-cells[class*=atk-move] {
-	  width: auto;
+		width: auto;
 	}

@@ -19,13 +19,15 @@ class page_reports_bs_balancesheet extends Page{
 		$f->addSubmit('Filter');
 
 		$view = $this->add('View',null,null,['page/balancesheet']);
+		// $view->add('View',null,'balancesheet_caption')->setHtml('<div> <h2 class="text-center"> BalanceSheet As On</h3> </div><div class="atk-row"><small class="atk-col-6 atk-text-dimmed"> From Date: '.$_GET['from_date']."</small><small class='atk-col-6 text-right atk-text-dimmed'> &nbsp;To Date: ".$_GET['to_date']. '</small></div>' );
+		$view->add('View',null,'balancesheet_caption')->setHtml('<div> <h2 class="text-center"> BalanceSheet As On '. $_GET['to_date'].'</h3> </div>');
 
 		if($f->isSubmitted()){
 			$view->js()->reload(['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0])->execute();
 		}
 
 		if(!$from_date){
-			$this->add('View')->set('Please select date range');
+			$this->add('View')->set('Please select date range')->addClass('date-range-view');
 			return;
 		}
 

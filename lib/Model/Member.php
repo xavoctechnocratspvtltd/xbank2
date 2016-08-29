@@ -160,7 +160,7 @@ class Model_Member extends Model_Table {
 
 		if($admissionFee){
 			$transaction = $this->add('Model_Transaction');
-			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$branch, $on_date, "Member Registration Fee for ". $this->id, null, array('reference_id'=>$this->id));
+			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$branch, $on_date, "Member Registration Fee for ". $this['member_no'], null, array('reference_id'=>$this->id));
 			
 			$transaction->addDebitAccount($this->ref('branch_id')->get('Code').SP.CASH_ACCOUNT, $admissionFee);
 			$transaction->addCreditAccount($this->ref('branch_id')->get('Code').SP.ADMISSION_FEE_ACCOUNT, $admissionFee);

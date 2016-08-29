@@ -109,12 +109,12 @@ class Model_Member extends Model_Table {
 		if( $m->isDirty('PhoneNos') && strlen($m['PhoneNos'])<10)
 			throw $this->exception(' Please Enter correct No'.strlen($m['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
 
-		if(!$this->laoded()){
+		if(!$this->loaded()){
 			$max_member_number = $this->add('Model_Member');
 			$m['member_no'] = $max_member_number->_dsql()->del('fields')
 								->field($this->dsql()->expr('MAX(member_no)'))
 								->getOne();
-		}
+		}`
 
 		// if(!$this['title'])
 		// if(!$this['Occupation'])

@@ -12,7 +12,7 @@ class page_reports_member_member extends Page {
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
 		$grid->setModel($member_model,array('member_no','branch','name','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
 		$grid->addPaginator(50);
-		$grid->addQuickSearch(array('id','name','PhoneNos'));
+		$grid->addQuickSearch(array('member_no','name','PhoneNos'));
 		$self=$this;
 
 		$self=$this;

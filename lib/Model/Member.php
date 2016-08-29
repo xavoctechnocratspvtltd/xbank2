@@ -10,6 +10,9 @@ class Model_Member extends Model_Table {
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.')->mandatory(true);
 		$this->addField('name')->mandatory(true);
+
+		$this->addField('member_no')->type('int');
+
 		$this->addField('username');
 		$this->addField('password');
 		$this->addField('CurrentAddress')->type('text')->mandatory(true);
@@ -59,7 +62,7 @@ class Model_Member extends Model_Table {
 		$this->addExpression('member_name_only')->set(function($m,$q){
 			return $q->expr('[0]',[$m->getElement('name')]);
 		})->caption('Member Name');
-		$this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));
+		$this->addExpression('member_name')->set('CONCAT(name," [",member_no, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));
 
 		$this->addExpression('search_string')->set("CONCAT(name,' ',FatherName,' ',PanNo)");
 
@@ -105,6 +108,13 @@ class Model_Member extends Model_Table {
 		// Check For Proper Mobile Number
 		if( $m->isDirty('PhoneNos') && strlen($m['PhoneNos'])<10)
 			throw $this->exception(' Please Enter correct No'.strlen($m['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
+
+		if(!$this->laoded()){
+			$max_member_number = $this->add('Model_Member');
+			$m['member_no'] = $max_member_number->_dsql()->del('fields')
+								->field($this->dsql()->expr('MAX(member_no)'))
+								->getOne();
+		}
 
 		// if(!$this['title'])
 		// if(!$this['Occupation'])

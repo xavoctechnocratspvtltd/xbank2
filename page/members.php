@@ -12,7 +12,7 @@ class page_members extends Page {
 		$crud = $this->add('xCRUD',array('grid_class'=>'Grid_Member'));
 
 		$member_model = $this->add('Model_Member');
-		$member_model->setOrder('id','desc');
+		$member_model->setOrder('member_no','desc');
 		
 
 		$crud->addHook('myupdate',function($crud,$form){
@@ -108,7 +108,7 @@ class page_members extends Page {
 				$g->js()->reload()->execute();
 			}
 
-			$g->addQuickSearch(array('id','branch','name','created_at','is_active','CurrentAddress','landmark','PermanentAddress','FatherName','PhoneNos','PanNo'));
+			$g->addQuickSearch(array('member_no','branch','name','created_at','is_active','CurrentAddress','landmark','PermanentAddress','FatherName','PhoneNos','PanNo'));
 			// $g->addQuickSearch(array('search_string'));
 			$g->addMethod('format_removeEdit',function($grid,$field){
 				if($grid->model['name'] == $grid->model->ref('branch_id')->get('Code').SP.'Default')
@@ -133,8 +133,8 @@ class page_members extends Page {
 			// $g->addFormatter('active','activeStatus');
 			$g->addFormatter('delete','removeDelete');
 			$g->addPaginator(10);
-			$g->controller->importField('id');
-			$g->addOrder()->move('id','first')->now();
+			// $g->controller->importField('id');
+			$g->addOrder()->move('member_no','first')->now();
 			// $g->addClass('.mygrid');
 			// $g->js('reload')->reload();
 		}

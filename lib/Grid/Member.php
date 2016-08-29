@@ -16,6 +16,7 @@ class Grid_Member extends Grid {
 		$this->addFormatter('MinorDOB','wrap');
 		$this->addFormatter('doc_image','wrap');
 		// $this->addFormatter('PanNo','wrap');
+		$this->removeColumn('id');
 		$this->removeColumn('PermanentAddress');
 		$this->removeColumn('title');
 		$this->removeColumn('member_name');

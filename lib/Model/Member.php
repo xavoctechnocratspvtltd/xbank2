@@ -111,9 +111,9 @@ class Model_Member extends Model_Table {
 
 		if(!$this->loaded()){
 			$max_member_number = $this->add('Model_Member');
-			$m['member_no'] = $max_member_number->_dsql()->del('fields')
+			$m['member_no'] = ($max_member_number->_dsql()->del('fields')
 								->field($this->dsql()->expr('MAX(member_no)'))
-								->getOne();
+								->getOne() + 1);
 		}
 
 		// if(!$this['title'])

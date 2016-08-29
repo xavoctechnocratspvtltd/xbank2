@@ -114,7 +114,7 @@ class Model_Member extends Model_Table {
 			$m['member_no'] = $max_member_number->_dsql()->del('fields')
 								->field($this->dsql()->expr('MAX(member_no)'))
 								->getOne();
-		}`
+		}
 
 		// if(!$this['title'])
 		// if(!$this['Occupation'])

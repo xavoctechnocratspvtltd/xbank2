@@ -177,14 +177,15 @@ class Model_Account_DDS extends Model_Account{
 
         $amount = $monthly_submitted_amount * $percent / 100;
         
-        $commissionForThisAgent = $this->agent()->cadre()->selfEfectivePercentage() * $amount / 100.00;
+        $commissionForThisAgent = round($this->agent()->cadre()->selfEfectivePercentage() * $amount / 100.00,2);
+        $tds = round($commissionForThisAgent * $tds_percentage / 100,2);
 
         $transaction = $this->add('Model_Transaction');
         $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Commission ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
         
         $transaction->addDebitAccount($branch_code. SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
-        $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - ($commissionForThisAgent * $tds_percentage / 100)));
-        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,(($commissionForThisAgent * $tds_percentage / 100)));
+        $transaction->addCreditAccount($agentAccount ,($commissionForThisAgent - $tds));
+        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,$tds);
         
         $transaction->execute();
 
@@ -202,7 +203,7 @@ class Model_Account_DDS extends Model_Account{
 
         $branch_code =$this->ref('branch_id')->get('Code');
 
-        $tds_percentage = $this->ref('agent_id')->ref('member_id')->hasPanNo()? 10 : 20 ;
+        $tds_percentage = $this->ref('agent_id')->ref('member_id')->hasPanNo()? TDS_PERCENTAGE_WITH_PAN : TDS_PERCENTAGE_WITHOUT_PAN ;
 //            $amount = $ac->amountCr;
 
         $int_amt = $this->interestGiven($this->api->previousMonth($on_date),$this->api->nextDate($on_date));
@@ -217,14 +218,15 @@ class Model_Account_DDS extends Model_Account{
 
         $amount = $monthly_submitted_amount * $percent / 100;
         
-        $commissionForThisAgent = $amount;
+        $commissionForThisAgent = round($amount,2);
+        $tds = round(($commissionForThisAgent * $tds_percentage / 100),2);
 
         $transaction = $this->add('Model_Transaction');
         $transaction->createNewTransaction(TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT, $this->ref('branch_id') , $on_date, "DDS Premium Collection Charge ".$this['AccountNumber'], $only_transaction=false, array('reference_id'=>$this->id));
         
         $transaction->addDebitAccount($branch_code. SP . COLLECTION_CHARGE_PAID_ON . SP. $this['scheme_name'], $commissionForThisAgent);
-        $transaction->addCreditAccount($agentAccount ,round(($commissionForThisAgent - ($commissionForThisAgent * $tds_percentage / 100)),3));
-        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,round((($commissionForThisAgent * $tds_percentage / 100)),3));
+        $transaction->addCreditAccount($agentAccount ,$commissionForThisAgent - $tds);
+        $transaction->addCreditAccount($branch_code.SP.BRANCH_TDS_ACCOUNT ,$tds);
         
         $transaction->execute();
 	}

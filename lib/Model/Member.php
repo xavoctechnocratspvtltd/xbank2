@@ -50,7 +50,7 @@ class Model_Member extends Model_Table {
 		$this->addField('RelationWithNominee');
 		$this->addField('NomineeAge');
 
-		$this->add('filestore/Field_Image','doc_image_id')->type('image');//->mandatory(true);
+		// $this->add('filestore/Field_Image','doc_image_id')->type('image');//->mandatory(true);
 
 		// $this->addField('is_customer')->type('boolean')->mandatory(true);
 		// $this->addField('is_member')->type('boolean')->mandatory(true)->defaultValue(true);
@@ -61,7 +61,8 @@ class Model_Member extends Model_Table {
 		});
 
 		$this->addExpression('doc_thumb_url')->set(function($m,$q){
-			return $m->refSQL('doc_image_id')->fieldQuery('thumb_url');
+				$acc = $this->add('Model_Account_SM')->addCondition('member_id',$q->getField('id'));
+				return $this->add('filestore/Model_Image',['table_alias'=>'mi'])->addCondition('id',$acc->fieldQuery('sig_image_id'))->setLimit(1)->fieldQuery('thumb_url');
 		});
 
 		$this->addExpression('member_name_only')->set(function($m,$q){

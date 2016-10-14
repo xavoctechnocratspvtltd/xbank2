@@ -27,10 +27,17 @@ class page_reports_member_member extends Page {
 			$g->current_row[$f]=$narration;
 		});
 
+		$grid->addMethod('init_image2',function($g){
+			$this->js('click')->_selector('img')->univ()->frameURL('IMAGE',[$this->app->url('image'),'image_id'=>$this->js()->_selectorThis()->data('sig-image-id') ]);
+		});
+
+		$grid->addMethod('format_image2',function($g,$f)use($self){
+			$g->current_row_html[$f]=$g->model['doc_thumb_url']?'<img src="'.$this->model['doc_thumb_url'].'" data-sig-image-id="'.$g->model['sig_image_id'].'"/>':'';
+		});
 		
 		$grid->addFormatter('comment','comment');
 		$grid->addFormatter('landmark','wrap');
-		$grid->addFormatter('doc_thumb_url','image');
+		$grid->addFormatter('doc_thumb_url','image2');
 		
 
 		

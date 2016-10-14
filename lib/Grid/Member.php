@@ -57,7 +57,12 @@ class Grid_Member extends Grid {
 		$this->current_row_html['MinorDOB']=$this->model['IsMinor']?"IsMinor.:".$this->model['IsMinor']."," : '<br/><span class="atk-text-dimmed"><small style="font-size:70%">'. "[ " .$this->model['MinorDOB']. "  ] ";
 		
 		$this->current_row_html['PanNo']=$this->model['PanNo']?"PAN No.:".$this->model['PanNo'].",":'<br/><span class="atk-text-dimmed"><small style="font-size:70%">'. "FilledForm 60/61 "."[".$this->model['FilledForm60' ]."]";
-		$this->current_row_html['doc_thumb_url']=$this->model['doc_thumb_url']?'<img src="'.$this->model['doc_thumb_url'].'"/>':'';
+		$this->current_row_html['doc_thumb_url']=$this->model['doc_thumb_url']?'<img src="'.$this->model['doc_thumb_url'].'"  data-sig-image-id="'.$this->model['sig_image_id'].'"/>':'';
 		parent::formatRow();
+	}
+
+	function recursiveRender(){
+		$this->js('click')->_selector('img')->univ()->frameURL('IMAGE',[$this->app->url('image'),'image_id'=>$this->js()->_selectorThis()->data('sig-image-id') ]);
+		return parent::recursiveRender();
 	}
 }

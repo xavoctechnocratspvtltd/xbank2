@@ -59,6 +59,11 @@ class Model_Member extends Model_Table {
 		$this->addExpression('age')->set(function($m,$q){
 			return $q->expr('TIMESTAMPDIFF(YEAR, [0], CURDATE())',array('DOB'));
 		});
+
+		$this->addExpression('doc_thumb_url')->set(function($m,$q){
+			return $m->refSQL('doc_image_id')->fieldQuery('thumb_url');
+		});
+
 		$this->addExpression('member_name_only')->set(function($m,$q){
 			return $q->expr('[0]',[$m->getElement('name')]);
 		})->caption('Member Name');

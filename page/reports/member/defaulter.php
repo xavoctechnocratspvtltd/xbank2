@@ -9,7 +9,7 @@ class page_reports_member_defaulter extends Page{
 		$member_model->addCondition('is_defaulter',true);
 		$form=$this->add('Form');
 		$grid=$this->add('Grid_AccountsBase');
-		$grid_column_array = array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','added_by');
+		$grid_column_array = array('id','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active');
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$document=$this->add('Model_Document');

@@ -10,7 +10,7 @@ class page_reports_member_member extends Page {
 
 		$grid=$this->add('Grid');
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
-		$grid->setModel($member_model,array('member_no','branch','name','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
+		$grid->setModel($member_model,array('member_no','branch','name','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter','doc_thumb_url'));
 		$grid->addPaginator(50);
 		$grid->addQuickSearch(array('member_no','name','PhoneNos'));
 		$self=$this;
@@ -26,9 +26,11 @@ class page_reports_member_member extends Page {
 			$narration=$comment_model->get('narration');
 			$g->current_row[$f]=$narration;
 		});
+
 		
 		$grid->addFormatter('comment','comment');
 		$grid->addFormatter('landmark','wrap');
+		$grid->addFormatter('doc_thumb_url','image');
 		
 
 		

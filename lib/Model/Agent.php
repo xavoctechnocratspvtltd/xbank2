@@ -13,6 +13,8 @@ class Model_Agent extends Model_Table {
 		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'));;
 		$this->hasOne('Cadre','cadre_id');
 		// $this->hasOne('Tree','tree_id');
+		$this->addField('added_by');
+
 		$this->addField('username')->mandatory(true);
 		$this->addField('password')->mandatory(true);
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);

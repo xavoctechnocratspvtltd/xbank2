@@ -109,7 +109,7 @@ class page_reports_agent_detail extends Page {
 		$grid_agent=$view->add('Grid_AccountsBase');
 
 		$grid_agent->add('H3',null,'grid_buttons')->set('Agent Detail As On '. date('d-M-Y'));
-		$grid_agent->setModel($agent);
+		$grid_agent->setModel($agent, $grid_column_array);
 		$grid_agent->addSno();
 		$grid_agent->addFormatter('sponsor','wrap');
 

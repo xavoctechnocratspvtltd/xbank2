@@ -61,11 +61,11 @@ class Model_Member extends Model_Table {
 		});
 
 		$this->addExpression('sig_image_id')->set(function($m,$q){
-				return $acc = $this->add('Model_Account_SM')->addCondition('member_id',$q->getField('id'))->fieldQuery('sig_image_id');
+				return $acc = $this->add('Model_Account_SM')->addCondition('member_id',$q->getField('id'))->setLimit(1)->fieldQuery('sig_image_id');
 		});
 
 		$this->addExpression('doc_thumb_url')->set(function($m,$q){
-				$acc = $this->add('Model_Account_SM')->addCondition('member_id',$q->getField('id'));
+				$acc = $this->add('Model_Account_SM')->addCondition('member_id',$q->getField('id'))->setLImit(1);
 				return $this->add('filestore/Model_Image',['table_alias'=>'mi'])->addCondition('id',$acc->fieldQuery('sig_image_id'))->setLimit(1)->fieldQuery('thumb_url');
 		});
 

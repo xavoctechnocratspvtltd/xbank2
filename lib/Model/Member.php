@@ -40,6 +40,7 @@ class Model_Member extends Model_Table {
 		$this->addField('IsMinor')->type('boolean');
 		$this->addField('is_active')->type('boolean')->defaultValue(true);
 		$this->addField('is_defaulter')->type('boolean')->defaultValue(false);
+		$this->addField('defaulter_on')->type('datetime');
 		$this->addField('MinorDOB')->type('date');
 		$this->addField('ParentName');
 		$this->addField('RelationWithParent');
@@ -242,6 +243,10 @@ class Model_Member extends Model_Table {
 		if(!$this->loaded())
 			throw $this->exception('Please call on loaded object');
 		$this['is_defaulter']=!$this['is_defaulter'];
+		if($this['is_defaulter']) 
+			$this['defaulter_on'] = $this->app->now;
+		else
+			$this['defaulter_on'] = null;
 		$this->save();
 
 	}

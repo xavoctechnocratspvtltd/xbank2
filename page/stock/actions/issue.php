@@ -63,7 +63,7 @@ class page_stock_actions_issue extends Page {
 		$this->add('View_Info')->set('Issue Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
 		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false,'allow_edit'=>false));
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(100);
 		}
 		
 		$issue_transaction=$this->add('Model_Stock_Transaction');

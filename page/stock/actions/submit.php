@@ -43,7 +43,7 @@ class page_stock_actions_submit extends Page {
 		$submit_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$submit_transaction->setOrder('created_at','desc');
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(100);
 		}
 
 		if($_GET['filter']){

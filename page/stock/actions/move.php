@@ -97,7 +97,7 @@ class page_stock_actions_move extends Page {
 		
 		$transfer_transaction->setOrder('created_at','desc');
 
-		$crud->grid->addPaginator(10);
+		$crud->grid->addPaginator(100);
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');

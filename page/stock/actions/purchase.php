@@ -40,7 +40,7 @@ class page_stock_actions_purchase extends Page {
 		$purchase_transaction->addCondition('transaction_type','Purchase');
 		$purchase_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$purchase_transaction->setOrder('created_at','desc');
-		$crud->grid->addPaginator(15);
+		$crud->grid->addPaginator(100);
 		// DO Search Filter 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');

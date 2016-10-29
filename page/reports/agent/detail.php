@@ -14,6 +14,10 @@ class page_reports_agent_detail extends Page {
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
+		$form->addField('dropdown','status')->setValueList(['all'=>'All','0'=>'InActive','1'=>'Active']);
+
 		$document=$this->add('Model_Document');
 		$document->addCondition('AgentDocuments',true);
 		foreach ($document as $junk) {
@@ -98,6 +102,17 @@ class page_reports_agent_detail extends Page {
 				$agent_guarantor->addCondition('agent_id',$_GET['agent']);
 			}
 
+			if($this->app->stickyGET('from_date')){
+				$agent->addCondition('created_at','>',$_GET['from_date']);
+			}
+
+			if($this->app->stickyGET('to_date')){
+				$agent->addCondition('created_at','<=',$this->app->nextDate($_GET['to_date']));
+			}
+
+			if($this->app->stickyGET('status') !=='all')
+				$agent->addCondition('ActiveStatus',$_GET['status']==0?false:true);
+
 		}else
 			$agent->addCondition('id',-1);
 
@@ -134,7 +149,7 @@ class page_reports_agent_detail extends Page {
 		$grid_agent->addPaginator(500);
 
 		if($form->isSubmitted()){
-			$send =['agent'=>$form['agent'],'filter'=>1];
+			$send =['agent'=>$form['agent'],'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'status'=>$form['status']?:null,'filter'=>1];
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

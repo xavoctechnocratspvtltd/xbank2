@@ -30,7 +30,7 @@ class page_stock_row extends Page {
 	
 		if($g=$crud->grid){
 			$g->addQuickSearch(array('container','name'));	
-			$g->addPaginator(20);
+			$g->addPaginator(100);
 		}
 	}
 }

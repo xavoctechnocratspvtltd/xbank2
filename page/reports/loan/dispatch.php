@@ -17,6 +17,10 @@ class page_reports_loan_dispatch extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
+
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
+		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
+
 		// $form->addField('DropDown','document')->setEmptyText('No Document')->setModel('Document')->addCondition('LoanAccount',true);
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
@@ -88,6 +92,11 @@ class page_reports_loan_dispatch extends Page {
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PermanentAddress');
 		});
 
+
+		$account_model->addExpression('dsa_id')->set(function($m,$q){
+			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
+		});
+
 		$grid_array = array('AccountNumber','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
@@ -122,6 +131,33 @@ class page_reports_loan_dispatch extends Page {
 				$this->api->stickyGET('to_date');
 				$account_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			}
+
+			switch ($this->app->stickyGET('loan_type')) {
+				case 'vl':
+					$account_model->addCondition('AccountNumber','like','%vl%');
+					$account_model->addCondition('AccountNumber','not like','%fvl%');
+					break;
+				case 'pl':
+					$account_model->addCondition('AccountNumber','like','%pl%');
+					break;
+				case 'fvl':
+					$account_model->addCondition('AccountNumber','like','%FVL%');
+					break;
+				case 'sl':
+					$account_model->addCondition('AccountNumber','like','%SL%');
+					break;
+				case 'other':
+					$account_model->addCondition('AccountNumber','not like','%pl%');
+					$account_model->addCondition('AccountNumber','not like','%vl%');
+					// $account_model->_dsql()->where('(accounts.AccountNumber not like "%pl%" and accounts.AccountNumber not like "%pl%")');
+					break;
+			}
+
+			if($this->app->stickyGET('dsa')){
+				$account_model->addCondition('dsa_id',$_GET['dsa']);
+				if(!$_GET['dealer']) $grid_array[] ='dealer';
+			}
+
 
 			foreach ($document as $junk) {
 				$doc_id = $document->id;
@@ -177,7 +213,7 @@ class page_reports_loan_dispatch extends Page {
 		$grid->js('click',$js);
 		if($form->isSubmitted()){
 
-			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'document'=>$form['document']?:0,'filter'=>1);
+			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'document'=>$form['document']?:0,'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'], 'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

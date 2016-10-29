@@ -194,7 +194,7 @@ class page_accounts_Loan extends Page {
 
 		if($crud->isEditing('add')){
 			// $crud->form->getElement('member_id')->getModel()->addOkConditions();
-
+			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
 
 			// $crud->form->add('Order')

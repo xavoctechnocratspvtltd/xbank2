@@ -35,6 +35,8 @@ class page_reports_loan_emiduelist extends Page {
 		$form->addField('DatePicker','to_date');
 		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
+		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
+
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
 		foreach ($document as $junk) {
@@ -148,6 +150,10 @@ class page_reports_loan_emiduelist extends Page {
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PermanentAddress');
 			return "'guarantor_phno'";
 		});
+
+		$account_model->addExpression('dsa_id')->set(function($m,$q){
+			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
+		});
 		
 
 		
@@ -210,6 +216,11 @@ class page_reports_loan_emiduelist extends Page {
 					$account_model->addCondition('AccountNumber','not like','%vl%');
 					// $account_model->_dsql()->where('(accounts.AccountNumber not like "%pl%" and accounts.AccountNumber not like "%pl%")');
 					break;
+			}
+
+			if($this->app->stickyGET('dsa')){
+				$account_model->addCondition('dsa_id',$_GET['dsa']);
+				if(!$_GET['dealer']) $grid_column_array[] ='dealer';
 			}
 
 			// $grid->addMethod('format_total',function($g,$f){
@@ -299,7 +310,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		if($form->isSubmitted()){
 
-			$send = array('dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
+			$send = array('dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'], 'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

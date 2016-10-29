@@ -60,7 +60,7 @@ class page_accounts_DDS extends Page {
 			$k = 2;
 			for($k=2;$k<=4;$k++) {
 			    $f=$crud->form->addField('autocomplete/Basic','member_ID_'.$k);
-			   	$f->setModel('Member');
+			   	$f->setModel('Member')->addCondition('is_active',true);
 			   	$o->move($f->other_field,'before','Nominee');
 			}
 

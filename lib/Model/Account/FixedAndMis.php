@@ -274,7 +274,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 			$interest = $this['Amount'] * $this['Interest'] * $days_to_count / 36500;
 
 
-		$interest = round($interest,2);
+		$interest = round($interest);
 
 		// OLD SOFTWARE CODE FOR REFERENCE HERE : xcideveloper joomla
 		// if($days['days_total'] < 30 && (date("m",strtotime(getNow("Y-m-d"))) - 1 ) !=2)

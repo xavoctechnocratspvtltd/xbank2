@@ -109,7 +109,7 @@ class page_stock_actions_transfer extends Page {
     		$grid->addMethod('format_to',function($g,$f){
     			$g->current_row[$f] = $g->add('Model_Branch')->addCondition('id',$g->current_row[$f])->tryLoadAny()->get('name');
     		});
-    		$crud->grid->addPaginator(10);
+    		$crud->grid->addPaginator(100);
 		}
 
 		if($form->isSubmitted()){

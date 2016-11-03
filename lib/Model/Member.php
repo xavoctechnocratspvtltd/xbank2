@@ -10,6 +10,9 @@ class Model_Member extends Model_Table {
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.')->mandatory(true);
 		$this->addField('name')->mandatory(true);
+
+		$this->addField('member_no')->type('int');
+
 		$this->addField('username');
 		$this->addField('password');
 		$this->addField('CurrentAddress')->type('text')->mandatory(true);
@@ -37,6 +40,7 @@ class Model_Member extends Model_Table {
 		$this->addField('IsMinor')->type('boolean');
 		$this->addField('is_active')->type('boolean')->defaultValue(true);
 		$this->addField('is_defaulter')->type('boolean')->defaultValue(false);
+		$this->addField('defaulter_on')->type('datetime');
 		$this->addField('MinorDOB')->type('date');
 		$this->addField('ParentName');
 		$this->addField('RelationWithParent');
@@ -47,7 +51,7 @@ class Model_Member extends Model_Table {
 		$this->addField('RelationWithNominee');
 		$this->addField('NomineeAge');
 
-		$this->add('filestore/Field_Image','doc_image_id')->type('image');//->mandatory(true);
+		// $this->add('filestore/Field_Image','doc_image_id')->type('image');//->mandatory(true);
 
 		// $this->addField('is_customer')->type('boolean')->mandatory(true);
 		// $this->addField('is_member')->type('boolean')->mandatory(true)->defaultValue(true);
@@ -56,10 +60,20 @@ class Model_Member extends Model_Table {
 		$this->addExpression('age')->set(function($m,$q){
 			return $q->expr('TIMESTAMPDIFF(YEAR, [0], CURDATE())',array('DOB'));
 		});
+
+		$this->addExpression('sig_image_id')->set(function($m,$q){
+				return $acc = $this->add('Model_Account_SM')->addCondition('member_id',$q->getField('id'))->setLimit(1)->fieldQuery('sig_image_id');
+		});
+
+		$this->addExpression('doc_thumb_url')->set(function($m,$q){
+				$acc = $this->add('Model_Account_SM')->addCondition('member_id',$q->getField('id'))->setLImit(1);
+				return $this->add('filestore/Model_Image',['table_alias'=>'mi'])->addCondition('id',$acc->fieldQuery('sig_image_id'))->setLimit(1)->fieldQuery('thumb_url');
+		});
+
 		$this->addExpression('member_name_only')->set(function($m,$q){
 			return $q->expr('[0]',[$m->getElement('name')]);
 		})->caption('Member Name');
-		$this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));
+		$this->addExpression('member_name')->set('CONCAT(name," [",member_no, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));
 
 		$this->addExpression('search_string')->set("CONCAT(name,' ',FatherName,' ',PanNo)");
 
@@ -106,6 +120,13 @@ class Model_Member extends Model_Table {
 		if( $m->isDirty('PhoneNos') && strlen($m['PhoneNos'])<10)
 			throw $this->exception(' Please Enter correct No'.strlen($m['PhoneNos']), 'ValidityCheck')->setField('PhoneNos');
 
+		if(!$this->loaded()){
+			$max_member_number = $this->add('Model_Member');
+			$m['member_no'] = ($max_member_number->_dsql()->del('fields')
+								->field($this->dsql()->expr('MAX(member_no)'))
+								->getOne() + 1);
+		}
+
 		// if(!$this['title'])
 		// if(!$this['Occupation'])
 		// 	throw $this->exception('Please Select Occupation', 'ValidityCheck')->setField('Occupation');
@@ -150,7 +171,7 @@ class Model_Member extends Model_Table {
 
 		if($admissionFee){
 			$transaction = $this->add('Model_Transaction');
-			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$branch, $on_date, "Member Registration Fee for ". $this->id, null, array('reference_id'=>$this->id));
+			$transaction->createNewTransaction(TRA_NEW_MEMBER_REGISTRATIO_AMOUNT,$branch, $on_date, "Member Registration Fee for ". $this['member_no'], null, array('reference_id'=>$this->id));
 			
 			$transaction->addDebitAccount($this->ref('branch_id')->get('Code').SP.CASH_ACCOUNT, $admissionFee);
 			$transaction->addCreditAccount($this->ref('branch_id')->get('Code').SP.ADMISSION_FEE_ACCOUNT, $admissionFee);
@@ -222,6 +243,10 @@ class Model_Member extends Model_Table {
 		if(!$this->loaded())
 			throw $this->exception('Please call on loaded object');
 		$this['is_defaulter']=!$this['is_defaulter'];
+		if($this['is_defaulter']) 
+			$this['defaulter_on'] = $this->app->now;
+		else
+			$this['defaulter_on'] = null;
 		$this->save();
 
 	}

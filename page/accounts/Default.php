@@ -55,6 +55,7 @@ class page_accounts_Default extends Page {
 		}
 
 		if($crud->isEditing('add')){
+			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$m = $crud->form->getElement('scheme_id')->getModel();
 			$m->addCondition('SchemeType',ACCOUNT_TYPE_DEFAULT);
 			$m->addCondition('name','<>','Share Capital');

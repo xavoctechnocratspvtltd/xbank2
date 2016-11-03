@@ -44,7 +44,7 @@ class page_stock_actions_usedsubmit extends Page {
 		$used_transaction->addCondition('branch_id',$this->api->currentBranch->id);
 		$used_transaction->setOrder('created_at','desc');
 		if($crud->grid){
-			$crud->grid->addPaginator(10);
+			$crud->grid->addPaginator(100);
 		}
 
 		if($_GET['filter']){

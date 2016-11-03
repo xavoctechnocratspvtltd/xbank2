@@ -110,10 +110,10 @@ class Model_Premium extends Model_Table {
 			$all_paid_noncollected_preimums->saveAndUnload();			
 		}
 
-		$commissionForThisAgent = $commission;
+		$commissionForThisAgent = round($commission,2);
 
-		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?10:20;
-		$tds = $commissionForThisAgent * $tds_percentage / 100;
+		$tds_percentage = $this->ref('account_id')->ref('agent_id')->ref('member_id')->get('PanNo')?TDS_PERCENTAGE_WITH_PAN:TDS_PERCENTAGE_WITHOUT_PAN;
+		$tds = round($commissionForThisAgent * $tds_percentage / 100,2);
 
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Collection ".$account['AccountNumber'], null, array('reference_id'=>$account->id));

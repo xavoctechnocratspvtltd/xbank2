@@ -23,7 +23,7 @@ class page_stock_member extends Page {
 		$crud->setModel($party);		
 	
 		if($g=$crud->grid){
-			$g->addPaginator(10);
+			$g->addPaginator(100);
 		}
 
 		$crud->add('Controller_Acl');

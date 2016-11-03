@@ -10,9 +10,9 @@ class page_reports_member_member extends Page {
 
 		$grid=$this->add('Grid');
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
-		$grid->setModel($member_model,array('id','branch','name','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter'));
+		$grid->setModel($member_model,array('member_no','branch','name','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter','doc_thumb_url','sig_image_id'));
 		$grid->addPaginator(50);
-		$grid->addQuickSearch(array('id','name','PhoneNos'));
+		$grid->addQuickSearch(array('member_no','name','PhoneNos'));
 		$self=$this;
 
 		$self=$this;
@@ -26,15 +26,25 @@ class page_reports_member_member extends Page {
 			$narration=$comment_model->get('narration');
 			$g->current_row[$f]=$narration;
 		});
+
+		$grid->addMethod('init_image2',function($g){
+			$this->js('click')->_selector('img')->univ()->frameURL('IMAGE',[$this->app->url('image'),'image_id'=>$this->js()->_selectorThis()->data('sig-image-id') ]);
+		});
+
+		$grid->addMethod('format_image2',function($g,$f)use($self){
+			$g->current_row_html[$f]=$g->model['doc_thumb_url']?'<img src="'.$g->model['doc_thumb_url'].'" data-sig-image-id="'.$g->model['sig_image_id'].'"/>':'';
+		});
 		
 		$grid->addFormatter('comment','comment');
 		$grid->addFormatter('landmark','wrap');
+		$grid->addFormatter('doc_thumb_url','image2');
 		
 
 		
 		$grid->addColumn('expander','details');
 		$grid->addColumn('expander','accounts');
 		$grid->addColumn('expander','guarantor_in');
+		$grid->removeColumn('sig_image_id');
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

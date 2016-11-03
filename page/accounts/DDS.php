@@ -53,11 +53,12 @@ class page_accounts_DDS extends Page {
 		});
 
 		if($crud->isEditing("add")){
+
 		    $o=$crud->form->add('Order');
 			$k = 2;
 			for($k=2;$k<=4;$k++) {
 			    $f=$crud->form->addField('autocomplete/Basic','member_ID_'.$k);
-			   	$f->setModel('Member');
+			   	$f->setModel('Member')->addCondition('is_active',true);
 			   	$o->move($f->other_field,'before','Nominee');
 			}
 
@@ -117,7 +118,7 @@ class page_accounts_DDS extends Page {
 		}
 
 		if($crud->isEditing('add')){
-
+			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
 			
 			$o->move('initial_opening_amount','before','Amount')

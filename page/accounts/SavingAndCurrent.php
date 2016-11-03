@@ -35,7 +35,7 @@ class page_accounts_SavingAndCurrent extends Page {
 		    $o=$crud->form->add('Order');
 			for($k=2;$k<=4;$k++) {
 			    $f=$crud->form->addField('autocomplete/Basic','member_ID_'.$k, 'Joint Member '.$k);
-			   	$f->setModel('Member');
+			   	$f->setModel('Member')->addCondition('is_active',true);
 			   	$o->move($f->other_field,'before','Nominee');
 			}
 
@@ -82,6 +82,7 @@ class page_accounts_SavingAndCurrent extends Page {
 		}
 
 		if($crud->isEditing('add')){
+			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
 			$o->now();

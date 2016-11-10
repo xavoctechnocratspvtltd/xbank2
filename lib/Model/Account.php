@@ -422,7 +422,7 @@ class Model_Account extends Model_Table {
 						'address'=>$member['CurrentAddress']. ', LandMark '. $member['landmark'].', Tehsil '. $member['tehsil'].', District '.$member['district'],
 						'city'=>$member['city'],
 						'pin_code'=>$member['pin_code'],
-						'created_at'=>$member['created_at'],
+						'created_at'=>$this['created_at'],
 						'phone_numbers'=>$member['PhoneNos']
 					],
 					$header_array=[],$http_header);

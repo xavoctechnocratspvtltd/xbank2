@@ -9,7 +9,13 @@ class page_api_account extends page_api_auth{
 	function page_index(){
 		// parent::init();
 		$account_no=$this->app->stickyGET('account');
-		$account_no = "SLBRD2";
+		
+		$account_no = explode(" ", $account_no);
+		$account_no = explode("-", $account_no[0]);
+		
+		$account_no = $account_no[0];
+
+
 		if(!$account_no){
 			$this->add('View_Info')->set('No Extrenal Information Available');
 			return ;

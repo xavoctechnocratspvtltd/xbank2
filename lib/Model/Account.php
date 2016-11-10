@@ -412,22 +412,24 @@ class Model_Account extends Model_Table {
 		// throw new \Exception("Error Processing Request", 1);
 
 		// Call API if available
-		try{
-			$http_header=null;
-			$member = $this->ref('member_id');
-			$this->add('Controller_CURL')->post(ACCOUNT_CREATE_API_URL,
-				$data=[
-					'first_name'=>$this['AccountNumber'].'-'.$member['name'],
-					'address'=>$member['CurrentAddress']. ', LandMark '. $member['landmark'].', Tehsil '. $member['tehsil'].', District '.$member['district'],
-					'city'=>$member['city'],
-					'pin_code'=>$member['pin_code'],
-					'created_at'=>$member['created_at'],
-					'phone_numbers'=>$member['PhoneNos']
-				],
-				$header_array=[],$http_header);
-		}catch(\Exception $e){
-			die($e->getMessage());
-			throw $e;
+		if(ENABLE_API){
+			try{
+				$http_header=null;
+				$member = $this->ref('member_id');
+				$this->add('Controller_CURL')->post(ACCOUNT_CREATE_API_URL,
+					$data=[
+						'first_name'=>$this['AccountNumber'].'-'.$member['name'],
+						'address'=>$member['CurrentAddress']. ', LandMark '. $member['landmark'].', Tehsil '. $member['tehsil'].', District '.$member['district'],
+						'city'=>$member['city'],
+						'pin_code'=>$member['pin_code'],
+						'created_at'=>$member['created_at'],
+						'phone_numbers'=>$member['PhoneNos']
+					],
+					$header_array=[],$http_header);
+			}catch(\Exception $e){
+				die($e->getMessage());
+				throw $e;
+			}
 		}
 
 		return $this->id;

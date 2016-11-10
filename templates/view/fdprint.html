@@ -264,11 +264,16 @@
 		font-size:12px;
 		width: 20%;
 	}
+	@media print {
+		.fd-bond-layout img{
+  	 		display: none!important;
+  		}
+	}
 
 </style>
 	<div class="container">
 		{$Content}
-		<div id="main">
+		<div id="main" class="fd-bond-layout ">
 			<img src="templates/images/fd bond.jpg" />
 			<div class="branch">{$branch}</div>
 			<div class="branch_1">{$branch_1}</div>

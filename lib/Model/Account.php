@@ -412,7 +412,7 @@ class Model_Account extends Model_Table {
 		// throw new \Exception("Error Processing Request", 1);
 
 		// Call API if available
-		if($this->api->getConfig('enable_api',false)){
+		if($this->api->getConfig('enable_api',false) && !$this['DefaultAC']){
 			try{
 				$http_header=null;
 				$member = $this->ref('member_id');

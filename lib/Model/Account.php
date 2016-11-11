@@ -423,7 +423,8 @@ class Model_Account extends Model_Table {
 						'city'=>$member['city'],
 						'pin_code'=>$member['pin_code'],
 						'created_at'=>$this['created_at'],
-						'phone_numbers'=>$member['PhoneNos']
+						'phone_numbers'=>$member['PhoneNos'],
+						'category'=>$this['account_type']
 					],
 					$header_array=[],$http_header);
 			}catch(\Exception $e){

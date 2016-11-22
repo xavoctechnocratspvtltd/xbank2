@@ -91,7 +91,7 @@ class page_reports_loan_rcduelist extends Page {
 		$accounts_model->setOrder('Description','asc');
 		$grid->setModel($accounts_model,array('AccountNumber','created_at','scheme','member','father_name','address','phone_nos','maturity_date','dealer','Description','submitted_on'));
 
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 		$grid->addSno();
 		$grid->addFormatter('scheme','Wrap');
 		$grid->addFormatter('member','Wrap');

@@ -198,7 +198,7 @@ class page_reports_loan_dispatch extends Page {
 		// $order->move('file_charge','after','Amount')->now();
 		// $order->move('cheque_amount','after','file_charge')->now();
 
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 
 		$grid->addTotals(array('total','Amount','file_charge','cheque_amount','emi'));
 

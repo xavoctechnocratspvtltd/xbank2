@@ -44,7 +44,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$min_limit= 0; // No minimum limit for FD .. Let all money be withdrawn
 
 		if(round($amount,0) > (round($balance,0))){
-			throw $this->exception('Cannot withdraw amount less then '. $balance ,'ValidityCheck')->setField('amount');
+			throw $this->exception('Cannot withdraw amount more then '. $balance ,'ValidityCheck')->setField('amount')->addMoreInfo('Account',$this['AccountNumber']);
 		}
 		
 		// $this['CurrentInterest'] = $this['CurrentInterest'] + $this->getSavingInterest($on_date);

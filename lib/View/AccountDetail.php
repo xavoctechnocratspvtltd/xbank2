@@ -53,6 +53,8 @@ class View_AccountDetail extends View {
 		$documents = $ac_m->ref('DocumentSubmitted');
 		$grid_document= $this->add('Grid',null,'documents');
 		$grid_document->setModel($documents);
+
+		$grid_document->addFormatter('Description','wrap');
 		
 		$grid_document->addMethod('format_dealer',function($g,$f)use($ac_m){
 			if(!$g->model['dealer_id'])

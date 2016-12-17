@@ -117,6 +117,8 @@ class page_reports_general_document extends Page {
 		$document_submitted_model->add('Controller_Acl');
 
 		$grid->setModel($document_submitted_model);
+
+		$grid->addFormatter('Description','wrap');
 		$grid->addPaginator(500);
 
 		// $js=array(

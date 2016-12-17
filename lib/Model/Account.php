@@ -412,18 +412,19 @@ class Model_Account extends Model_Table {
 		// throw new \Exception("Error Processing Request", 1);
 
 		// Call API if available
-		if(ENABLE_API){
+		if($this->api->getConfig('enable_api',false) && !$this['DefaultAC']){
 			try{
 				$http_header=null;
 				$member = $this->ref('member_id');
-				$this->add('Controller_CURL')->post(ACCOUNT_CREATE_API_URL,
+				$this->add('Controller_CURL')->post($this->api->getConfig('account_create_api_url',false),
 					$data=[
 						'first_name'=>$this['AccountNumber'].'-'.$member['name'],
 						'address'=>$member['CurrentAddress']. ', LandMark '. $member['landmark'].', Tehsil '. $member['tehsil'].', District '.$member['district'],
 						'city'=>$member['city'],
 						'pin_code'=>$member['pin_code'],
-						'created_at'=>$member['created_at'],
-						'phone_numbers'=>$member['PhoneNos']
+						'created_at'=>$this['created_at'],
+						'phone_numbers'=>$member['PhoneNos'],
+						'category'=>$this['account_type']
 					],
 					$header_array=[],$http_header);
 			}catch(\Exception $e){

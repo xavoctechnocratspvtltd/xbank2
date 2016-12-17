@@ -123,7 +123,7 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 				}				
 
 				$active_fd_accounts->doInterestProvision($on_date,$maturity_day);
-				if($maturity_day ){					
+				if($maturity_day ){
 					$active_fd_accounts->revertProvision($on_date);
 					$active_fd_accounts->settleAccessOrLess($on_date,$this->app->nextDate($on_date));
 					$active_fd_accounts->markMature($on_date);

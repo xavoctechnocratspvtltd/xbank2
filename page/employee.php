@@ -161,9 +161,9 @@ class page_employee extends Page{
 			$total_days = 30;
 			if($emp_salary['total_days'])
 				$total_days = $emp_salary['total_days'];
+				
+			$new_salary_amount=round(($emp_model['basic_salary']?$emp_model['basic_salary']:0 /$total_days * $emp_salary['paid_days'])); 
 
-			$new_salary_amount=round(($emp_model['basic_salary']/$total_days * $emp_salary['paid_days'])); 
-			
 			$s_c=$salary=$col->addColumn(1)->addClass('bank-col-1');
 			$salary_f = $s_c->addField('hidden','salary_'.$emp_model['id'])->set($new_salary_amount);
 			$s_c->add('View')->setHtml(round($emp_salary['salary']).'&nbsp')->addClass('value-text');

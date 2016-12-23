@@ -140,7 +140,7 @@ class page_reports_loan_newNPAaccount extends Page {
 
 
 			// $account_model->addCondition('DueDate','<=',$till_date);
-			$account_model->addCondition('maturity_date','>',$till_date);
+			$account_model->addCondition($account_model->dsql()->expr("[0] > '[1]'",[$account_model->getElement('maturity_date'),$till_date]));
 
 			if($_GET['dealer'])
 				$account_model->addCondition('dealer_id',$_GET['dealer']);

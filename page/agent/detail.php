@@ -21,7 +21,7 @@ class page_agent_detail extends Page {
 		$member_join->addField('FatherName');
 		$member_join->addField('PermanentAddress');
 		$member_join->addField('PhoneNos');
-		$member_join->addField('branch_id');
+		// $member_join->addField('branch_id');
 
 		// $agent_guarantor->addCondition('branch_id',$this->api->current_branch->id);
 
@@ -32,7 +32,7 @@ class page_agent_detail extends Page {
 		$member_join->addField('PermanentAddress');
 		$member_join->addField('PanNo');
 		$member_join->addField('PhoneNos');
-		$member_join->addField('branch_id');
+		// $member_join->addField('branch_id');
 
 		// $agent->add('Controller_Acl');
 		// $agent->addCondition('branch_id',$this->api->current_branch->id);

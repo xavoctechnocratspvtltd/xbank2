@@ -13,10 +13,14 @@ class page_reports_member_member extends Page {
 		}
 
 		$form->addField('Dropdown','type')->setValueList(array_merge($type_array,["All"=>"All"]));
+		$bank_field = $form->addField('Dropdown','bank')->setEmptyText('All Banks');
+		$bank_field->setModel('Bank');
 		$form->addSubmit('Get List');
 		$member_model=$this->add('Model_Member');
 		$member_model->setOrder('created_at','desc');
-
+		$member_model->addExpression('bank_a_id')->set($member_model->refSQL('bankbranch_a_id')->fieldQuery('bank_id'));
+		$member_model->addExpression('bank_b_id')->set($member_model->refSQL('bankbranch_b_id')->fieldQuery('bank_id'));
+		
 		$grid=$this->add('Grid');
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -26,6 +30,10 @@ class page_reports_member_member extends Page {
 				if($_GET['type'] != "All"){
 					$member_model->addCondition('memebr_type',$_GET['type']);
 				}
+			}
+			if($_GET['bank']){
+				$this->api->stickyGET('bank');
+				$member_model->addCondition([['bank_a_id',$_GET['bank']],['bank_b_id',$_GET['bank']]]);
 			}
 
 		}else{
@@ -79,7 +87,7 @@ class page_reports_member_member extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$send = array('type'=>$form['type'],'filter'=>1);
+			$send = array('type'=>$form['type'],'bank'=>$form['bank'],'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	

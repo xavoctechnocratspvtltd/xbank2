@@ -72,6 +72,7 @@ class page_reports_deposit_duestogive extends Page {
 		$grid->addPaginator(500);
 		$grid->addSno();
 		$grid->addFormatter('PermanentAddress','wrap');
+		$grid->addTotals(['Amount','MaturityAmount']);
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
 		// 	$this->js()->_selector('#header')->toggle(),

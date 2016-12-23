@@ -38,12 +38,13 @@ class page_reports_agent_tds extends Page {
 		$agent_member_j->addField('PanNo');
 
 		$model->addExpression('saving_account_id')->set(function($m,$q){
-			$tr = $tis->add('Model_TransactionRow',['table_alias'=>'sv_acc']);
+			$tr = $m->add('Model_TransactionRow',['table_alias'=>'sv_acc']);
 			$tr->addExpression('account_type')->set(function($m,$q){
 				return $m->refSQL('account_id')->fieldQuery('account_type');
 			});
 			$tr->addCondition('account_type','Saving');
-			return $m->refSQL('TransactionRow')->fieldQuery('account_id');
+			$tr->addCondition('transaction_id',$q->getField('id'));
+			return $tr->fieldQuery('account_id');
 		});
 		
 

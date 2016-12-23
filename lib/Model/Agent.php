@@ -304,7 +304,8 @@ class Model_Agent extends Model_Table {
 	}
 
 	function beforeDelete(){
-		throw new Exception("Agent Delete Hook ????", 1);
+		if($this->add('Model_Account')->addCondition('agent_id',$this->id)->count()->getOne() > 0 )
+			throw new Exception("Agent Has Accounts", 1);
 		
 	}
 

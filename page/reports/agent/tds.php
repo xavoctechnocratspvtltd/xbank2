@@ -30,10 +30,21 @@ class page_reports_agent_tds extends Page {
 
 		$reference_account_j = $model->join('accounts','reference_id');
 		$agent_j=$reference_account_j->join('agents','agent_id');
+		$agent_j->addField('agent_saving_account_id','account_id');
+
 		$reference_account_j->addField('agent_id');
 		$reference_account_j->addField('account_type');
 		$agent_member_j = $agent_j->join('members','member_id');
 		$agent_member_j->addField('PanNo');
+
+		$model->addExpression('saving_account_id')->set(function($m,$q){
+			$tr = $tis->add('Model_TransactionRow',['table_alias'=>'sv_acc']);
+			$tr->addExpression('account_type')->set(function($m,$q){
+				return $m->refSQL('account_id')->fieldQuery('account_type');
+			});
+			$tr->addCondition('account_type','Saving');
+			return $m->refSQL('TransactionRow')->fieldQuery('account_id');
+		});
 		
 
 
@@ -56,6 +67,9 @@ class page_reports_agent_tds extends Page {
 			$this->api->stickyGET("account_type");
 			$this->api->stickyGET("agent");
 
+			$agent_temp_m = $this->add('Model_Agent');
+			$agent_temp_m->load($_GET['agent']);
+
 			if($_GET['account_type']){
 				$model->addCondition('account_type','like',$_GET['account_type']);
 			}
@@ -66,7 +80,7 @@ class page_reports_agent_tds extends Page {
 			if($_GET['to_date'])
 				$model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			if($_GET['agent'])
-				$model->addCondition('agent_id',$_GET['agent']);
+				$model->addCondition('agent_saving_account_id',$agent_temp_m['account_id']);
 		}else
 			$model->addCondition('id',-1);
 

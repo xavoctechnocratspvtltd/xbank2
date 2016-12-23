@@ -5,10 +5,32 @@ class page_reports_member_member extends Page {
 
 	function page_index(){
 		// parent::init();
+
+		$form = $this->add('Form');
+		$type_array = [];
+		foreach (explode(",", MEMBER_TYPES) as $key => $value) {
+			$type_array[$value] = $value; 
+		}
+
+		$form->addField('Dropdown','type')->setValueList(array_merge($type_array,["All"=>"All"]));
+		$form->addSubmit('Get List');
 		$member_model=$this->add('Model_Member');
 		$member_model->setOrder('created_at','desc');
 
 		$grid=$this->add('Grid');
+		if($_GET['filter']){
+			$this->api->stickyGET('filter');
+
+			if($_GET['type']){
+				$this->api->stickyGET('type');
+				if($_GET['type'] != "All"){
+					$member_model->addCondition('memebr_type',$_GET['type']);
+				}
+			}
+
+		}else{
+			$member_model->addCondition('id',-1);
+		}
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
 		$grid->setModel($member_model,array('member_no','branch','name','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter','doc_thumb_url','sig_image_id'));
 		$grid->addPaginator(50);
@@ -55,6 +77,12 @@ class page_reports_member_member extends Page {
 		// 	);
 
 		// $grid->js('click',$js);
+
+		if($form->isSubmitted()){
+			$send = array('type'=>$form['type'],'filter'=>1);
+			$grid->js()->reload($send)->execute();
+
+		}	
 	}
 
 	function page_details(){

@@ -123,9 +123,9 @@ class page_reports_member_member extends Page {
 		$this->add('H4')->setHTML('Accounts Details for <span style="text-transform:capitalize"><u>'.$member_model['name'].'</u></span>');
 		$grid=$this->add('Grid');
 		$accounts=$member_model->ref('Account');
-		$accounts->addCondition('ActiveStatus',true);
+		// $accounts->addCondition('ActiveStatus',true);
 		$accounts->addCondition('MaturedStatus',false);
-		$grid->setModel($accounts,array('branch','AccountNumber','scheme','agent','Amount'));
+		$grid->setModel($accounts,array('branch','AccountNumber','scheme','agent','Amount','ActiveStatus'));
 
 		$grid->addMethod('format_cuBal',function($g,$f){
 			$bal = $g->model->getOpeningBalance($on_date=$g->api->nextDate($g->api->today),$side='both',$forPandL=false);

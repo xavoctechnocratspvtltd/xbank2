@@ -16,9 +16,20 @@ class Model_BankBranches extends Model_Table {
 					$m->refSQL('bank_id')->fieldQuery('name')
 				]);
 		});
-		$this->hasMany('Member','bank_a_id',null,'AsFirstBank');
-		$this->hasMany('Member','bank_b_id',null,'AsSecondBank');
-
+		$this->hasMany('Member','bankbranch_a_id',null,'AsFirstBank');
+		$this->hasMany('Member','bankbranch_a_id',null,'AsSecondBank');
+		$this->addHook('beforeDelete',$this);
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeDelete(){
+		if($this->ref('AsFirstBank')->count()->getOne() > 0){
+			throw new \Exception("can not Delete, First Delete related member", 1);
+			
+		}
+		if($this->ref('AsSecondBank')->count()->getOne() > 0){
+			throw new \Exception("can not Delete, First Delete related member", 1);
+
+		}
 	}
 }

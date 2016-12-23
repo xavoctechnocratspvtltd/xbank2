@@ -52,10 +52,10 @@ class Model_Member extends Model_Table {
 		$this->addField('NomineeAge');
 
 		// Bank Details
-		$this->hasOne('BankBranches','bank_a_id','full_name');
+		$this->hasOne('BankBranches','bankbranch_a_id','full_name');
 		$this->addField('bank_account_number_1');
 
-		$this->hasOne('BankBranches','bank_b_id','full_name');
+		$this->hasOne('BankBranches','bankbranch_b_id','full_name');
 		$this->addField('bank_account_number_2');
 
 		$this->addField('memebr_type')->enum(explode(",", MEMBER_TYPES))->defaultValue('General');

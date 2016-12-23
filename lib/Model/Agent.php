@@ -309,6 +309,10 @@ class Model_Agent extends Model_Table {
 	}
 
 	function beforeSave(){
+		
+		$member  = $this->ref('member_id');
+		if($member['is_agent']) throw $this->exception('This member is already agent','ValidityCheck')->setField('member_id');
+		
 
 		$old_agent_username = $this->add('Model_Agent');
 		$old_agent_username->addCondition('username',$this['username']);
@@ -331,7 +335,6 @@ class Model_Agent extends Model_Table {
 		// throw new \Exception($this->api->now, 1);
 		
 		//Member ke is_agent field true 
-		$member  = $this->ref('member_id');
 		$member['is_agent'] = true;
 		$member->save();
 	}

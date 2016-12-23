@@ -135,6 +135,8 @@ define('TRA_EXCESS_AMOUNT_REVERT',  'EXCESS AMOUNT REVERT');
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')
 
+define('MEMBER_TYPES',                         "General,VIP,VVIP");
+
 // define('ACCOUNT_TYPES',                         "DDS");
 define('ACCOUNT_TYPES',                         "DDS,Loan,CC,Default,FixedAndMis,SavingAndCurrent,Recurring");
 define('ACCOUNT_TYPE_DEFAULT',                  "Default");

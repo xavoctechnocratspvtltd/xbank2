@@ -21,10 +21,6 @@ class page_reports_agent_search extends Page {
 		$grid=$this->add('Grid_AccountsBase'); 
 		$grid->add('H3',null,'grid_buttons')->set('Agent List As On '. date('d-M-Y',strtotime($till_date))); 
 		$agent_model=$this->add('Model_Agent');
-		
-		$agent_model->addExpression('branch_id')->set(function($m,$q){
-			return $m->refSQL('account_id')->fieldQuery('branch_id');
-		});
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');

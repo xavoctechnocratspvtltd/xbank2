@@ -44,6 +44,9 @@ class Model_Agent extends Model_Table {
 		$this->addExpression('AccountNumber')->set(function($m,$q){
 			return $m->refSQL('account_id')->fieldQuery('AccountNumber');
 		});
+		$this->addExpression('branch_id')->set(function($m,$q){
+			return $m->refSQL('account_id')->fieldQuery('branch_id');
+		});
 
 		$this->addExpression('agent_member_name')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('name');

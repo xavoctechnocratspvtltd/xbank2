@@ -36,6 +36,15 @@ class page_agents extends Page{
 				$agent_guarantor_crud->add('Controller_Acl');
 			}
 
+			$crud->grid->addHook('formatRow',function($g){
+				if(!$g->model['ActiveStatus']){
+					$g->setTDParam('member','style/color','red');
+					$g->setTDParam('member','style/text-decoration','line-through');
+				}
+				else
+					$g->setTDParam('member','style/color','');
+			});
+
 			$crud->grid->addPaginator(50);
 			$crud->grid->addQuickSearch(array('member','account','code'));
 			$crud->grid->addFormatter('sponsor_name','Wrap');

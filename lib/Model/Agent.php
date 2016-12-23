@@ -293,6 +293,7 @@ class Model_Agent extends Model_Table {
 
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('beforeSave',$this);
+		$this->addHook('beforeInsert',$this);
 
 		$this->addHook('editing',array($this,'defaultEditing'));
 
@@ -309,10 +310,15 @@ class Model_Agent extends Model_Table {
 		
 	}
 
-	function beforeSave(){
-		
+	function beforeInsert(){
 		$member  = $this->ref('member_id');
 		if($member['is_agent']) throw $this->exception('This member is already agent','ValidityCheck')->setField('member_id');
+		//Member ke is_agent field true 
+		$member['is_agent'] = true;
+		$member->save();
+	}
+
+	function beforeSave(){
 		
 
 		$old_agent_username = $this->add('Model_Agent');
@@ -335,9 +341,6 @@ class Model_Agent extends Model_Table {
 
 		// throw new \Exception($this->api->now, 1);
 		
-		//Member ke is_agent field true 
-		$member['is_agent'] = true;
-		$member->save();
 	}
 
 	function account(){

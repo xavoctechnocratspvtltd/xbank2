@@ -52,14 +52,10 @@ class Model_Member extends Model_Table {
 		$this->addField('NomineeAge');
 
 		// Bank Details
-		$this->addField('bank_name_1');
-		$this->addField('bank_branch_1');
-		$this->addField('bank_ifsc_1');
+		$this->hasOne('BankBranches','bank_a_id','full_name');
 		$this->addField('bank_account_number_1');
 
-		$this->addField('bank_name_2');
-		$this->addField('bank_branch_2');
-		$this->addField('bank_ifsc_2');
+		$this->hasOne('BankBranches','bank_b_id','full_name');
 		$this->addField('bank_account_number_2');
 
 		$this->addField('memebr_type')->enum(explode(",", MEMBER_TYPES))->defaultValue('General');
@@ -103,6 +99,7 @@ class Model_Member extends Model_Table {
 		$this->addHook('beforeDelete',$this);
 		$this->addHook('afterInsert',$this);
 		// $this->debug();
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function beforeDelete(){

@@ -28,7 +28,7 @@ class page_reports_agent_status extends Page {
 		$member_join->addField('member_branch_id','branch_id');
 
 		$sb_acc_join = $agent_model->join('accounts','account_id');
-		$sb_acc_join->addField('branch_id');
+		// $sb_acc_join->addField('branch_id');
 
 		$agent_model->addExpression('status')->set(function($m,$q){
 			$date = $m->api->previousMonth(

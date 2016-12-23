@@ -41,6 +41,10 @@ class Model_Agent extends Model_Table {
 			return $m->refSQL('sponsor_id')->fieldQuery('cadre');
 		});
 
+		$this->addExpression('AccountNumber')->set(function($m,$q){
+			return $m->refSQL('account_id')->fieldQuery('AccountNumber');
+		});
+
 		$this->addExpression('agent_member_name')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('name');
 		});

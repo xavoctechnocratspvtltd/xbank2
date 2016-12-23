@@ -52,6 +52,12 @@ class Model_Agent extends Model_Table {
 		$this->addExpression('agent_pan_no')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('PanNo');
 		});
+		$this->addExpression('agent_member_address')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('CurrentAddress');
+		});
+		$this->addExpression('agent_member_father_name')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('FatherName');
+		});
 
 		$this->addExpression('agent_phone_no')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('PhoneNos');

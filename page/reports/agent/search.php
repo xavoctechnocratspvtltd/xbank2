@@ -46,7 +46,6 @@ class page_reports_agent_search extends Page {
 			$agent_model->addCondition('id',-1);
 		}
 		
-		$grid->add('Controller_Acl');
 		$grid->setModel($agent_model,array('code','agent_member_name','account','agent_member_father_name','agent_member_address','agent_phone_no','agent_pan_no','added_by','ActiveStatus','created_at'));
 
 		$paginator = $grid->addPaginator(500);

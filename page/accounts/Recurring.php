@@ -92,6 +92,7 @@ class page_accounts_Recurring extends Page {
 		if($crud->isEditing('add')){
 			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
+			$crud->form->getElement('agent_id')->getModel()->addCondition('ActiveStatus',true);
 			
 			$crud->form->add('Order')
 						// ->move($c_a_f->other_field,'after','Amount')

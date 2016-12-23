@@ -12,7 +12,9 @@ class page_reports_agent_search extends Page {
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','branch')->setModel('Model_Branch');
+		$branch = $this->add('Model_Branch');
+		$branch_field = $form->addField('dropdown','branch')->setEmptyText('Please Select Branch');
+		$branch_field->setModel($branch);
 		$form->addSubmit('GET List');
 
 

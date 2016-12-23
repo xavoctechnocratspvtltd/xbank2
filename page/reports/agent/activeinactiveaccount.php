@@ -57,12 +57,13 @@ class page_reports_agent_activeinactiveaccount extends Page {
 			$rd_account_model->addCondition('id',-1);
 		}
 		
-		$rd_grid->setModel($rd_account_model,array('sno','AccountNumber','created_at','maturity_date','name','FatherName','address','phone_no','Amount'));
+		$rd_grid->setModel($rd_account_model,array('sno','AccountNumber','created_at','maturity_date','name','FatherName','address','phone_no','Amount','ActiveStatus'));
 
 		$paginator = $rd_grid->addPaginator(500);
 		$rd_grid->skip_var = $paginator->skip_var;
 
 		$rd_grid->addSno();
+		$rd_grid->addTotals(['Amount']);
 
 		/*Fixed And Mis Grid*/
 
@@ -104,12 +105,13 @@ class page_reports_agent_activeinactiveaccount extends Page {
 			$fixed_account_model->addCondition('id',-1);
 		}
 		
-		$fixed_grid->setModel($fixed_account_model,array('sno','AccountNumber','created_at','maturity_date','name','FatherName','address','phone_no','Amount'));
+		$fixed_grid->setModel($fixed_account_model,array('sno','AccountNumber','created_at','maturity_date','name','FatherName','address','phone_no','Amount','ActiveStatus'));
 
 		$paginator = $fixed_grid->addPaginator(500);
 		$fixed_grid->skip_var = $paginator->skip_var;
 
 		$fixed_grid->addSno();
+		$fixed_grid->addTotals(['Amount']);
 
 
 		/*Fixed And Mis Grid*/
@@ -152,12 +154,13 @@ class page_reports_agent_activeinactiveaccount extends Page {
 			$dds_account_model->addCondition('id',-1);
 		}
 		
-		$dds_grid->setModel($dds_account_model,array('sno','AccountNumber','created_at','maturity_date','name','FatherName','address','phone_no','Amount'));
+		$dds_grid->setModel($dds_account_model,array('sno','AccountNumber','created_at','maturity_date','name','FatherName','address','phone_no','Amount','ActiveStatus'));
 
 		$paginator = $dds_grid->addPaginator(500);
 		$dds_grid->skip_var = $paginator->skip_var;
 
 		$dds_grid->addSno();
+		$dds_grid->addTotals(['Amount']);
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

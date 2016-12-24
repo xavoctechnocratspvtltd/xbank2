@@ -35,7 +35,8 @@ class Model_Agent extends Model_Table {
 		$this->hasMany('DocumentSubmitted','agent_id');
 		$this->hasMany('Agent','sponsor_id');
 		
-		$this->addExpression('code')->set($this->dsql()->concat($this->refSQL('account_id')->fieldQuery('branch_code'), ' ' , $this->getElement('id') ));
+		$this->addField('code_no');
+		$this->addExpression('code')->set('CONCAT("BCCSAG ",IFNULL(code_no,""))');
 
 		$this->addExpression('sponsor_cadre')->set(function($m,$q){
 			return $m->refSQL('sponsor_id')->fieldQuery('cadre');
@@ -307,6 +308,10 @@ class Model_Agent extends Model_Table {
 	function beforeDelete(){
 		if($this->add('Model_Account')->addCondition('agent_id',$this->id)->count()->getOne() > 0 )
 			throw new Exception("Agent Has Accounts", 1);
+
+		$member  = $this->ref('member_id');
+		$member['is_agent'] = false;
+		$member->save();
 		
 	}
 
@@ -338,6 +343,8 @@ class Model_Agent extends Model_Table {
 		}
 
 		$this['updated_at'] = $this->api->now;
+
+		if(!$this->loaded()) $this['code_no']= $this->add('Model_Agent')->_dsql()->del('fields')->field('max(code_no)')->getOne() + 1;
 
 		// throw new \Exception($this->api->now, 1);
 		

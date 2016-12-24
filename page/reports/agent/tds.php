@@ -8,13 +8,15 @@ class page_reports_agent_tds extends Page {
 	function init(){
 		parent::init();
 
+		set_time_limit(100);
+
 		$till_date = $this->api->today;
 		$from_date = '01-01-1970';
 		if($_GET['to_date']) $till_date = $_GET['to_date'];
 		if($_GET['from_date']) $from_date = $_GET['from_date'];
 
 		$form = $this->add('Form');
-		$agent_field=$form->addField('autocomplete/Basic','agent');
+		$agent_field=$form->addField('autocomplete/Basic','agent')->validateNotNull();
 		$agent_field->setModel('Agent');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
@@ -30,15 +32,97 @@ class page_reports_agent_tds extends Page {
 
 		$reference_account_j = $model->join('accounts','reference_id');
 		$agent_j=$reference_account_j->join('agents','agent_id');
+		// $agent_j->addField('agent_saving_account_id','account_id');
+
 		$reference_account_j->addField('agent_id');
 		$reference_account_j->addField('account_type');
 		$agent_member_j = $agent_j->join('members','member_id');
-		$agent_member_j->addField('PanNo');
+		$agent_member_j->addField('agent_name','name');
+		// $agent_member_j->addField('PanNo'); // must be of the agent who you are viewing ... not who brought this account
+
+		$model->addExpression('my_saving_account_count')->set(function($m,$q){
+			$tr = $m->add('Model_TransactionRow',['table_alias'=>'sv_acc']);
+			$tr->addExpression('account_type')->set(function($m,$q){
+				return $m->refSQL('account_id')->fieldQuery('account_type');
+			});
+			$tr->addCondition('account_type','Saving');
+			$tr->addCondition('transaction_id',$q->getField('id'));
+			return $tr->count();
+		});
+
+		$model->addExpression('my_saving_account_id')->set(function($m,$q){
+			$tr = $m->add('Model_TransactionRow',['table_alias'=>'sv_acc']);
+			$tr->addExpression('account_type')->set(function($m,$q){
+				return $m->refSQL('account_id')->fieldQuery('account_type');
+			});
+			$tr->addCondition('account_type','Saving');
+			$tr->addCondition('transaction_id',$q->getField('id'));
+			return $tr->setLimit(1)->fieldQuery('account_id');
+		});
+
+		$model->addExpression('my_saving_account')->set(function($m,$q){
+			$tr = $m->add('Model_TransactionRow',['table_alias'=>'sv_acc']);
+			$tr->addExpression('account_type')->set(function($m,$q){
+				return $m->refSQL('account_id')->fieldQuery('account_type');
+			});
+			$tr->addCondition('account_type','Saving');
+			$tr->addCondition('transaction_id',$q->getField('id'));
+			return $tr->fieldQuery('account');
+		});
+
+		$model->addExpression('bandd_saving_account_id')->set(function($m,$q){
+			$tr = $m->add('Model_TransactionRow',['table_alias'=>'bandd_acc']);
+			$tr->addExpression('account_type')->set(function($m,$q){
+				return $m->refSQL('account_id')->fieldQuery('account_type');
+			});
+
+			$tr->addCondition('account_type','Saving');
+			$tr->addCondition('transaction_type_id',$q->getField('transaction_type_id'));
+			$tr->addCondition('reference_id',$q->getField('reference_id'));
+
+			// THIS IS SOOO WRONG, BUT THIS IS ONLY OPTION FOR NOW, WILL GIVE WRONG REPORT IF ANY ENTRY WILL BE EDITTED
+			$tr->addCondition('id','<>',$q->getField('id'));
+			$tr->addCondition('branch_id','<>',$q->getField('branch_id'));
+			$tr->addCondition('created_at',$q->getField('created_at'));
+			
+			// SETLIMIT 1 Value
+			return $tr->setLimit(1)->fieldQuery('account_id');
+			// GROUP CONCAT VALUES
+			return $tr->_dsql()->del('fields')->field($q->expr('(GROUP_CONCAT([0]))',[$tr->getElement('account_id')]));
+		});
+
+		$model->addExpression('bandd_saving_account')->set(function($m,$q){
+			$tr = $m->add('Model_TransactionRow',['table_alias'=>'bandd_acc']);
+			$tr->addExpression('account_type')->set(function($m,$q){
+				return $m->refSQL('account_id')->fieldQuery('account_type');
+			});
+
+			$tr->addCondition('account_type','Saving');
+			$tr->addCondition('transaction_type_id',$q->getField('transaction_type_id'));
+			$tr->addCondition('reference_id',$q->getField('reference_id'));
+
+			// THIS IS SOOO WRONG, BUT THIS IS ONLY OPTION FOR NOW, WILL GIVE WRONG REPORT IF ANY ENTRY WILL BE EDITTED
+			$tr->addCondition('id','<>',$q->getField('id'));
+			$tr->addCondition('branch_id','<>',$q->getField('branch_id'));
+			$tr->addCondition('created_at',$q->getField('created_at'));
+			
+			// SET LIMIT 1 VALUE
+			return $tr->setLimit(1)->fieldQuery('account');
+			// GROU PCONCAT VALUE
+			return $tr->_dsql()->del('fields')->field($q->expr('(GROUP_CONCAT([0]))',[$tr->getElement('account')]));
+		});
+
+		$model->addExpression('tds')->set($model->refSQL('TransactionRow')->addCondition('account','like','%TDS%')->sum('amountCr'));
+
+		// $model->setOrder('id','desc');
+		// $model->setLimit(100);
+		// $temp_grid = $this->add('Grid');
+		// $temp_grid->setModel($model,['transaction_type','branch','voucher_no','dr_sum','cr_sum','saving_account_id','tds']);
+		// return;
 		
 
 
 		// $model->addExpression('total_commission')->set($model->fieldQuery('cr_sum'));
-		$model->addExpression('tds')->set($model->refSQL('TransactionRow')->addCondition('account','like','%TDS%')->sum('amountCr'));
 		// $model->addExpression('tds')->set('"0"');
 		$model->addExpression('tr_row_count')->set($model->refSQL('TransactionRow')->count());
 		$model->addExpression('net_commission')->set($model->refSQL('TransactionRow')->addCondition('account','not like','%TDS%')->sum('amountCr'));
@@ -56,17 +140,27 @@ class page_reports_agent_tds extends Page {
 			$this->api->stickyGET("account_type");
 			$this->api->stickyGET("agent");
 
+
 			if($_GET['account_type']){
 				$model->addCondition('account_type','like',$_GET['account_type']);
 			}
 
-			if($_GET['from_date'])
+			if($_GET['from_date']){
 				$model->addCondition('created_at','>=',$_GET['from_date']);
+			}
 
-			if($_GET['to_date'])
+			if($_GET['to_date']){
 				$model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
-			if($_GET['agent'])
-				$model->addCondition('agent_id',$_GET['agent']);
+			}
+			if($_GET['agent']){
+				$agent_temp_m = $this->add('Model_Agent');
+				$agent_temp_m->load($_GET['agent']);
+
+				$model->addCondition([
+					['my_saving_account_id',$agent_temp_m['account_id']],
+					['bandd_saving_account_id',$agent_temp_m['account_id']]
+				]);
+			}
 		}else
 			$model->addCondition('id',-1);
 
@@ -75,9 +169,14 @@ class page_reports_agent_tds extends Page {
 		$model->getElement('created_at')->caption('Deposit Date');
 		$model->setOrder('created_at');
 
+
 		// $model->setLimit(10);
 		// $model->_dsql()->group('reference_id');
-		$grid->setModel($model,array('id','agent_id','agent','voucher_no','reference','dr_sum','tds','net_commission','created_at','PanNo'));
+		$grid->setModel($model,array('id','agent_id','agent','voucher_no','reference','dr_sum','tds','net_commission','my_saving_account_id','my_saving_account_count','bandd_saving_account_id','created_at','PanNo'));
+		
+		$grid->removeColumn('my_saving_account_id');
+		$grid->removeColumn('my_saving_account_count');
+		$grid->removeColumn('bandd_saving_account_id');
 		
 		if($_GET['agent'])
 			$grid->removeColumn('agent_id');

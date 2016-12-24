@@ -25,7 +25,7 @@ class page_agents extends Page{
 
 		// $agent->addCondition('sponsor_id','>',0);
 
-		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus','username','password','added_by'),array('code','created_at','member','sponsor_name','sponsor_cadre','account','cadre','current_individual_crpb','ActiveStatus','username','password','added_by'));
+		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus','username','password','added_by','code_no'),array('code','created_at','member','sponsor_name','sponsor_cadre','account','cadre','current_individual_crpb','ActiveStatus','username','password','added_by'));
 
 		if($crud and !$crud->isEditing('add') and ! $crud->isEditing('edit')){
 			$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));

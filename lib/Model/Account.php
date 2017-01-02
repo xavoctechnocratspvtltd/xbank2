@@ -46,7 +46,7 @@ class Model_Account extends Model_Table {
 		$this->addField('Nominee');
 		$this->addField('NomineeAge');
 		$this->addField('RelationWithNominee')->enum(array('Father','Mother','Husband','Wife','Brother','Sister','Son','Daughter','Other'));
-		$this->addField('MinorNomineeDOB');
+		$this->addField('MinorNomineeDOB')->hint('ex. : if you don`t know nominee DOB you just type this == 00-00-0000')->defaultValue("00-00-0000");
 		$this->addField('MinorNomineeParentName')->type('text')->caption('Minor Nominee Parents Details');
 		$this->addField('DefaultAC')->type('boolean')->defaultValue(false);
 		$this->addField('created_at')->type('datetime')->sortable(true);//->defaultValue($this->api->now);

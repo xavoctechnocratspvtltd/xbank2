@@ -104,7 +104,7 @@ class page_Accounts_FixedAndMis extends Page {
 			$account_fixedandmis_model->hook('editing');
 		}
 
-		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','mo_id','team_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeParentName','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','mo','team'));
+		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','mo_id','team_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeDOB','MinorNomineeParentName','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','mo','team'));
 		$crud->addRef('JointMember');
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'FixedMISAccount'));
 		

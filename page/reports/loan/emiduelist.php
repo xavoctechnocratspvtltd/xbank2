@@ -286,7 +286,7 @@ class page_reports_loan_emiduelist extends Page {
 			// $grid->addColumn('total','total');
 			$grid->addOrder()
 				->move('emi_dueamount','after','emi_amount')
-				->move('total','last')
+				->move('total','after','other_received')
 				->now();
 
 			$grid->addFormatter('guarantor_address','wrap');

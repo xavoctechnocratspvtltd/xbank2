@@ -61,7 +61,7 @@ class page_reports_loan_emiduelist extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','other_received','total');
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($from_date,$to_date){
 			$p_m=$m->refSQL('Premium')
@@ -113,8 +113,14 @@ class page_reports_loan_emiduelist extends Page {
 			$tr_m->addCondition('transaction_type_id',13); // JV
 			$tr_m->addCondition('account_id',$q->getField('id'));
 			return $tr_m->sum('amountDr');
-			return "'other_charges'";
+		});
 
+		$account_model->addExpression('other_received')->set(function($m,$q){
+			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$received = $tr_m->sum('amountCr');
+			$premium_paid = $q->expr('([0]*[1])',[$m->getElement('paid_premium_count'),$m->getElement('emi_amount')]);
+			return $q->expr('([0]-[1])',[$received,$premium_paid]);
 		});
 
 		$account_model->addExpression('guarantor_name')->set(function($m,$q){
@@ -263,7 +269,7 @@ class page_reports_loan_emiduelist extends Page {
 			$account_model->addCondition('id',-1);
 
 		$account_model->add('misc\Field_Callback','total')->set(function($m){
-			return ($m['due_premium_count'] * $m['emi_amount']) +$m['due_panelty']+$m['other_charges'];
+			return ($m['due_premium_count'] * $m['emi_amount']) +$m['due_panelty']+$m['other_charges']-$m['other_received'];
 		});
 
 		$account_model->add('misc\Field_Callback','emi_dueamount')->set(function($m){
@@ -273,9 +279,6 @@ class page_reports_loan_emiduelist extends Page {
 		// $account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
 
-
-
-
 		$grid->setModel($account_model,$grid_column_array);
 
 		if($_GET['filter']){
@@ -283,7 +286,7 @@ class page_reports_loan_emiduelist extends Page {
 			// $grid->addColumn('total','total');
 			$grid->addOrder()
 				->move('emi_dueamount','after','emi_amount')
-				->move('total','after','other_charges')
+				->move('total','last')
 				->now();
 
 			$grid->addFormatter('guarantor_address','wrap');

@@ -32,14 +32,20 @@ class page_Accounts_FixedAndMis extends Page {
 					$account = $crud->add('Model_Account');
 					$account->loadBy('AccountNumber',$form['debit_account']);
 
-					$member_ids_array=[];
-					$member_ids_array[] = $form['member_id'];
+					$member_ids_filled=[];
+					$member_ids_filled[] = $form['member_id'];
 					
-					if($form['member_ID_2']) $member_ids_array[] =$form['member_ID_2'];
-					if($form['member_ID_3']) $member_ids_array[] =$form['member_ID_3'];
-					if($form['member_ID_4']) $member_ids_array[] =$form['member_ID_4'];
+					if($form['member_ID_2']) $member_ids_filled[] =$form['member_ID_2'];
+					if($form['member_ID_3']) $member_ids_filled[] =$form['member_ID_3'];
+					if($form['member_ID_4']) $member_ids_filled[] =$form['member_ID_4'];
 
-					if($account['SchemeType']==ACCOUNT_TYPE_SAVING and !in_array($account['member_id'], $member_ids_array)){
+					$member_ids_of_saving_account = [$account['member_id']];
+
+					foreach ($account->ref('JointMember') as $jm) {
+						$member_ids_of_saving_account[] =$jm['member_id'];
+					}
+
+					if($account['SchemeType']==ACCOUNT_TYPE_SAVING and !count(array_intersect($member_ids_of_saving_account, $member_ids_filled))){
 						$form->displayError('debit_account','Account must be of same member');
 					}
 

@@ -64,7 +64,6 @@ class page_Accounts_FixedAndMis extends Page {
 
 					$fixedAndMis_account_model->allow_any_name = true;
 			    	$fixedAndMis_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch,null,$form->getAllFields(),$form);
-			    	throw new \Exception("Error Processing Request", 1);
 			    	
 			    $crud->api->db->commit();
 			}catch(Exception_ValidityCheck $e){

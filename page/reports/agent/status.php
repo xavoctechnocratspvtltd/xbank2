@@ -104,7 +104,7 @@ class page_reports_agent_status extends Page {
 
 		$agent_model->add('Controller_Acl');
 
-		$grid->setModel($agent_model,array('code','agent_member_name','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','current_individual_crpb','last_account_date','sponsor','sponsor_phone','sponsor_cadre','total_accounts','total_amount'));
+		$grid->setModel($agent_model,array('code','agent_member_name','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','current_individual_crpb','last_account_date','sponsor','sponsor_phone','sponsor_cadre','total_accounts','total_amount','created_at','added_by'));
 		$grid->addPaginator(500);
 
 		$grid->addSno();

@@ -22,6 +22,8 @@ class page_accounts_Default extends Page {
 			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
+
+			$Default_account_model->callApi();
 			return true;
 		});
 

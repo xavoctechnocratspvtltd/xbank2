@@ -36,6 +36,9 @@ class page_accounts_Recurring extends Page {
 			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
+
+			$new_account->callApi();
+
 			return true;
 		});
 

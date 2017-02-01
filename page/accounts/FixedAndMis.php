@@ -67,6 +67,9 @@ class page_Accounts_FixedAndMis extends Page {
 			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
+
+			$fixedAndMis_account_model->callApi();
+
 			return true;
 		});
 

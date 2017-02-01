@@ -27,6 +27,9 @@ class page_accounts_SavingAndCurrent extends Page {
 			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
+
+			$sbca_account_model->callApi();
+
 			return true;
 		});
 

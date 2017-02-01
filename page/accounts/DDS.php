@@ -49,6 +49,8 @@ class page_accounts_DDS extends Page {
 			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
+
+			$dds_account_model->callApi();
 			return true;
 		});
 

@@ -70,6 +70,7 @@ class page_accounts_Loan extends Page {
 			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
+
 			return true;
 		});
 
@@ -448,6 +449,9 @@ class page_accounts_Loan extends Page {
 				$this->api->db->rollBack();
 				throw $e;
 			}
+
+			$pending_account->callApi();
+
 			$this->js()->_selector('.pending_grid')->trigger('reload')->execute();
 		}
 

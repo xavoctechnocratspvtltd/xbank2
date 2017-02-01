@@ -411,6 +411,10 @@ class Model_Account extends Model_Table {
 		// var_dump($otherValues);
 		// throw new \Exception("Error Processing Request", 1);
 
+		return $this->id;
+	}
+
+	function callApi(){
 		// Call API if available
 		if($this->api->getConfig('enable_api',false) && !$this['DefaultAC']){
 			try{
@@ -432,8 +436,6 @@ class Model_Account extends Model_Table {
 				throw $e;
 			}
 		}
-
-		return $this->id;
 	}
 
 	function jointAccountMember($j_m_id){

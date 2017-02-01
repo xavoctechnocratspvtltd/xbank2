@@ -35,6 +35,8 @@ class page_accounts_CC extends Page {
 			   	$crud->api->db->rollBack();
 			   	throw $e;
 			}
+
+			$cc_account_model->callApi();
 			
 			return true;
 		});

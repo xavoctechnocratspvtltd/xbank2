@@ -61,6 +61,11 @@ class Model_Account extends Model_Table {
 		$this->addField('Group');
 		$this->addField('PAndLGroup')->system(true);
 		
+		$this->addField('bike_surrendered')->type('boolean');
+		$this->addField('bike_surrendered_on')->type('date');
+		$this->addField('is_in_legal')->type('boolean');
+		$this->addField('legal_filing_date')->type('date');
+		
 		$this->addField('is_dirty')->type('boolean')->system(true)->defaultValue(false);
 		
 		$this->addField('extra_info')->type('text')->system(true); // Put json style extra info in this field

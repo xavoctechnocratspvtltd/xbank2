@@ -1,8 +1,8 @@
 <?php
 
-class page_reports_loan_emiduelist extends Page {
+class page_reports_loan_dealerwise extends Page {
 
-	public $title="EMI Due List (Recovery List)";
+	public $title="EMI Due List Dealer Wise (Recovery List)";
 
 	function init(){
 		parent::init();
@@ -28,8 +28,8 @@ class page_reports_loan_emiduelist extends Page {
 			$grid->add('H3',null,'grid_buttons')->set('Loan EMI '.$_GET['report_type'].' From '.date('d-M-Y',strtotime($from_date)).' To '. date('d-M-Y',strtotime($to_date)));
 		}
 
-		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
-		$dealer_field->setModel('ActiveDealer');
+		// $dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
+		// $dealer_field->setModel('ActiveDealer');
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
@@ -41,10 +41,10 @@ class page_reports_loan_emiduelist extends Page {
 		$form->add('HR');
 
 		$document=$this->add('Model_Document');
-		$document->addCondition('LoanAccount',true);
-		foreach ($document as $junk) {
-			$form->addField('CheckBox','doc_'.$document->id, $document['name']);
-		}
+		// $document->addCondition('LoanAccount',true);
+		// foreach ($document as $junk) {
+		// 	$form->addField('CheckBox','doc_'.$document->id, $document['name']);
+		// }
 		$form->addSubmit('GET List');
 
 
@@ -164,8 +164,6 @@ class page_reports_loan_emiduelist extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 		
-
-		
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('dealer');
@@ -180,8 +178,8 @@ class page_reports_loan_emiduelist extends Page {
 
 			// $account_model->addCondition('DueDate','<=',$till_date);
 
-			if($_GET['dealer'])
-				$account_model->addCondition('dealer_id',$_GET['dealer']);
+			// if($_GET['dealer'])
+			// 	$account_model->addCondition('dealer_id',$_GET['dealer']);
 
 			if(!$_GET['bike_surrendered'] AND !$_GET['legal_accounts']){
 				switch ($_GET['report_type']) {
@@ -285,49 +283,81 @@ class page_reports_loan_emiduelist extends Page {
 			// });
 
 
-			foreach ($document as $junk) {
-				$doc_id = $document->id;
-				if($_GET['doc_'.$document->id]){
-					$this->api->stickyGET('doc_'.$document->id);
-					$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
-						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
-					});
-					$grid_column_array[] = $this->api->normalizeName($document['name']);
-				}
-			}
+			// foreach ($document as $junk) {
+			// 	$doc_id = $document->id;
+			// 	if($_GET['doc_'.$document->id]){
+			// 		$this->api->stickyGET('doc_'.$document->id);
+			// 		$account_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
+			// 			return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
+			// 		});
+			// 		$grid_column_array[] = $this->api->normalizeName($document['name']);
+			// 	}
+			// }
 
 		}else
 			$account_model->addCondition('id',-1);
 
-		$account_model->add('misc\Field_Callback','total')->set(function($m){
-			return ($m['due_premium_count'] * $m['emi_amount']) +$m['due_panelty']+$m['other_charges']-$m['other_received'];
+		$account_model->addExpression('total')->set(function($m,$q){
+			return $q->expr('([due_premium_count] * [emi_amount]) + [due_panelty] + [other_charges] + [other_received]',
+			[
+				'due_premium_count' => $m->getElement('due_premium_count'),
+				'emi_amount' 	=> $m->getElement('emi_amount'),
+				'due_panelty'	=> $m->getElement('due_panelty'),
+				'other_charges'	=> $m->getElement('other_charges'),
+				'other_received'=> $m->getElement('other_received')
+			]);//($m['due_premium_count'] * $m['emi_amount']) +$m['due_panelty']+$m['other_charges']-$m['other_received'];
 		});
 
-		$account_model->add('misc\Field_Callback','emi_dueamount')->set(function($m){
-			return $m['due_premium_count']*$m['emi_amount'];
+		$account_model->addExpression('emi_dueamount')->set(function($m,$q){
+			return $q->expr('([0]*[1])',[$m['due_premium_count'],$m['emi_amount']]);
 		});
+
+
+		$account_model->addExpression('sum_emi_amount')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('emi_amount')]);
+		});
+
+		$account_model->addExpression('sum_emi_due_amount')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('emi_dueamount')]);
+		});
+
+		$account_model->addExpression('sum_due_panelty')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('due_panelty')]);
+		});
+
+		$account_model->addExpression('sum_other_charges')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('other_charges')]);
+		});
+
+		$account_model->addExpression('sum_other_received')->set(function($m,$q){
+			return $q->expr('SUM([0])',[$m->getElement('other_received')]);
+		});
+
+		$account_model->_dsql()->group($account_model->dsql()->expr('[0]',[$account_model->getElement('dealer_id')]));
+
+
 
 		// $account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
 
-		$grid->setModel($account_model,$grid_column_array);
+		$grid->setModel($account_model,['dealer','sum_emi_amount','sum_due_panelty','sum_other_charges','sum_other_received']);
 
 		if($_GET['filter']){
 			// $grid->addColumn('emidue','emi_dueamount');
 			// $grid->addColumn('total','total');
-			$grid->addOrder()
-				->move('emi_dueamount','after','emi_amount')
-				->move('total','after','other_received')
-				->now();
+			// $grid->addOrder()
+			// 	->move('emi_dueamount','after','emi_amount')
+			// 	->move('total','after','other_received')
+			// 	->now();
 
-			$grid->addFormatter('guarantor_address','wrap');
-			$grid->addFormatter('CurrentAddress','wrap');
+			// $grid->addFormatter('guarantor_address','wrap');
+			// $grid->addFormatter('CurrentAddress','wrap');
 		}
 		// $grid->addColumn('text','openning_date');
 
 		$grid->addPaginator(500);
 		$grid->addSno();
-		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty'));
+		// $grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty'));
 		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ,'output_filename'=>$_GET['report_type'].' lilst_as_on '. $to_date.".csv"));
 
 		$grid->removeColumn('last_premium');

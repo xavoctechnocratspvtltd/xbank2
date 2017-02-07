@@ -4,8 +4,9 @@ class page_accounts_Loan extends Page {
 
 	function page_index(){
 		$tabs=$this->add('Tabs');
-		$accounts_tab = $tabs->addTabURL($this->api->url('./accounts'),'Accounts');
 		$pending_accounts_tab = $tabs->addTabURL($this->api->url('./pendingAccounts'),'Pending');
+		$accounts_tab = $tabs->addTabURL($this->api->url('./accounts'),'Accounts');
+		$bike_legal = $tabs->addTabURL($this->api->url('./bike_legal'),'Manage Surrender Bike and Legal');
 	}
 
 	function page_pendingAccounts(){
@@ -496,6 +497,17 @@ class page_accounts_Loan extends Page {
 		$crud=$this->add('CRUD');
 		$crud->setModel($account_guarantors, array('member_id','member'));
 
+	}
+
+	function page_bike_legal(){
+		$model= $this->add('Model_Active_Account_Loan');
+		$model->getElement('AccountNumber')->readOnly(true);
+		$crud = $this->add('CRUD',['allow_add'=>false, 'allow_del'=>false]);
+		$crud->setModel($model,['bike_surrendered','bike_surrendered_on','is_in_legal','legal_filing_date'],['AccountNumber','bike_surrendered','bike_surrendered_on','is_in_legal','legal_filing_date']);
+		$crud->add('Controller_Acl');
+
+		$crud->grid->addPaginator(50);
+		$crud->grid->addQuickSearch(['AccountNumber']);
 	}
 
 

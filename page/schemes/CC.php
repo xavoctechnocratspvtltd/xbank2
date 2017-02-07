@@ -30,7 +30,7 @@ class page_schemes_CC extends Page{
 			$scheme_cc_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_cc_model,array('name','ActiveStatus','Interest','balance_sheet_id','balance_sheet','ProcessingFees','ProcessingFeesinPercent','SchemePoints','SchemeGroup','MinLimit','MaxLimit','total_accounts','total_active_accounts'));
+		$crud->setModel($scheme_cc_model,array('name','ActiveStatus','Interest','balance_sheet_id','balance_sheet','ProcessingFees','ProcessingFeesinPercent','SchemePoints','SchemeGroup','MinLimit','MaxLimit','total_accounts','total_active_accounts','valid_till'));
 
 		
 		if($crud->grid){

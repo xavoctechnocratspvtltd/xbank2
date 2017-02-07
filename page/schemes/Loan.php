@@ -34,7 +34,7 @@ class page_schemes_Loan extends Page{
 			// $scheme_Loan_model->getElement('type')->system(true);
 		}
 
-		$crud->setModel($scheme_Loan_model,array('type','name','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet','balance_sheet_id','ProcessingFees','ProcessingFeesinPercent','SchemeGroup','MinLimit','MaxLimit','total_accounts','total_active_accounts'));
+		$crud->setModel($scheme_Loan_model,array('type','name','Interest','ReducingOrFlatRate','PremiumMode','NumberOfPremiums','ActiveStatus','balance_sheet','balance_sheet_id','ProcessingFees','ProcessingFeesinPercent','SchemeGroup','MinLimit','MaxLimit','total_accounts','total_active_accounts','valid_till'));
 
 		
 		if(!$crud->isEditing()){

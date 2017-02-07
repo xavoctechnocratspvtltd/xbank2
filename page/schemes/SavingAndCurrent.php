@@ -30,7 +30,7 @@ class page_schemes_SavingAndCurrent extends Page{
 			$scheme_SavingAndCurrent_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_SavingAndCurrent_model,array('type','name','MinLimit','MaxLimit','Interest','ActiveStatus','balance_sheet_id','SchemePoints','SchemeGroup','isDepriciable','DepriciationPercentBeforeSep','DepriciationPercentAfterSep','total_accounts','total_active_accounts'));
+		$crud->setModel($scheme_SavingAndCurrent_model,array('type','name','MinLimit','MaxLimit','Interest','ActiveStatus','balance_sheet_id','SchemePoints','SchemeGroup','isDepriciable','DepriciationPercentBeforeSep','DepriciationPercentAfterSep','total_accounts','total_active_accounts','valid_till'));
 
 		
 		if($crud->grid){

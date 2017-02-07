@@ -30,7 +30,7 @@ class page_schemes_Default extends Page{
 			$scheme_default_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_default_model,array('name','MinLimit','MaxLimit','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','balance_sheet','ProcessingFees','SchemePoints','SchemeGroup','isDepriciable','DepriciationPercentBeforeSep','DepriciationPercentAfterSep','total_accounts','total_active_accounts'));
+		$crud->setModel($scheme_default_model,array('name','MinLimit','MaxLimit','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','balance_sheet','ProcessingFees','SchemePoints','SchemeGroup','isDepriciable','DepriciationPercentBeforeSep','DepriciationPercentAfterSep','total_accounts','total_active_accounts','valid_till'));
 
 		
 		if($crud->grid){

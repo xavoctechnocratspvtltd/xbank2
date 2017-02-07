@@ -49,12 +49,17 @@ class Grid_Scheme extends Grid{
 			$this->setTDParam('balance_sheet','style/color','');
 		}
 
-		if(!$this->model['ActiveStatus']){
+		if(!$this->model['ActiveStatus'] OR ($this->model['valid_till'] AND strtotime($this->model['valid_till']) < strtotime($this->app->today)) ){
 			$this->setTDParam('name','style/color','red');
 			$this->setTDParam('name','style/text-decoration','line-through');
+			$this->setTDParam('valid_till','style/color','red');
+			$this->setTDParam('valid_till','style/text-decoration','line-through');
 		}
-		else
+		else{
 			$this->setTDParam('name','style/color','');
+			$this->setTDParam('valid_till','style/color','');
+		}
+
 
 		$this->current_row['limits']= 'Min ' .$this->model['MinLimit'] . ' /- ' . ($this->model['MaxLimit'] !=-1? ' to ' . $this->model['MaxLimit'] .' /-': '');
 		$this->current_row_html['Interest'] = $this->model['Interest'] . '% <small><small class="atk-text-dimmed">'. $this->model['ReducingOrFlatRate'] .'</small></span>';

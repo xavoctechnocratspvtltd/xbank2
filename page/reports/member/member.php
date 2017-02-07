@@ -15,6 +15,7 @@ class page_reports_member_member extends Page {
 		$form->addField('Dropdown','type')->setValueList(array_merge($type_array,["All"=>"All"]));
 		$bank_field = $form->addField('Dropdown','bank')->setEmptyText('All Banks');
 		$bank_field->setModel('Bank');
+		$form->addField('dropdown','status')->setValueList(array('Inactive'=>'Inactive','Active'=>'Active'))->setEmptyText('Please Select')->validateNotNull();
 		$form->addSubmit('Get List');
 		$member_model=$this->add('Model_Member');
 		$member_model->setOrder('created_at','desc');
@@ -24,7 +25,13 @@ class page_reports_member_member extends Page {
 		$grid=$this->add('Grid');
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
-
+			if($_GET['status']){
+				$this->api->stickyGET('status');
+				if($_GET['status'] == "Active"){
+					$member_model->addCondition('is_active',true);
+				}else
+					$member_model->addCondition('is_active',false);
+			}
 			if($_GET['type']){
 				$this->api->stickyGET('type');
 				if($_GET['type'] != "All"){
@@ -87,7 +94,7 @@ class page_reports_member_member extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$send = array('type'=>$form['type'],'bank'=>$form['bank'],'filter'=>1);
+			$send = array('type'=>$form['type'],'bank'=>$form['bank'],'status'=>$form['status'],'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	

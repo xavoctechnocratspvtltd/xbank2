@@ -15,7 +15,7 @@ class page_reports_member_member extends Page {
 		$form->addField('Dropdown','type')->setValueList(array_merge($type_array,["All"=>"All"]));
 		$bank_field = $form->addField('Dropdown','bank')->setEmptyText('All Banks');
 		$bank_field->setModel('Bank');
-		$form->addField('dropdown','status')->setValueList(array('Inactive'=>'Inactive','Active'=>'Active'))->setEmptyText('Please Select')->validateNotNull();
+		$form->addField('dropdown','status')->setValueList(array('all'=>'All','0'=>'InActive','1'=>'Active'));
 		$form->addSubmit('Get List');
 		$member_model=$this->add('Model_Member');
 		$member_model->setOrder('created_at','desc');
@@ -25,13 +25,10 @@ class page_reports_member_member extends Page {
 		$grid=$this->add('Grid');
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
-			if($_GET['status']){
-				$this->api->stickyGET('status');
-				if($_GET['status'] == "Active"){
-					$member_model->addCondition('is_active',true);
-				}else
-					$member_model->addCondition('is_active',false);
-			}
+			$this->api->stickyGET('status');
+			if($_GET['status'] !=='all')
+				$member_model->addCondition('is_active',$_GET['status']==0?false:true);
+			
 			if($_GET['type']){
 				$this->api->stickyGET('type');
 				if($_GET['type'] != "All"){
@@ -47,7 +44,7 @@ class page_reports_member_member extends Page {
 			$member_model->addCondition('id',-1);
 		}
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
-		$grid->setModel($member_model,array('member_no','branch','name','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter','doc_thumb_url','sig_image_id'));
+		$grid->setModel($member_model,array('member_no','branch','name','FatherName','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter','doc_thumb_url','sig_image_id'));
 		$grid->addPaginator(50);
 		$grid->addQuickSearch(array('member_no','name','PhoneNos'));
 		$self=$this;

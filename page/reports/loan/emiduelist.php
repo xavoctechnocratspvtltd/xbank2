@@ -110,7 +110,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		$account_model->addExpression('other_charges')->set(function($m,$q){
 			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
-			$tr_m->addCondition('transaction_type_id',13); // JV
+			$tr_m->addCondition('transaction_type_id',[13, 46, 39]); // JV, TRA_VISIT_CHARGE, LegalChargeReceived
 			$tr_m->addCondition('account_id',$q->getField('id'));
 			return $tr_m->sum('amountDr');
 		});

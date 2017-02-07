@@ -30,7 +30,7 @@ class View_FDPrint extends View{
 			$this->template->set('nominee_name',$account['Nominee']);
 			$this->template->set('relation_with_nominee',$account['RelationWithNominee']);
 			$this->template->set('nominee_age',$account['NomineeAge']);
-			$this->template->set('nominee_dob',date('d-m-Y',strtotime($account['MinorNomineeDOB'])));
+			$this->template->set('nominee_dob',$account['MinorNomineeDOB']);
 			
 		}else{
 			$this->template->tryDel('nominee_name');

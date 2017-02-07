@@ -89,6 +89,7 @@ class page_accounts_DDS extends Page {
 		if($crud->isEditing('edit')){
 			$account_dds_model->hook('editing');
 		}
+		
 
 		$crud->setModel($account_dds_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
 		$crud->addRef('JointMember');
@@ -122,6 +123,7 @@ class page_accounts_DDS extends Page {
 		if($crud->isEditing('add')){
 			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
+			$crud->form->getElement('scheme_id')->getModel()->putValidDateCondition();
 			$crud->form->getElement('agent_id')->getModel()->addCondition('ActiveStatus',true);
 			
 			$o->move('initial_opening_amount','before','Amount')

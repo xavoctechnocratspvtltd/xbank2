@@ -197,7 +197,8 @@ class page_accounts_Loan extends Page {
 			// $crud->form->getElement('member_id')->getModel()->addOkConditions();
 			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
-
+			$crud->form->getElement('scheme_id')->getModel()->putValidDateCondition();
+			
 			// $crud->form->add('Order')
 						// ->move('LoanAgSecurity','after','LoanInsurranceDate')
 						$o->move($loan_from_account_field->other_field,'after','LoanInsurranceDate')

@@ -87,6 +87,7 @@ class page_accounts_SavingAndCurrent extends Page {
 		if($crud->isEditing('add')){
 			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
+			$crud->form->getElement('scheme_id')->getModel()->putValidDateCondition();
 			$crud->form->getElement('account_type')->setEmptyText('Please Select');
 			$o->now();
 		}

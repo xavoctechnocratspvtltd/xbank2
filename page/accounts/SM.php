@@ -94,6 +94,7 @@ class page_accounts_SM extends Page {
 			// $m->addCondition('SchemeType',ACCOUNT_TYPE_DEFAULT);
 			$m->addCondition('name','Share Capital');
 			$m->addCondition('published',true);
+			$m->putValidDateCondition();
 			// $o->move('initial_opening_amount','before','Amount')
 			// ->now();
 		}

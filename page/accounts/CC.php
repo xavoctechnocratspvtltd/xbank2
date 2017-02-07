@@ -78,6 +78,7 @@ class page_accounts_CC extends Page {
 		if($crud->isEditing('add')){
 			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$crud->form->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
+			$crud->form->getElement('scheme_id')->getModel()->putValidDateCondition();
 			$o->now();
 		}
 

@@ -31,7 +31,7 @@ class page_reports_agent_search extends Page {
 			}
 			if($_GET['to_date']){
 				$this->api->stickyGET('to_date');
-				$agent_model->addCondition('created_at','<=',$_GET['to_date']);
+				$agent_model->addCondition('created_at','<',$this->app->nextDate($_GET['to_date']));
 			}
 			if($_GET['branch']){
 				$this->api->stickyGET('branch');

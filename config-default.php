@@ -114,7 +114,9 @@ define('TRA_JV_ENTRY',                          'Journal Voucher Entry');
 define('TRA_DEFAULT_ACCOUNT_DEPOSIT_ENTRY',             'Default Account Deposit Enrty');
 define('TRA_SM_ACCOUNT_DEPOSIT_ENTRY',             'Default SM Deposit Enrty');
 define('TRA_NEW_MEMBER_REGISTRATIO_AMOUNT',     'NewMemberRegistrationAmount');
-define('TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT',	'PenaltyAccountAmountDeposit');
+define('TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT',	'PenaltyAccountAmountDeposit'); // This is charge actually ... (Devendra sir ne bahut samay baad bataya ...)
+define('TRA_PENALTY_AMOUNT_RECEIVED',			'PenaltyAmountReceived');
+define('TRA_OTHER_AMOUNT_RECEIVED',	'OtherAmountReceived');
 define('TRA_FOR_CLOSE_ACCOUNT_AMOUNT_DEPOSIT',	'ForCloseAccountAmountDeposit');
 define('TRA_CC_ACCOUNT_AMOUNT_DEPOSIT',         'CCAccountAmountDeposit');
 define('TRA_CC_ACCOUNT_AMOUNT_WITHDRAWL',	'CCAccountAmountWithdrawl');

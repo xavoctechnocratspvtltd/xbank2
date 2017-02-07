@@ -14,7 +14,7 @@ class View_FDPrint extends View{
 		$this->template->set('branch',$account->ref('branch_id')->get('name'));
 		$this->template->set('branch_1',$account->ref('branch_id')->get('name'));
 		$this->template->set('date',date("d-M-Y",strtotime($account['created_at'])));
-		$this->template->set('name',$account->ref('member_id')->get('name'));
+		$this->template->set('name',$account['ModeOfOperation']==="Joint"?$account->ref('member_id')->get('name')." (Joint) ":$account->ref('member_id')->get('name'));
 		$this->template->set('name_1',$account->ref('member_id')->get('name'));
 		$this->template->set('f_name',$account->ref('member_id')->get('FatherName'));
 		$this->template->set('f_name_1',$account->ref('member_id')->get('FatherName'));
@@ -25,10 +25,19 @@ class View_FDPrint extends View{
 		$this->template->set('deposite_amount_word_2',$account->convert_number_to_words(round($account['Amount'])));
 		$this->template->set('deposite_amount_1',$account['Amount']);
 		$this->template->set('deposite_amount_2',$account['Amount']);
-		$this->template->set('nominee_name',$account['Nominee']);
-		$this->template->set('relation_with_nominee',$account['RelationWithNominee']);
-		$this->template->set('nominee_age',$account['NomineeAge']);
-		$this->template->set('nominee_dob',date('d-m-Y',strtotime($account['MinorNomineeDOB'])));
+		
+		if($account['ModeOfOperation']!="Joint"){
+			$this->template->set('nominee_name',$account['Nominee']);
+			$this->template->set('relation_with_nominee',$account['RelationWithNominee']);
+			$this->template->set('nominee_age',$account['NomineeAge']);
+			$this->template->set('nominee_dob',date('d-m-Y',strtotime($account['MinorNomineeDOB'])));
+			
+		}else{
+			$this->template->tryDel('nominee_name');
+			$this->template->tryDel('relation_with_nominee');
+			$this->template->tryDel('nominee_age');
+			$this->template->tryDel('nominee_dob');			
+		}
 		$this->template->set('special_candidate',"");
 		$this->template->set('account_no',$account['AccountNumber']);
 		$this->template->set('account_no_1',$account['AccountNumber']);

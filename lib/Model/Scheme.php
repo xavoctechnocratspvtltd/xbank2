@@ -42,6 +42,7 @@ class Model_Scheme extends Model_Table {
 		$this->addField('percent_loan_on_deposit')->type('number')->defaultValue('80')->sortable(true);
 		$this->addField('no_loan_on_deposit_till')->type('number')->defaultValue('0')->sortable(true);
 		$this->addField('pre_mature_interests');
+		$this->addField('valid_till')->type('date');
 
 		
 		$this->addField('SchemePoints')->caption('Scheme Points')->system(true);
@@ -74,6 +75,10 @@ class Model_Scheme extends Model_Table {
 
 
 		//$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function putValidDateCondition(){
+		$this->addCondition([['valid_till',null],['valid_till','>',$this->app->today]]);
 	}
 
 	function updateTransactionRows(){

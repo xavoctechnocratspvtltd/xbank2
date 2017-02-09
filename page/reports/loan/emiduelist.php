@@ -110,7 +110,7 @@ class page_reports_loan_emiduelist extends Page {
 			$tr_m->addCondition('account_id',$q->getField('id'));
 			$tr_m->addCondition('created_at','>=',$from_date);
 			$tr_m->addCondition('created_at','<',$this->app->nextDate($to_date));
-			
+
 			return $tr_m->sum('amountDr');
 
 			// Previously this was running, and was including un entered amount also, but
@@ -340,7 +340,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		$grid->addPaginator(500);
 		$grid->addSno();
-		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty'));
+		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty','other_received'));
 		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ,'output_filename'=>$_GET['report_type'].' lilst_as_on '. $to_date.".csv"));
 
 		$grid->removeColumn('last_premium');

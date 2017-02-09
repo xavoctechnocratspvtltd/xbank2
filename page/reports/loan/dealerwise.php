@@ -194,7 +194,7 @@ class page_reports_loan_dealerwise extends Page {
 			// if($_GET['dealer'])
 			// 	$account_model->addCondition('dealer_id',$_GET['dealer']);
 
-			if(!$_GET['bike_surrendered'] AND !$_GET['legal_accounts']){
+			if($_GET['bike_surrendered']==='include' AND $_GET['legal_accounts']==='include'){
 				switch ($_GET['report_type']) {
 					case 'duelist':
 						$account_model->addCondition('due_premium_count','>',0);

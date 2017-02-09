@@ -322,7 +322,7 @@ class page_reports_loan_dealerwise extends Page {
 		});
 
 		$account_model->addExpression('emi_dueamount')->set(function($m,$q){
-			return $q->expr('([0]*[1])',[$m['due_premium_count'],$m['emi_amount']]);
+			return $q->expr('([0]*[1])',[$m->getElement('due_premium_count'),$m->getElement('emi_amount')]);
 		});
 
 

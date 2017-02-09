@@ -355,7 +355,7 @@ class page_reports_loan_dealerwise extends Page {
 		// $account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
 
-		$grid->setModel($account_model,['dealer','count_accounts','sum_emi_amount','sum_due_panelty','sum_other_charges','sum_other_received']);
+		$grid->setModel($account_model,['dealer','count_accounts','sum_emi_amount','sum_emi_due_amount','sum_due_panelty','sum_other_charges','sum_other_received','total']);
 
 		if($_GET['filter']){
 			// $grid->addColumn('emidue','emi_dueamount');

@@ -346,6 +346,8 @@ class page_reports_loan_dealerwise extends Page {
 			return $q->expr('SUM([0])',[$m->getElement('other_received')]);
 		});
 
+		$account_model->addExpression('count_accounts')->set('count(*)');
+
 		$account_model->_dsql()->group($account_model->dsql()->expr('[0]',[$account_model->getElement('dealer_id')]));
 
 
@@ -353,7 +355,7 @@ class page_reports_loan_dealerwise extends Page {
 		// $account_model->_dsql()->group('id');
 		$account_model->add('Controller_Acl');
 
-		$grid->setModel($account_model,['dealer','sum_emi_amount','sum_due_panelty','sum_other_charges','sum_other_received']);
+		$grid->setModel($account_model,['dealer','count_accounts','sum_emi_amount','sum_due_panelty','sum_other_charges','sum_other_received']);
 
 		if($_GET['filter']){
 			// $grid->addColumn('emidue','emi_dueamount');

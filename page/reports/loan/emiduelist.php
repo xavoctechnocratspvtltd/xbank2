@@ -103,6 +103,19 @@ class page_reports_loan_emiduelist extends Page {
 		});
 
 		$account_model->addExpression('due_panelty')->set(function($m,$q)use($from_date,$to_date){
+			$trans_type = $this->add('Model_TransactionType')->tryLoadBy('name',TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT);
+			
+			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'due_panelty_tr'));
+			$tr_m->addCondition('transaction_type_id',$trans_type->id); 
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$tr_m->addCondition('created_at','>=',$from_date);
+			$tr_m->addCondition('created_at','<',$this->app->nextDate($to_date));
+			
+			return $tr_m->sum('amountDr');
+
+			// Previously this was running, and was including un entered amount also, but
+			// this was changed as per request ... 
+			// Reason, old accounts was not included in penalty
 			$p_m = $m->refSQL('Premium');
 			if($from_date)
 				$p_m->addCondition('DueDate','>=',$from_date);

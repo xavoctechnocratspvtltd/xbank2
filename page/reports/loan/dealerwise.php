@@ -311,7 +311,7 @@ class page_reports_loan_dealerwise extends Page {
 			$account_model->addCondition('id',-1);
 
 		$account_model->addExpression('total')->set(function($m,$q){
-			return $q->expr('([due_premium_count] * [emi_amount]) + [due_panelty] + [other_charges] + [other_received]',
+			return $q->expr('([due_premium_count] * [emi_amount]) + [due_panelty] + [other_charges] - [other_received]',
 			[
 				'due_premium_count' => $m->getElement('due_premium_count'),
 				'emi_amount' 	=> $m->getElement('emi_amount'),

@@ -126,7 +126,7 @@ class page_reports_loan_dealerwise extends Page {
 
 		$account_model->addExpression('other_charges')->set(function($m,$q){
 			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
-			$tr_m->addCondition('transaction_type_id',[13, 46, 39]); // JV, TRA_VISIT_CHARGE, LegalChargeReceived
+			$tr_m->addCondition('transaction_type_id',[13, 46, 39]); // JV, TRA_VISIT_CHARGE, LegalChargeReceived, TRA_PENALTY_AMOUNT_RECEIVED
 			$tr_m->addCondition('account_id',$q->getField('id'));
 			return $tr_m->sum('amountDr');
 		});
@@ -310,17 +310,6 @@ class page_reports_loan_dealerwise extends Page {
 		}else
 			$account_model->addCondition('id',-1);
 
-		$account_model->addExpression('total')->set(function($m,$q){
-			return $q->expr('([due_premium_count] * [emi_amount]) + [due_panelty] + [other_charges] - [other_received]',
-			[
-				'due_premium_count' => $m->getElement('due_premium_count'),
-				'emi_amount' 	=> $m->getElement('emi_amount'),
-				'due_panelty'	=> $m->getElement('due_panelty'),
-				'other_charges'	=> $m->getElement('other_charges'),
-				'other_received'=> $m->getElement('other_received')
-			]);//($m['due_premium_count'] * $m['emi_amount']) +$m['due_panelty']+$m['other_charges']-$m['other_received'];
-		});
-
 		$account_model->addExpression('emi_dueamount')->set(function($m,$q){
 			return $q->expr('([0]*[1])',[$m->getElement('due_premium_count'),$m->getElement('emi_amount')]);
 		});
@@ -344,6 +333,16 @@ class page_reports_loan_dealerwise extends Page {
 
 		$account_model->addExpression('sum_other_received')->set(function($m,$q){
 			return $q->expr('SUM([0])',[$m->getElement('other_received')]);
+		});
+
+		$account_model->addExpression('total')->set(function($m,$q){
+			return $q->expr('[sum_emi_due_amount] + [sum_due_panelty] + [sum_other_charges] - [sum_other_received]',
+			[
+				'sum_emi_due_amount' => $m->getElement('sum_emi_due_amount'),
+				'sum_due_panelty' 	=> $m->getElement('sum_due_panelty'),
+				'sum_other_charges'	=> $m->getElement('sum_other_charges'),
+				'sum_other_received'	=> $m->getElement('sum_other_received')
+			]);//($m['due_premium_count'] * $m['emi_amount']) +$m['due_panelty']+$m['other_charges']-$m['other_received'];
 		});
 
 		$account_model->addExpression('count_accounts')->set('count(*)');

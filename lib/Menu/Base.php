@@ -63,6 +63,7 @@ class Menu_Base extends Menu {
 		$reports_sub_menu->addMenuItem('reports_loan','Loan & Recovery Reports');
 		$reports_sub_menu->addMenuItem('reports_genral','General Reports');
 		$reports_sub_menu->addMenuItem('reports_books','Books');
+		$reports_sub_menu->addMenuItem('reports_employee','Employee');
 		// $reports_sub_menu->addMenuItem('reports_search','Search Accounts');
 		$reports->js('click',$reports_sub_menu_popover->showJS());
 		

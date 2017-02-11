@@ -371,7 +371,7 @@ class page_reports_loan_dealerwise extends Page {
 
 		$grid->addPaginator(500);
 		$grid->addSno();
-		// $grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty'));
+		$grid->addTotals(array('total','sum_emi_due_amount','sum_due_panelty','sum_other_charges','sum_other_received'));
 		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ,'output_filename'=>$_GET['report_type'].' lilst_as_on '. $to_date.".csv"));
 
 		$grid->removeColumn('last_premium');

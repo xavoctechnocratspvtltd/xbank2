@@ -336,7 +336,7 @@ class page_reports_loan_dealerwise extends Page {
 		});
 
 		$account_model->addExpression('total')->set(function($m,$q){
-			return $q->expr('[sum_emi_due_amount] + [sum_due_panelty] + [sum_other_charges] - [sum_other_received]',
+			return $q->expr('IFNULL([sum_emi_due_amount],0) + IFNULL([sum_due_panelty],0) + IFNULL([sum_other_charges],0) - IFNULL([sum_other_received],0)',
 			[
 				'sum_emi_due_amount' => $m->getElement('sum_emi_due_amount'),
 				'sum_due_panelty' 	=> $m->getElement('sum_due_panelty'),

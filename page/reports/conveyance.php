@@ -49,7 +49,7 @@ class page_reports_conveyance extends Page {
 		}
 
 		$grid = $v->add('Grid_AccountStatement');
-		$grid->setModel($tr_row);
+		$grid->setModel($tr_row,['account','scheme','amountCr','created_at','voucher_no','Narration']);
 		$grid->addPaginator(50);
 		$grid->addTotals(['amountCr','amountDr']);
 

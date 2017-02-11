@@ -8,7 +8,7 @@ class page_reports_conveyance extends Page {
 		parent::init();	
 
 		$this->add('Controller_Acl');
-		$staff =  $this->add('Model_Staff');
+		$staff =  $this->add('Model_Employee');
 		$form=$this->add('Form')->addClass('noneprintalbe');
 		$staff_field = $form->addField('autocomplete/Basic','staff')->validateNotNull();
 		$staff_field->setModel($staff);

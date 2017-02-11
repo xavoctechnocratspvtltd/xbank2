@@ -64,7 +64,58 @@ class page_transactions_deposit extends Page {
 
 		if($_GET['account_selected']){
 			$account_selected =$this->add('Model_Account');
+
+			$account_selected->addExpression('paid_premium_count')->set(function($m,$q){
+				$p_m=$m->refSQL('Premium')
+							->addCondition('PaidOn','<>',null);
+				return $p_m->count();
+			})->sortable(true);
+
+			$account_selected->addExpression('emi_amount')->set(function($m,$q){
+				return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('Amount');
+			});
+
+			
+			$account_selected->addExpression('due_panelty')->set(function($m,$q){
+				$trans_type = $this->add('Model_TransactionType')->tryLoadBy('name',TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT);
+				
+				$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'due_panelty_tr'));
+				$tr_m->addCondition('transaction_type_id',$trans_type->id); 
+				$tr_m->addCondition('account_id',$q->getField('id'));
+				// $tr_m->addCondition('created_at','>=',$from_date);
+				// $tr_m->addCondition('created_at','<',$this->app->nextDate($to_date));
+
+				return $tr_m->sum('amountDr');
+
+				// Previously this was running, and was including un entered amount also, but
+				// this was changed as per request ... 
+				// Reason, old accounts was not included in penalty
+				// $p_m = $m->refSQL('Premium');
+				// if($from_date)
+				// 	$p_m->addCondition('DueDate','>=',$from_date);
+				// if($to_date)
+				// 	$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+				// return $p_m->sum($m->dsql()->expr('IFNULL(PaneltyCharged,0)'));
+			});
+
+			$account_selected->addExpression('other_charges')->set(function($m,$q){
+				$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+				$tr_m->addCondition('transaction_type_id',[13, 46, 39]); // JV, TRA_VISIT_CHARGE, LegalChargeReceived
+				$tr_m->addCondition('account_id',$q->getField('id'));
+				return $tr_m->sum('amountDr');
+			});
+
+			$account_selected->addExpression('other_received')->set(function($m,$q){
+				$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+				$tr_m->addCondition('account_id',$q->getField('id'));
+				$received = $tr_m->sum('amountCr');
+				$premium_paid = $q->expr('([0]*[1])',[$m->getElement('paid_premium_count'),$m->getElement('emi_amount')]);
+				return $q->expr('([0]-[1])',[$received,$premium_paid]);
+			});
+
+
 			$account_selected->loadBy('AccountNumber',$_GET['account_selected']);
+			
 			if($_GET['amount_filled'] >=50000 and (strlen($account_selected->ref('member_id')->get('PanNo')) != 10) ){
 				$pan_details->setHTML('<font color="red">No Pan Card Found</font>');
 			}elseif($_GET['amount_filled'] < 50000 and strlen($account_selected->ref('member_id')->get('PanNo')) != 10){
@@ -81,6 +132,8 @@ class page_transactions_deposit extends Page {
 					case 'Loan':
 						$account_info->set("Over Due Premiums ". $account_selected->ref('Premium')->addCondition('DueDate','<',$this->api->today)->addCondition('Paid',false)->count());
 						$right_col->add('View')->set('Premium Amount ' . $account_selected->ref('Premium')->tryLoadAny()->get('Amount'));
+						$right_col->add('View')->set('Due Penalty & Other Charges '. ($account_selected['due_panelty'] + $account_selected['other_charges'] - $account_selected['other_received']));
+
 						break;
 					case 'Recurring':
 						$account_info->set("Paid Premiums ".$account_selected->ref('Premium')->addCondition('PaidOn','is not',null)->count());

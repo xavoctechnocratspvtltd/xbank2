@@ -4,6 +4,9 @@ class page_reports_general_memberdepositeandloan extends Page {
 	public $title="Member Deposite and Loan Repots";
 	function page_index(){
 		// parent::init();
+	
+		$this->api->stickyGET('filter');
+		$this->api->stickyGET('status');
 
 		$as_on_date = $this->api->today;
 		if($this->api->stickyGET('as_on_date'))
@@ -37,9 +40,7 @@ class page_reports_general_memberdepositeandloan extends Page {
 			// return $m->add('Model_Transaction')->addCondition('transaction_type_id',$transaction_type_model->fieldQuery('id'))->addCondition('reference_id',$member_model->getElement('id'))->sum('cr_sum');
 		});
 
-		if($form->isSubmitted()){
-			$grid->js()->reload(array('as_on_date'=>$form['as_on_date']?:0,'status'=>$form['status'],'filter'=>1))->execute();
-		}
+		
 
 		if($this->api->stickyGET('filter')){
 			if($_GET['as_on_date'])
@@ -57,6 +58,10 @@ class page_reports_general_memberdepositeandloan extends Page {
 										'add_fees',
 									)
 						);
+
+		if($form->isSubmitted()){
+			$grid->js()->reload(array('as_on_date'=>$form['as_on_date']?:0,'status'=>$form['status'],'filter'=>1))->execute();
+		}
 
 	}
 

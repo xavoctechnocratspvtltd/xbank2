@@ -19,6 +19,7 @@ class page_reports_loan_dealerwiseloanreport extends Page {
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
 		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
 		$form->addField('dropdown','active_status')->setEmptyText('All')->setValueList(['active'=>'Active','inactive'=>'InActive']);
+		$form->addField('dropdown','maturity_status')->setEmptyText('All')->setValueList(['mature'=>'Matured','running'=>'Running']);
 
 		$form->addSubmit('GET List');
 
@@ -46,8 +47,20 @@ class page_reports_loan_dealerwiseloanreport extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
+		$account_model->addExpression('maturity_date')->set(function($m,$q){
+			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +(".$m->add('Model_Scheme')->addCondition('id',$q->getField('scheme_id'))->fieldQuery("NumberOfPremiums")->render().") MONTH)";
+		});
+
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
+
+			if($_GET['maturity_status']){
+				if($_GET['maturity_status']==='mature'){
+					$account_model->_dsql()->where($account_model->dsql()->expr('[0] <= "'.$this->app->today.'"',[$account_model->getElement('maturity_date')]));
+				}else{
+					$account_model->_dsql()->where($account_model->dsql()->expr('[0] > "'.$this->app->today.'"',[$account_model->getElement('maturity_date')]));
+				}
+			}
 			
 			if($_GET['dealer']){
 				$this->api->stickyGET('dealer');
@@ -142,7 +155,7 @@ class page_reports_loan_dealerwiseloanreport extends Page {
 
 		$grid->addPaginator(500);
 
-		$grid->addTotals(array('sum_loan_amount','sum_file_charge','sum_cheque_amount','sum_emi'));
+		$grid->addTotals(array('count_accounts','sum_loan_amount','sum_file_charge','sum_cheque_amount','sum_emi'));
 
 		$js=array(
 			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
@@ -155,7 +168,7 @@ class page_reports_loan_dealerwiseloanreport extends Page {
 		$grid->js('click',$js);
 		if($form->isSubmitted()){
 
-			$send = array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'document'=>$form['document']?:0,'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'],'active_status'=>$form['active_status'] , 'filter'=>1);
+			$send = array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'document'=>$form['document']?:0,'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'],'active_status'=>$form['active_status'],'maturity_status'=>$form['maturity_status'] , 'filter'=>1);
 			$grid->js()->reload($send)->execute();
 		}		
 

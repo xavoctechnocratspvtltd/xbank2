@@ -14,9 +14,9 @@ class page_reports_agent_detail extends Page {
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','status')->setValueList(['all'=>'All','0'=>'InActive','1'=>'Active']);
+		// $form->addField('DatePicker','from_date');
+		// $form->addField('DatePicker','to_date');
+		// $form->addField('dropdown','status')->setValueList(['all'=>'All','0'=>'InActive','1'=>'Active']);
 
 		$document=$this->add('Model_Document');
 		$document->addCondition('AgentDocuments',true);
@@ -36,14 +36,14 @@ class page_reports_agent_detail extends Page {
 		// $agent_guarantor->addCondition('gurantor_branch_id',$this->api->current_branch->id);
 
 		$agent=$this->add('Model_Agent');
-		$member_join=$agent->join('members','member_id');
+		$member_join=$agent->leftJoin('members','member_id');
 		$member_join->addField('FatherName');
 		$member_join->addField('PermanentAddress');
 		$member_join->addField('PanNo');
 		$member_join->addField('PhoneNos');
 		// $member_join->addField('branch_id');
 
-		$agent->add('Controller_Acl');
+		// $agent->add('Controller_Acl');
 		// $agent->addCondition('branch_id',$this->api->current_branch->id);
 
 		$agent->addExpression('is_default')->set(function($m,$q){
@@ -53,7 +53,7 @@ class page_reports_agent_detail extends Page {
 			return $def_acc->count();
 		});
 
-		$agent->addCondition('is_default',false);
+		// $agent->addCondition('is_default',0);
 
 		$agent->addExpression('sponsor_phone')->set(function($m,$q){
 			$sponsor = $m->add('Model_Agent',array('table_alias'=>'spns'));
@@ -82,7 +82,7 @@ class page_reports_agent_detail extends Page {
 			$agent->addCondition('sponsor_id',$_GET['team_sponsor_id']);
 		}
 
-		$grid_column_array = array('code','agent_member_name','level_1_crpb','level_2_crpb','level_3_crpb','total_group_crpb','FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor','sponsor_cadre','sponsor_phone','self_business','team_business','self_crpb','total_team_business','total_group_crpb','added_by','ActiveStatus');
+		$grid_column_array = array('code','agent_member_name',/*'level_1_crpb','level_2_crpb','level_3_crpb','total_group_crpb',*/'FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor','sponsor_cadre','sponsor_phone',/*'self_business','team_business','self_crpb','total_team_business','total_group_crpb',*/'added_by','ActiveStatus');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -102,23 +102,25 @@ class page_reports_agent_detail extends Page {
 				$agent_guarantor->addCondition('agent_id',$_GET['agent']);
 			}
 
-			if($this->app->stickyGET('from_date')){
-				$agent->addCondition('created_at','>',$_GET['from_date']);
-			}
+			// if($this->app->stickyGET('from_date')){
+			// 	$agent->addCondition('created_at','>',$_GET['from_date']);
+			// }
 
-			if($this->app->stickyGET('to_date')){
-				$agent->addCondition('created_at','<=',$this->app->nextDate($_GET['to_date']));
-			}
+			// if($this->app->stickyGET('to_date')){
+			// 	$agent->addCondition('created_at','<=',$this->app->nextDate($_GET['to_date']));
+			// }
 
-			if($this->app->stickyGET('status') !=='all')
-				$agent->addCondition('ActiveStatus',$_GET['status']==0?false:true);
+			// if($this->app->stickyGET('status') !=='all')
+			// 	$agent->addCondition('ActiveStatus',$_GET['status']==0?false:true);
 
-		}else
+			$agent->tryLoadAny();
+		}else{
 			$agent->addCondition('id',-1);
+			$agent_guarantor->addCondition('agent_id',-1);
+		}
 
 			
 
-		$agent->tryLoadAny();
 
 		$view=$this->add('View');
 		$grid_agent=$view->add('Grid_AccountsBase');
@@ -127,8 +129,6 @@ class page_reports_agent_detail extends Page {
 		$grid_agent->setModel($agent, $grid_column_array);
 		$grid_agent->addSno();
 		$grid_agent->addFormatter('sponsor','wrap');
-
-		$grid_agent->addColumn('Button','member_list');
 		
 		$view->add('H3')->set('Agent Guarantor');
 		$grid_agent_guarantor=$view->add('Grid');
@@ -148,8 +148,20 @@ class page_reports_agent_detail extends Page {
 
 		$grid_agent->addPaginator(500);
 
+
+		$this->add('VirtualPage')->addColumn('team_members',"Team Members",null,$grid_agent)->set(function($p){
+			$grid = $p->add('Grid');
+			$agent_level_1 = $p->add('Model_Agent');
+			
+			$m_m = $agent_level_1->getElement('member_id')->getModel();
+			$m_m->title_field="name";
+			
+			$agent_level_1->addCondition('sponsor_id',$p->id);
+			$grid->setModel($agent_level_1,array('member','PhoneNos','account','created_at','self_crpb','self_business'));
+		});
+
 		if($form->isSubmitted()){
-			$send =['agent'=>$form['agent'],'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'status'=>$form['status']?:null,'filter'=>1];
+			$send =['agent'=>$form['agent'],/*'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'status'=>$form['status']?:null,*/'filter'=>1];
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

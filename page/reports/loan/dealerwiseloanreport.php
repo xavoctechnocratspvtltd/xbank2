@@ -123,9 +123,11 @@ class page_reports_loan_dealerwiseloanreport extends Page {
 			return $q->expr('SUM([0])',[$m->getElement('emi')]);
 		});
 
+		$account_model->addExpression('count_accounts')->set('count(*)');
+
 		$account_model->_dsql()->group($account_model->dsql()->expr('[0]',[$account_model->getElement('dealer_id')]));
 
-		$grid_array = array('dealer','sum_loan_amount','sum_file_charge','sum_cheque_amount','sum_emi');
+		$grid_array = array('dealer','count_accounts','sum_loan_amount','sum_file_charge','sum_cheque_amount','sum_emi');
 		$grid->setModel($account_model,$grid_array);
 		
 

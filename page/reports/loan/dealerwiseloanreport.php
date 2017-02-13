@@ -155,7 +155,7 @@ class page_reports_loan_dealerwiseloanreport extends Page {
 
 		$grid->addPaginator(500);
 
-		$grid->addTotals(array('sum_loan_amount','sum_file_charge','sum_cheque_amount','sum_emi'));
+		$grid->addTotals(array('count_accounts','sum_loan_amount','sum_file_charge','sum_cheque_amount','sum_emi'));
 
 		$js=array(
 			$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

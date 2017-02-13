@@ -17,8 +17,8 @@ class page_reports_general_schemeaccount extends Page {
 		
 		$scheme_m = $this->add('Model_Scheme');
 
-		// if($_GET['acc_type']){
-		// 	$scheme_m->addCondition('SchemeType',$_GET['acc_type']);
+		// if($_GET['acc_type_scheme']){
+		// 	// $scheme_m->addCondition('SchemeType',$_GET['acc_type_scheme']);
 		// }
 
 		$form=$this->add('Form');
@@ -29,13 +29,13 @@ class page_reports_general_schemeaccount extends Page {
 		$account_type=$form->addField('DropDown','account_type');
 		$array_value = $array_key = explode(',', ACCOUNT_TYPES);
 		$account_type->setValueList(array_combine($array_key, $array_value))->setEmptyText('Select Account type');
-		$scheme_field=$form->addField('DropDown','scheme')->setEmptyText('Please Select Scheme');
+		$scheme_field=$form->addField('autocomplete/Basic','scheme');
 		$scheme_field->setModel($scheme_m);
+		$scheme_field->send_other_fields = array($form->getElement('account_type'));
+		if($scheme_selected = $_GET['o_'.$form->getElement('account_type')->name]){
+			$scheme_field->model->addCondition('SchemeType',$scheme_selected);
+		}
 		
-		// $account_type->js('change',
-		// 			$scheme_field->js()->reload(
-		// 					array('acc_type'=>$account_type->js()->val())));
-
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid',array('from_date'=>$from_date,'to_date'=>$to_date));
@@ -102,6 +102,7 @@ class page_reports_general_schemeaccount extends Page {
 		}
 		// $scheme->add('Controller_Acl');
 		$grid->setModel($scheme,array('account_count','sum_amount'));
+		
 		
 		if($form->isSubmitted()){
 			$grid->js()->reload(

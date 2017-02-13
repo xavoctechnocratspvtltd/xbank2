@@ -29,7 +29,7 @@ class page_reports_general_schemeaccount extends Page {
 		$account_type=$form->addField('DropDown','account_type');
 		$array_value = $array_key = explode(',', ACCOUNT_TYPES);
 		$account_type->setValueList(array_combine($array_key, $array_value))->setEmptyText('Select Account type');
-		$scheme_field=$form->addField('DropDown','scheme');
+		$scheme_field=$form->addField('DropDown','scheme')->setEmptyText('Please Select Scheme');
 		$scheme_field->setModel($scheme_m);
 		
 		// $account_type->js('change',
@@ -49,6 +49,13 @@ class page_reports_general_schemeaccount extends Page {
 					->addCondition('scheme_id',$q->getField('id'));
 			if($_GET['account_status'] !=='all'){
 				$sum_acc->addCondition('ActiveStatus',$_GET['status']==0?false:true);
+			}
+			if($_GET['from_date']){
+				$sum_acc->addCondition('created_at','>',$_GET['from_date']);
+			}
+
+			if($_GET['to_date']){
+				$sum_acc->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			}		
 					
 			return $sum_acc->count();
@@ -59,6 +66,14 @@ class page_reports_general_schemeaccount extends Page {
 			if($_GET['account_status'] !=='all'){
 				$sum_acc->addCondition('ActiveStatus',$_GET['status']==0?false:true);
 			}		
+
+			if($_GET['from_date']){
+				$sum_acc->addCondition('created_at','>',$_GET['from_date']);
+			}
+
+			if($_GET['to_date']){
+				$sum_acc->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+			}
 					
 			return $sum_acc->sum('Amount');		
 		});
@@ -75,13 +90,15 @@ class page_reports_general_schemeaccount extends Page {
 			if($selected_scheme){
 				$scheme->addCondition('id',$selected_scheme);
 			}
-			if($_GET['from_date']){
-				$scheme->addCondition('created_at','>',$_GET['from_date']);
-			}
+			// if($_GET['from_date']){
+			// 	$scheme->addCondition('created_at','>',$_GET['from_date']);
+			// }
 
-			if($_GET['to_date']){
-				$scheme->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
-			}
+			// if($_GET['to_date']){
+			// 	$scheme->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+			// }
+		}else{
+				$scheme->addCondition('id',-1);
 		}
 		// $scheme->add('Controller_Acl');
 		$grid->setModel($scheme,array('account_count','sum_amount'));

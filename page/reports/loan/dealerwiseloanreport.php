@@ -47,11 +47,19 @@ class page_reports_loan_dealerwiseloanreport extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
+		$account_model->addExpression('maturity_date')->set(function($m,$q){
+			return "DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +(".$m->add('Model_Scheme')->addCondition('id',$q->getField('scheme_id'))->fieldQuery("NumberOfPremiums")->render().") MONTH)";
+		});
+
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 
 			if($_GET['maturity_status']){
-				$account_model->addCondition('MaturedStatus',$_GET['maturity_status']==='mature'?true:false);
+				if($_GET['maturity_status']==='mature'){
+					$account_model->_dsql()->where($account_model->dsql()->expr('[0] <= "'.$this->app->today.'"',[$account_model->getElement('maturity_date')]));
+				}else{
+					$account_model->_dsql()->where($account_model->dsql()->expr('[0] > "'.$this->app->today.'"',[$account_model->getElement('maturity_date')]));
+				}
 			}
 			
 			if($_GET['dealer']){

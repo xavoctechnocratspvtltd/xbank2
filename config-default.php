@@ -14,7 +14,7 @@ define('DIR_READ_MODE', 0755);
 define('DIR_WRITE_MODE', 0777);
 
 $config['enable_api']=true;
-$config['account_create_api_url']='http://bhawani.xepan-local.org/xepan2/api/v1/customer';
+$config['account_create_api_url']='http://epan.xepan-local.org/xepan2/api/v1/customer';
 
 $config['autocreator']=false;
 

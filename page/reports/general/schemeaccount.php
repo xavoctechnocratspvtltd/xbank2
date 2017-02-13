@@ -1,7 +1,7 @@
 <?php
 
 class page_reports_general_schemeaccount extends Page {
-	public $title="Account Close Repots";
+	public $title="Scheme Account Report";
 	function page_index(){
 		// parent::init();
 

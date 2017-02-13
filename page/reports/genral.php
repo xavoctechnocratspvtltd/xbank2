@@ -15,5 +15,6 @@ class page_reports_genral extends Page {
 		$tab1=$tabs->addTabURL('reports_general_accountclose','Account Close Report');
 		$tab1=$tabs->addTabURL('reports_general_fixedassets','Fixed Assets Report');
 		$tab1=$tabs->addTabURL('reports_general_accuntsignimg','Account Sign');
+		$tab1=$tabs->addTabURL('reports_general_schemeaccount','Scheme Wise Account');
 	}
 }

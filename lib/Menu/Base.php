@@ -60,7 +60,8 @@ class Menu_Base extends Menu {
 		$reports_sub_menu->addMenuItem('reports_agent','Agent Reports');
 		$reports_sub_menu->addMenuItem('reports_deleardsa','Dealer/DSA Reports');
 		$reports_sub_menu->addMenuItem('reports_deposit','Deposit Reports');
-		$reports_sub_menu->addMenuItem('reports_loan','Loan & Recovery Reports');
+		$reports_sub_menu->addMenuItem('reports_loan','Loan Reports');
+		$reports_sub_menu->addMenuItem('reports_recovery','Recovery Reports');
 		$reports_sub_menu->addMenuItem('reports_genral','General Reports');
 		$reports_sub_menu->addMenuItem('reports_books','Books');
 		$reports_sub_menu->addMenuItem('reports_employee','Employee');

@@ -31,9 +31,15 @@ class page_reports_general_schemeaccount extends Page {
 		$account_type->setValueList(array_combine($array_key, $array_value))->setEmptyText('Select Account type');
 		$scheme_field=$form->addField('autocomplete/Basic','scheme');
 		$scheme_field->setModel($scheme_m);
-		$scheme_field->send_other_fields = array($form->getElement('account_type'));
+		$scheme_field->send_other_fields = array($form->getElement('account_type'),$form->getElement('scheme_status'));
 		if($scheme_selected = $_GET['o_'.$form->getElement('account_type')->name]){
 			$scheme_field->model->addCondition('SchemeType',$scheme_selected);
+		}
+
+
+		if(($status_selected =$_GET['o_'.$form->getElement('scheme_status')->name])!=="all" ){
+			$scheme_field->model->addCondition('ActiveStatus',$status_selected==0?false:true);
+
 		}
 		
 		$form->addSubmit('GET List');

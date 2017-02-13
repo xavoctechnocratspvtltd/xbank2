@@ -6,7 +6,7 @@ class page_reports_general_memberdepositeandloan extends Page {
 		// parent::init();
 
 		$as_on_date = $this->api->today;
-		if($_GET['as_on_date'])
+		if($this->api->stickyGET('as_on_date'))
 			$as_on_date = $_GET['as_on_date'];
 
 		$form=$this->add('Form');
@@ -41,7 +41,7 @@ class page_reports_general_memberdepositeandloan extends Page {
 			$grid->js()->reload(array('as_on_date'=>$form['as_on_date']?:0,'status'=>$form['status'],'filter'=>1))->execute();
 		}
 
-		if($_GET['filter']){
+		if($this->api->stickyGET('filter')){
 			if($_GET['as_on_date'])
 				$member_model->addCondition('created_at','<=',$as_on_date);
 			

@@ -28,9 +28,9 @@ class page_reports_conveyance extends Page {
 			if($staff_id = $this->app->stickyGET('staff_id'))
 				$tr_row->addCondition('reference_id',$staff_id);
 			if($_GET['from_date'])
-				$transactions->addCondition('created_at','>=',$_GET['from_date']);
+				$tr_row->addCondition('created_at','>=',$_GET['from_date']);
 			if($_GET['to_date'])
-				$transactions->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
+				$tr_row->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 		}else{
 				$tr_row->addCondition('id',-1);
 		}

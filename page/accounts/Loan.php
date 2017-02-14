@@ -500,6 +500,8 @@ class page_accounts_Loan extends Page {
 	}
 
 	function page_bike_legal(){
+
+		$this->add('Controller_Acl');
 		$model= $this->add('Model_Active_Account_Loan');
 		$model->getElement('AccountNumber')->readOnly(true);
 

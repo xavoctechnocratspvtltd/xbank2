@@ -54,7 +54,8 @@ class Controller_Acl extends AbstractController{
 		
 		if(!$acl->allowAdd()){
 			$this->owner->allow_add=false;
-			$this->owner->add_button->destroy();
+			if($this->owner->add_button)
+				$this->owner->add_button->destroy();
 		}
 
 		if(!$acl->allowEdit()){

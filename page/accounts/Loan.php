@@ -500,10 +500,8 @@ class page_accounts_Loan extends Page {
 	}
 
 	function page_bike_legal(){
-		if($this->app->current_staff['AccessLevel'] < '80'){
-			$this->add('View_Error')->set('You are Not Authorize');
-			return;
-		}
+
+		$this->add('Controller_Acl');
 		$model= $this->add('Model_Active_Account_Loan');
 		$model->getElement('AccountNumber')->readOnly(true);
 
@@ -516,6 +514,7 @@ class page_accounts_Loan extends Page {
 
 		$crud = $this->add('CRUD',['allow_add'=>false, 'allow_del'=>false]);
 		$crud->setModel($model,['bike_surrendered','bike_surrendered_on','is_in_legal','legal_filing_date'],['AccountNumber','bike_surrendered','bike_surrendered_on','is_in_legal','legal_filing_date']);
+		$crud->add('Controller_Acl');
 
 		$crud->grid->addPaginator(50);
 		$crud->grid->addQuickSearch(['AccountNumber']);

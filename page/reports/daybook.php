@@ -7,6 +7,7 @@ class page_reports_daybook extends Page {
 		parent::init();
 		
 		$form = $this->add('Form')->addClass('noneprintalbe');
+		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','date')->validateNotNull();
 		$form->addField('DropDown','voucher_type')->setEmptyText('All')->setModel('TransactionType');
 
@@ -36,11 +37,17 @@ class page_reports_daybook extends Page {
 		$daybook_lister_grid->add('View',null,'grid_buttons')->set('Date :'. $_GET['date_selected'] )->addClass('pull-right');
 
 		if($_GET['date_selected']){			
-			$day_transaction_model->addCondition('created_at','>=',$_GET['date_selected']);
+			// $day_transaction_model->addCondition('created_at','>=',$_GET['date_selected']);
 			$day_transaction_model->addCondition('created_at','<',$this->api->nextDate($_GET['date_selected']));
-		}else{
+		}
+		else{
 			$day_transaction_model->addCondition('created_at','>=',$this->api->today);
 			$day_transaction_model->addCondition('created_at','<',$this->api->nextDate($this->api->today));
+		}
+
+		if($_GET['from_date']){
+			$day_transaction_model->addCondition('created_at','>=',$_GET['from_date']);
+
 		}
 
 		if($_GET['voucher_type']){
@@ -64,7 +71,7 @@ class page_reports_daybook extends Page {
 				$form->js()->univ()->newWindow($this->api->url('voucher_print',array('selected_voucher_list'=>$form['selected_voucher'],'hide_print_btn'=>true,'cut_page'=>0)))->execute();
 			}
 			if($form->isClicked($open_day_book)){
-				$daybook_lister_grid->js()->reload(array('date_selected'=>$form['date']?:0,'voucher_type'=>$form['voucher_type']))->execute();
+				$daybook_lister_grid->js()->reload(array('date_selected'=>$form['date']?:0,'from_date'=>$form['from_date']?:0,'voucher_type'=>$form['voucher_type']))->execute();
 			}
 
 		}

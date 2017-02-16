@@ -21,6 +21,12 @@ class page_reports_daybook extends Page {
 		$transaction_row->addField('amountDr');
 		$transaction_row->addField('amountCr');
 
+		$ref_account = $day_transaction_model->join('accounts','reference_id');
+		$ref_account_member = $ref_account->join('members','member_id');
+		$ref_account_member->addField('member_name','name');
+		$ref_account_member->addField('PermanentAddress');
+		$ref_account_member->addField('PanNo');
+
 		
 		$day_transaction_model->add('Controller_Acl');
 		$day_transaction_model->setOrder('voucher_no');
@@ -41,7 +47,7 @@ class page_reports_daybook extends Page {
 			$day_transaction_model->addCondition('transaction_type_id',$_GET['voucher_type']);
 		}
  
-		$daybook_lister_grid->setModel($day_transaction_model,array('voucher_no','Narration','account','amountDr','amountCr'));
+		$daybook_lister_grid->setModel($day_transaction_model,array('voucher_no','Narration','member_name','PermanentAddress','PanNo','account','amountDr','amountCr'));
 		$daybook_lister_grid->removeColumn('Narration');
 		// $daybook_lister_grid->addPaginator(10);
 

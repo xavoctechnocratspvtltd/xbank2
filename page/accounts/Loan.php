@@ -6,7 +6,7 @@ class page_accounts_Loan extends Page {
 		$tabs=$this->add('Tabs');
 		$pending_accounts_tab = $tabs->addTabURL($this->api->url('./pendingAccounts'),'Pending');
 		$accounts_tab = $tabs->addTabURL($this->api->url('./accounts'),'Accounts');
-		$bike_legal = $tabs->addTabURL($this->api->url('./bike_legal'),'Manage Surrender Bike and Legal');
+		$bike_legal = $tabs->addTabURL($this->api->url('accounts_Loan_bikelegal'),'Manage Surrender Bike and Legal');
 	}
 
 	function page_pendingAccounts(){
@@ -498,29 +498,7 @@ class page_accounts_Loan extends Page {
 		$crud->setModel($account_guarantors, array('member_id','member'));
 
 	}
-
-	function page_bike_legal(){
-
-		$this->add('Controller_Acl');
-		$model= $this->add('Model_Active_Account_Loan');
-		$model->getElement('AccountNumber')->readOnly(true);
-
-		$model->addHook('beforeSave',function($m){
-			if(!$m['bike_surrendered'] && $m['bike_surrendered_on'])
-				throw $m->exception('Please select this','ValidityCheck')->setField('bike_surrendered');
-			if(!$m['is_in_legal'] && $m['legal_filing_date'])
-				throw $m->exception('Please select this','ValidityCheck')->setField('is_in_legal');
-		});
-
-		$crud = $this->add('CRUD',['allow_add'=>false, 'allow_del'=>false]);
-		$crud->setModel($model,['bike_surrendered','bike_surrendered_on','is_in_legal','legal_filing_date'],['AccountNumber','bike_surrendered','bike_surrendered_on','is_in_legal','legal_filing_date']);
-		$crud->add('Controller_Acl');
-
-		$crud->grid->addPaginator(50);
-		$crud->grid->addQuickSearch(['AccountNumber']);
-	}
-
-
+ 
 	function page_accounts_Loan_accounts_comment(){
 		
 	}

@@ -1,4 +1,4 @@
-<?php
+	<?php
 
 class page_reports_recovery extends Page {
 	public $title ="Recovery Reports";
@@ -9,6 +9,7 @@ class page_reports_recovery extends Page {
 		$tab1=$tabs->addTabURL('reports_loan_emiduelist','EMI Due List');
 		$tab1=$tabs->addTabURL('reports_loan_emireceivedlist','EMI Rceceived List');
 		$tab1=$tabs->addTabURL('reports_loan_penaltyandotherreceivedlist','Penalty & Other Received List');
+		$tab1=$tabs->addTabURL('reports_loan_duestoreceive','Dues To Receive List');
 		// $tab1=$tabs->addTabURL('reports_loan_insuranceduelist','Insurance Due List');
 		// $tab1=$tabs->addTabURL('reports_loan_dispatch','Loan Dispatch');
 		// $tab1=$tabs->addTabURL('reports_loan_approval','Approval Letter');

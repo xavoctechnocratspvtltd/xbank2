@@ -40,7 +40,7 @@ class View_DuesReceiveList extends View{
 		$due_premiums->add('Controller_Acl');
 
 		$grid = $this->add('Grid_AccountsBase');
-		$grid->setModel($due_premiums,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos', 'Amount','DueDate','agent','dealer'));
+		$grid->setModel($due_premiums,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos', 'Amount','DueDate','agent','dealer','repayment_mode','account_type'));
 		$grid->addSno();
 		$grid->addPaginator(50);
 

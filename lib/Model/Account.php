@@ -60,6 +60,7 @@ class Model_Account extends Model_Table {
 		$this->addField('MaturedStatus')->type('boolean')->defaultValue(false);
 		$this->addField('Group');
 		$this->addField('PAndLGroup')->system(true);
+		$this->addField('repayment_mode')->enum(['Cash','Cheque','NACH/ECS'])->defaultValue('Cash');
 		
 		$this->addField('bike_surrendered')->type('boolean');
 		$this->addField('bike_surrendered_on')->type('date');

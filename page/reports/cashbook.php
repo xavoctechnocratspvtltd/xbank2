@@ -25,11 +25,11 @@ class page_reports_cashbook extends Page {
 		$scheme_join = $account_join->join('schemes','scheme_id');
 		$scheme_join->addField('scheme_name','name');
 
-		$ref_account = $cash_transaction_model->join('accounts','reference_id');
-		$ref_account_member = $ref_account->join('members','member_id');
-		$ref_account_member->addField('member_name','name');
-		$ref_account_member->addField('PermanentAddress');
-		$ref_account_member->addField('PanNo');
+		// $ref_account = $cash_transaction_model->join('accounts','reference_id');
+		// $ref_account_member = $ref_account->join('members','member_id');
+		// $ref_account_member->addField('member_name','name');
+		// $ref_account_member->addField('PermanentAddress');
+		// $ref_account_member->addField('PanNo');
 
 		$cash_transaction_model->addCondition('scheme_name',CASH_ACCOUNT);
 		$cash_transaction_model->setOrder('voucher_no');

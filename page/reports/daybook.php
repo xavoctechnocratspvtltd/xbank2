@@ -22,11 +22,11 @@ class page_reports_daybook extends Page {
 		$transaction_row->addField('amountDr');
 		$transaction_row->addField('amountCr');
 
-		// $ref_account = $day_transaction_model->join('accounts','reference_id');
-		// $ref_account_member = $ref_account->join('members','member_id');
-		// $ref_account_member->addField('member_name','name');
-		// $ref_account_member->addField('PermanentAddress');
-		// $ref_account_member->addField('PanNo');
+		$ref_account = $day_transaction_model->join('accounts','reference_id');
+		$ref_account_member = $ref_account->join('members','member_id');
+		$ref_account_member->addField('member_name','name');
+		$ref_account_member->addField('PermanentAddress');
+		$ref_account_member->addField('PanNo');
 
 		
 		$day_transaction_model->add('Controller_Acl');

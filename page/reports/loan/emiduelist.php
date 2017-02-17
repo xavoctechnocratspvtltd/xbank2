@@ -57,6 +57,7 @@ class page_reports_loan_emiduelist extends Page {
 		$member_join->addField('PhoneNos');
 		$member_join->addField('CurrentAddress');
 		$member_join->addField('landmark');
+		$member_join->addField('tehsil');
 
 		$account_model->addCondition('DefaultAC',false);
 
@@ -64,7 +65,7 @@ class page_reports_loan_emiduelist extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','other_received','total');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','tehsil','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','other_received','total');
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($from_date,$to_date){
 			$p_m=$m->refSQL('Premium')

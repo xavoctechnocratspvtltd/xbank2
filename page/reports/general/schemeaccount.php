@@ -107,7 +107,7 @@ class page_reports_general_schemeaccount extends Page {
 				$scheme->addCondition('id',-1);
 		}
 		// $scheme->add('Controller_Acl');
-		$grid->setModel($scheme,array('account_count','sum_amount'));
+		$grid->setModel($scheme,array('name','account_count','sum_amount'));
 		
 		
 		if($form->isSubmitted()){

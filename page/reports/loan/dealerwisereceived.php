@@ -70,6 +70,8 @@ class page_reports_loan_dealerwisereceived extends Page {
 			if($_GET['receive_type']){
 				$this->api->stickyGET('receive_type');
 				$transaction_row_model->addCondition('transaction_type_name',$_GET['receive_type']);
+			}else{
+				$transaction_row_model->addCondition('transaction_type_name',[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
 			}
 
 			$this->api->stickyGET('loan_type');

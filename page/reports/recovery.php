@@ -22,6 +22,7 @@ class page_reports_recovery extends Page {
 		// $tab1=$tabs->addTabURL('reports_loan_documentrenew','CC Document Renew Report');
 		$tab1=$tabs->addTabURL('reports_loan_newNPAaccount','New NPA Account List');
 		$tab1=$tabs->addTabURL('reports_loan_dealerwise','Dealer Wise Recovery');
+		$tab1=$tabs->addTabURL('reports_loan_dealerwisereceived','Dealer Wise Received');
 			
 
 	}

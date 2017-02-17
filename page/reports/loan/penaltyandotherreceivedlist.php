@@ -17,6 +17,7 @@ class page_reports_loan_penaltyandotherreceivedlist extends Page {
 		$form->addField('DatePicker','to_date');
 
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','other'=>'Other'));
+		$form->addField('dropdown','receive_type')->setEmptyText("All")->setValueList([TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
 		$document=$this->add('Model_Document');
 		$form->addSubmit('GET List');
 
@@ -47,7 +48,6 @@ class page_reports_loan_penaltyandotherreceivedlist extends Page {
 		$scheme_join->addField('SchemeType');
 		$transaction_type_join->addField('transaction_type_name','name');
 
-		$transaction_row_model->addCondition('transaction_type_name',[TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
 		$transaction_row_model->addCondition('amountCr','>',0);
 		$transaction_row_model->addCondition('SchemeType','Loan');
 
@@ -68,6 +68,12 @@ class page_reports_loan_penaltyandotherreceivedlist extends Page {
 			if($_GET['dealer']){
 				$this->api->stickyGET('dealer');
 				$transaction_row_model->addCondition('dealer_id',$_GET['dealer']); 
+			}
+
+			if($_GET['receive_type']){
+				$transaction_row_model->addCondition('transaction_type_name',$_GET['receive_type']);
+			}else{
+				$transaction_row_model->addCondition('transaction_type_name',[TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
 			}
 
 			$this->api->stickyGET('loan_type');
@@ -123,7 +129,7 @@ class page_reports_loan_penaltyandotherreceivedlist extends Page {
 
 		if($form->isSubmitted()){
 
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'loan_type'=>$form['loan_type'],'filter'=>1))->execute();
+			$grid->js()->reload(array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'loan_type'=>$form['loan_type'],'receive_type'=>$form['receive_type'],'filter'=>1))->execute();
 
 		}		
 

@@ -25,6 +25,12 @@ class page_reports_general_periodical extends Page {
 		$dealer_field->setModel('Dealer');
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
+		$mo_field = $form->addField('autocomplete/Basic','mo');
+		$mo_field->setModel('Mo');
+
+		$team_field = $form->addField('autocomplete/Basic','team');
+		$team_field->setModel('Team');
+
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		
@@ -61,6 +67,16 @@ class page_reports_general_periodical extends Page {
 			if($_GET['agent']){
 				$this->api->stickyGET("agent");
 				$account_model->addCondition('agent_id',$_GET['agent']);
+			}
+
+			if($_GET['mo_id']){
+				$this->api->stickyGET('mo_id');
+				$account_model->addCondition('mo_id',$_GET['mo_id']);
+			}
+
+			if($_GET['team_id']){
+				$this->api->stickyGET('team_id');
+				$account_model->addCondition('team_id',$_GET['team_id']);
 			}
 
 		}
@@ -156,7 +172,7 @@ class page_reports_general_periodical extends Page {
 		// $grid->js('click',$js);
 		
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1))->execute();
+			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'team_id'=>$form['team'],'mo_id'=>$form['mo'],'filter'=>1))->execute();
 		}	
 
 	}

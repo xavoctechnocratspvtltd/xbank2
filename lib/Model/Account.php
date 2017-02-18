@@ -68,6 +68,7 @@ class Model_Account extends Model_Table {
 		$this->addField('legal_filing_date')->type('date');
 		
 		$this->addField('is_dirty')->type('boolean')->system(true)->defaultValue(false);
+		$this->addField('new_or_renew')->enum(['New','ReNew'])->defaultValue('New');
 		
 		$this->addField('extra_info')->type('text')->system(true); // Put json style extra info in this field
 

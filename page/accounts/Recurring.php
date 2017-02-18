@@ -61,7 +61,7 @@ class page_accounts_Recurring extends Page {
 			$account_recurring_model->hook('editing');
 		}
 
-		$crud->setModel($account_recurring_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','collector','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team'));
+		$crud->setModel($account_recurring_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id','new_or_renew'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','collector','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team','new_or_renew'));
 		$crud->addRef('JointMember');
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'RDandDDSAccount'));
 		

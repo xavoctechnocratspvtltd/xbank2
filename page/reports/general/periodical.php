@@ -31,6 +31,8 @@ class page_reports_general_periodical extends Page {
 		$team_field = $form->addField('autocomplete/Basic','team');
 		$team_field->setModel('Team');
 
+		$new_renew_field = $form->addField('DropDown','new_or_renew')->setEmptyText('All')->setValueList(array_combine(['New','ReNew'],['New','ReNew']));
+
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		
@@ -77,6 +79,11 @@ class page_reports_general_periodical extends Page {
 			if($_GET['team_id']){
 				$this->api->stickyGET('team_id');
 				$account_model->addCondition('team_id',$_GET['team_id']);
+			}
+
+			if($_GET['new_or_renew']){
+				$this->api->stickyGET('new_or_renew');
+				$account_model->addCondition('new_or_renew',$_GET['new_or_renew']);
 			}
 
 		}
@@ -143,6 +150,11 @@ class page_reports_general_periodical extends Page {
 						$account_model->addCondition('team_id',$_GET['team_id']);
 					}
 
+					if($_GET['new_or_renew']){
+						$this->api->stickyGET('new_or_renew');
+						$account_model->addCondition('new_or_renew',$_GET['new_or_renew']);
+					}
+
 				}
 
 				$account_model->addExpression('sm_no')->set(function($m,$q){
@@ -182,7 +194,7 @@ class page_reports_general_periodical extends Page {
 		// $grid->js('click',$js);
 		
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'team_id'=>$form['team'],'mo_id'=>$form['mo'],'filter'=>1))->execute();
+			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'team_id'=>$form['team'],'mo_id'=>$form['mo'],'new_or_renew'=>$form['new_or_renew'],'filter'=>1))->execute();
 		}	
 
 	}

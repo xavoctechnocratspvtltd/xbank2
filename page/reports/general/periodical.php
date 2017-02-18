@@ -133,6 +133,16 @@ class page_reports_general_periodical extends Page {
 						$account_model->addCondition('agent_id',$_GET['agent']);
 					}
 
+					if($_GET['mo_id']){
+						$this->api->stickyGET('mo_id');
+						$account_model->addCondition('mo_id',$_GET['mo_id']);
+					}
+
+					if($_GET['team_id']){
+						$this->api->stickyGET('team_id');
+						$account_model->addCondition('team_id',$_GET['team_id']);
+					}
+
 				}
 
 				$account_model->addExpression('sm_no')->set(function($m,$q){

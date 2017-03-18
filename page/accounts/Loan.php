@@ -112,6 +112,7 @@ class page_accounts_Loan extends Page {
 						->where($loan_from_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_CC)
 						->where($loan_from_account_model->scheme_join->table_alias.'.name',CASH_ACCOUNT_SCHEME)
 						->where($loan_from_account_model->scheme_join->table_alias.'.name','Sundry Debtor')
+						->where($loan_from_account_model->scheme_join->table_alias.'.name','Loan Advance(Assets)')
 						->where(
 								$loan_from_account_model->dsql()->andExpr()
 									->where($loan_from_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_LOAN)

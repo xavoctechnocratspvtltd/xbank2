@@ -79,7 +79,7 @@ class page_reports_loan_forclose extends Page {
 
 
 		$grid->addMethod('format_for_close_charge',function($g,$f){
-			$g->forclose_charges = round(($g->model['premium_count'] - $g->interests_for_months)*($g->monthly_interest* 25/100.00));
+			$g->forclose_charges = round(($g->model['premium_count'] - $g->interests_for_months)*($g->monthly_interest* 40/100.00));
 			$g->current_row[$f] = $g->forclose_charges;
 		});
 

@@ -12,7 +12,7 @@ class page_reports_member_member extends Page {
 			$type_array[$value] = $value; 
 		}
 
-		$form->addField('Dropdown','type')->setValueList(array_merge($type_array,["All"=>"All"]));
+		$form->addField('Dropdown','type')->setValueList(array_merge(["All"=>"All"],$type_array));
 		$bank_field = $form->addField('Dropdown','bank')->setEmptyText('All Banks');
 		$bank_field->setModel('Bank');
 		$form->addField('dropdown','status')->setValueList(array('all'=>'All','0'=>'InActive','1'=>'Active'));

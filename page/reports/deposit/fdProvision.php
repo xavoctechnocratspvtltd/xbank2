@@ -51,8 +51,8 @@ class page_reports_deposit_fdProvision extends Page {
 		$grid->addQuickSearch(array('reference'));
 		// $grid->removeColumn('account_created');
 		$grid->addSno();
-		$grid->addPaginator(50);
-
+		$grid->addPaginator(500);
+		$grid->addTotals(['amountDr']);
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

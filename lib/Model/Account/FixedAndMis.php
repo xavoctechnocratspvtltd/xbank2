@@ -264,7 +264,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 
 		if(date('m',strtotime($on_date))==2){
 			// Its february
-			if($days_to_count == date("t",strtotime($on_date))) $days_to_count=30;
+			if($days_to_count >= date("t",strtotime($on_date))) $days_to_count=30;
 		}
 		if($days_to_count >= 30) $days_to_count=30;
 

@@ -85,7 +85,7 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 		// echo $last_halfyearly_closing . "<br/>";
 		// $after_date_not_included = $this['LastCurrentInterestUpdatedAt'];
 		if(strtotime($this['created_at']) > strtotime($last_halfyearly_closing)){
-			$after_date_not_included = $this['created_at'];
+			$after_date_not_included = $this->api->nextDate($this['created_at']);
 		}else{
 			$after_date_not_included = $this->api->nextDate($last_halfyearly_closing);
 		}
@@ -120,7 +120,8 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 
 		// echo $this['AccountNumber']. " " . $current_interest . "<br/>";
 		
-
+		if($current_interest < 0 ) $current_interest = 0;
+		
 		if($return) return $current_interest;
 
 		$this->save();

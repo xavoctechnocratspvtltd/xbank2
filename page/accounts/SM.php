@@ -23,7 +23,7 @@ class page_accounts_SM extends Page {
 			try {
 				$crud->api->db->beginTransaction();
 			    $Default_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $Default_account_model->getNewAccountNumber() ,$form->getAllFields(),$form);
-			    $Default_account_model->deposit($form['Amount'],$narration='Share Account Opened for member '. $form['member'],$accounts_to_debit=null,$form,$transaction_date=null,$in_branch=null);
+			    $Default_account_model->deposit($form['Amount'],$narration='Share Account Opened for member '. $form['member'],$form['debit_account']?[ [ $form['debit_account']=>$form['Amount'] ] ]:null,$form,$transaction_date=null,$in_branch=null);
 			    $crud->api->db->commit();
 			} catch (Exception $e) {
 			   	$crud->api->db->rollBack();
@@ -44,6 +44,24 @@ class page_accounts_SM extends Page {
 			//    	$o->move($f->other_field,'before','Nominee');
 			// }
 		    $account_Default_model->getElement('member_id')->getModel()->addCondition('is_active',true);
+
+		    $debit_account = $crud->form->addField('autocomplete/Basic','debit_account');
+			
+			$debit_account_model = $this->add('Model_Active_Account');
+		
+			$debit_account_model->addCondition(
+					$debit_account_model->dsql()->orExpr()
+						->where($debit_account_model->scheme_join->table_alias.'.name',BANK_ACCOUNTS_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.name',BANK_OD_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_SAVING)
+						->where($debit_account_model->scheme_join->table_alias.'.name',SUSPENCE_ACCOUNT_SCHEME)
+						->where($debit_account_model->scheme_join->table_alias.'.name',CASH_ACCOUNT_SCHEME)
+
+				);
+
+			// $debit_account_model->add('Controller_Acl');
+
+			$debit_account->setModel($debit_account_model,'AccountNumber');
 		}
 
 		if($crud->isEditing('edit')){

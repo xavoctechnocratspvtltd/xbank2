@@ -6,9 +6,8 @@ class page_reports_genral extends Page {
 		parent::init();
 
 		$tabs=$this->add('Tabs');
-		$tab1=$tabs->addTabURL('reports_general_document','Genral Documents');
-		$tab1=$tabs->addTabURL('reports_general_periodical','Periodical Accounts');
 		$tab1=$tabs->addTabURL('reports_loan_accountdetailed','Account Detailed');
+		$tab1=$tabs->addTabURL('reports_general_periodical','Periodical Accounts');
 		// $tab1=$tabs->addTabURL('reports_general_defaulterlist','Defaulter List');
 		$tab1=$tabs->addTabURL('reports_general_memberdepositeandloan','Member Deposite & Loan Report');
 		$tab1=$tabs->addTabURL('reports_general_closingbalanceofaccount','Closing Balance of Account');
@@ -16,5 +15,6 @@ class page_reports_genral extends Page {
 		$tab1=$tabs->addTabURL('reports_general_fixedassets','Fixed Assets Report');
 		$tab1=$tabs->addTabURL('reports_general_accuntsignimg','Account Sign');
 		$tab1=$tabs->addTabURL('reports_general_schemeaccount','Scheme Wise Account');
+		$tab1=$tabs->addTabURL('reports_general_document','General Documents');
 	}
 }

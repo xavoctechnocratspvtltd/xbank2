@@ -44,7 +44,7 @@ class Model_Account_Recurring extends Model_Account{
 		}
 		
 		if(isset($otherValues['initial_opening_amount']) and $otherValues['initial_opening_amount'])
-			$this->deposit($otherValues['initial_opening_amount'],null,null,null, $on_date);
+			$this->deposit($otherValues['initial_opening_amount'],null,$otherValues['debit_account']?[ [ $otherValues['debit_account']=>$otherValues['initial_opening_amount'] ] ]:null,null, $on_date);
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null){

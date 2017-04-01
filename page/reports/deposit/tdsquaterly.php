@@ -32,6 +32,9 @@ class page_reports_deposit_tdsquaterly extends Page {
 		$agent_member_j->addField('PanNo');
 		$agent_member_j->addField('PermanentAddress');
 
+		$agent_saving_account_j = $agent_j->join('accounts','account_id');
+		$agent_saving_account_j->addField('saving_account','AccountNumber');
+
 		// $model->addExpression('total_commission')->set($model->fieldQuery('cr_sum'));
 		$model->addExpression('tds')->set($model->refSQL('TransactionRow')->addCondition('account','like','%TDS%')->sum('amountCr'));
 		// $model->addExpression('tds')->set('"0"');
@@ -81,7 +84,7 @@ class page_reports_deposit_tdsquaterly extends Page {
 
 		// $model->setLimit(10);
 		// $model->_dsql()->group('reference_id');
-		$grid->setModel($model,array('agent_name','PermanentAddress','PanNo','month','month_display','sum_total','sum_tds','sum_net_commission','created_at','PanNo'));
+		$grid->setModel($model,array('agent_name','saving_account','PermanentAddress','PanNo','month','month_display','sum_total','sum_tds','sum_net_commission','created_at','PanNo'));
 		
 		if($_GET['agent'])
 			$grid->removeColumn('agent_id');

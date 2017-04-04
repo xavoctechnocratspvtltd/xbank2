@@ -46,7 +46,7 @@ class page_reports_loan_newNPAaccount extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_father_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total');
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
@@ -126,6 +126,17 @@ class page_reports_loan_newNPAaccount extends Page {
 			$guarantor_m->setOrder('id');
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PermanentAddress');
 			return "'guarantor_phno'";
+		});
+
+		$account_model->addExpression('guarantor_father_name')->set(function($m,$q){
+			$guarantor_m = $m->add('Model_Member',array('table_alias'=>'guarantor_father_q'));
+			$ac_join = $guarantor_m->join('account_guarantors.member_id');
+			$ac_join->addField('account_id');
+			$guarantor_m->addCondition('account_id',$q->getField('id'));
+			$guarantor_m->setLimit(1);
+			$guarantor_m->setOrder('id');
+			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.FatherName');
+			return "'guarantor_father_name'";
 		});
 		
 

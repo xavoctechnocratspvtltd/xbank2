@@ -29,6 +29,10 @@ class View_AccountDetail extends View {
 		$ac_m_join->addField('PermanentAddress','PermanentAddress');
 		$ac_m_join->addField('PhoneNos');
 
+		$ac_m->addExpression('member_sm_account')->set(function($m,$q){
+			return  $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])->addCondition('member_id',$q->getField('member_id'))->setLimit(1)->fieldQuery('AccountNumber');
+		});
+
 		$guarenters = $ac_m->ref('AccountGuarantor');
 		$g_m_join = $guarenters->join('members','member_id');
 		$g_m_join->addField('memberName','name');

@@ -74,7 +74,7 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 			$tr_m_received->addCondition('account_id',$q->getField('id'));
 			$tr_m_received->addCondition('created_at','<',$this->app->nextDate($this->app->today));
 
-			return $q->expr('([0]-[1])',[$tr_m_due->sum('amountDr'),$tr_m_received->sum('amountCr')]);
+			return $q->expr('(IFNULL([0],0)-IFNULL([1],0))',[$tr_m_due->sum('amountDr'),$tr_m_received->sum('amountCr')]);
 		});
 
 		$account_model->addExpression('other_charges')->set(function($m,$q){
@@ -101,14 +101,14 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 		});
 
 		$account_model->addExpression('other_charges_due')->set(function($m,$q){
-			return $q->expr('([0]-[1])',[$m->getElement('other_charges'),$m->getElement('other_received')]);
+			return $q->expr('(IFNULL([0],0)-IFNULL([1],0))',[$m->getElement('other_charges'),$m->getElement('other_received')]);
 		});
 
 		$account_model->addExpression('total_due')->set(function($m,$q){
 			return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		});
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','other_received','other_charges_due','total_due'];
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','other_received','other_charges_due','total_due','created_at'];
 
 		if($this->api->stickyGET('filter')){
 			if($this->api->stickyGET('dealer')){

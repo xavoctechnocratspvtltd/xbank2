@@ -105,7 +105,7 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 		});
 
 		$account_model->addExpression('other_received')->set(function($m,$q){
-			return $q->expr('([0]-([1]+[2]))',[$m->getElement('total_cr'),$m->getElement('premium_amount_received'),$m->getElement('penalty_amount_received')]);
+			return $q->expr('(IFNULL([0],0)-(IFNULL([1],0)+IFNULL([2],0)))',[$m->getElement('total_cr'),$m->getElement('premium_amount_received'),$m->getElement('penalty_amount_received')]);
 		});
 
 		$account_model->addExpression('other_charges_due')->set(function($m,$q){

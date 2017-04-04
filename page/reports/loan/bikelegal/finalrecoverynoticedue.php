@@ -146,6 +146,7 @@ class page_reports_loan_bikelegal_finalrecoverynoticedue extends Page {
 
 		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(100);
+		// $grid->addTotals(['due_premium_amount','due_panelty','other_charges','penalty_amount_received','other_received','other_charges_due','total_due']);
 
 		if($form->isSubmitted()){
 			$send = array('filter'=>1,'dealer'=>$form['dealer']);

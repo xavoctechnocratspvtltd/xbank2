@@ -121,6 +121,7 @@ class page_reports_loan_bikelegal_bikessra extends Page {
 		$grid= $this->add('Grid');
 		$grid->setModel($account_model,['AccountNumber',$field,'FatherName'.'PermanentAddress','PhoneNos','landmark','tehsil','district','dealer','bike_surrendered_by','total_due']);
 		$grid->addPaginator(100);
+		$grid->addTotals(['total_due']);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(['filter'=>1,'from'=>$form['from']?:'0','to'=>$form['to']?:'0','type'=>$form['type']])->execute();

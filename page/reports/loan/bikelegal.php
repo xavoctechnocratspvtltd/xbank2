@@ -8,8 +8,7 @@ class page_reports_loan_bikelegal extends Page {
 		$tabs = $this->add('Tabs');
 		$tabs->addTabURL('reports_loan_bikelegal_bikesinstock','Bike In Stock');
 		$tabs->addTabURL('reports_loan_bikelegal_sellnoticedue','Sell Notice Due');
-		$tabs->addTabURL('reports_loan_bikelegal_bikesretunred','Bike Returned');
-		$tabs->addTabURL('reports_loan_bikelegal_bikesauctioned','Bike Auctioned');
+		$tabs->addTabURL('reports_loan_bikelegal_bikessra','Bike SRA');
 		$tabs->addTabURL('reports_loan_bikelegal_finalrecoverynoticedue','Final Recovery Notice Due');
 		$tabs->addTabURL('reports_loan_bikelegal_chequesubmitdue','Cheque Submit Due');
 		$tabs->addTabURL('reports_loan_bikelegal_legalactionpendrive','Legal Action Pending');

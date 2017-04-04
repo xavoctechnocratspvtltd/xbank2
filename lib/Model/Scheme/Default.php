@@ -129,5 +129,9 @@ class Model_Scheme_Default extends Model_Scheme {
             $transaction->addCreditAccount($account, round($depAmt,COMMISSION_ROUND_TO));
             $transaction->execute();
 		}
+
+		// Revert TDS entry for commissions less then 15,000/- or in config
+		
+
 	}
 }

@@ -12,7 +12,7 @@ class page_reports_loan_bikelegal_bikessra extends Page {
 		$form->addField('DropDown','type')->setValueList(['surrender'=>'Surrendered Bikes','returned'=>'Returned Bikes','auctioned'=>'Auctioned Bikes']);
 		$form->addSubmit('Get List');
 
-		$account_model = $this->add('Model_account_Loan');
+		$account_model = $this->add('Model_Account_Loan');
 
 		$account_model->addExpression('no_of_emi')->set(function($m,$q){
 			return $m->refSQL('Premium')->count();

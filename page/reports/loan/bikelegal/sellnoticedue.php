@@ -77,6 +77,12 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 			return $q->expr('(IFNULL([0],0)-IFNULL([1],0))',[$tr_m_due->sum('amountDr'),$tr_m_received->sum('amountCr')]);
 		});
 
+		$account_model->addExpression('total_cr')->set(function($m,$q){
+			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			return $received = $tr_m->sum('amountCr');
+		});
+
 		$account_model->addExpression('other_charges')->set(function($m,$q){
 			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
 			$tr_m->addCondition('transaction_type_id',[13, 46, 39]); // JV, TRA_VISIT_CHARGE, LegalChargeReceived
@@ -84,20 +90,22 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 			return $tr_m->sum('amountDr');
 		});
 
-		$account_model->addExpression('other_received')->set(function($m,$q){
-			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
-			$tr_m->addCondition('account_id',$q->getField('id'));
-			$received = $tr_m->sum('amountCr');
+		$account_model->addExpression('premium_amount_received')->set(function($m,$q){
+			return $premium_paid = $q->expr('([0]*[1])',[$m->getElement('paid_premium_count'),$m->getElement('emi_amount')]);
+		});
 
+		$account_model->addExpression('penalty_amount_received')->set(function($m,$q){
 			$trans_type = $this->add('Model_TransactionType')->tryLoadBy('name',TRA_PENALTY_AMOUNT_RECEIVED);
 			
 			$tr_m_received = $m->add('Model_TransactionRow',array('table_alias'=>'other_received_panelty_tr'));
 			$tr_m_received->addCondition('transaction_type_id',$trans_type->id); 
 			$tr_m_received->addCondition('account_id',$q->getField('id'));
 			$tr_m_received->addCondition('created_at','<',$this->app->nextDate($this->app->today));
+			return $tr_m_received->sum('amountCr');
+		});
 
-			$premium_paid = $q->expr('([0]*[1])',[$m->getElement('paid_premium_count'),$m->getElement('emi_amount')]);
-			return $q->expr('([0]-([1]+[2]))',[$received,$premium_paid,$tr_m_received->sum('amountCr')]);
+		$account_model->addExpression('other_received')->set(function($m,$q){
+			return $q->expr('([0]-([1]+[2]))',[$m->getElement('total_cr'),$m->getElement('premium_amount_received'),$m->getElement('penalty_amount_received')]);
 		});
 
 		$account_model->addExpression('other_charges_due')->set(function($m,$q){
@@ -108,7 +116,7 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 			return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		});
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','other_received','other_charges_due','total_due','created_at'];
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at'];
 
 		if($this->api->stickyGET('filter')){
 			if($this->api->stickyGET('dealer')){

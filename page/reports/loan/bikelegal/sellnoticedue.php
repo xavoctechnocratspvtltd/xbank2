@@ -25,6 +25,9 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 		$member_j->addField('FatherName');
 		$member_j->addField('PermanentAddress');
 		$member_j->addField('PhoneNos');
+		$member_j->addField('landmark');
+		$member_j->addField('tehsil');
+		$member_j->addField('district');
 
 		$account_model->addExpression('member_sm_account')->set(function($m,$q){
 			return  $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])->addCondition('member_id',$q->getField('member_id'))->setLimit(1)->fieldQuery('AccountNumber');
@@ -124,6 +127,10 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 			}
 		}
 
+		$account_model->addCondition('bike_surrendered',true);
+		$account_model->addCondition('is_bike_returned',false);
+		$account_model->addCondition('is_bike_auctioned',false);
+		$account_model->addCondition('bike_surrendered_on','<',date('Y-m-d',strtotime($this->app->today.' -20 DAYS')));
 
 		$grid = $this->add('Grid');
 

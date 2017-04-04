@@ -62,38 +62,38 @@ class Model_Account extends Model_Table {
 		$this->addField('PAndLGroup')->system(true);
 		$this->addField('repayment_mode')->enum(['Cash','Cheque','NACH/ECS'])->defaultValue('Cash');
 		
-		$this->addField('bike_surrendered')->type('boolean');
+		$this->addField('bike_surrendered')->type('boolean')->defaultValue(false);;
 		$this->addField('bike_surrendered_on')->type('date');
 		$this->addField('bike_surrendered_by');
 		
-		$this->addField('is_in_legal')->type('boolean');
+		$this->addField('is_in_legal')->type('boolean')->defaultValue(false);
 		$this->addField('legal_filing_date')->type('date');
 
-		$this->addField('is_godowncharge_debited')->type('boolean');
+		$this->addField('is_godowncharge_debited')->type('boolean')->defaultValue(false);;
 		$this->addField('godowncharge_debited_on')->type('date');
 
-		$this->addField('is_legal_notice_sent_for_bike_auction')->type('boolean');
+		$this->addField('is_legal_notice_sent_for_bike_auction')->type('boolean')->defaultValue(false);;
 		$this->addField('legal_notice_sent_for_bike_auction_on')->type('date');
 
-		$this->addField('is_bike_auctioned')->type('boolean');
+		$this->addField('is_bike_auctioned')->type('boolean')->defaultValue(false);;
 		$this->addField('bike_auctioned_on')->type('date');
 
-		$this->addField('is_final_recovery_notice_sent')->type('boolean');
+		$this->addField('is_final_recovery_notice_sent')->type('boolean')->defaultValue(false);;
 		$this->addField('final_recovery_notice_sent_on')->type('date');
 
-		$this->addField('is_cheque_presented_in_bank')->type('boolean');
+		$this->addField('is_cheque_presented_in_bank')->type('boolean')->defaultValue(false);;
 		$this->addField('cheque_presented_in_bank_on')->type('date');
 
-		$this->addField('is_cheque_returned')->type('boolean');
+		$this->addField('is_cheque_returned')->type('boolean')->defaultValue(false);;
 		$this->addField('cheque_returned_on')->type('date');
 
-		$this->addField('is_notice_sent_after_cheque_returned')->type('boolean');
+		$this->addField('is_notice_sent_after_cheque_returned')->type('boolean')->defaultValue(false);;
 		$this->addField('notice_sent_after_cheque_returned_on')->type('date');
 
-		$this->addField('is_legal_case_finalised')->type('boolean');
+		$this->addField('is_legal_case_finalised')->type('boolean')->defaultValue(false);;
 		$this->addField('legal_case_finalised_on')->type('date');
 
-		$this->addField('is_bike_returned')->type('boolean');
+		$this->addField('is_bike_returned')->type('boolean')->defaultValue(false);;
 		$this->addField('bike_returned_on')->type('date');
 
 		$this->addField('bike_not_sold_reason')->type('text');

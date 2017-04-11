@@ -130,6 +130,10 @@ class page_reports_loan_bikelegal_bikesinstock extends Page {
 			}
 		}
 
+		$account_model->addCondition('ActiveStatus',true);
+		$account_model->addCondition('bike_surrendered',true);
+		$account_model->addCondition('is_bike_returned',false);
+		$account_model->addCondition('is_bike_auctioned',false);
 
 		$grid = $this->add('Grid');
 

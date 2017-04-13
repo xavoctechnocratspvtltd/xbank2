@@ -46,10 +46,11 @@ class View_IntrestPrint extends CompleteLister{
 																TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT,
 																TRA_INTEREST_POSTING_IN_MIS_ACCOUNT,
 																TRA_INTEREST_POSTING_IN_HID_ACCOUNT,
-																TRA_INTEREST_POSTING_IN_CC_ACCOUNT,
+																// TRA_INTEREST_POSTING_IN_CC_ACCOUNT,
 																TRA_INTEREST_POSTING_IN_RECURRING,
 																TRA_INTEREST_POSTING_IN_DDS,
-																TRA_INTEREST_POSTING_IN_LOAN)
+																// TRA_INTEREST_POSTING_IN_LOAN
+																)
 										);		
 
 		if($_GET['from_date']){

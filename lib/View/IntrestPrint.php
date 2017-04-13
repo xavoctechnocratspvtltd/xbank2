@@ -43,7 +43,7 @@ class View_IntrestPrint extends CompleteLister{
 
 		$transaction_row->addCondition('member_id',$member_id);
 		$transaction_row->addCondition('transaction_type_name',array(
-																// TRA_INTEREST_POSTING_IN_SAVINGS,
+																TRA_INTEREST_POSTING_IN_SAVINGS,
 																TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT,
 																TRA_INTEREST_POSTING_IN_MIS_ACCOUNT,
 																TRA_INTEREST_POSTING_IN_HID_ACCOUNT,

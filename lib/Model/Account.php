@@ -627,6 +627,9 @@ class Model_Account extends Model_Table {
 		
 		$agent = $this->agent();
 		while($sponsor = $agent->sponsor()){
+
+			// do not give sponsor commission if agent and sponsor on same level
+			if($agent->cadre()->get('id') == $sponsor()->cadre()->get('id')) continue;
 			
 			$percentage = $sponsor->cadre()->cumulativePercantage($agent->cadre());
 			$commissionForThisAgent = $total_commission_amount * $percentage / 100;

@@ -136,6 +136,7 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 		}
 
 
+		$account_model->addCondition('is_in_legal',false);
 		$account_model->addCondition('bike_surrendered',true);
 		$account_model->addCondition('is_bike_returned',false);
 		$account_model->addCondition('is_bike_auctioned',false);

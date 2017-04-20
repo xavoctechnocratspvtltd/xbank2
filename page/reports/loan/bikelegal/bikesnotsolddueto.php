@@ -19,7 +19,7 @@ class page_reports_loan_bikelegal_bikesnotsolddueto extends Page {
 		$form->addSubmit('Get List');
 
 		$account_model = $this->add('Model_Account_Loan');
-		$account_model->addCondition('DefaultAC',false);
+		
 
 		$member_j = $account_model->join('members','member_id');
 		$member_j->addField('FatherName');
@@ -135,10 +135,12 @@ class page_reports_loan_bikelegal_bikesnotsolddueto extends Page {
 			}
 		}
 
+		$account_model->addCondition('DefaultAC',false);
 		$account_model->addCondition('bike_surrendered',true);
-		$account_model->addCondition('is_bike_returned',false);
-		$account_model->addCondition('is_bike_auctioned',false);
-		$account_model->addCondition([['bike_not_sold_reason','<>',''],['bike_not_sold_reason','<>',null]]);
+		$account_model->addCondition([['is_bike_returned',false],['is_bike_returned',null]]);
+		$account_model->addCondition([['is_bike_auctioned',false],['is_bike_auctioned',null]]);
+		$account_model->addCondition('bike_not_sold_reason','<>','');
+		$account_model->addCondition('bike_not_sold_reason','<>',null);
 
 		$grid = $this->add('Grid');
 

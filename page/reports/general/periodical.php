@@ -165,6 +165,7 @@ class page_reports_general_periodical extends Page {
 					return $sm_a->fieldQuery('AccountNumber');
 				});
 
+				$account_model->addExpression('pan_no')->set($account_model->refSQL('member_id')->fieldQuery('PanNo'));
 				$account_model->addExpression('father_name')->set($account_model->refSQL('member_id')->fieldQuery('FatherName'));
 				$account_model->addExpression('address')->set($account_model->refSQL('member_id')->fieldQuery('PermanentAddress'));
 				$account_model->addExpression('phone_no')->set($account_model->refSQL('member_id')->fieldQuery('PhoneNos'));
@@ -173,7 +174,7 @@ class page_reports_general_periodical extends Page {
 
 				$grid = $p->add('Grid_AccountsBase');
 				$grid->addSno();
-				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','member','father_name','address','phone_no','agent','dealer','mo','team','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee'));
+				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','pan_no','member','father_name','address','phone_no','agent','dealer','mo','team','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee'));
 				$grid->addFormatter('agent','Wrap');
 				$grid->addFormatter('agent_saving_acc','Wrap');
 				$grid->addFormatter('team','Wrap');

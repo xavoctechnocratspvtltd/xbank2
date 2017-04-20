@@ -46,7 +46,7 @@ class page_reports_loan_newNPAaccount extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_father_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_father_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges','other_charges_due','total_due');
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
@@ -62,6 +62,34 @@ class page_reports_loan_newNPAaccount extends Page {
 						->addCondition('DueDate','<',$m->api->nextDate($till_date))
 						->count();
 			return "'due_premium_count'";
+		});
+
+
+
+		$account_model->addExpression('no_of_emi')->set(function($m,$q){
+			return $m->refSQL('Premium')->count();
+		});
+
+		$account_model->addExpression('emi_amount')->set(function($m,$q){
+			return $m->refSQL('Premium')->setLImit(1)->fieldQuery('Amount');
+		});
+
+		$account_model->addExpression('due_premium_count')->set(function($m,$q){
+			$p_m = $m->refSQL('Premium')
+						->addCondition('PaidOn',null);
+			$p_m->addCondition('DueDate','<',$m->api->nextDate($this->app->now));
+			return $p_m->count();
+		});
+
+		$account_model->addExpression('paid_premium_count')->set(function($m,$q){
+			$p_m=$m->refSQL('Premium')
+						->addCondition('PaidOn','<>',null);
+			$p_m->addCondition('DueDate','<',$m->api->nextDate($this->app->today));
+			return $p_m->count();
+		})->sortable(true);
+
+		$account_model->addExpression('due_premium_amount')->set(function($m,$q){
+			return $q->expr('[0]*[1]',[$m->getElement('due_premium_count'),$m->getElement('emi_amount')]);
 		});
 
 		$account_model->addExpression('due_date')->set(function($m,$q){
@@ -83,6 +111,63 @@ class page_reports_loan_newNPAaccount extends Page {
 		$account_model->addExpression('due_panelty')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')->addCondition('DueDate','<',$till_date)->sum($m->dsql()->expr('IFNULL(PaneltyCharged,0)'));
 			return "'due_panelty'";
+		})->caption('Panelty Charged');
+
+		$account_model->addExpression('due_panelty')->set(function($m,$q){
+			$trans_type = $this->add('Model_TransactionType')->tryLoadBy('name',TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT);
+			
+			$tr_m_due = $m->add('Model_TransactionRow',array('table_alias'=>'charged_panelty_tr'));
+			$tr_m_due->addCondition('transaction_type_id',$trans_type->id); 
+			$tr_m_due->addCondition('account_id',$q->getField('id'));
+			$tr_m_due->addCondition('created_at','<',$this->app->nextDate($this->app->today));
+
+			$trans_type = $this->add('Model_TransactionType')->tryLoadBy('name',TRA_PENALTY_AMOUNT_RECEIVED);
+			
+			$tr_m_received = $m->add('Model_TransactionRow',array('table_alias'=>'received_panelty_tr'));
+			$tr_m_received->addCondition('transaction_type_id',$trans_type->id); 
+			$tr_m_received->addCondition('account_id',$q->getField('id'));
+			$tr_m_received->addCondition('created_at','<',$this->app->nextDate($this->app->today));
+
+			return $q->expr('(IFNULL([0],0)-IFNULL([1],0))',[$tr_m_due->sum('amountDr'),$tr_m_received->sum('amountCr')]);
+		});
+
+		$account_model->addExpression('total_cr')->set(function($m,$q){
+			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			return $received = $tr_m->sum('amountCr');
+		});
+
+		$account_model->addExpression('other_charges')->set(function($m,$q){
+			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+			$tr_m->addCondition('transaction_type_id',[13, 46, 39]); // JV, TRA_VISIT_CHARGE, LegalChargeReceived
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			return $tr_m->sum('amountDr');
+		});
+
+		$account_model->addExpression('premium_amount_received')->set(function($m,$q){
+			return $premium_paid = $q->expr('([0]*[1])',[$m->getElement('paid_premium_count'),$m->getElement('emi_amount')]);
+		});
+
+		$account_model->addExpression('penalty_amount_received')->set(function($m,$q){
+			$trans_type = $this->add('Model_TransactionType')->tryLoadBy('name',TRA_PENALTY_AMOUNT_RECEIVED);
+			
+			$tr_m_received = $m->add('Model_TransactionRow',array('table_alias'=>'other_received_panelty_tr'));
+			$tr_m_received->addCondition('transaction_type_id',$trans_type->id); 
+			$tr_m_received->addCondition('account_id',$q->getField('id'));
+			$tr_m_received->addCondition('created_at','<',$this->app->nextDate($this->app->today));
+			return $tr_m_received->sum('amountCr');
+		});
+
+		$account_model->addExpression('other_received')->set(function($m,$q){
+			return $q->expr('(IFNULL([0],0)-(IFNULL([1],0)+IFNULL([2],0)))',[$m->getElement('total_cr'),$m->getElement('premium_amount_received'),$m->getElement('penalty_amount_received')]);
+		});
+
+		$account_model->addExpression('other_charges_due')->set(function($m,$q){
+			return $q->expr('(IFNULL([0],0)-IFNULL([1],0))',[$m->getElement('other_charges'),$m->getElement('other_received')]);
+		});
+
+		$account_model->addExpression('total_due')->set(function($m,$q){
+			return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		});
 
 		$account_model->addExpression('other_charges')->set(function($m,$q){
@@ -270,7 +355,7 @@ class page_reports_loan_newNPAaccount extends Page {
 			// $grid->addColumn('total','total');
 			$grid->addOrder()
 				->move('emi_dueamount','after','emi_amount')
-				->move('total','after','other_charges')
+				// ->move('total','after','other_charges')
 				->now();
 
 			$grid->addFormatter('guarantor_address','wrap');
@@ -283,7 +368,7 @@ class page_reports_loan_newNPAaccount extends Page {
 		$grid->addTotals(array('total','emi_dueamount','other_charges','emi_amount','due_panelty'));
 		$grid->add('Controller_xExport',array('fields'=>array_merge($grid_column_array,array('emi_dueamount','total')),'totals'=>array('total','emi_dueamount','other_charges','emi_amount','due_panelty') ,'output_filename'=>$_GET['report_type'].' lilst_as_on '. $till_date.".csv"));
 
-		$grid->removeColumn('last_premium');
+		// $grid->removeColumn('last_premium');
 		// $js=array(
 		// 	// $this->js()->_selector('.atk-layout-row')->toggle(),
 		// 	$this->js()->_selector('#header')->toggle(),

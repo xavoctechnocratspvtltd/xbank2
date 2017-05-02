@@ -307,7 +307,7 @@ class Model_Account extends Model_Table {
 			    $this['ActiveStatus'] = false;
 			    $this['affectsBalanceSheet'] = true;
 			    $this['MaturedStatus'] = true;
-			    $this->save();
+			    $this->saveAs('Account');
 			}
 		}
 	}

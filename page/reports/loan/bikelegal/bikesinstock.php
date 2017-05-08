@@ -135,7 +135,7 @@ class page_reports_loan_bikelegal_bikesinstock extends Page {
 		$account_model->addCondition('is_bike_returned',false);
 		$account_model->addCondition('is_bike_auctioned',false);
 
-		$grid = $this->add('Grid');
+		$grid = $this->add('Grid_AccountsBase')->addSno();
 
 		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(100);

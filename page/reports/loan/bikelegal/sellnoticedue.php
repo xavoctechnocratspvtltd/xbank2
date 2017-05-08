@@ -143,7 +143,7 @@ class page_reports_loan_bikelegal_sellnoticedue extends Page {
 		$account_model->addCondition('is_legal_notice_sent_for_bike_auction',false);
 		$account_model->addCondition('bike_surrendered_on','<',date('Y-m-d',strtotime($this->app->today.' -20 DAYS')));
 
-		$grid = $this->add('Grid');
+		$grid = $this->add('Grid_AccountsBase')->addSno();
 
 		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(100);

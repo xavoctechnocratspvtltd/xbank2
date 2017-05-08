@@ -139,7 +139,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 		$account_model->addCondition('is_in_legal',true);
 		$account_model->addCondition('is_legal_case_finalised',false);
 
-		$grid = $this->add('Grid');
+		$grid = $this->add('Grid_AccountsBase')->addSno();
 
 		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(100);

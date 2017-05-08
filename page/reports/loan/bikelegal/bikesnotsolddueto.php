@@ -142,7 +142,7 @@ class page_reports_loan_bikelegal_bikesnotsolddueto extends Page {
 		$account_model->addCondition('bike_not_sold_reason','<>','');
 		$account_model->addCondition('bike_not_sold_reason','<>',null);
 
-		$grid = $this->add('Grid');
+		$grid = $this->add('Grid_AccountsBase')->addSno();
 
 		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(100);

@@ -63,7 +63,64 @@ class Model_Account_Loan extends Model_Account{
 	}
 
 	function createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
-		$pending_account = parent::createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Must be Loaded Object of Model_Branch');
+		if(!$created_at) $created_at = $this->api->now;
+		if(!$otherValues) $otherValues=array();
+
+		if($otherValues['account_type']==LOAN_AGAINST_DEPOSIT){
+			if(!$otherValues['LoanAgainstAccount_id'])
+				throw $this->exception('Please Specify Loan Against Account Number', 'ValidityCheck')->setField('LoanAgainstAccount');
+
+		}else{
+			if(!$otherValues['dealer_id'])
+				throw $this->exception('Dealer is Must', 'ValidityCheck')->setField('dealer');
+		}
+
+		$pending_account = $this->add('Model_PendingAccount');
+		$pending_account->allow_any_name = true;
+
+		$pending_account['member_id'] = $member_id;
+		$pending_account['scheme_id'] = $scheme_id;
+		$pending_account['AccountNumber'] = 'new_account '.$this->api->currentBranch->id.date('YmdHis').rand(1000,9999);
+		$pending_account['branch_id'] = $branch->id;
+		$pending_account['created_at'] = $created_at;
+		$pending_account['LastCurrentInterestUpdatedAt']=isset($otherValues['LastCurrentInterestUpdatedAt'])? :$created_at;
+
+		unset($otherValues['member_id']);
+		unset($otherValues['scheme_id']);
+		unset($otherValues['AccountNumber']);
+		unset($otherValues['branch_id']);
+		unset($otherValues['created_at']);
+		unset($otherValues['LastCurrentInterestUpdatedAt']);
+
+		foreach ($otherValues as $field => $value) {
+			$pending_account[$field] = $value;
+		}
+
+		$extra_info=array();
+		
+		$joint_members=array();
+		for($k=2;$k<=4;$k++) {
+		    if($j_m_id=$otherValues['member_ID'.$k])
+		    	$joint_members[] = $j_m_id;
+		}
+
+		$documents=$this->add('Model_Document');
+		$documents_feeded = array();
+		foreach ($documents as $d) {
+		 	if($form[$this->api->normalizeName($documents['name'])]){
+				$documents_feeded[$documents['name']]=$form[$this->api->normalizeName($documents['name'].' value')];
+		 	}
+		}
+
+		$extra_info['joint_members'] = $joint_members;
+		$extra_info['documents_feeded'] = $documents_feeded;
+		$extra_info['loan_from_account'] = $otherValues['loan_from_account'];
+		$extra_info['sm_amount'] = $otherValues['sm_amount'];
+		
+ 		$pending_account['extra_info'] = json_encode($extra_info);
+		$pending_account->save();
+
 		return $pending_account;
 	}
 
@@ -80,7 +137,8 @@ class Model_Account_Loan extends Model_Account{
 
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$on_date);
 		
-		$this->createProcessingFeeTransaction($from_account = $otherValues['loan_from_account'], $on_date);
+		// old function name "createProcessingFeeTransaction"
+		$this->createProcessingFeeAndSMTransaction($otherValues, $on_date);
 		
 		$extra_info = json_decode($otherValues['extra_info'],true);
 
@@ -99,7 +157,10 @@ class Model_Account_Loan extends Model_Account{
 		$this->createPremiums();
 	}
 
-	function createProcessingFeeTransaction($from_account, $on_date){
+	function createProcessingFeeAndSMTransaction($otherValues, $on_date){
+		$from_account = $otherValues['loan_from_account'];
+		$sm_amount = $otherValues['sm_amount'];
+
 		$scheme = $this->ref('scheme_id');
 		$ProcessingFees = $scheme['ProcessingFees'];
 		$AccountCredit = $this['Amount'] - $ProcessingFees;
@@ -109,15 +170,25 @@ class Model_Account_Loan extends Model_Account{
 			$AccountCredit = $this['Amount'] - $ProcessingFees;
 		}
 
+		$narration = "Loan Account Openned ". $this['AccountNumber'];
+		if($sm_amount){
+			$sm_account = $this->add('Model_Account_SM')->addCondition('member_id',$this['member_id'])->setLimit(1)->tryLoadAny();			
+			$narration .= " / & Amount Deposited in SM Account " . $sm_account['AccountNumber'];
+		} 
+
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$on_date, "Loan Account Openned ". $this['AccountNumber'], null, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$on_date, $narration , null, array('reference_id'=>$this->id));
 		
 		$loan_from_other_account = $this->add('Model_Account')->load($from_account);
 
 		$transaction->addDebitAccount($this, $this['Amount']);
 		$transaction->addCreditAccount($this['branch_code'] . SP . PROCESSING_FEE_RECEIVED . SP. $this['scheme_name'], $ProcessingFees);
+		if($sm_amount){
+			$transaction->addCreditAccount($sm_account, $sm_amount);
+			$AccountCredit = $AccountCredit - $sm_amount;
+		}
 		$transaction->addCreditAccount($loan_from_other_account, $AccountCredit);
-		
+
 		$transaction->execute();
 	}
 

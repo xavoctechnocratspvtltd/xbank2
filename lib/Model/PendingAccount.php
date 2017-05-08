@@ -1,5 +1,8 @@
 <?php
-class Model_PendingAccount extends Model_Account {
+
+// ========== ONLY FOR LOAN ACCOUNTS ==========
+
+class Model_PendingAccount extends Model_Account_Loan {
 	var $table= "accounts_pending";
 
 	function init(){
@@ -10,8 +13,6 @@ class Model_PendingAccount extends Model_Account {
 
 	function approve(){
 		if(!$this->loaded()) throw $this->exception('Pending Account must be loaded to approve');
-
-
 
 		$model="";
 
@@ -40,7 +41,9 @@ class Model_PendingAccount extends Model_Account {
 		$new_account = $this->add('Model_Account'.$model);
 		$otherValues = $this->data;
 		$otherValues['loan_from_account'] = $extra_info['loan_from_account'];
-                unset($otherValues['id']);
+		$otherValues['sm_amount'] = $extra_info['sm_amount'];
+		
+		unset($otherValues['id']);
 
 		$new_account->createNewAccount($this['member_id'],$this['scheme_id'],$this->ref('branch_id'), $new_account->getNewAccountNumber($this['account_type'],$this->ref('branch_id')) ,$otherValues,$form=null, $on_date = null );
 

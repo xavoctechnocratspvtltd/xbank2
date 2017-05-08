@@ -13,8 +13,8 @@ class page_accounts_Loan extends Page {
 		$this->add('Controller_Acl');
 
 		$crud=$this->add('xCRUD',array('allow_del'=>false,'add_form_beautifier'=>false));
-		$account_loan_model = $this->add('Model_Account_Loan',array('table'=>'accounts_pending'));
-		$account_loan_model->addField('is_approved')->type('boolean')->defaultValue(false);
+		$account_loan_model = $this->add('Model_PendingAccount',array('table'=>'accounts_pending'));
+		// $account_loan_model->addField('is_approved')->type('boolean')->defaultValue(false);
 		$account_loan_model->addCondition('is_approved',0); // Status asked as Pending
 
 		$account_loan_model->setOrder('id','desc');
@@ -55,10 +55,15 @@ class page_accounts_Loan extends Page {
 					$form->displayError('Amount',"Amount is grater than ".$account['percent_loan_on_deposit']."% of  FD Amount (".$amount_allowed.")");
 			}
 
+			if($form['sm_amount'] && !is_numeric($form['sm_amount']))
+					$form->displayError('sm_amount',"Must be a number");
+
 			if($crud->isEditing('edit')) {
 				$extra_info = json_decode($crud->form->model['extra_info'],true);
 				$extra_info['loan_from_account'] = $form['loan_from_account'];
+				$extra_info['sm_amount'] = $form['sm_amount'];
 				$crud->form->model['extra_info'] = json_encode($extra_info);
+				// $crud->form->model->debug()->saveAs('Account');
 				return;
 			}			
 
@@ -80,8 +85,12 @@ class page_accounts_Loan extends Page {
 		 * Add Documents Fields ...
 		 */
 
+		if($crud->isEditing()){
+			$o=$crud->form->add('Order');
+		}
+
 		if($crud->isEditing("add")){
-		    $o=$crud->form->add('Order');
+		    
 			$documents=$this->add('Model_Document');
 			$documents->addCondition('LoanAccount',true);
 			foreach ($documents as $d) {
@@ -100,7 +109,6 @@ class page_accounts_Loan extends Page {
 
 
 		if($crud->isEditing()){
-
 			$loan_from_account_model =$this->add('Model_Active_Account');
 			// $loan_from_account_model->join('schemes','scheme_id')->addField('scheme_name','name');
 
@@ -124,6 +132,8 @@ class page_accounts_Loan extends Page {
 			$loan_from_account_field = $crud->form->addField('autocomplete/Basic','loan_from_account')->validateNotNull();
 			$loan_from_account_field->setModel($loan_from_account_model);
 			$account_loan_model->getElement('ModeOfOperation')->system(true);
+
+			$crud->form->addField('sm_amount');
 		}
 		
 
@@ -133,7 +143,7 @@ class page_accounts_Loan extends Page {
 			// $account_loan_model->hook('editing');
 		}
 		
-		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','repayment_mode','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id','doc_image_id','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','repayment_mode','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','LoanInsurranceDate','LoanAgainstAccount','dealer','doc_image','sig_image'));
+		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','sm_amount','agent_id','repayment_mode','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id','doc_image_id','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','repayment_mode','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','LoanInsurranceDate','LoanAgainstAccount','dealer','doc_image','sig_image'));
 
 		if($crud->isEditing()){			//TODO 
 			$loan_against_account_field = $crud->form->getElement('LoanAgainstAccount_id');
@@ -143,6 +153,11 @@ class page_accounts_Loan extends Page {
 				$loan_against_account_field->model->addCondition('ActiveStatus',true);
 				$loan_against_account_field->model->addCondition('LockingStatus',false);
 			}
+
+			
+			$sm_amount = json_decode($crud->form->model['extra_info'],true);
+			$sm_amount = $sm_amount['sm_amount'];
+			$crud->form->getElement('sm_amount')->set($sm_amount);
 
 			
 			// 	$account_model=$this->add('Model_Active_Account');
@@ -164,7 +179,11 @@ class page_accounts_Loan extends Page {
 			// // No Fixed and Mis Accounts For Any Branch
 			// $account_model->addCondition('SchemeType','<>',ACCOUNT_TYPE_FIXED);
 
-			$crud->form->getElement('account_type')->setEmptyText('Please Select');
+			$t = $crud->form->getElement('account_type');
+
+			// don't knwo why during editing this field is considered as line 
+			// if($crud->isEditing('add')) $t->setEmptyText('Please Select');
+
             $loan_from_account = json_decode($crud->form->model['extra_info'],true);
 			$loan_from_account = $loan_from_account['loan_from_account'];
 			$crud->form->getElement('loan_from_account')->set($loan_from_account);
@@ -188,7 +207,7 @@ class page_accounts_Loan extends Page {
 			if($_GET['check_existing_loan_member_id']){
 				$member_for_existing_loans = $this->add('Model_Member');
 				$member_for_existing_loans->load($_GET['check_existing_loan_member_id']);
-				$members_loan_accounts = $member_for_existing_loans->ref('Account')->addCondition('SchemeType','Loan')->count()->getOne();
+				$members_loan_accounts = $member_for_existing_loans->ref('Account')->addCondition('SchemeType','Loan')->addCondition('ActiveStatus',true)->count()->getOne();
 				$member_existing_loan_view->set('Member Has ' . $members_loan_accounts. ' existing Loan Accounts');
 			}
 			$member_field->other_field->js('change',$member_existing_loan_view->js()->reload(array('check_existing_loan_member_id'=>$member_field->js()->val())));;
@@ -203,9 +222,14 @@ class page_accounts_Loan extends Page {
 			
 			// $crud->form->add('Order')
 						// ->move('LoanAgSecurity','after','LoanInsurranceDate')
-						$o->move($loan_from_account_field->other_field,'after','LoanInsurranceDate')
-						->now();
-			$o->now();
+			
+			$o->move($loan_from_account_field->other_field,'after','LoanInsurranceDate');
+						
+		}
+
+		if($crud->isEditing()){
+			$o->move('sm_amount','after','Amount')
+				->now();
 		}
 
 
@@ -223,11 +247,21 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addMethod('format_loan_from_account',function($g,$f){
 				$extra_info = json_decode($g->model['extra_info']);
 				$g->current_row[$f]= $g->add('Model_Account')->tryLoad($extra_info->loan_from_account?:-1)->get('AccountNumber');
-			});			
+			});	
+
+			// Not editing
+			$crud->grid->addMethod('format_sm_amount',function($g,$f){
+				$extra_info = json_decode($g->model['extra_info']);
+				$g->current_row[$f]= isset($extra_info->sm_amount)?$extra_info->sm_amount:'';
+			});		
 
 			$crud->grid->addColumn('loan_from_account','loan_from_account');
+			$crud->grid->addColumn('sm_amount','sm_amount');
 
-			$crud->grid->addOrder()->move('loan_from_account','after','dealer')->now();
+			$crud->grid->addOrder()
+				->move('loan_from_account','after','dealer')
+				->move('sm_amount','after','Amount')
+				->now();
 
 		}
 

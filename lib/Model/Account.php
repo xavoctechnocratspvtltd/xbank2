@@ -312,66 +312,69 @@ class Model_Account extends Model_Table {
 		}
 	}
 
-	function createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
-		if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Must be Loaded Object of Model_Branch');
-		if(!$created_at) $created_at = $this->api->now;
-		if(!$otherValues) $otherValues=array();
+// NO MORE PENDING ACCOUNTS FOR ACCOUNTS OTEHR THEN LOAN NOW
+	// =====================================================
+	// function createNewPendingAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+	// 	if(!($branch instanceof Model_Branch) or !$branch->loaded()) throw $this->exception('Branch Must be Loaded Object of Model_Branch');
+	// 	if(!$created_at) $created_at = $this->api->now;
+	// 	if(!$otherValues) $otherValues=array();
 
-		if($otherValues['account_type']==LOAN_AGAINST_DEPOSIT){
-			if(!$otherValues['LoanAgainstAccount_id'])
-				throw $this->exception('Please Specify Loan Against Account Number', 'ValidityCheck')->setField('LoanAgainstAccount');
+	// 	if($otherValues['account_type']==LOAN_AGAINST_DEPOSIT){
+	// 		if(!$otherValues['LoanAgainstAccount_id'])
+	// 			throw $this->exception('Please Specify Loan Against Account Number', 'ValidityCheck')->setField('LoanAgainstAccount');
 
-		}else{
-			if(!$otherValues['dealer_id'])
-				throw $this->exception('Dealer is Must', 'ValidityCheck')->setField('dealer');
-		}
+	// 	}else{
+	// 		if(!$otherValues['dealer_id'])
+	// 			throw $this->exception('Dealer is Must', 'ValidityCheck')->setField('dealer');
+	// 	}
 
-		$pending_account = $this->add('Model_PendingAccount');
-		$pending_account->allow_any_name = true;
+	// 	$pending_account = $this->add('Model_PendingAccount');
+	// 	$pending_account->allow_any_name = true;
 
-		$pending_account['member_id'] = $member_id;
-		$pending_account['scheme_id'] = $scheme_id;
-		$pending_account['AccountNumber'] = 'new_account '.$this->api->currentBranch->id.date('YmdHis').rand(1000,9999);
-		$pending_account['branch_id'] = $branch->id;
-		$pending_account['created_at'] = $created_at;
-		$pending_account['LastCurrentInterestUpdatedAt']=isset($otherValues['LastCurrentInterestUpdatedAt'])? :$created_at;
+	// 	$pending_account['member_id'] = $member_id;
+	// 	$pending_account['scheme_id'] = $scheme_id;
+	// 	$pending_account['AccountNumber'] = 'new_account '.$this->api->currentBranch->id.date('YmdHis').rand(1000,9999);
+	// 	$pending_account['branch_id'] = $branch->id;
+	// 	$pending_account['created_at'] = $created_at;
+	// 	$pending_account['LastCurrentInterestUpdatedAt']=isset($otherValues['LastCurrentInterestUpdatedAt'])? :$created_at;
 
-		unset($otherValues['member_id']);
-		unset($otherValues['scheme_id']);
-		unset($otherValues['AccountNumber']);
-		unset($otherValues['branch_id']);
-		unset($otherValues['created_at']);
-		unset($otherValues['LastCurrentInterestUpdatedAt']);
+	// 	unset($otherValues['member_id']);
+	// 	unset($otherValues['scheme_id']);
+	// 	unset($otherValues['AccountNumber']);
+	// 	unset($otherValues['branch_id']);
+	// 	unset($otherValues['created_at']);
+	// 	unset($otherValues['LastCurrentInterestUpdatedAt']);
 
-		foreach ($otherValues as $field => $value) {
-			$pending_account[$field] = $value;
-		}
+	// 	foreach ($otherValues as $field => $value) {
+	// 		$pending_account[$field] = $value;
+	// 	}
 
-		$extra_info=array();
+	// 	$extra_info=array();
 		
-		$joint_members=array();
-		for($k=2;$k<=4;$k++) {
-		    if($j_m_id=$otherValues['member_ID'.$k])
-		    	$joint_members[] = $j_m_id;
-		}
+	// 	$joint_members=array();
+	// 	for($k=2;$k<=4;$k++) {
+	// 	    if($j_m_id=$otherValues['member_ID'.$k])
+	// 	    	$joint_members[] = $j_m_id;
+	// 	}
 
-		$documents=$this->add('Model_Document');
-		$documents_feeded = array();
-		foreach ($documents as $d) {
-		 	if($form[$this->api->normalizeName($documents['name'])]){
-				$documents_feeded[$documents['name']]=$form[$this->api->normalizeName($documents['name'].' value')];
-		 	}
-		}
+	// 	$documents=$this->add('Model_Document');
+	// 	$documents_feeded = array();
+	// 	foreach ($documents as $d) {
+	// 	 	if($form[$this->api->normalizeName($documents['name'])]){
+	// 			$documents_feeded[$documents['name']]=$form[$this->api->normalizeName($documents['name'].' value')];
+	// 	 	}
+	// 	}
 
-		$extra_info['joint_members'] = $joint_members;
-		$extra_info['documents_feeded'] = $documents_feeded;
-		$extra_info['loan_from_account'] = $otherValues['loan_from_account'];
+	// 	$extra_info['joint_members'] = $joint_members;
+	// 	$extra_info['documents_feeded'] = $documents_feeded;
+	// 	$extra_info['loan_from_account'] = $otherValues['loan_from_account'];
+	// 	$extra_info['sm_amount'] = $otherValues['sm_amount'];
 		
- 		$pending_account['extra_info'] = json_encode($extra_info);
-		$pending_account->save();
+ // 		$pending_account['extra_info'] = json_encode($extra_info);
+	// 	$pending_account->save();
 
-		return $pending_account;
-	}
+	// 	return $pending_account;
+	// }
 
 	function getNewAccountNumber($account_type=null,$branch=null){
 		

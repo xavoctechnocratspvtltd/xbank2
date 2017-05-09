@@ -164,8 +164,8 @@ class page_reports_member_member extends Page {
 		$grid=$this->add('Grid');
 		$accounts=$member_model->ref('Account');
 		// $accounts->addCondition('ActiveStatus',true);
-		$accounts->addCondition('MaturedStatus',false);
-		$grid->setModel($accounts,array('branch','AccountNumber','scheme','agent','Amount','ActiveStatus'));
+		// $accounts->addCondition('MaturedStatus',false);
+		$grid->setModel($accounts,array('branch','AccountNumber','scheme','agent','Amount','ActiveStatus','MaturedStatus'));
 
 		$grid->addMethod('format_cuBal',function($g,$f){
 			$bal = $g->model->getOpeningBalance($on_date=$g->api->nextDate($g->api->today),$side='both',$forPandL=false);

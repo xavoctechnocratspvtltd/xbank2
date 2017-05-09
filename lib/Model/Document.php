@@ -28,6 +28,10 @@ class Model_Document extends Model_Table {
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
+	function depositDocuments(){
+		return $this->addCondition([['SavingAccount',true],['FixedMISAccount',true],['RDandDDSAccount',true]]);
+	}
+
 	function loanDocuments(){
 		return $this->addCondition('LoanAccount',true);
 	}

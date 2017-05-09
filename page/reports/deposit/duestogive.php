@@ -17,6 +17,14 @@ class page_reports_deposit_duestogive extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
+		$document=$this->add('Model_Document');
+		$document->depositDocuments();
+
+		foreach ($document as $junk) {
+			$form->addField('CheckBox','doc_'.$document->id, $document['name']);
+		}
+
+
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_AccountsBase');
@@ -44,6 +52,8 @@ class page_reports_deposit_duestogive extends Page {
 				)";
 		});
 
+		$grid_column_array=array('AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','maturity_date','Amount','MaturityAmount','agent_name','agent_phoneno','ActiveStatus','account_type');
+
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -56,19 +66,30 @@ class page_reports_deposit_duestogive extends Page {
 				else
 					$account->addCondition('account_type','like',$_GET['account_type']);
 			}
-			
 
 			if($_GET['from_date'])
 				$account->_dsql()->having('maturity_date','>=',$_GET['from_date']);
 			if($_GET['to_date'])
 				$account->_dsql()->having('maturity_date','<=',$_GET['to_date']);
+
+			foreach ($document as $junk) {
+				$doc_id = $document->id;
+				if($this->api->stickyGET('doc_'.$document->id)){
+					$this->api->stickyGET('doc_'.$document->id);
+					$account->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
+						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
+					});
+					$grid_column_array[] = $this->api->normalizeName($document['name']);
+				}
+			}
+			
 		}else
 			$account->addCondition('id',-1);
 
 		$account->addCondition('DefaultAC',false);
 		$account->add('Controller_Acl');
 		$account->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
-		$grid->setModel($account,array('AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','maturity_date','Amount','MaturityAmount','agent_name','agent_phoneno','ActiveStatus','account_type'));
+		$grid->setModel($account,$grid_column_array);
 		$grid->addPaginator(500);
 		$grid->addSno();
 		$grid->addFormatter('PermanentAddress','wrap');
@@ -85,7 +106,15 @@ class page_reports_deposit_duestogive extends Page {
 
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
+			
+			$send = array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1);
+			foreach ($document as $junk) {
+				if($form['doc_'.$document->id])
+					$send['doc_'.$document->id] = $form['doc_'.$document->id];
+			}
+			$grid->js()->reload($send)->execute();
+
+			// $grid->js()->reload(array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
 		}
 
 	}

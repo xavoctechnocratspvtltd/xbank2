@@ -18,7 +18,7 @@ class page_dashboard_scheme extends Page {
 		$dds=$tab->addTab('DDS');
 			$scheme_dds_model =$dds->add('Model_Scheme_DDS');
 			$grid=$dds->add('Grid_Scheme');
-			$grid->setModel($scheme_dds_model,array('name','Interest','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemeGroup','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','valid_till'));
+			$grid->setModel($scheme_dds_model,array('name','Interest','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemeGroup','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','percent_loan_on_deposit','no_loan_on_deposit_till','pre_mature_interests','valid_till'));
 		
 		$default=$tab->addTab('Default');
 			$grid=$default->add('Grid_Scheme');
@@ -29,7 +29,7 @@ class page_dashboard_scheme extends Page {
 			$grid=$fixed->add('Grid_Scheme');
 			$scheme_FixedAndMis_model =$fixed->add('Model_Scheme_FixedAndMis');
 			$scheme_FixedAndMis_model->setOrder('id','desc');
-			$grid->setModel($scheme_FixedAndMis_model,array('type','name','Interest','InterestToAnotherAccount','AccountOpenningCommission','CRPB','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','balance_sheet','MinLimit','MaxLimit','MaturityPeriod','ProcessingFeesinPercent','ProcessingFees','SchemeGroup','total_accounts','total_active_accounts','valid_till'));
+			$grid->setModel($scheme_FixedAndMis_model,array('type','name','Interest','InterestToAnotherAccount','AccountOpenningCommission','CRPB','ReducingOrFlatRate','ActiveStatus','balance_sheet_id','balance_sheet','MinLimit','MaxLimit','MaturityPeriod','percent_loan_on_deposit','no_loan_on_deposit_till','pre_mature_interests','ProcessingFeesinPercent','ProcessingFees','SchemeGroup','total_accounts','total_active_accounts','valid_till'));
 		
 		$loan=$tab->addTab('Loan');
 			$grid=$loan->add('Grid_Scheme');
@@ -40,7 +40,7 @@ class page_dashboard_scheme extends Page {
 		$rec=$tab->addTab('Recurring');
 			$grid=$rec->add('Grid_Scheme');
 			$scheme_Recurring_model =$rec->add('Model_Scheme_Recurring');
-			$grid->setModel($scheme_Recurring_model,array('name','Interest','PremiumMode','NumberOfPremiums','MaturityPeriod','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','ActiveStatus','balance_sheet','balance_sheet_id','SchemeGroup','total_accounts','total_active_accounts','valid_till'));
+			$grid->setModel($scheme_Recurring_model,array('name','Interest','PremiumMode','NumberOfPremiums','MaturityPeriod','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','percent_loan_on_deposit','no_loan_on_deposit_till','pre_mature_interests','ActiveStatus','balance_sheet','balance_sheet_id','SchemeGroup','total_accounts','total_active_accounts','valid_till'));
 		
 		$saving=$tab->addTab('SavingAndCurrent');
 			$grid=$saving->add('Grid_Scheme');

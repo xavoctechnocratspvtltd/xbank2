@@ -38,6 +38,11 @@ class page_reports_general_periodical extends Page {
 		
 		$form->addField('account_amount_from');
 		$form->addField('account_amount_to');
+
+		if($this->app->currentStaff->isSuper()){
+			$form->addField('DropDown','branch_id')->setEmptyText('All')->setModel('Branch');
+		}
+
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_AccountsBase');
@@ -86,9 +91,18 @@ class page_reports_general_periodical extends Page {
 				$account_model->addCondition('new_or_renew',$_GET['new_or_renew']);
 			}
 
+			if($this->app->currentStaff->isSuper()){
+				if($_GET['branch_id']){
+					$this->api->stickyGET('branch_id');
+					$account_model->addCondition('branch_id',$_GET['branch_id']);
+				}
+			}
+
 		}
 
-		$account_model->add('Controller_Acl');
+		if(!$this->app->currentStaff->isSuper()){
+			$account_model->add('Controller_Acl');
+		}
 
 		$account_model->addCondition('DefaultAC',false);
 		$account_model->addCondition('SchemeType',explode(',',ACCOUNT_TYPES));
@@ -115,7 +129,9 @@ class page_reports_general_periodical extends Page {
 			->set(function($p){
 				$account_model=$p->add('Model_Account');
 				$account_model->addCondition('account_type',$p->id);
-				$account_model->add('Controller_Acl');
+				if(!$this->app->currentStaff->isSuper()){
+					$account_model->add('Controller_Acl');
+				}
 
 				if($_GET['filter']){
 					$p->api->stickyGET("filter");
@@ -153,6 +169,13 @@ class page_reports_general_periodical extends Page {
 					if($_GET['new_or_renew']){
 						$this->api->stickyGET('new_or_renew');
 						$account_model->addCondition('new_or_renew',$_GET['new_or_renew']);
+					}
+
+					if($this->app->currentStaff->isSuper()){
+						if($_GET['branch_id']){
+							$this->api->stickyGET('branch_id');
+							$account_model->addCondition('branch_id',$_GET['branch_id']);
+						}
 					}
 
 				}
@@ -195,7 +218,11 @@ class page_reports_general_periodical extends Page {
 		// $grid->js('click',$js);
 		
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'team_id'=>$form['team'],'mo_id'=>$form['mo'],'new_or_renew'=>$form['new_or_renew'],'filter'=>1))->execute();
+			$send_array = array('dealer'=>$form['dealer'],'agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'team_id'=>$form['team'],'mo_id'=>$form['mo'],'new_or_renew'=>$form['new_or_renew'],'filter'=>1);
+			if($this->app->currentStaff->isSuper()){
+				$send_array['branch_id'] = $form['branch_id'];
+			}
+			$grid->js()->reload($send_array)->execute();
 		}	
 
 	}

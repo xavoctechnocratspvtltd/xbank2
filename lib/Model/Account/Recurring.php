@@ -298,7 +298,7 @@ class Model_Account_Recurring extends Model_Account{
 		$this->revertAccessInterest();
 
 		$this['MaturedStatus'] = true;
-		$this->save();
+		$this->saveAs('Account_Recurring');
 	}
 
 	function revertAccessInterest(){
@@ -400,7 +400,7 @@ class Model_Account_Recurring extends Model_Account{
 			
 			$debitAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
 			$transaction->addDebitAccount($debitAccount, $difference);
-			$transaction->addCreditAccount($this, $difference);
+			$transaction->addCreditAccount($this['AccountNumber'], $difference);
 			$transaction->execute();
 
 		}else{
@@ -409,19 +409,20 @@ class Model_Account_Recurring extends Model_Account{
 			$transaction = $this->add('Model_Transaction');
 			$transaction->createNewTransaction(TRA_EXCESS_AMOUNT_REVERT, $this->ref('branch_id'), $on_date, "Excess amount reverted in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 			
-			$transaction->addDebitAccount($this, $difference);
+			$transaction->addDebitAccount($this['AccountNumber'], $difference);
 			$creditAccount = $this['branch_code'] . SP . INTEREST_PAID_ON . SP. $this['scheme_name'];
 			$transaction->addCreditAccount($creditAccount, $difference);
 			$transaction->execute();	
 
 		}
+
 		
 		$transaction = $this->add('Model_Transaction');
 		$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "RD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
 		$final_credit_amount = $amount_to_give;
 
-		$transaction->addDebitAccount($this, $amount_to_give);
+		$transaction->addDebitAccount($this['AccountNumber'], $amount_to_give);
 		if(count($other_charges)){
 			$transaction->addCreditAccount($other_charges['Account'], $other_charges['Amount']);
 			$final_credit_amount -= $other_charges['Amount'];
@@ -433,12 +434,12 @@ class Model_Account_Recurring extends Model_Account{
 		}
 
 		$transaction->addCreditAccount($account_to_credit, $final_credit_amount);
-		$transaction->execute();
+		$transaction->execute();			
 
 		// mark mature and deactivate
 		$this['MaturedStatus']=true;
 		$this['ActiveStatus']=false;
-		$this->saveAndUnload();
+		$this->save();
 
 	}
 

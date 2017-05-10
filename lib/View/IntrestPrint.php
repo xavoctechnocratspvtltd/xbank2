@@ -30,6 +30,7 @@ class View_IntrestPrint extends CompleteLister{
 		$account_j= $transaction_row->join('accounts','account_id');
 		$account_j->addField('member_id');
 		$account_j->addField('AccountNumber');
+		$account_j->addField('account_type');
 		//member join
 		$member_j= $account_j->join('members','member_id');
 		$member_j->addField('CurrentAddress');
@@ -42,16 +43,34 @@ class View_IntrestPrint extends CompleteLister{
 		$transaction_type_j->addField('transaction_type_name','name');
 
 		$transaction_row->addCondition('member_id',$member_id);
-		$transaction_row->addCondition('transaction_type_name',array(TRA_INTEREST_POSTING_IN_SAVINGS,
-																TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT,
-																TRA_INTEREST_POSTING_IN_MIS_ACCOUNT,
-																TRA_INTEREST_POSTING_IN_HID_ACCOUNT,
-																// TRA_INTEREST_POSTING_IN_CC_ACCOUNT,
-																TRA_INTEREST_POSTING_IN_RECURRING,
-																TRA_INTEREST_POSTING_IN_DDS,
-																// TRA_INTEREST_POSTING_IN_LOAN
-																)
-										);		
+		$transaction_row->addCondition(
+							$transaction_row->dsql()->orExpr()
+								->where(
+									$transaction_row->getElement('transaction_type_name'),
+										'in',
+										[
+											TRA_INTEREST_POSTING_IN_SAVINGS,
+											TRA_INTEREST_POSTING_IN_FIXED_ACCOUNT,
+											// TRA_INTEREST_POSTING_IN_MIS_ACCOUNT,
+											TRA_INTEREST_POSTING_IN_HID_ACCOUNT,
+											// TRA_INTEREST_POSTING_IN_CC_ACCOUNT,
+											TRA_INTEREST_POSTING_IN_RECURRING,
+											TRA_INTEREST_POSTING_IN_DDS,
+											// TRA_INTEREST_POSTING_IN_LOAN
+										]
+								)
+								->where(
+										$transaction_row->dsql()->andExpr()
+											->where($transaction_row->getElement('transaction_type_name'), TRA_INTEREST_POSTING_IN_MIS_ACCOUNT)
+											->where($transaction_row->getElement('account_type'),'not in',['Saving','Current'])
+									)
+										
+							);
+
+		// not include transaction where sb account is in credit
+
+		// $transaction_row->addCondition(['account_type','not in',['Saving','Current']]);
+		// $transaction_row->addCondition('amountCr','<>',0);
 
 		if($_GET['from_date']){
 			$transaction_row->addCondition('created_at','>',$_GET['from_date']);
@@ -61,6 +80,7 @@ class View_IntrestPrint extends CompleteLister{
 			$transaction_row->addCondition('created_at','<=',$this->api->nextDate($_GET['to_date']));
 		}
 
+		$transaction_row->addCondition('amountCr','>',0);
 
 		// throw new Exception('member_id'.$_GET['member_id']."from_date".$_GET['from_date']."to_date".$_GET['to_date'], 1);
 		// throw new \Exception("MEmber_id=".$transaction_row['member_id']."Member_name=".$transaction_row['name']);

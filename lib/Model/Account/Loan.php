@@ -321,11 +321,13 @@ class Model_Account_Loan extends Model_Account{
 		$rate = $this->ref('scheme_id')->get('Interest');
 		$premiums = $this->ref('scheme_id')->get('NumberOfPremiums');
 
+		$tran_penalty_and_other_amt_received = $this->add('Model_TransactionRow')->addCondition('transaction_type',[TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED])->addCondition('account_id',$this->id)->sum('amountCr')->getOne();
+
 		// Access amount then loan amount per premium is actually interest
 		$interest = round((($emi * $premiums) - $this['Amount']) / $premiums);
 
 		$PremiumAmountAdjusted = $PaidEMI * $emi;
-		$AmountForPremiums = ($this['CurrentBalanceCr']) - $PremiumAmountAdjusted; // This amount is already credit to account in deposit function parent::deposit 
+		$AmountForPremiums = ($this['CurrentBalanceCr']- $tran_penalty_and_other_amt_received) - $PremiumAmountAdjusted; // This amount is already credit to account in deposit function parent::deposit 
 
 		$premiumsSubmited = (int) ($AmountForPremiums / $emi);
 

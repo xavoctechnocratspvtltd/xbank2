@@ -408,7 +408,7 @@ class Model_Account_Recurring extends Model_Account{
 
 		$transactions = $this->add('Model_TransactionRow');
 		$transactions->addCondition('account_id',$this->id);
-		$cr_sum = $transactions->sum('amountCr')->debug()->getOne();
+		$cr_sum = $transactions->sum('amountCr')->getOne();
 
 		$difference = $amount_to_give - $cr_sum;
 		$final_debit_amount = $difference;

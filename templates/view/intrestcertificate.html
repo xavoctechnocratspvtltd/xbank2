@@ -1,79 +1,77 @@
-<div id="{$_name}" class="" style='width:900px;margin:0 auto;' >
-    {$Content}
-    <h2 class="atk-align-center">Bhawani Credit Co-operative Society Ltd Udaipur</h2>
-    <div class="row">
-  		<div class="col-md-6">
-  			<img src="templates/images/logo.jpg" style="width:80px" />
-  		</div>
-  		<div class="col-md-6 atk-text-bold atk-align-right" style="margin-top:50px">Date : {$date}</div>
-  	</div>
-  	<h3 class="atk-align-center">
-  		Certificates for interest on  deposits 
-			for the period<br/> from <b>{$from_date}</b> to <b>{$to_date}</b>
-  	</h3>
-  	<div class="row">
-      <div class="col-md-5" >Customer ID</div>
-      <div class="col-md-1" >:</div>
-      <div class="col-md-6" >{$customer_id}</div>
-    </div>
-    <div class="row">
-      <div class="col-md-5">Name</div>
-      <div class="col-md-1" >:</div>
-      <div class="col-md-6">{$name}</div>
-    </div>
-    <div class="row">
-      <div class="col-md-5">Address</div>
-      <div class="col-md-1" >:</div>
-      <div class="col-md-6">{$address}</div>
-    </div>
-    <div class="row">
-      <div class="col-md-5">Phone No.</div>
-      <div class="col-md-1" >:</div>
-      <div class="col-md-6">{$phone_no}</div>
-    </div>
-    <div class="row">
-      <div class="col-md-5">Email ID.</div>
-  		<div class="col-md-1" >:</div>
-  		<div class="col-md-6">{$email_id}</div>
-  	</div>
-  <table class="atk-align-center" border="true" width="100%" style="margin:10px 0 10px 0px;">
+
+<div id="{$_name}" style="width:900px;margin:0 auto;">{$Content}
+  <h2 class="atk-align-center">Bhawani Credit Co-operative Society Ltd Udaipur</h2>
+  <div class="row">
+    <div class="col-md-6"><img src="templates/images/logo.jpg" style="width:80px"/></div>
+    <div style="margin-top:50px" class="col-md-6 atk-text-bold atk-align-right">Date : {$date}</div>
+  </div>
+  <h3 class="atk-align-center">
+    Certificates for interest on  deposits 
+    for the period<br/> from <b>{$from_date}</b> to <b>{$to_date}</b>
+  </h3>
+  <div class="row">
+    <div class="col-md-5">Customer ID</div>
+    <div class="col-md-1">:</div>
+    <div class="col-md-6">{$customer_id}</div>
+  </div>
+  <div class="row">
+    <div class="col-md-5">Name</div>
+    <div class="col-md-1">:</div>
+    <div class="col-md-6">{$name}</div>
+  </div>
+  <div class="row">
+    <div class="col-md-5">Address</div>
+    <div class="col-md-1">:</div>
+    <div class="col-md-6">{$address}</div>
+  </div>
+  <div class="row">
+    <div class="col-md-5">Phone No.</div>
+    <div class="col-md-1">:</div>
+    <div class="col-md-6">{$phone_no}</div>
+  </div>
+  <div class="row">
+    <div class="col-md-5">Email ID.</div>
+    <div class="col-md-1">:</div>
+    <div class="col-md-6">{$email_id}</div>
+  </div>
+  <table border="true" width="100%" style="margin:10px 0 10px 0px;" class="atk-align-center">
     <tr>
       <th class="atk-align-center">Account No.</th>
-      <th class="atk-align-center" >Currency</th>
+      <th class="atk-align-center">Currency</th>
       <th class="atk-align-center">Intt. Paid</th>
       <th class="atk-align-center">Intt. Collect</th>
-    </tr>
-      {rows}
-        {row}
-        <tr>
-          <td class="">{$account_no}</td>
-          <td >{$currency}</td>
-          <td >{$intt_paid}</td>
-          <td>{$intt_collect}</td>
-        </tr>
-      {/row}
-    {/rows} 
+    </tr>      {rows}
+            {row}
+    <tr>
+      <td>{$account_no}</td>
+      <td>{$currency}</td>
+      <td>{$intt_paid}</td>
+      <td>{$intt_collect}</td>
+    </tr>      {/row}
+        {/rows} 
     <tr>
       <td>TOTAL</td>
-      <td>&nbsp;</td>
+      <td> </td>
       <td>{$total_intt_paid}</td>
       <td>{$total_intt_collect}</td>
     </tr>
   </table>
-
-  <div class="" style="margin:20px 0 20px 0">For Bhawani Credit Co-operative Society</div>
-  <div class="row">
-    <div class="col-md-6">
-      <div> Authorised Signatory</div>
-      <div> 07, Amrit Shree Plaza,<br/>Doodhiya Ganesh ji, Sajjangarh Road,<br/>Udaipur -313001 Rajasthan</div>
-    </div>
-    <div class="col-md-6">
-      <div>Acknowledgemet 
-            Received BY: </div>
-        <div> Name: </div>    
-        <div> Date: </div>    
+  <div style="margin:20px 0 20px 0">For Bhawani Credit Co-operative Society</div>
+  <table style="width:100%">
+    <tr>
+      <td colspan="6">
+        <div> Authorised Signatory</div>
+        <div>07, Amrit Shree Plaza,<br/>Doodhiya Ganesh ji, Sajjangarh Road,<br/>Udaipur -313001 Rajasthan</div>
+      </td>
+      <td colspan="6">
+        <div>
+          Acknowledgemet
+          Received BY:
+        </div>
+        <div> Name: </div>
+        <div> Date: </div>
         <div> Signature: </div>
-      </div>      
-  </div>
-
+      </td>
+    </tr>
+  </table>
 </div>

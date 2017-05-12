@@ -1,0 +1,73 @@
+div(id='{$_name}', style='width:900px;margin:0 auto;')
+  | {$Content}
+  h2.atk-align-center Bhawani Credit Co-operative Society Ltd Udaipur
+  .row
+    .col-md-6
+      img(src='templates/images/logo.jpg', style='width:80px')
+    .col-md-6.atk-text-bold.atk-align-right(style='margin-top:50px') Date : {$date}
+  h3.atk-align-center
+    | Certificates for interest on  deposits 
+    | for the period
+    br
+    |  from 
+    b {$from_date}
+    |  to 
+    b {$to_date}
+  .row
+    .col-md-5 Customer ID
+    .col-md-1 :
+    .col-md-6 {$customer_id}
+  .row
+    .col-md-5 Name
+    .col-md-1 :
+    .col-md-6 {$name}
+  .row
+    .col-md-5 Address
+    .col-md-1 :
+    .col-md-6 {$address}
+  .row
+    .col-md-5 Phone No.
+    .col-md-1 :
+    .col-md-6 {$phone_no}
+  .row
+    .col-md-5 Email ID.
+    .col-md-1 :
+    .col-md-6 {$email_id}
+  table.atk-align-center(border='true', width='100%', style='margin:10px 0 10px 0px;')
+    tr
+      th.atk-align-center Account No.
+      th.atk-align-center Currency
+      th.atk-align-center Intt. Paid
+      th.atk-align-center Intt. Collect
+    |       {rows}
+    |         {row}
+    tr
+      td {$account_no}
+      td {$currency}
+      td {$intt_paid}
+      td {$intt_collect}
+    |       {/row}
+    |     {/rows} 
+    tr
+      td TOTAL
+      td  
+      td {$total_intt_paid}
+      td {$total_intt_collect}
+  div(style='margin:20px 0 20px 0') For Bhawani Credit Co-operative Society
+  table(style="width:100%")
+    tr
+      td(colspan="6")
+        div  Authorised Signatory
+        div
+          | 07, Amrit Shree Plaza,
+          br
+          | Doodhiya Ganesh ji, Sajjangarh Road,
+          br
+          | Udaipur -313001 Rajasthan
+      td(colspan="6")
+        div
+          | Acknowledgemet
+          | Received BY:
+        div  Name: 
+        div  Date: 
+        div  Signature: 

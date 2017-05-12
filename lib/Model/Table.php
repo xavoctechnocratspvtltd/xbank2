@@ -40,4 +40,10 @@ class Model_Table extends SQL_Model {
 		});
 
 	}
+
+	function saveAs($model){
+		$o = parent::saveAs($model);
+		$this->data = $o->data;
+		$this->id = $o->id;
+	}
 }

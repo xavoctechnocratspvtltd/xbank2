@@ -199,11 +199,12 @@ class Model_Account extends Model_Table {
 
 	function defaultBeforeSave(){
 
-		// throw new \Exception($this['account_type'], 1);
 		if(!$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 AND !$this->allow_any_name AND !$this->loaded() ){
 			$start_code = ($this->ref('branch_id')->get('Code').$this->api->getConfig('account_code/'.$this['account_type']));
-			if(strpos($this['AccountNumber'], $start_code) !==0)
+			if(strpos($this['AccountNumber'], $start_code) !==0){
+				throw new \Exception(print_r($this->data,true), 1);
 				throw $this->exception('AccountNumber Format not accpeted, Must start with '. $start_code.' or SM whie it is '. $this['AccountNumber'],'ValidityCheck')->setField('AccountNumber')->addMoreInfo('acc',$this['AccountNumber']);//->setField('AccountNumber');
+			}
 		}
 
 		// if(!$this['DefaultAC'] AND strpos($this['AccountNumber'], 'SM') !==0 and substr($this['AccountNumber'],0,3) !== $this->api->current_branch['Code'])

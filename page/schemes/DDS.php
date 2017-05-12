@@ -30,7 +30,7 @@ class page_schemes_DDS extends Page{
 			$scheme_dds_model->hook('editing');
 		}
 
-		$crud->setModel($scheme_dds_model,array('name','Interest','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemeGroup','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','percent_loan_on_deposit','no_loan_on_deposit_till','pre_mature_interests','valid_till'));
+		$crud->setModel($scheme_dds_model,array('name','Interest','ActiveStatus','balance_sheet_id','MaturityPeriod','SchemeGroup','MinLimit','MaxLimit','CRPB','AccountOpenningCommission','CollectorCommissionRate','percent_loan_on_deposit','no_loan_on_deposit_till','pre_mature_interests','mature_interests_for_uncomplete_product','valid_till'));
 
 		
 		if($crud->grid){

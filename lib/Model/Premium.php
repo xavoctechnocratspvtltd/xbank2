@@ -154,19 +154,35 @@ class Model_Premium extends Model_Table {
 
 	function reAdjustPaidValue($on_date=null){
 		if(!$on_date) $on_date = $this->api->now;
+
+		// echo "Re adjusting ".$this['account'].' on '. $on_date . ' <br/>';
+
 		$premiums_to_affect = $this->ref('account_id')->ref('Premium');
-		$premiums_to_affect->_dsql()->where("(DueDate <='$on_date') and Paid = 0");
+		$no_of_premiums = $premiums_to_affect->count()->getOne();
+		$premiums_to_affect->_dsql()->where("(DueDate <='$on_date')");
 		$premiums_to_affect->setOrder('id');
 
+		$i=1;
 		foreach ($premiums_to_affect as $junk) {
 			$paid_premiums_before_date = $this->add('Model_Premium');
 			$paid_premiums_before_date->addCondition('account_id',$premiums_to_affect['account_id']);
-			// $paid_premiums_before_date->addCondition('PaidOn','<=',date('Y-m-t',strtotime($on_date)));
-			$paid_premiums_before_date->addCondition('PaidOn','<',$this->api->nextDate($on_date));
+
+			if($i < $no_of_premiums){
+				$paid_premiums_before_date->addCondition('PaidOn','<',$this->api->nextDate(date('Y-m-t',strtotime($premiums_to_affect['DueDate']))));
+				// echo $i. '/'. $no_of_premiums .' PaidOn < '. date('Y-m-t',strtotime($this->api->nextDate($premiums_to_affect['DueDate']))). '<br/>';
+			}
+			else{
+				$paid_premiums_before_date->addCondition('PaidOn','<',$this->api->nextDate($premiums_to_affect['DueDate']));
+				// echo $i. '/'. $no_of_premiums .' PaidOn < '. $this->api->nextDate($premiums_to_affect['DueDate']). '<br/>';
+			}
+			
 			$paid_premiums_before_date->addCondition('id','<=',$premiums_to_affect->id);			
 			$premiums_to_affect['Paid'] = $paid_premiums_before_date->count()->getOne();
 			$premiums_to_affect->saveAndUnload();
+			$i++;
 		}
+
+		// var_dump($this->add('Model_Premium')->addCondition('account_id',$this['account_id'])->getRows(['DueDate','PaidOn','Paid','Account']));
 	}
 
     // function reAdjustPaidValues($on_date=null){ udrrd1005

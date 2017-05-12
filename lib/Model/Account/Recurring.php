@@ -291,25 +291,35 @@ class Model_Account_Recurring extends Model_Account{
 	}
 
 	function markMatured($on_date=null){
+		if(!$this->loaded()) throw new \Exception("Account must be loaded to mark mature", 1);
 		if(!$on_date) $on_date = $this->api->now;
 
 		$this->payInterest();
 
-		$this->revertAccessInterest();
-
+		$this->revertAccessInterest($on_date);
+	
+		
 		$this['MaturedStatus'] = true;
 		$this->saveAs('Account_Recurring');
 	}
 
-	function revertAccessInterest(){
+	function revertAccessInterest($on_date=null){
+		if(!$on_date) $on_date = $this->api->now;
+		// if not product completed .. use non_product_percentage
+		if($this->premiums()->count()->getOne() == $this->premiums()->_dsql()->del('fields')->field($this->dsql()->expr('max(Paid)'))->getOne()){
+			$percentages=null ; // actual as in scheme
+		}else{
+			$percentages=$this->ref('scheme_id')->get('mature_interests_for_uncomplete_product')?:'4';
+		}
 
+		$this->pre_mature($on_date,null,null,null,null,$percentages,true);
 	}
 
 	function premiums(){
 		return $this->add('Model_Premium')->addCondition('account_id',$this->id);
 	}
 
-	function pre_mature_info($on_date = null ){
+	function pre_mature_info($on_date = null , $is_maturity =false ){
 		if(!$on_date) $on_date = $this->app->today;
 		$info = [];
 		$this_scheme = $this->ref('scheme_id');
@@ -322,6 +332,9 @@ class Model_Account_Recurring extends Model_Account{
 		$info['days_months_total'] = ($this->app->my_date_diff(date('Y-m-d',strtotime($this['created_at'])),$on_date)['months_total']);
 
 		$info['applicable_percentage'] = $this_scheme['Interest'];
+
+		if($is_maturity) return $info;
+
 		$info['can_premature']=false;
 		$info['premiums_paid']=$this->paidPremiums();
 		foreach ($percentages as $day_percent_pair) {
@@ -340,16 +353,21 @@ class Model_Account_Recurring extends Model_Account{
 		return $info;
 	}
 
-	function pre_mature($on_date=null,$return_amount = false,$account_to_credit=null ,$other_charges=[], $other_bonus=[]){
+	function pre_mature($on_date=null,$return_amount = false,$account_to_credit=null ,$other_charges=[], $other_bonus=[],$percentages=null,$is_maturity=false){
+		
 		if(!$on_date) $on_date = $this->app->now;
-		$info = $this->pre_mature_info($on_date);
-		if(!$info['can_premature'])
+		$info = $this->pre_mature_info($on_date,$is_maturity);
+		
+		if(!$is_maturity && !$info['can_premature'])
 			throw new \Exception("You cannot pre mature this account", 1);
 		// throw new \Exception("YES", 1);
 
 		$given_interest = $this->interestPaid($on_date);
 
-		$new_applicable_percentage = $info['applicable_percentage'];
+		$new_applicable_percentage = $percentages?:$info['applicable_percentage'];
+
+		// echo "calculating pre_mature as per  $new_applicable_percentage % ". $info['applicable_percentage'] ."<br/>";
+
 		$months_to_check = $info['days_months_total'];
 
 		$years_completed = (int) ($months_to_check / 12) ;
@@ -374,7 +392,7 @@ class Model_Account_Recurring extends Model_Account{
 									->expr('select sum((Paid*Amount)+'.$interest.') from (select Paid, Amount from premiums WHERE account_id='.$this->id.' and Paid>=1 limit '.(12*($i-1)).', 12) as temp')
 									// ->debug()
 									->getOne();
-			$interest = ($product * $info['applicable_percentage'])/1200;
+			$interest = ($product * $new_applicable_percentage)/1200;
 			// echo $product ." - " ;
 			// echo $interest ." - <br/>" ;
 			// $interest_total += $interest;
@@ -382,16 +400,21 @@ class Model_Account_Recurring extends Model_Account{
 
 		$amount_to_give  = $this->paidPremiums() * $this['Amount'] + $interest;
 
+		// echo "amount to give $amount_to_give <br/>";
+
 		if($return_amount){
 			return $amount_to_give;
 		}
 
 		$transactions = $this->add('Model_TransactionRow');
 		$transactions->addCondition('account_id',$this->id);
-		$cr_sum = $transactions->sum('amountCr')->getOne();
+		$cr_sum = $transactions->sum('amountCr')->debug()->getOne();
 
 		$difference = $amount_to_give - $cr_sum;
 		$final_debit_amount = $difference;
+
+		// echo "CR sum $cr_sum for account_id ".$this->id."<br/>";
+		// echo "Amount to debit $final_debit_amount <br/>";
 
 		if($difference > 0) {
 			// amount to give is more and more payment need to be given now (Aur paisa dena hai)
@@ -416,30 +439,37 @@ class Model_Account_Recurring extends Model_Account{
 
 		}
 
-		
-		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "RD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
-		
-		$final_credit_amount = $amount_to_give;
+		// die('account_to_credit ' . $account_to_credit);
 
-		$transaction->addDebitAccount($this['AccountNumber'], $amount_to_give);
-		if(count($other_charges)){
-			$transaction->addCreditAccount($other_charges['Account'], $other_charges['Amount']);
-			$final_credit_amount -= $other_charges['Amount'];
+		if($account_to_credit){
+			// only for premature.. but not in maturity case if this same function is reused
+			$transaction = $this->add('Model_Transaction');
+			$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "RD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			
+			$final_credit_amount = $amount_to_give;
+
+			$transaction->addDebitAccount($this['AccountNumber'], $amount_to_give);
+			if(count($other_charges)){
+				$transaction->addCreditAccount($other_charges['Account'], $other_charges['Amount']);
+				$final_credit_amount -= $other_charges['Amount'];
+			}
+
+			if(count($other_bonus)){
+				$transaction->addDebitAccount($other_bonus['Account'], $other_bonus['Amount']);
+				$final_credit_amount += $other_bonus['Amount'];
+			}
+
+			$transaction->addCreditAccount($account_to_credit, $final_credit_amount);
+			$transaction->execute();			
 		}
-
-		if(count($other_bonus)){
-			$transaction->addDebitAccount($other_bonus['Account'], $other_bonus['Amount']);
-			$final_credit_amount += $other_bonus['Amount'];
-		}
-
-		$transaction->addCreditAccount($account_to_credit, $final_credit_amount);
-		$transaction->execute();			
+		
 
 		// mark mature and deactivate
 		$this['MaturedStatus']=true;
 		$this['ActiveStatus']=false;
-		$this->save();
+		$o = $this->saveAs('Account_Recurring');
+		if(!$this->loaded()) throw new \Exception("Oops, account is unloaded somewhere 2", 1);
+
 
 	}
 

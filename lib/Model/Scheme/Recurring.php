@@ -77,7 +77,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
 		$all_todays_matured_Accounts->addCondition('MaturedStatus',false);
 		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
-		$all_todays_matured_Accounts->_dsql()->where($all_todays_matured_Accounts->getElement('maturity_date'),$on_date);
+		$all_todays_matured_Accounts->_dsql()->where($all_todays_matured_Accounts->getElement('maturity_date'),$this->app->nextDate($on_date));
 
 		if($test_account) $all_todays_matured_Accounts->addCondition('id',$test_account->id);
 
@@ -86,8 +86,8 @@ class Model_Scheme_Recurring extends Model_Scheme {
 		// echo 'found '.$all_todays_matured_Accounts_count . ' accounts on '.$on_date.' <br/>';
 		foreach ($all_todays_matured_Accounts as $acc_array) {
 			// echo "workgin on ". $acc_array['AccountNumber'].'<br/>';
-			$all_todays_matured_Accounts->reAdjustPaidValue($on_date);
-			$all_todays_matured_Accounts->markMatured($on_date); // peying interest in there as well
+			$all_todays_matured_Accounts->reAdjustPaidValue($this->app->nextDate($on_date));
+			$all_todays_matured_Accounts->markMatured($this->app->nextDate($on_date)); // peying interest in there as well
 			$this->api->markProgress('Recurring_Mark_Mature',$i++,$acc_array['AccountNumber'],$all_todays_matured_Accounts_count);
 		}
 

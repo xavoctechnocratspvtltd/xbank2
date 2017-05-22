@@ -258,27 +258,27 @@ class Frontend extends ApiFrontend {
     }
 
     function markProgress($what, $running=0, $detail=null, $total=null){
-        // $data =$this->api->recall('progress_data',array());
+        $data =$this->api->recall('progress_data',array());
         
-        // if($running !== null or $running !== "") $data[$what] = array('running'=>$running);
-        // if($detail) $data[$what] += array('detail'=>$detail);
-        // if($total) $data[$what] += array('total'=>$total. ' ' . (memory_get_peak_usage(true)/1024/1024) . "MiB" );
+        if($running !== null or $running !== "") $data[$what] = array('running'=>$running);
+        if($detail) $data[$what] += array('detail'=>$detail);
+        if($total) $data[$what] += array('total'=>$total. ' ' . (memory_get_peak_usage(true)/1024/1024) . "MiB" );
 
-        // if($running === null and isset($data[$what]))
-        //     unset($data[$what]);
+        if($running === null and isset($data[$what]))
+            unset($data[$what]);
 
-        // $this->api->memorize('progress_data',$data);
+        $this->api->memorize('progress_data',$data);
 
-        // $m=new Memcache();
-        // $m->addServer('localhost',11211);
-        // $m->set('data',$data);
+        $m=new Memcache();
+        $m->addServer('localhost',11211);
+        $m->set('data',$data);
     }
 
     function getProgress(){
-        // $m=new Memcache();
-        // $m->addServer('localhost',11211);
-        // $data=$m->get('data');
-        // return $data;
+        $m=new Memcache();
+        $m->addServer('localhost',11211);
+        $data=$m->get('data');
+        return $data;
     }
 
     function resetProgress(){

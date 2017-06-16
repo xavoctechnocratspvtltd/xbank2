@@ -182,8 +182,16 @@ class page_reports_loan_dispatch extends Page {
 			return $q->expr("if([0]=1,[1]/100.0*[2],[2])",array($s->fieldQuery('ProcessingFeesinPercent'),$m->getElement('Amount'),$s->fieldQuery('ProcessingFees')));
 		});
 
+		$account_model->addExpression('sm_amount')->set(function($m,$q){
+			$trans_m = $this->add('Model_TransactionRow');
+			$trans_m->addCondition('reference_id',$q->getField('id'));
+			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
+			$trans_m->addCondition('scheme','SHARE CAPITAL');
+			return $trans_m->fieldQuery('amountCr');
+		});
+
 		$account_model->addExpression('cheque_amount')->set(function($m,$q){
-			return $q->expr("[0]-[1]",array($m->getElement('Amount'),$m->getElement('file_charge')));
+			return $q->expr("[0]-([1]+IFNULL([2],0))",array($m->getElement('Amount'),$m->getElement('file_charge'),$m->getElement('sm_amount')));
 		});
 
 		$grid->setModel($account_model,$grid_array);

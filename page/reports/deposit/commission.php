@@ -9,13 +9,10 @@ class page_reports_deposit_commission extends Page {
 		// TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT
  
 		$form=$this->add('Form');
-		$agent_field=$form->addField('autocomplete/Basic','agent');
-		$agent_field->setModel('Agent');
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
 
 		$account_type_array=array('%'=>'All','DDS'=>'DDS','FixedAndMis'=>'Fixed And Mis','Recurring'=>'Recurring');
-
 
 		$form->addField('dropdown','account_type')->setValueList($account_type_array);
 		$form->addSubmit('GET List');
@@ -23,21 +20,43 @@ class page_reports_deposit_commission extends Page {
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->add('H3',null,'grid_buttons')->set('Commission Report From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
 
-		$transaction_row=$this->add('Model_TransactionRow');
-		$transaction_row->getElement('amountCr')->caption('Net Commission')->type('int');
-		$transaction_join = $transaction_row->join('transactions','transaction_id');
-		// $transaction_type_join = $transaction_join->join('transaction_types','transaction_type_id');
+		$transaction = $this->add('Model_Transaction');
+		$transaction->addExpression('commission')->set(function($m,$q){
+			return $m->refSQL('TransactionRow')
+				->addCondition('account','like','%Commission%')
+				->fieldQuery('amountDr');
+		});
 
-		$account_join = $transaction_row->join('accounts','account_id');
-		$agent_join = $account_join->join('agents.account_id');
-		$agent_join->addField('agent_id_for_account','id');
-		$agent_sb_join = $agent_join->join('accounts','account_id');
-		$agent_sb_join->addField('agent_account_number','AccountNumber');
-		$member_join=$agent_join->join('members','member_id');
-		$member_join->addField('agent_name','name');
+		$transaction->addExpression('tds')->set(function($m,$q){
+			return $m->refSQL('TransactionRow')
+				->addCondition('account','like','%TDS%')
+				->fieldQuery('amountCr');
+		});
 
+		$transaction->addExpression('acc')->set(function($m,$q){
+			$tr=  $m->refSQL('TransactionRow');
+			$tr->addExpression('SchemeType')->set(function($m,$q){
+				return $m->refSQL('scheme_id')->fieldQuery('SchemeType');
+			});
+			$tr->addCondition('account','not like','%TDS%')
+			->addCondition([['balance_sheet','Branch/Divisions'],['balance_sheet','Deposits - Liabilities']])
+				;
+				// ->addCondition([['scheme','Saving Account'],['scheme','Branch & Divisions']])
+			return $tr->sum('amountCr');
+		});
 
-		$referance_account_join = $transaction_join->join('accounts','reference_id');
+		$transaction->addExpression('acc_name')->set(function($m,$q){
+			$tr=  $m->refSQL('TransactionRow');
+			$tr->addExpression('SchemeType')->set(function($m,$q){
+				return $m->refSQL('scheme_id')->fieldQuery('SchemeType');
+			});
+
+			return $tr
+				->addCondition([['SchemeType','SavingAndCurrent'],['scheme','Branch & Divisions']])
+				->fieldQuery('account');
+		})->sortable(true);
+
+		$referance_account_join = $transaction->join('accounts','reference_id');
 		$referance_account_join->addField('AccountNumber');
 		$referance_account_join->addField('Amount');
 		$reference_member_join = $referance_account_join->join('members','member_id');
@@ -51,72 +70,71 @@ class page_reports_deposit_commission extends Page {
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 
-			if($_GET['agent']){
-				$this->api->stickyGET("agent");
-				$transaction_row->addCondition('agent_id_for_account',$_GET['agent']);
-			}
-
 			if($_GET['from_date']){
 				$this->api->stickyGET("from_date");
-				$transaction_row->addCondition('created_at','>',$_GET['from_date']);
+				$transaction->addCondition('created_at','>',$_GET['from_date']);
 			}
 
 			if($_GET['to_date']){
 				$this->api->stickyGET("to_date");
-				$transaction_row->addCondition('created_at','<',$_GET['to_date']);
+				$transaction->addCondition('created_at','<',$_GET['to_date']);
 			}  
 
 			if($_GET['account_type']){
 				$this->api->stickyGET("account_type");
-				$transaction_row->addCondition('ref_account_scheme_type','like',$_GET['account_type']);
+				$transaction->addCondition('ref_account_scheme_type','like',$_GET['account_type']);
 			}
 
 		}else
-			$transaction_row->addCondition('id',-1);
+			$transaction->addCondition('id',-1);
 
 		$grid->addSno();
 
-		$transaction_row->_dsql()->having(
-            $transaction_row->dsql()->orExpr()
+		$transaction->_dsql()->having(
+            $transaction->dsql()->orExpr()
                 ->where('transaction_type', TRA_ACCOUNT_OPEN_AGENT_COMMISSION)
                 ->where('transaction_type', TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT)
+                ->where('transaction_type', TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT)
         );
 
-		$transaction_row->setOrder('created_at','desc');
-		$transaction_row->add('Controller_Acl');
+        $transaction->addCondition('commission','>',0);
 
-		$grid->setModel($transaction_row,array('AccountNumber','member_name','Amount','ref_account_scheme_name','created_at','total_commission','voucher_no','transaction_type','amountCr','agent_name','agent_account_number'));
+		$transaction->setOrder('created_at','desc');
+		$transaction->add('Controller_Acl');
+
+		$grid->setModel($transaction,array('AccountNumber','member_name','Amount','ref_account_scheme_name','created_at','commission','tds','acc','acc_name','voucher_no','transaction_type'));
 		$grid->addFormatter('voucher_no','voucherNo');
+		$grid->addTotals(['commission','tds','acc']);
 
-		$grid->addMethod('format_totalCommission',function($g,$f){
-			$m=$g->add('Model_TransactionRow');
-			$m->addCondition('transaction_id',$g->model->dsql()->expr($g->model['transaction_id']));
-			$m->addCondition('amountDr','>',0);
+		// $grid->addMethod('format_totalCommission',function($g,$f){
+		// 	$m=$g->add('Model_TransactionRow');
+		// 	$m->addCondition('transaction_id',$g->model->dsql()->expr($g->model['transaction_id']));
+		// 	$m->addCondition('amountDr','>',0);
 			
-			$a_j = $m->join('accounts','account_id');
-			$a_j->addField('AccountNumber');
+		// 	$a_j = $m->join('accounts','account_id');
+		// 	$a_j->addField('AccountNumber');
 
-			$m->addCondition('AccountNumber','like','%Commission Paid On%');
+		// 	$m->addCondition('AccountNumber','like','%Commission Paid On%');
 
-			$m->setLimit(1);
+		// 	$m->setLimit(1);
 
-			$m->_dsql()->del('fields')->field('amountDr');
-			// $m->tryLoadAny();
-			$g->current_row[$f]=$m->_dsql()->getOne();
-		});
+		// 	$m->_dsql()->del('fields')->field('amountDr');
+		// 	// $m->tryLoadAny();
+		// 	$g->current_row[$f]=$m->_dsql()->getOne();
+		// });
 
-		$grid->addMethod('format_tds',function($g,$f){
-			$g->current_row[$f]=$g->current_row['total_commission'] - $g->current_row['amountCr'];
-		});
+		// $grid->addMethod('format_tds',function($g,$f){
+		// 	$g->current_row[$f]=$g->current_row['total_commission'] - $g->current_row['amountCr'];
+		// });
 		
-		$grid->addColumn('totalCommission','total_commission');
-		$grid->addColumn('tds','tds','TDS');
-		$grid->addPaginator(50);
+		// $grid->addColumn('totalCommission','total_commission');
+		// $grid->addColumn('tds','tds','TDS');
+		$grid->addPaginator(500);
 		// $grid->addTotals(array('tds'));
 
 		$grid->removeColumn('transaction_type');
 
-		$grid->addOrder()->move('amountCr','after','total_commission')->now();
+		// $grid->addOrder()->move('amountCr','after','total_commission')->now();
 		
 		// $grid->addColumn('expander','accounts');
 		if($form->isSubmitted()){

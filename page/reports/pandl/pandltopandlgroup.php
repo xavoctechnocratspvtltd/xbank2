@@ -47,75 +47,101 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 		
 		$curr_trans = $this->api->db->dsql()->expr($curr_trans_q)->get();
 
-		$acc=$this->add('Model_Account');
-		$scheme_j = $acc->join('schemes','scheme_id');
-		// $scheme_j->addField('balance_sheet_id');
-		$bs_j = $scheme_j->join('balance_sheet','balance_sheet_id');
-		$bs_j->addField('is_pandl');
-		$acc->addCondition('balance_sheet_id',$bs_id);
-		$acc->_dsql()->group('PAndLGroup');
-
+		$bs_array=[];
 		$total_dr = 0; 
 		$total_cr = 0; 
-		$bs_array=[];
 
-		foreach ($acc as $ac) {
-
+		foreach ($curr_trans as $tr) {
 			$data=[];
-			$data['OpeningBalanceDr'] = 0;
-			$data['OpeningBalanceCr'] = 0;
-			$data['PreviousTransactionsDr'] = 0;
-			$data['PreviousTransactionsCr'] = 0;
-			$data['TransactionsDr'] = 0;
-			$data['TransactionsCr'] = 0;
-
-			$data['id']=$ac['PAndLGroup'];
-			$data['name'] = $ac['PAndLGroup'];
-			foreach ($op_balances as $opb) {
-				if($opb['id']==$ac['PAndLGroup']){
-					$data['OpeningBalanceDr'] = $opb['DR'];
-					$data['OpeningBalanceCr'] = $opb['CR'];
-				}
-			}
-
-			foreach ($prev_transactions as $opb) {
-				if($opb['id']==$ac['PAndLGroup']){
-					$data['PreviousTransactionsDr'] = $opb['DR'];
-					$data['PreviousTransactionsCr'] = $opb['CR'];
-				}
-			}
-
-			foreach ($curr_trans as $opb) {
-				if($opb['id']==$ac['PAndLGroup']){
-					$data['TransactionsDr'] = $opb['DR'];
-					$data['TransactionsCr'] = $opb['CR'];
-				}
-			}
-
-			// echo $scheme_m['name']. ' -- '.  $scheme_m['is_pandl'] . '<br/>';
-
-			if(!$ac['is_pandl']){
-				$data['ClosingBalanceDr'] = $data['OpeningBalanceDr']+$data['PreviousTransactionsDr']+$data['TransactionsDr'];
-				$data['ClosingBalanceCr'] = $data['OpeningBalanceCr']+$data['PreviousTransactionsCr']+$data['TransactionsCr'];
+			if($tr['DR'] > $tr['CR']){
+				$tr['DR'] = $tr['DR'] - $tr['CR'];
+				$tr['CR']=0;
 			}else{
-				$data['ClosingBalanceDr'] = $data['TransactionsDr'];
-				$data['ClosingBalanceCr'] = $data['TransactionsCr'];
+				$tr['CR'] = $tr['CR'] - $tr['DR'];
+				$tr['DR']=0;
 			}
 
-			if(($data['ClosingBalanceCr']==0 && $data['ClosingBalanceDr']==0) || ($data['ClosingBalanceCr']==$data['ClosingBalanceDr'] )) continue;
+			$data['ClosingBalanceDr'] = $tr['DR'];
+			$data['ClosingBalanceCr'] = $tr['CR'];
+			$data['id']=$tr['id'];
+			$data['name']=$tr['id'];
 
-			if($data['ClosingBalanceCr'] > $data['ClosingBalanceDr']){
-				$data['ClosingBalanceCr'] -= $data['ClosingBalanceDr'];
-				$data['ClosingBalanceDr']=0;
-			}else{
-				$data['ClosingBalanceDr'] -= $data['ClosingBalanceCr'];
-				$data['ClosingBalanceCr']=0;
-			}
+			$bs_array[] = $data;
 
-			$bs_array [] = $data;
 			$total_dr += $data['ClosingBalanceDr'];
 			$total_cr += $data['ClosingBalanceCr'];
 		}
+
+		// $acc=$this->add('Model_Account');
+		// $scheme_j = $acc->join('schemes','scheme_id');
+		// // $scheme_j->addField('balance_sheet_id');
+		// $bs_j = $scheme_j->join('balance_sheet','balance_sheet_id');
+		// $bs_j->addField('is_pandl');
+		// $acc->addCondition('balance_sheet_id',$bs_id);
+		// if($branch_id) $acc->addCondition('branch_id',$branch_id);
+		// $acc->_dsql()->group('PAndLGroup');
+
+		// $total_dr = 0; 
+		// $total_cr = 0; 
+		// $bs_array=[];
+
+		// foreach ($acc as $ac) {
+
+		// 	$data=[];
+		// 	$data['OpeningBalanceDr'] = 0;
+		// 	$data['OpeningBalanceCr'] = 0;
+		// 	$data['PreviousTransactionsDr'] = 0;
+		// 	$data['PreviousTransactionsCr'] = 0;
+		// 	$data['TransactionsDr'] = 0;
+		// 	$data['TransactionsCr'] = 0;
+
+		// 	$data['id']=$ac['PAndLGroup'];
+		// 	$data['name'] = $ac['PAndLGroup'];
+		// 	foreach ($op_balances as $opb) {
+		// 		if($opb['id']==$ac['PAndLGroup']){
+		// 			$data['OpeningBalanceDr'] = $opb['DR'];
+		// 			$data['OpeningBalanceCr'] = $opb['CR'];
+		// 		}
+		// 	}
+
+		// 	foreach ($prev_transactions as $opb) {
+		// 		if($opb['id']==$ac['PAndLGroup']){
+		// 			$data['PreviousTransactionsDr'] = $opb['DR'];
+		// 			$data['PreviousTransactionsCr'] = $opb['CR'];
+		// 		}
+		// 	}
+
+		// 	foreach ($curr_trans as $opb) {
+		// 		if($opb['id']==$ac['PAndLGroup']){
+		// 			$data['TransactionsDr'] = $opb['DR'];
+		// 			$data['TransactionsCr'] = $opb['CR'];
+		// 		}
+		// 	}
+
+		// 	// echo $scheme_m['name']. ' -- '.  $scheme_m['is_pandl'] . '<br/>';
+
+		// 	if(!$ac['is_pandl']){
+		// 		$data['ClosingBalanceDr'] = $data['OpeningBalanceDr']+$data['PreviousTransactionsDr']+$data['TransactionsDr'];
+		// 		$data['ClosingBalanceCr'] = $data['OpeningBalanceCr']+$data['PreviousTransactionsCr']+$data['TransactionsCr'];
+		// 	}else{
+		// 		$data['ClosingBalanceDr'] = $data['TransactionsDr'];
+		// 		$data['ClosingBalanceCr'] = $data['TransactionsCr'];
+		// 	}
+
+		// 	if(($data['ClosingBalanceCr']==0 && $data['ClosingBalanceDr']==0) || ($data['ClosingBalanceCr']==$data['ClosingBalanceDr'] )) continue;
+
+		// 	if($data['ClosingBalanceCr'] > $data['ClosingBalanceDr']){
+		// 		$data['ClosingBalanceCr'] -= $data['ClosingBalanceDr'];
+		// 		$data['ClosingBalanceDr']=0;
+		// 	}else{
+		// 		$data['ClosingBalanceDr'] -= $data['ClosingBalanceCr'];
+		// 		$data['ClosingBalanceCr']=0;
+		// 	}
+
+		// 	$bs_array [] = $data;
+		// 	$total_dr += $data['ClosingBalanceDr'];
+		// 	$total_cr += $data['ClosingBalanceCr'];
+		// }
 
 
 		// $bs_group = $this->add('Model_BS_Scheme',['from_date'=>$from_date,'to_date'=>$to_date]);

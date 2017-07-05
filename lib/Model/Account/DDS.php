@@ -2,7 +2,7 @@
 class Model_Account_DDS extends Model_Account{
 	
 	public $transaction_deposit_type = TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT;	
-	public $default_transaction_deposit_narration = "DDS Amount Deposit in {{AccountNumber}}";	
+	public $default_transaction_deposit_narration = "DDS Amount Deposit in {{AccountNumber}} ({{AccountHolderName}})";	
 
 	public $transaction_withdraw_type = TRA_DDS_ACCOUNT_AMOUNT_WITHDRAWL;	
 	public $default_transaction_withdraw_narration = "Amount withdrawl from {{SchemeType}} Account {{AccountNumber}}";

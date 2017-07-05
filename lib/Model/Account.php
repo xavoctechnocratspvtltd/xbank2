@@ -513,7 +513,7 @@ class Model_Account extends Model_Table {
 		if(!isset($this->transaction_deposit_type)) throw $this->exception('transaction_deposit_type must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 		if(!isset($this->default_transaction_deposit_narration)) throw $this->exception('default_transaction_deposit_narration must be defined for this account type')->addMoreInfo('AccountType',$this['SchemeType']);
 
-		if(!trim($narration)) $narration = str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace('{{SchemeType}}', $this['SchemeType'], $this->default_transaction_deposit_narration));
+		if(!trim($narration)) $narration = str_replace("{{AccountHolderName}}",$this['member_name_only'],str_replace("{{AccountNumber}}", $this['AccountNumber'],str_replace('{{SchemeType}}', $this['SchemeType'], $this->default_transaction_deposit_narration)));
 		if(!$transaction_date) $transaction_date = $this->api->now;
 		if(!$accounts_to_debit) $accounts_to_debit = array();
 		if(!$in_branch) $in_branch = $this->api->current_branch;

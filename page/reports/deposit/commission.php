@@ -43,7 +43,7 @@ class page_reports_deposit_commission extends Page {
 				;
 				// ->addCondition([['scheme','Saving Account'],['scheme','Branch & Divisions']])
 			return $tr->sum('amountCr');
-		});
+		})->caption('Net Commission');
 
 		$transaction->addExpression('acc_name')->set(function($m,$q){
 			$tr=  $m->refSQL('TransactionRow');
@@ -54,7 +54,8 @@ class page_reports_deposit_commission extends Page {
 			return $tr
 				->addCondition([['SchemeType','SavingAndCurrent'],['scheme','Branch & Divisions']])
 				->fieldQuery('account');
-		})->sortable(true);
+		})->sortable(true)
+		->caption('Agent Account');
 
 		$referance_account_join = $transaction->join('accounts','reference_id');
 		$referance_account_join->addField('AccountNumber');

@@ -127,6 +127,7 @@ class page_transactions_deposit extends Page {
 			if($account_selected->loaded()){
 				// $right_col->add('H3')->set(array('Signature For - '));
 				$right_col->add('View')->set('Scheme Type: '.$account_selected['SchemeType']);
+				$right_col->add('View')->set('Scheme: '.$account_selected['scheme_name']);
 				$account_info=$right_col->add('View');
 				switch ($account_selected['SchemeType']) {
 					case 'Loan':

@@ -66,11 +66,16 @@ class Model_Account_Recurring extends Model_Account{
 
 	function withdrawl($amount,$narration=null,$accounts_to_credit=null,$form=null,$on_date=null){
 		if( !$this->isMatured() OR $this->isActive())
-			throw $this->exception('Account is wither not matured or is active, cannot withdraw', 'ValidityCheck')->setField('account');
+			throw $this->exception('Account is either not matured or is active, cannot withdraw', 'ValidityCheck')->setField('account');
 
-		if($amount != round(($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']),0))
-			throw $this->exception('CAnnot withdraw partial amount : '. ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']), 'ValidityCheck')->setField('amount');
+		if(empty($accounts_to_credit) AND $amount != round(($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']),0))
+			throw $this->exception('CAnnot withdraw partial amount in cash : '. ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']), 'ValidityCheck')->setField('amount');
 
+		if(!empty($accounts_to_credit) AND $amount != ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']))
+			throw $this->exception('CAnnot withdraw partial amount: '. ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']), 'ValidityCheck')->setField('amount');
+
+		throw new \Exception("Error Processing Request", 1);
+		
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
 	}
 

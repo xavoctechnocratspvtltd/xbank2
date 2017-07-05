@@ -73,8 +73,6 @@ class Model_Account_Recurring extends Model_Account{
 
 		if(!empty($accounts_to_credit) AND $amount != ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']))
 			throw $this->exception('CAnnot withdraw partial amount: '. ($this['CurrentBalanceCr'] - $this['CurrentBalanceDr']), 'ValidityCheck')->setField('amount');
-
-		throw new \Exception("Error Processing Request", 1);
 		
 		parent::withdrawl($amount,$narration,$accounts_to_credit,$form,$on_date);
 	}

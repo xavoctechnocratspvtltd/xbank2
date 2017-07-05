@@ -16,9 +16,9 @@ class page_transactions_forclose extends Page {
 
 		$form = $this->add('Form');
 		
+		$amount_from_account_field = $form->addField('autocomplete/Basic','amount_from_account','Account');
 		$form->addField('Number','amount')->validateNotNull();
 		
-		$amount_from_account_field = $form->addField('autocomplete/Basic','amount_from_account');
 		$hint_view = $amount_from_account_field->other_field->belowField()->add('View');
 
 		if($_GET['check_cr']){
@@ -58,7 +58,7 @@ class page_transactions_forclose extends Page {
 			   	$this->api->db->rollBack();
 			   	throw $e;
 			}
-			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- Legal Charge Received in " . $form['amount_from_account'])->execute();
+			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- For Close Charge Received in " . $form['amount_from_account'])->execute();
 		}
 	}
 }

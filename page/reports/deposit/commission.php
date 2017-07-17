@@ -23,14 +23,14 @@ class page_reports_deposit_commission extends Page {
 		$transaction = $this->add('Model_Transaction');
 		$transaction->addExpression('commission')->set(function($m,$q){
 			return $m->refSQL('TransactionRow')
-				->addCondition('account','like','%Commission%')
-				->fieldQuery('amountDr');
+				->addCondition([['account','like','%Commission%'],['account','like','%Collection%']])
+				->sum('amountDr');
 		});
 
 		$transaction->addExpression('tds')->set(function($m,$q){
 			return $m->refSQL('TransactionRow')
 				->addCondition('account','like','%TDS%')
-				->fieldQuery('amountCr');
+				->sum('amountCr');
 		});
 
 		$transaction->addExpression('acc')->set(function($m,$q){
@@ -46,6 +46,7 @@ class page_reports_deposit_commission extends Page {
 		})->caption('Net Commission');
 
 		$transaction->addExpression('acc_name')->set(function($m,$q){
+
 			$tr=  $m->refSQL('TransactionRow');
 			$tr->addExpression('SchemeType')->set(function($m,$q){
 				return $m->refSQL('scheme_id')->fieldQuery('SchemeType');
@@ -57,7 +58,7 @@ class page_reports_deposit_commission extends Page {
 		})->sortable(true)
 		->caption('Agent Account');
 
-		$referance_account_join = $transaction->join('accounts','reference_id');
+		$referance_account_join = $transaction->leftjoin('accounts','reference_id');
 		$referance_account_join->addField('AccountNumber');
 		$referance_account_join->addField('Amount');
 		$reference_member_join = $referance_account_join->join('members','member_id');
@@ -78,7 +79,7 @@ class page_reports_deposit_commission extends Page {
 
 			if($_GET['to_date']){
 				$this->api->stickyGET("to_date");
-				$transaction->addCondition('created_at','<',$_GET['to_date']);
+				$transaction->addCondition('created_at','<',$this->app->nextDate($_GET['to_date']));
 			}  
 
 			if($_GET['account_type']){
@@ -98,6 +99,7 @@ class page_reports_deposit_commission extends Page {
                 ->where('transaction_type', TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT)
         );
 
+		// To filter empty rows... don't know why they are there
         $transaction->addCondition('commission','>',0);
 
 		$transaction->setOrder('created_at','desc');
@@ -105,7 +107,7 @@ class page_reports_deposit_commission extends Page {
 
 		$grid->setModel($transaction,array('AccountNumber','member_name','Amount','ref_account_scheme_name','created_at','commission','tds','acc','acc_name','voucher_no','transaction_type'));
 		$grid->addFormatter('voucher_no','voucherNo');
-		$grid->addTotals(['commission','tds','acc']);
+		$grid->addTotals(['commission','tds','acc','Amount']);
 
 		// $grid->addMethod('format_totalCommission',function($g,$f){
 		// 	$m=$g->add('Model_TransactionRow');

@@ -81,7 +81,7 @@ class page_reports_agent_topten extends Page {
 				$grid->addPaginator(50);
 
 			}elseif($rt == 'account'){
-				$account_types=explode(",", str_replace(",Default",'', ACCOUNT_TYPES));
+				$account_types=['DDS','FixedAndMis','Recurring'];
 				$model = $this->add('Model_Agent');
 				$fields=['name'];
 				$remove_zero_condition=[];

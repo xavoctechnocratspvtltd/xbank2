@@ -23,37 +23,118 @@ class page_reports_agent_topten extends Page {
 
 		if($fl){
 			if($rt =='collection'){
+				$account_types=['RD'=>TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT,'DDS'=>TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT];
 				$model = $this->add('Model_Agent');
-				$acc_j = $model->join('accounts.agent_id');
-				$model->addExpression('amount_compared')->set(function($m,$q)use($fd,$td){
-					$tr = $m->add('Model_TransactionRow');
-					$tr->addCondition('transaction_type',[TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT,TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT]);
-					$tr_j = $tr->join('transactions','transaction_id');
-					$ref_acc_j = $tr_j->join('accounts','reference_id');
-					$ref_acc_j->addField('agent_id');
-					$tr->addCondition('agent_id',$q->getField('id'));
+				$fields=['name'];
+				$remove_zero_condition=[];
+				foreach ($account_types as $key=>$tr_type) {
+					$model->addExpression($key.'_amount_compared')->set(function($m,$q)use($fd,$td,$tr_type){
+						$tr = $m->add('Model_TransactionRow');
+						$tr->addCondition('transaction_type',$tr_type);
+						$tr_j = $tr->join('transactions','transaction_id');
+						$ref_acc_j = $tr_j->join('accounts','reference_id');
+						$ref_acc_j->addField('agent_id');
+						$tr->addCondition('agent_id',$q->getField('id'));
 
-					if($fd){
-						$tr->addCondition('created_at','>=',$fd);
-					}
-					if($td){
-						$tr->addCondition('created_at','<',$this->app->nextDate($td));
-					}
+						if($fd){
+							$tr->addCondition('created_at','>=',$fd);
+						}
+						if($td){
+							$tr->addCondition('created_at','<',$this->app->nextDate($td));
+						}
+						return $tr->_dsql()->del('fields')->field('sum(amountCr)');
 
-					return $tr->_dsql()->del('fields')->field('sum(amountCr)');
-				});
+					})->sortable(true);
+
+					$model->addExpression($key.'_accounts_count')->set(function($m,$q)use($fd,$td,$tr_type){
+						$tr = $m->add('Model_TransactionRow',['table_alias'=>'xyz']);
+						$tr->addCondition('transaction_type',$tr_type);
+						$tr_j = $tr->join('transactions','transaction_id');
+						$ref_acc_j = $tr_j->join('accounts','reference_id');
+						$ref_acc_j->addField('agent_id');
+						$tr->addCondition('agent_id',$q->getField('id'));
+
+						if($fd){
+							$tr->addCondition('created_at','>=',$fd);
+						}
+						if($td){
+							$tr->addCondition('created_at','<',$this->app->nextDate($td));
+						}
+						return $tr->_dsql()->del('fields')->field($q->expr('count(DISTINCT([0]))',[$tr->getElement('reference_id')]));
+					})->sortable(true);
+
+					$fields[] = $key.'_accounts_count';
+					$fields[] = $key.'_amount_compared';
+					$remove_zero_condition[] = [$key.'_accounts_count','>',0];
+				}
+
+				if($br){					
+					$model->addCondition('branch_id',$br);
+				}
+
+				$model->getElement('name')->sortable(true);
+				$model->addCondition($remove_zero_condition);
+				// $model->setOrder('amount_compared','desc');
+				$model->_dsql()->group('id');
+				$grid = $view->add('Grid');
+				$grid->setModel($model,$fields);
+				$grid->addPaginator(50);
 
 			}elseif($rt == 'account'){
-				$model = $this->add('Model_Account');
-				$field_sum='Amount';
+				$account_types=explode(",", str_replace(",Default",'', ACCOUNT_TYPES));
+				$model = $this->add('Model_Agent');
+				$fields=['name'];
+				$remove_zero_condition=[];
+				foreach ($account_types as $acc_type) {
+					$model->addExpression($acc_type.'_amount_compared')->set(function($m,$q)use($fd,$td,$acc_type){
+						$acc = $m->add('Model_Account');
+						$acc->addCondition('SchemeType',$acc_type);
+						$acc->addCondition('agent_id',$q->getField('id'));
+
+						if($fd){
+							$acc->addCondition('created_at','>=',$fd);
+						}
+						if($td){
+							$acc->addCondition('created_at','<',$this->app->nextDate($td));
+						}
+						return $acc->_dsql()->del('fields')->field('sum(Amount)');
+
+					})->sortable(true);
+
+					$model->addExpression($acc_type.'_accounts_count')->set(function($m,$q)use($fd,$td,$acc_type){
+						$acc = $m->add('Model_Account');
+						$acc->addCondition('SchemeType',$acc_type);
+						$acc->addCondition('agent_id',$q->getField('id'));
+
+						if($fd){
+							$acc->addCondition('created_at','>=',$fd);
+						}
+						if($td){
+							$acc->addCondition('created_at','<',$this->app->nextDate($td));
+						}
+						return $acc->_dsql()->del('fields')->field('count(Amount)');
+					})->sortable(true);
+
+					$fields[] = $acc_type.'_accounts_count';
+					$fields[] = $acc_type.'_amount_compared';
+					$remove_zero_condition[] = [$acc_type.'_accounts_count','>',0];
+				}
+
+				if($br){					
+					$model->addCondition('branch_id',$br);
+				}
+
+				$model->getElement('name')->sortable(true);
+				$model->addCondition($remove_zero_condition);
+				// $model->setOrder('amount_compared','desc');
+				$model->_dsql()->group('id');
+				$grid = $view->add('Grid');
+				$grid->setModel($model,$fields);
+				$grid->addPaginator(50);
+
 			}
 
-			$model->addCondition('amount_compared','>',0);
-			$model->setOrder('amount_compared','desc');
-			$model->_dsql()->group('agent_id');
-			$grid = $view->add('Grid');
-			$grid->setModel($model,['name','amount_compared']);
-			$grid->addPaginator(50);
+			
 		}
 
 

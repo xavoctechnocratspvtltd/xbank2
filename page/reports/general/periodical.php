@@ -58,7 +58,7 @@ class page_reports_general_periodical extends Page {
 
 			if($_GET['from_date']){
 				$this->api->stickyGET("from_date");
-				$account_model->addCondition('created_at','>',$_GET['from_date']);
+				$account_model->addCondition('created_at','>=',$_GET['from_date']);
 			}
 
 			if($_GET['to_date']){
@@ -138,7 +138,7 @@ class page_reports_general_periodical extends Page {
 
 					if($_GET['from_date']){
 						$p->api->stickyGET("from_date");
-						$account_model->addCondition('created_at','>',$_GET['from_date']);
+						$account_model->addCondition('created_at','>=',$_GET['from_date']);
 					}
 
 					if($_GET['to_date']){

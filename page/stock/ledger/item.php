@@ -75,7 +75,7 @@ class page_stock_ledger_item extends Page {
 
 
 
-		$grid->addOpeningBalance($openning_bal,'DR',array('narration'=>'Openning Balance'),'DR');
+		$grid->addOpeningBalance($openning_bal,$openning_bal>0?'CR':'DR',array('narration'=>'Openning Balance'),'CR');
 		$grid->addCurrentBalanceInEachRow('Balance','last','CR','CR','DR');
 
 		if($form->isSubmitted()){

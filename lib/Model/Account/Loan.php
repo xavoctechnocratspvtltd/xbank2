@@ -2,7 +2,7 @@
 class Model_Account_Loan extends Model_Account{
 	
 	public $transaction_deposit_type = TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT;	
-	public $default_transaction_deposit_narration = "Amount submited in Loan Account {{AccountNumber}}";	
+	public $default_transaction_deposit_narration = "Amount credited in Loan Account {{AccountNumber}} ({{AccountHolderName}})";	
 
 	function init(){
 		parent::init();

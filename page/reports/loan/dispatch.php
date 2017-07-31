@@ -92,12 +92,11 @@ class page_reports_loan_dispatch extends Page {
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PermanentAddress');
 		});
 
-
 		$account_model->addExpression('dsa_id')->set(function($m,$q){
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -145,6 +144,7 @@ class page_reports_loan_dispatch extends Page {
 					break;
 				case 'sl':
 					$account_model->addCondition('AccountNumber','like','%SL%');
+					$account_model->addCondition('AccountNumber','not like','%VL%');
 					break;
 				case 'other':
 					$account_model->addCondition('AccountNumber','not like','%pl%');
@@ -182,8 +182,21 @@ class page_reports_loan_dispatch extends Page {
 			return $q->expr("if([0]=1,[1]/100.0*[2],[2])",array($s->fieldQuery('ProcessingFeesinPercent'),$m->getElement('Amount'),$s->fieldQuery('ProcessingFees')));
 		});
 
+		$account_model->addExpression('sm_amount')->set(function($m,$q){
+			$trans_m = $this->add('Model_TransactionRow');
+			$trans_m->addCondition('reference_id',$q->getField('id'));
+			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
+			$trans_m->addCondition('scheme','SHARE CAPITAL');
+			return $trans_m->fieldQuery('amountCr');
+		});
+
 		$account_model->addExpression('cheque_amount')->set(function($m,$q){
-			return $q->expr("[0]-[1]",array($m->getElement('Amount'),$m->getElement('file_charge')));
+			return $q->expr("[0]-([1]+IFNULL([2],0))",array($m->getElement('Amount'),$m->getElement('file_charge'),$m->getElement('sm_amount')));
+		});
+
+		$account_model->addExpression('LoanAgainst')->set(function($m,$q){
+			$x = $m->add('Model_Account',['table_alias'=>'loan_ag']);
+			return $x->addCondition('id',$q->getField('LoanAgainstAccount_id'))->fieldQuery('AccountNumber');
 		});
 
 		$grid->setModel($account_model,$grid_array);

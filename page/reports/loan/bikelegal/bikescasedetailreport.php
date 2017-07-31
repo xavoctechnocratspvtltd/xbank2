@@ -135,7 +135,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 			}
 		}
 
-		$account_model->addCondition('bike_surrendered',true);
+		$account_model->addCondition([['cheque_returned_on','<>',""],['cheque_returned_on','<>',null]]);
 		$account_model->addCondition('is_in_legal',true);
 		$account_model->addCondition('is_legal_case_finalised',false);
 

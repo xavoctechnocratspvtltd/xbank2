@@ -336,7 +336,15 @@ class Model_Transaction extends Model_Table {
 		// 	$other_transaction->addDebitAccount($other_branch_and_division_account,$cr_total_amount);
 		
 
-		if($dr_total_amount != $cr_total_amount ) throw $this->exception('Inter Branch Transaction must have same amounts');
+		if(round($dr_total_amount,8) != round($cr_total_amount,8)){
+			var_dump($dr_total_amount);
+			var_dump($cr_total_amount);
+			throw $this->exception('Inter Branch Transaction must have same amounts')
+						->addMoreInfo('dr_total_amount',$dr_total_amount)
+						->addMoreInfo('cr_total_amount',$cr_total_amount)
+						->addMoreInfo('transaction_type',$this['transaction_type']);
+						;
+		} 
 
 		$my_transaction->execute();
 		$other_transaction->execute();

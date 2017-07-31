@@ -60,7 +60,7 @@ class page_reports_loan_duestoreceive extends Page {
 
 		$due_premiums->addCondition('DueDate','>=',$from_date);
 		$due_premiums->addCondition('DueDate','<',$to_date);
-		$due_premiums->addCondition('Paid',0);
+		// $due_premiums->addCondition('Paid',0);
 		$due_premiums->addCondition('ActiveStatus',true);
 		$due_premiums->addCondition('SchemeType','Loan');
 

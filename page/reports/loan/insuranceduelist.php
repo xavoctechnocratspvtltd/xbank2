@@ -86,7 +86,7 @@ class page_reports_loan_insuranceduelist extends Page {
 		$grid->setModel($accounts_model,$grid_column_array);
 
 		$grid->addMethod('format_onlyDateMonth',function($g,$f){
-			$g->current_row[$f] = date('d-M',strtotime($g->current_row[$f]));
+			$g->current_row[$f] = date('d-M',strtotime($g->model[$f]));
 		});
 
 		$grid->addFormatter('LoanInsurranceDate','onlyDateMonth');

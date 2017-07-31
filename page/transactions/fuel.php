@@ -11,6 +11,7 @@ class page_transactions_fuel extends Page {
 		$account_from_account_model->addCondition(
 			$account_from_account_model->dsql()->orExpr()
 				->where('_s.SchemeType',ACCOUNT_TYPE_SAVING)
+				->where('_s.name','Sundry Debtor')
 				->where('(_s.name = "'.CASH_ACCOUNT_SCHEME.'" and acc.branch_id= '.$this->api->current_branch->id.' )')
 				->where('(_s.name = "'.BANK_ACCOUNTS_SCHEME.'" and acc.branch_id= '.$this->api->current_branch->id.' )')
 			);

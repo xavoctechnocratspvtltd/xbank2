@@ -58,7 +58,7 @@ class page_reports_general_periodical extends Page {
 
 			if($_GET['from_date']){
 				$this->api->stickyGET("from_date");
-				$account_model->addCondition('created_at','>',$_GET['from_date']);
+				$account_model->addCondition('created_at','>=',$_GET['from_date']);
 			}
 
 			if($_GET['to_date']){
@@ -138,7 +138,7 @@ class page_reports_general_periodical extends Page {
 
 					if($_GET['from_date']){
 						$p->api->stickyGET("from_date");
-						$account_model->addCondition('created_at','>',$_GET['from_date']);
+						$account_model->addCondition('created_at','>=',$_GET['from_date']);
 					}
 
 					if($_GET['to_date']){
@@ -197,7 +197,7 @@ class page_reports_general_periodical extends Page {
 
 				$grid = $p->add('Grid_AccountsBase');
 				$grid->addSno();
-				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','pan_no','member','father_name','address','phone_no','agent','dealer','mo','team','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee'));
+				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','pan_no','member','father_name','address','phone_no','agent','dealer','mo','team','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee','repayment_mode'));
 				$grid->addFormatter('agent','Wrap');
 				$grid->addFormatter('agent_saving_acc','Wrap');
 				$grid->addFormatter('team','Wrap');

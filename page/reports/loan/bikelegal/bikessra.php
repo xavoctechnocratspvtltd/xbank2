@@ -103,7 +103,7 @@ class page_reports_loan_bikelegal_bikessra extends Page {
 					break;
 			}
 
-			$account_model->addCondition($field,'>',$this->app->stickyGET('from'));
+			$account_model->addCondition($field,'>=',$this->app->stickyGET('from'));
 			$account_model->addCondition($field,'<=',$this->app->nextDate($this->app->stickyGET('to')));
 
 		}else{

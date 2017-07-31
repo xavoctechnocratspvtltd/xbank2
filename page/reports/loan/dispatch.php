@@ -199,7 +199,7 @@ class page_reports_loan_dispatch extends Page {
 			return $x->addCondition('id',$q->getField('LoanAgainstAccount_id'))->fieldQuery('AccountNumber');
 		});
 
-		$grid->setModel($account_model->debug(),$grid_array);
+		$grid->setModel($account_model,$grid_array);
 		
 		$grid->addMethod('format_myTotal',function($grid, $field){
 			$grid->current_row[$field] = $grid->current_row['no_of_emi'] * $grid->current_row['emi'];

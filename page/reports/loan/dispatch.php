@@ -92,12 +92,11 @@ class page_reports_loan_dispatch extends Page {
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.PermanentAddress');
 		});
 
-
 		$account_model->addExpression('dsa_id')->set(function($m,$q){
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -145,6 +144,7 @@ class page_reports_loan_dispatch extends Page {
 					break;
 				case 'sl':
 					$account_model->addCondition('AccountNumber','like','%SL%');
+					$account_model->addCondition('AccountNumber','not like','%VL%');
 					break;
 				case 'other':
 					$account_model->addCondition('AccountNumber','not like','%pl%');
@@ -194,7 +194,12 @@ class page_reports_loan_dispatch extends Page {
 			return $q->expr("[0]-([1]+IFNULL([2],0))",array($m->getElement('Amount'),$m->getElement('file_charge'),$m->getElement('sm_amount')));
 		});
 
-		$grid->setModel($account_model,$grid_array);
+		$account_model->addExpression('LoanAgainst')->set(function($m,$q){
+			$x = $m->add('Model_Account',['table_alias'=>'loan_ag']);
+			return $x->addCondition('id',$q->getField('LoanAgainstAccount_id'))->fieldQuery('AccountNumber');
+		});
+
+		$grid->setModel($account_model->debug(),$grid_array);
 		
 		$grid->addMethod('format_myTotal',function($grid, $field){
 			$grid->current_row[$field] = $grid->current_row['no_of_emi'] * $grid->current_row['emi'];

@@ -347,7 +347,7 @@ class Model_Stock_Item extends Model_Table {
 
 		//'Transfer'
 		$transfer_to_this_branch_tra = $this->add('Model_Stock_Transaction');
-		$transfer_to_this_branch_tra->addCondition('is_used_submit',0);
+		// $transfer_to_this_branch_tra->addCondition('is_used_submit',0);
 		$transfer_to_this_branch_tra->addCondition('item_id',$this->id);
 		$transfer_to_this_branch_tra->addCondition('created_at','<',$as_on);
 		$transfer_to_this_branch_tra->addCondition('to_branch_id',$this->api->currentBranch->id);
@@ -356,7 +356,7 @@ class Model_Stock_Item extends Model_Table {
 		
 		//Transfer From
 		$transfer_from_this_branch_tra = $this->add('Model_Stock_Transaction');
-		$transfer_from_this_branch_tra->addCondition('is_used_submit',0);
+		// $transfer_from_this_branch_tra->addCondition('is_used_submit',0);
 		$transfer_from_this_branch_tra->addCondition('item_id',$this->id);
 		$transfer_from_this_branch_tra->addCondition('created_at','<',$as_on);
 		$transfer_from_this_branch_tra->addCondition('branch_id',$this->api->currentBranch->id);

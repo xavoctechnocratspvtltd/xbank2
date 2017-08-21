@@ -78,10 +78,11 @@ class page_stock_reports_itemwisestaff extends Page{
 
 			//BALANCE
 			$grid->addMethod('format_balance',function($g,$f){
-				if($g->model['transaction_type']=='Consume')	
-					$g->current_row[$f] = $g->balance = $g->consume;
-				else
-					$g->current_row[$f] = $g->balance = ( $g->current_row['opening'] + $g->current_row['issue'] ) - ( $g->current_row['submit'] + $g->current_row['dead'] ) ;
+				// if($g->model['transaction_type']=='Consume')
+				// 	$g->current_row[$f] = $g->balance = $g->consume;
+				// else
+					$g->balance = ( $g->current_row['opening'] + $g->current_row['issue'] ) - ( $g->current_row['submit'] + $g->current_row['dead']);
+					$g->current_row_html[$f] = '<div data-balance="'.$g->balance.'" class="stock-balance">'.$g->balance.'</div>';
 			});
 
 			//AVG RATE
@@ -113,6 +114,8 @@ class page_stock_reports_itemwisestaff extends Page{
 			$item_select_model = $this->add('Model_Stock_Item')->load($_GET['item']);
 			$item_name = $item_select_model['name'];
 			$msg ="Item ( ".$item_name." ) Wise Staff Report From Date: ".$_GET['from_date']." To Date: ".$_GET['to_date'];
+			
+			$grid->js(true)->_selector('.stock-balance[data-balance="0"]')->closest('tr')->hide();
 		}else{
 			$member_model->addCondition('id',-1);
 			$grid->setModel($member_model);

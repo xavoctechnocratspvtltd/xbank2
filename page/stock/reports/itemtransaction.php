@@ -29,9 +29,11 @@ class page_stock_reports_itemtransaction extends Page{
 		if($_GET['filter']){
 			$transaction_model->addCondition('item_id',$_GET['item']);
 			$transaction_model->addCondition('transaction_type','<>',array('Openning','move'));
-			// if($_GET['from_date'])
-				// $transaction_model->addCondition('created_at','>=',$_GET['from_date']);
-
+			if($_GET['from_date'])
+				$transaction_model->addCondition('created_at','>=',$_GET['from_date']);
+			if($_GET['to_date'])
+				$transaction_model->addCondition('created_at','<',$this->app->nextDate($_GET['to_date']));
+			
 			if($_GET['transaction_type']){
 				if($_GET['transaction_type'] == "TransferIn"){
 					$transaction_model->addCondition('transaction_type','Transfer');

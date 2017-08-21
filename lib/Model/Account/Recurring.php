@@ -275,8 +275,9 @@ class Model_Account_Recurring extends Model_Account{
 		$product = $non_interest_paid_premiums_till_now->_dsql()->del('fields')->field('sum((Paid*Amount)+'.($interest_paid?:0).')')->getOne();
 
 		// echo "product $product <br/>";
-
-		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/1200;
+		$premium_mode = $this->ref('scheme_id')->get('PremiumMode');
+		$x = ($premium_mode=='Y')?1:12;
+		$interest = ($product * $this->ref('scheme_id')->get('Interest'))/($x*100);
 		// echo "interest $interest <br/>";
 
 
@@ -382,6 +383,9 @@ class Model_Account_Recurring extends Model_Account{
 		// $interest_total=0;
 
 		$loop = $years_completed + ($uncompleted_months>0?1:0);
+		
+		$premium_mode = $this->ref('scheme_id')->get('PremiumMode');
+		$x = ($premium_mode=='Y')?1:12;
 
 		for($i=1;$i<=$loop;$i++){
 
@@ -389,13 +393,15 @@ class Model_Account_Recurring extends Model_Account{
 			$non_interest_paid_premiums_till_now->addCondition('account_id',$this->id);
 			$non_interest_paid_premiums_till_now->addCondition('Paid','>=',1);
 
-			$limit_sql = clone $non_interest_paid_premiums_till_now->_dsql()->limit(12,(12*($i-1)));
+			// $limit_sql = clone $non_interest_paid_premiums_till_now->_dsql()->limit(12,(12*($i-1))); // now converting from monthly to yearly also
+			$limit_sql = clone $non_interest_paid_premiums_till_now->_dsql()->limit($x,($x*($i-1)));
 
 			$product += $non_interest_paid_premiums_till_now->dsql()
-									->expr('select sum((Paid*Amount)+'.$interest.') from (select Paid, Amount from premiums WHERE account_id='.$this->id.' and Paid>=1 limit '.(12*($i-1)).', 12) as temp')
+									// ->expr('select sum((Paid*Amount)+'.$interest.') from (select Paid, Amount from premiums WHERE account_id='.$this->id.' and Paid>=1 limit '.(12*($i-1)).', 12) as temp') // monthly to yearly also
+									->expr('select sum((Paid*Amount)+'.$interest.') from (select Paid, Amount from premiums WHERE account_id='.$this->id.' and Paid>=1 limit '.($x*($i-1)).', '.$x.') as temp')
 									// ->debug()
 									->getOne();
-			$interest = ($product * $new_applicable_percentage)/1200;
+			$interest = ($product * $new_applicable_percentage)/($x*100);
 			// echo $product ." - " ;
 			// echo $interest ." - <br/>" ;
 			// $interest_total += $interest;

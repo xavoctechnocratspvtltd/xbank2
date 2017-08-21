@@ -58,10 +58,22 @@ class page_accounts_Loan extends Page {
 			if($form['sm_amount'] && !is_numeric($form['sm_amount']))
 					$form->displayError('sm_amount',"Must be a number");
 
+			if($form['other_account'] && !$form['other_account_cr_amount']){
+					$form->displayError('other_account',"Must be filled");
+			}
+
+			if(!$form['other_account'] && $form['other_account_cr_amount']){
+					$form->displayError('other_account_cr_amount',"Must be filled");
+			}
+
+
+
 			if($crud->isEditing('edit')) {
 				$extra_info = json_decode($crud->form->model['extra_info'],true);
 				$extra_info['loan_from_account'] = $form['loan_from_account'];
 				$extra_info['sm_amount'] = $form['sm_amount'];
+				$extra_info['other_account'] = $form['other_account'];
+				$extra_info['other_account_cr_amount'] = $form['other_account_cr_amount'];
 				$crud->form->model['extra_info'] = json_encode($extra_info);
 				// $crud->form->model->debug()->saveAs('Account');
 				return;
@@ -134,6 +146,9 @@ class page_accounts_Loan extends Page {
 			$account_loan_model->getElement('ModeOfOperation')->system(true);
 
 			$crud->form->addField('sm_amount');
+			$other_account_autocomplete = $crud->form->addField('autocomplete/Basic','other_account');
+			$other_account_autocomplete->setModel('Model_Account_Default');
+			$crud->form->addField('other_account_cr_amount');
 		}
 		
 
@@ -155,11 +170,16 @@ class page_accounts_Loan extends Page {
 			}
 
 			
-			$sm_amount = json_decode($crud->form->model['extra_info'],true);
-			$sm_amount = $sm_amount['sm_amount'];
+			$extra_info_sm_amount = json_decode($crud->form->model['extra_info'],true);
+			$sm_amount = $extra_info_sm_amount['sm_amount'];
 			$crud->form->getElement('sm_amount')->set($sm_amount);
 
+			$other_account_filled = $extra_info_sm_amount['other_account'];
+			$other_account_filled_cr_amount = $extra_info_sm_amount['other_account_cr_amount'];
 			
+			$crud->form->getElement('other_account')->set($other_account_filled);
+			$crud->form->getElement('other_account_cr_amount')->set($other_account_filled_cr_amount);
+
 			// 	$account_model=$this->add('Model_Active_Account');
 
 			// // NO BANK FOR ANY BRANCH
@@ -228,7 +248,11 @@ class page_accounts_Loan extends Page {
 		}
 
 		if($crud->isEditing()){
-			$o->move('sm_amount','after','Amount')
+			$o
+				->move('sm_amount','after','Amount')
+				->move('other_account','after','sm_amount')
+				->move($other_account_autocomplete->other_field,'after','other_account')
+				->move('other_account_cr_amount','after','other_account')
 				->now();
 		}
 
@@ -253,14 +277,30 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addMethod('format_sm_amount',function($g,$f){
 				$extra_info = json_decode($g->model['extra_info']);
 				$g->current_row[$f]= isset($extra_info->sm_amount)?$extra_info->sm_amount:'';
+			});
+
+			// Not editing
+			$crud->grid->addMethod('format_other_account',function($g,$f){
+				$extra_info = json_decode($g->model['extra_info']);
+				$g->current_row[$f]= $this->add('Model_Account')->tryLoad(isset($extra_info->other_account)?$extra_info->other_account:'0')->get('AccountNumber');
+			});
+
+			// Not editing
+			$crud->grid->addMethod('format_other_account_cr_amount',function($g,$f){
+				$extra_info = json_decode($g->model['extra_info']);
+				$g->current_row[$f]= isset($extra_info->other_account_cr_amount)?$extra_info->other_account_cr_amount:'';
 			});		
 
 			$crud->grid->addColumn('loan_from_account','loan_from_account');
 			$crud->grid->addColumn('sm_amount','sm_amount');
+			$crud->grid->addColumn('other_account','other_account');
+			$crud->grid->addColumn('other_account_cr_amount','other_account_cr_amount');
 
 			$crud->grid->addOrder()
 				->move('loan_from_account','after','dealer')
 				->move('sm_amount','after','Amount')
+				->move('other_account','after','sm_amount')
+				->move('other_account_cr_amount','after','other_account')
 				->now();
 
 		}

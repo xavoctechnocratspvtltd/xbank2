@@ -117,6 +117,8 @@ class Model_Account_Loan extends Model_Account{
 		$extra_info['documents_feeded'] = $documents_feeded;
 		$extra_info['loan_from_account'] = $otherValues['loan_from_account'];
 		$extra_info['sm_amount'] = $otherValues['sm_amount'];
+		$extra_info['other_account'] = $otherValues['other_account'];
+		$extra_info['other_account_cr_amount'] = $otherValues['other_account_cr_amount'];
 		
  		$pending_account['extra_info'] = json_encode($extra_info);
 		$pending_account->save();
@@ -161,6 +163,9 @@ class Model_Account_Loan extends Model_Account{
 		$from_account = $otherValues['loan_from_account'];
 		$sm_amount = $otherValues['sm_amount'];
 
+		$other_account = $otherValues['other_account'];
+		$other_account_cr_amount = $otherValues['other_account_cr_amount'];
+
 		$scheme = $this->ref('scheme_id');
 		$ProcessingFees = $scheme['ProcessingFees'];
 		$AccountCredit = $this['Amount'] - $ProcessingFees;
@@ -187,9 +192,19 @@ class Model_Account_Loan extends Model_Account{
 			$transaction->addCreditAccount($sm_account, $sm_amount);
 			$AccountCredit = $AccountCredit - $sm_amount;
 		}
+
+		if($other_account_cr_amount){
+			$other_account = $this->add('Model_Account')->load($other_account);
+			$transaction->addCreditAccount($other_account, $other_account_cr_amount);
+			$AccountCredit = $AccountCredit - $other_account_cr_amount;	
+
+		}
+
 		$transaction->addCreditAccount($loan_from_other_account, $AccountCredit);
 
 		$transaction->execute();
+
+		
 	}
 
 	function addDocumentDetails($form){

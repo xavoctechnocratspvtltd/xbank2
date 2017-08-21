@@ -42,6 +42,8 @@ class Model_PendingAccount extends Model_Account_Loan {
 		$otherValues = $this->data;
 		$otherValues['loan_from_account'] = $extra_info['loan_from_account'];
 		$otherValues['sm_amount'] = $extra_info['sm_amount'];
+		$otherValues['other_account'] = $extra_info['other_account'];
+		$otherValues['other_account_cr_amount'] = $extra_info['other_account_cr_amount'];
 		
 		unset($otherValues['id']);
 

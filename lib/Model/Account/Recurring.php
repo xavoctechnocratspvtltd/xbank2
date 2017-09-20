@@ -46,7 +46,7 @@ class Model_Account_Recurring extends Model_Account{
 		if(isset($otherValues['initial_opening_amount']) and $otherValues['initial_opening_amount']){
 			$this->deposit($otherValues['initial_opening_amount'],null,$otherValues['debit_account']?[ [ $otherValues['debit_account']=>$otherValues['initial_opening_amount'] ] ]:null,null, $on_date);
 
-			$member=$this->add('Model_Member')->loadBy($member_id);
+			$member=$this->add('Model_Member')->load($member_id);
 			$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ". $otherValues['initial_opening_amount'] . " on dated ". $this->app->today. " From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
 			
 			$mobile_no=explode(',', $member['PhoneNos']);

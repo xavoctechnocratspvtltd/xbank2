@@ -70,6 +70,16 @@ class Model_Account_FixedAndMis extends Model_Account{
 			$this->giveAgentCommission($created_at);
 			$this->agent()->addCRPB($this->scheme()->get('CRPB'),$this['Amount']);
 		}
+
+		$member=$this->add('Model_Member')->loadBy($member_id);
+		$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ".$this['Amount']." on dated ". $this->app->today. " From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
+		
+		$mobile_no=explode(',', $member['PhoneNos']);
+		if(strlen(trim($mobile_no[0])) == 10){
+			$sms=$this->add('Controller_Sms');
+			$sms->sendMessage($mobile_no[0],$msg);
+		}
+
 	}
 
 	function createInitialTransaction($on_date, $form){

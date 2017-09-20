@@ -20,8 +20,20 @@ class Model_Account_SavingAndCurrent extends Model_Account{
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null,$created_at=null){
 		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber($otherValues['account_type']);
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
-		if($this['Amount'])
+		if($this['Amount']){
 			$this->deposit($this['Amount'],null,null,null,$on_date=$created_at);
+
+
+			$member=$this->add('Model_Member')->loadBy($member_id);
+			$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ". $this['Amount'] . " on dated ". $this->app->today. " From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
+			
+			$mobile_no=explode(',', $member['PhoneNos']);
+			if(strlen(trim($mobile_no[0])) == 10){
+				$sms=$this->add('Controller_Sms');
+				$sms->sendMessage($mobile_no[0],$msg);
+			}
+
+		}
 	}
 
 	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$on_date=null,$in_branch=null){

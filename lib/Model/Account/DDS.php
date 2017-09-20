@@ -42,9 +42,19 @@ class Model_Account_DDS extends Model_Account{
 
 		if($otherValues['initial_opening_amount']){
 			$this->deposit($otherValues['initial_opening_amount'],null,$otherValues['debit_account']?:null,$form);
+
+			$member=$this->add('Model_Member')->loadBy($member_id);
+			$msg="Dear Member, Your account ".$AccountNumber." has been opened with amount ".$otherValues['initial_opening_amount']." on dated ". $this->app->today. " From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814";
+			
+			$mobile_no=explode(',', $member['PhoneNos']);
+			if(strlen(trim($mobile_no[0])) == 10){
+				$sms=$this->add('Controller_Sms');
+				$sms->sendMessage($mobile_no[0],$msg);
+			}
+
 			return;
 		}
-		throw new \Exception("Error Processing Request". print_r($otherValues,true), 1);
+		// throw new \Exception("Error Processing Request". print_r($otherValues,true), 1);
 		
 	}
 

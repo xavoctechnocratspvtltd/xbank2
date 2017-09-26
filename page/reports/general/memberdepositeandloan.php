@@ -23,7 +23,7 @@ class page_reports_general_memberdepositeandloan extends Page {
 
 		$member_model = $this->add('Model_Member');
 		$member_model->addExpression('sm_no')->set(function($m,$q){
-			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->fieldQuery('AccountNumber');
+			return $m->refSQL('Account')->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('AccountNumber');
 		});
 
 		// $member_model->addExpression('share_account_amount')->set(function($m,$q){

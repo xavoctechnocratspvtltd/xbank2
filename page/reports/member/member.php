@@ -16,7 +16,10 @@ class page_reports_member_member extends Page {
 		$bank_field = $form->addField('Dropdown','bank')->setEmptyText('All Banks');
 		$bank_field->setModel('Bank');
 		$form->addField('dropdown','status')->setValueList(array('all'=>'All','0'=>'InActive','1'=>'Active'));
+		$form->addField('Line','pan_no');
+		$form->addField('Line','adhar_no');
 		$form->addSubmit('Get List');
+		
 		$member_model=$this->add('Model_Member');
 		$member_model->setOrder('created_at','desc');
 		$member_model->addExpression('bank_a_id')->set($member_model->refSQL('bankbranch_a_id')->fieldQuery('bank_id'));
@@ -38,6 +41,16 @@ class page_reports_member_member extends Page {
 			if($_GET['bank']){
 				$this->api->stickyGET('bank');
 				$member_model->addCondition([['bank_a_id',$_GET['bank']],['bank_b_id',$_GET['bank']]]);
+			}
+
+			if($_GET['pan_no']){
+				$this->app->stickyGET('pan_no');
+				$member_model->addCondition('pan_no',$_GET['pan_no']);
+			}
+
+			if($_GET['adhar_no']){
+				$this->app->stickyGET('adhar_no');
+				$member_model->addCondition('AdharNumber',$_GET['adhar_no']);
 			}
 
 		}else{
@@ -91,7 +104,7 @@ class page_reports_member_member extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$send = array('type'=>$form['type'],'bank'=>$form['bank'],'status'=>$form['status'],'filter'=>1);
+			$send = array('pan_no'=>$form['pan_no'],'adhar_no'=>$form['adhar_no'],'type'=>$form['type'],'bank'=>$form['bank'],'status'=>$form['status'],'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	

@@ -13,6 +13,7 @@ class page_reports_loan extends Page {
 		$tab1=$tabs->addTabURL('reports_loan_approval','Approval Letter');
 		$tab1=$tabs->addTabURL('reports_loan_rcduelist','R.C. Due List');
 		$tab1=$tabs->addTabURL('reports_loan_dealerstatement','Dealer Statement');
+		$tab1=$tabs->addTabURL('reports_loan_dealeraccountstatement','Dealer Account Statement');
 		$tab1=$tabs->addTabURL('reports_loan_noc','NOC');
 		// $tab1=$tabs->addTabURL('reports_loan_informationletter','Information Letter');
 		// $tab1=$tabs->addTabURL('reports_loan_forclose','For Close Report');

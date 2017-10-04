@@ -98,7 +98,7 @@ class page_utility_activemember extends Page{
 		$grid = $this->add('Grid');
 		$grid->setModel($model,['member_name']);
 
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(['active_from_last_years'=>$form['active_from_last_years']])->execute();

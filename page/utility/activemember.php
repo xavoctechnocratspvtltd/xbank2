@@ -96,7 +96,7 @@ class page_utility_activemember extends Page{
 		$model->setOrder('id','desc');
 
 		$grid = $this->add('Grid');
-		$grid->setModel($model,['member_name']);
+		$grid->setModel($model,['member_name','PhoneNos','FatherName','PermanentAddress','tehsil','district']);
 
 		$grid->addPaginator(500);
 

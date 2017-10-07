@@ -519,15 +519,14 @@ class page_accounts_Loan extends Page {
 		if($approve_btn->isClicked('Are you sure to approve and create account')){
 			try{
 				$this->api->db->beginTransaction();
-					$pending_account->approve();
-
+					$new_account = $pending_account->approve();
 				$this->api->db->commit();
 			}catch(Exception $e){
 				$this->api->db->rollBack();
 				throw $e;
 			}
 
-			$pending_account->callApi();
+			$new_account->callApi();
 
 			$this->js()->_selector('.pending_grid')->trigger('reload')->execute();
 		}

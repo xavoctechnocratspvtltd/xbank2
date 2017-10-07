@@ -51,6 +51,8 @@ class Model_PendingAccount extends Model_Account_Loan {
 
 		$this['is_approved'] = true;
 		$this->save();
+
+		return $new_account;
 	}
 
 	function reject(){

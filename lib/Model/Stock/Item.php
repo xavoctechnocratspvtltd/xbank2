@@ -301,6 +301,14 @@ class Model_Stock_Item extends Model_Table {
 					
 		if(!$as_on) $as_on = $this->api->now;
 
+		$container = $this->add('Model_Stock_Container');
+		$container->addCondition('branch_id',$this->api->currentBranch->id);
+		$used_container_id = [];
+		foreach ($container as $cont) {
+			if(preg_match('/used/',strtolower($cont['name'])))
+				$used_container_id[$cont['id']] = $cont['id'];
+		}
+
 		// 'Openning'
 		$openning_tra = $this->add('Model_Stock_Transaction');
 		$openning_tra->addCondition('is_used_submit',0);
@@ -352,8 +360,10 @@ class Model_Stock_Item extends Model_Table {
 		$transfer_to_this_branch_tra->addCondition('created_at','<',$as_on);
 		$transfer_to_this_branch_tra->addCondition('to_branch_id',$this->api->currentBranch->id);
 		$transfer_to_this_branch_tra->addCondition('transaction_type','Transfer');
+		$transfer_to_this_branch_tra->addCondition('from_container_id','<>',$used_container_id);
+		$transfer_to_this_branch_tra->addCondition('to_container_id','<>',$used_container_id);
 		$transfer_to_this_branch_tra_qty = ($transfer_to_this_branch_tra->sum('qty')->getOne())?:0;
-		
+
 		//Transfer From
 		$transfer_from_this_branch_tra = $this->add('Model_Stock_Transaction');
 		// $transfer_from_this_branch_tra->addCondition('is_used_submit',0);
@@ -361,6 +371,8 @@ class Model_Stock_Item extends Model_Table {
 		$transfer_from_this_branch_tra->addCondition('created_at','<',$as_on);
 		$transfer_from_this_branch_tra->addCondition('branch_id',$this->api->currentBranch->id);
 		$transfer_from_this_branch_tra->addCondition('transaction_type','Transfer');
+		$transfer_from_this_branch_tra->addCondition('from_container_id','<>',$used_container_id);
+		$transfer_from_this_branch_tra->addCondition('to_container_id','<>',$used_container_id);
 		$transfer_from_this_branch_tra_qty = ($transfer_from_this_branch_tra->sum('qty')->getOne())?:0;
 
 		//Issue

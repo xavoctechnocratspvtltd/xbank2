@@ -5,7 +5,7 @@ class page_stock_reports_stock extends Page {
 		parent::init();
 
 		$self = $this;
-		$form=$this->add('Form');
+		$form = $this->add('Form');
 		$form->addField('DatePicker','to_date');
 		// $form->addField('DatePicker','from_date');
 		$form->addSubmit('GET LIST');
@@ -15,9 +15,17 @@ class page_stock_reports_stock extends Page {
 		// $item_j->addField('created_at');
 		// $item_j->addField('transaction_type');
 
-		$grid=$this->add('Grid_AccountsBase');
+		$container = $this->add('Model_Stock_Container');
+		$container->addCondition('branch_id',$this->api->currentBranch->id);
+		$this->used_container_id = [];
+		foreach ($container as $cont) {
+			if(preg_match('/used/',strtolower($cont['name'])))
+				$this->used_container_id[$cont['id']] = $cont['id'];
+		}
+		
+		$grid = $this->add('Grid_AccountsBase');
 		$grid->addSno();
- 
+ 		
 		$grid->addMethod('format_openning',function($g,$f){
 			$openning_tra = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$openning_tra->join('stock_items','item_id');
@@ -54,7 +62,7 @@ class page_stock_reports_stock extends Page {
 			$g->current_row_html[$f]=$purchase_tra_qty;
 		});
 
-		$grid->addMethod('format_transferto',function($g,$f){			
+		$grid->addMethod('format_transferto',function($g,$f){
 			$tra_model = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
 			$item_j=$tra_model->join('stock_items','item_id');
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
@@ -62,6 +70,8 @@ class page_stock_reports_stock extends Page {
 			$tra_model->addCondition('item_id',$g->model->id);
 			$tra_model->addCondition('to_branch_id','<>',$g->api->currentBranch->id);
 			$tra_model->addCondition('branch_id',$g->api->currentBranch->id);
+			$tra_model->addCondition('from_container_id','<>',$this->used_container_id);
+			$tra_model->addCondition('to_container_id','<>',$this->used_container_id);
 
 			$tra_model_qty = ($tra_model->sum('qty')->getOne())?:0;
 			$g->current_row_html[$f]=$tra_model_qty;
@@ -69,11 +79,13 @@ class page_stock_reports_stock extends Page {
 
 		$grid->addMethod('format_transferfrom',function($g,$f){
 			$tra_model = $g->add('Model_Stock_Transaction',array('table_alias'=>'xt'));
-			$item_j=$tra_model->join('stock_items','item_id');
+			$item_j = $tra_model->join('stock_items','item_id');
 			$tra_model->addCondition('created_at','<',$g->api->nextDate($_GET['to_date']?:$g->api->now));
 			$tra_model->addCondition('transaction_type','Transfer');
 			$tra_model->addCondition('item_id',$g->model->id);
 			$tra_model->addCondition('to_branch_id',$g->api->currentBranch->id);
+			$tra_model->addCondition('from_container_id','<>',$this->used_container_id);
+			$tra_model->addCondition('to_container_id','<>',$this->used_container_id);
 
 			$tra_model_from_qty = ($tra_model->sum('qty')->getOne())?:0;
 			$g->current_row_html[$f]=$tra_model_from_qty;

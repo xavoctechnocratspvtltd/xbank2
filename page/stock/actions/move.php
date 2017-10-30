@@ -124,12 +124,16 @@ class page_stock_actions_move extends Page {
 			$to_container_model->loadContainer($form['to_container']);
 
 			//CHECK FOR USED-SUBMIT MOVE TRANSACTION
+
 			if($form['is_used_submit']){
 				if(!preg_match('/used/',strtolower($from_container_model['name'])))
 					$form->displayError('from_container','Select Only Used Submit( Container and Row ) Only');
 				if(!preg_match('/used/',strtolower($to_container_model['name'])))
 					$form->displayError('to_container','Select Only Used Submit( Container and Row ) Only');
 			}
+			
+			if((preg_match('/used/',strtolower($from_container_model['name'])) OR preg_match('/used/',strtolower($to_container_model['name']))) ANd !$form['is_used_submit'])
+				$form->displayError('is_used_submit','select used submit for used transfer');
 			
 			$from_row_model = $this->add('Model_Stock_Row');
 			$from_row_model->loadRow($form['from_row'],$form['from_container']);

@@ -6,6 +6,7 @@ class page_reports_deposit extends Page {
 		parent::init();
 
 		$tabs=$this->add('Tabs');
+		$tab1=$tabs->addTab('-');
 		$tab1=$tabs->addTabURL('reports_deposit_fdProvision','FD Provision Report');
 		$tab1=$tabs->addTabURL('reports_deposit_emiduelist','EMI Due List');
 		$tab1=$tabs->addTabURL('reports_agent_tds','TDS Commission Report');

@@ -62,10 +62,13 @@ class Model_Account extends Model_Table {
 		$this->addField('PAndLGroup')->system(true);
 		$this->addField('repayment_mode')->enum(['Cash','Cheque','NACH/ECS'])->defaultValue('Cash');
 		
-		$this->addField('bike_surrendered')->type('boolean')->defaultValue(false);;
+		$this->addField('bike_surrendered')->type('boolean')->defaultValue(false);
 		$this->addField('bike_surrendered_on')->type('date');
 		$this->addField('bike_surrendered_by');
 		
+		$this->addField('is_given_for_legal_process')->type('boolean')->defaultValue(false);
+		$this->addField('legal_process_given_date')->type('date');
+
 		$this->addField('is_in_legal')->type('boolean')->defaultValue(false);
 		$this->addField('legal_filing_date')->type('date');
 

@@ -20,6 +20,7 @@ class page_accounts_Loan_bikelegal extends Page{
 
 			$check_date = [
 				'bike_surrendered'=>'bike_surrendered_on',
+				'is_given_for_legal_process'=>'legal_process_given_date',
 				'is_in_legal' =>'legal_filing_date',
 				'is_godowncharge_debited' => 'godowncharge_debited_on',
 				'is_legal_notice_sent_for_bike_auction'=>'legal_notice_sent_for_bike_auction_on',
@@ -43,6 +44,8 @@ class page_accounts_Loan_bikelegal extends Page{
 		$form_fields = ['bike_surrendered',
 						'bike_surrendered_on',
 						'bike_surrendered_by',
+						'is_given_for_legal_process',
+						'legal_process_given_date',
 						'is_in_legal',
 						'legal_filing_date',
 						'is_godowncharge_debited',

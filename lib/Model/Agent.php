@@ -39,7 +39,7 @@ class Model_Agent extends Model_Table {
 		$this->addExpression('code')->set('CONCAT("BCCSAG ",IFNULL(code_no,""))');
 
 		$this->addExpression('sponsor_cadre')->set(function($m,$q){
-			return $m->refSQL('sponsor_id')->fieldQuery('cadre');
+			return $m->refSQL('sponsor_id')->setLimit(1)->fieldQuery('cadre');
 		});
 
 		$this->addExpression('AccountNumber')->set(function($m,$q){

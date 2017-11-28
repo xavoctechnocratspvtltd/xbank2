@@ -23,6 +23,12 @@ class page_agents extends Page{
 			return $m->refSQL('sponsor_id')->fieldQuery('cadre');	
 		});
 
+		$agent->addHook('beforeSave',function($m){
+			if(!$m->loaded() && ($c = $m->ref('cadre_id')->get('name')) !='Advisor'){
+				throw new \Exception("Please add only as Advisor, Adding (".$c.")", 1);
+			}
+		});
+
 		// $agent->addCondition('sponsor_id','>',0);
 
 		$crud->setModel($agent,array('member_id','sponsor_id','account_id','cadre_id','ActiveStatus','username','password','added_by','code_no'),array('code','created_at','member','sponsor_name','sponsor_cadre','account','cadre','current_individual_crpb','ActiveStatus','username','password','added_by'));

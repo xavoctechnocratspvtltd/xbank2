@@ -194,7 +194,7 @@ class page_stock_reports_stock extends Page {
 		$grid->addColumn('amount','amount');
 		$grid->removeColumn('row');
 		$grid->removeColumn('branch');
-		$grid->removeColumn('category');
+		// $grid->removeColumn('category');
 		$grid->removeColumn('is_consumable');
 		$grid->removeColumn('is_issueable');
 		$grid->removeColumn('is_fixedassets');

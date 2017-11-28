@@ -197,7 +197,7 @@ class page_Accounts_FixedAndMis extends Page {
 
 			$type_field = $crud->form->getElement('ModeOfOperation');
 				$type_field->js(true)->univ()->bindConditionalShow(array(
-						'Self'=>array('Nominee','NomineeAge','RelationWithNominee'),
+						'Self'=>array('Nominee','NomineeAge','RelationWithNominee','MinorNomineeDOB'),
 						'Joint'=>array('member_ID_1','member_ID_2','member_ID_3','member_ID_4'),
 						),'div .atk-form-row');
 

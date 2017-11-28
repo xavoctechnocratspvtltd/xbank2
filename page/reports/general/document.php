@@ -114,7 +114,7 @@ class page_reports_general_document extends Page {
 		
 		$document_submitted_model->addCondition([['DefaultAC',false],['DefaultAC',null]]);
 		$document_submitted_model->setOrder('submitted_on desc,id desc,accounts desc');
-		$document_submitted_model->add('Controller_Acl');
+		// $document_submitted_model->add('Controller_Acl');
 
 		$grid->setModel($document_submitted_model);
 

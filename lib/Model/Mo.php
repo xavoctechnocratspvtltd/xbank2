@@ -8,6 +8,7 @@ class Model_Mo extends Model_Table {
 
 		$this->hasOne('ActiveBranch','branch_id');
 		$this->addField('name');
+		$this->addField('is_active')->type('boolean')->defaultValue(true);
 		$this->addHook('beforeDelete',$this);
 		
 		$this->hasMany('Account','mo_id');

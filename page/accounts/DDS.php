@@ -84,6 +84,8 @@ class page_accounts_DDS extends Page {
 			$debit_account->setModel($debit_account_model,'AccountNumber');
 			$account_dds_model->getElement('member_id')->getModel()->addCondition('is_active',true);
 			$account_dds_model->getElement('agent_id')->getModel()->addCondition('ActiveStatus',true);
+			$account_dds_model->getElement('mo_id')->getModel()->addCondition('is_active',true);
+			$account_dds_model->getElement('team_id')->getModel()->addCondition('is_active',true);
 		}
 
 		if($crud->isEditing('edit')){

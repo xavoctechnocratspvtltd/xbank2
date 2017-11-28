@@ -73,6 +73,8 @@ class page_accounts_Recurring extends Page {
 			// $debit_account_model->add('Controller_Acl');
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
+			$account_recurring_model->getElement('mo_id')->getModel()->addCondition('is_active',true);
+			$account_recurring_model->getElement('team_id')->getModel()->addCondition('is_active',true);
 		}
 
 		if($crud->isEditing('edit')){

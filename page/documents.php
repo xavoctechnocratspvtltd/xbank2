@@ -7,7 +7,7 @@ class page_documents extends Page {
 		parent::init();
 
 		$crud = $this->add('CRUD');
-		$crud->setModel('Document');
+		$crud->setModel('DocumentAll');
 
 	}
 }

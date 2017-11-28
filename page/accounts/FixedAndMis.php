@@ -114,7 +114,8 @@ class page_Accounts_FixedAndMis extends Page {
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
 			$account_fixedandmis_model->getElement('member_id')->getModel()->addCondition('is_active',true);
-
+			$account_fixedandmis_model->getElement('mo_id')->getModel()->addCondition('is_active',true);
+			$account_fixedandmis_model->getElement('team_id')->getModel()->addCondition('is_active',true);
 
 		}
 

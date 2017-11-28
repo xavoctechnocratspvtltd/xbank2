@@ -9,7 +9,8 @@ class page_accounts extends Page {
 		
 
 		$tabs = $this->add('Tabs');
-		foreach (explode(',',ACCOUNT_TYPES) as $accounts) {
+		$tabs->addTabURL('accounts_SM','SM Accounts');
+		foreach (explode(',','SavingAndCurrent,DDS,Recurring,FixedAndMis,Loan,Default') as $accounts) {
 			$accounts_display =$accounts;
 			if($accounts == 'Default') $accounts_display = 'Others';
 
@@ -17,6 +18,5 @@ class page_accounts extends Page {
 	
 		}
 
-		$tabs->addTabURL('accounts_SM','SM Accounts');
 	}
 }

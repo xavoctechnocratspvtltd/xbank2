@@ -138,6 +138,8 @@ class Model_Member extends Model_Table {
 								->getOne() + 1);
 		}
 
+		if(!$this['PermanentAddress']) $this['PermanentAddress']= $this['CurrentAddress'];
+
 		// if(!$this['title'])
 		// if(!$this['Occupation'])
 		// 	throw $this->exception('Please Select Occupation', 'ValidityCheck')->setField('Occupation');

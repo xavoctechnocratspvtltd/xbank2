@@ -13,7 +13,13 @@ class page_members extends Page {
 
 		$member_model = $this->add('Model_Member');
 		$member_model->setOrder('member_no','desc');
-		
+
+		$member_model->getElement('IsMinor')->destroy();
+		$member_model->getElement('ParentName')->destroy();
+		$member_model->getElement('RelationWithParent')->destroy();
+		$member_model->getElement('MinorDOB')->destroy();
+		$member_model->getElement('Nominee')->destroy();
+
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
@@ -63,9 +69,9 @@ class page_members extends Page {
 		if($crud->isEditing()){
 			$member_model->getElement('created_at')->system(true);
 			$member_model->getElement('updated_at')->system(true);
-			$member_model->getElement('Nominee')->system(true);
-			$member_model->getElement('NomineeAge')->system(true);
-			$member_model->getElement('RelationWithNominee')->system(true);
+			// $member_model->getElement('Nominee')->system(true);
+			// $member_model->getElement('NomineeAge')->system(true);
+			// $member_model->getElement('RelationWithNominee')->system(true);
 			$member_model->getElement('username')->system(true);
 			$member_model->getElement('is_agent')->system(true);
 			// $member_model->getElement('is_active')->system(true);
@@ -74,9 +80,9 @@ class page_members extends Page {
 
 		if($crud->isEditing('edit')){
 			$member_model->getElement('username')->system(true);
-			$member_model->getElement('Nominee')->system(true);
-			$member_model->getElement('RelationWithNominee')->system(true);
-			$member_model->getElement('NomineeAge')->system(true);
+			// $member_model->getElement('Nominee')->system(true);
+			// $member_model->getElement('RelationWithNominee')->system(true);
+			// $member_model->getElement('NomineeAge')->system(true);
 			$member_model->hook('editing');
 		}
 		
@@ -139,20 +145,20 @@ class page_members extends Page {
 			// $g->js('reload')->reload();
 		}
 
-		if($crud->isEditing()){
-			$is_minor_field = $crud->form->getElement('IsMinor');
-			$is_minor_field->js(true)->univ()->bindConditionalShow(array(
-				''=>array(''),
-				'*'=>array('MinorDOB','ParentName','RelationWithParent','ParentAddress')
-				),'div .atk-form-row');
+		// if($crud->isEditing()){
+		// 	$is_minor_field = $crud->form->getElement('IsMinor');
+		// 	$is_minor_field->js(true)->univ()->bindConditionalShow(array(
+		// 		''=>array(''),
+		// 		'*'=>array('MinorDOB','ParentName','RelationWithParent','ParentAddress')
+		// 		),'div .atk-form-row');
 
-			$form_60_field = $crud->form->getElement('FilledForm60');
-			$form_60_field->js(true)->univ()->bindConditionalShow(array(
-				''=>array('PanNo'),
-				'*'=>array()
-				),'div .atk-form-row');
+		// 	$form_60_field = $crud->form->getElement('FilledForm60');
+		// 	$form_60_field->js(true)->univ()->bindConditionalShow(array(
+		// 		''=>array('PanNo'),
+		// 		'*'=>array()
+		// 		),'div .atk-form-row');
 
-		}
+		// }
 
 		if($crud->isEditing('add')){
 		    // $o->move('open_share_account','before','Nominee');

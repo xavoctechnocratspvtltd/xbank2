@@ -10,10 +10,10 @@ class Grid_Member extends Grid {
 		$this->addFormatter('CurrentAddress','wrap');
 		$this->addFormatter('Witness1Name','wrap');
 		$this->addFormatter('Witness2Name','wrap');
-		$this->addFormatter('ParentName','wrap');
-		$this->addFormatter('Nominee','wrap');
+		// $this->addFormatter('ParentName','wrap');
+		// $this->addFormatter('Nominee','wrap');
 		$this->addFormatter('created_at','wrap');
-		$this->addFormatter('MinorDOB','wrap');
+		// $this->addFormatter('MinorDOB','wrap');
 		// $this->addFormatter('doc_image','wrap');
 		// $this->addFormatter('PanNo','wrap');
 		$this->removeColumn('id');

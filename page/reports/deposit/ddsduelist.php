@@ -64,7 +64,7 @@ class page_reports_deposit_ddsduelist extends Page {
 
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
-		$grid->setModel($account_model,array('AccountNumber','created_at','Amount','total_deposit','total_due_till_date','due_amount','member_name','FatherName','CurrentAddress','landmark','PhoneNos','agent','agent_code','agent_phone','scheme'));
+		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','Amount','total_deposit','total_due_till_date','due_amount','agent','agent_code','agent_phone','scheme'));
 		$grid->addFormatter('CurrentAddress','Wrap');
 		if($_GET['agent']){
 			$grid->removeColumn('agent_code');

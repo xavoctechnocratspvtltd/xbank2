@@ -141,6 +141,7 @@ class page_reports_loan_bikelegal_legalactionpending extends Page {
 		$account_model->addCondition('is_bike_auctioned',true);
 		$account_model->addCondition('is_final_recovery_notice_sent',true);
 		$account_model->addCondition('is_cheque_presented_in_bank',false);
+		$account_model->addCondition([['legal_case_not_submitted_reason',''],['legal_case_not_submitted_reason',false],['legal_case_not_submitted_reason',null]]);
 		$account_model->addCondition('bike_surrendered_on','<',date('Y-m-d',strtotime($this->app->today.' -20 DAYS')));
 
 		$grid = $this->add('Grid_AccountsBase')->addSno();

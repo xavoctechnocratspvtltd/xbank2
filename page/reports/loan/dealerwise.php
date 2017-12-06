@@ -261,10 +261,10 @@ class page_reports_loan_dealerwise extends Page {
 
 			switch ($_GET['legal_accounts']) {
 				case 'only':
-					$account_model->addCondition('is_in_legal',true);
+					$account_model->addCondition('is_given_for_legal_process',true);
 					break;
 				case 'exclude':
-					$account_model->addCondition('is_in_legal',false);
+					$account_model->addCondition('is_given_for_legal_process',false);
 					break;
 				case 'include':
 				default:

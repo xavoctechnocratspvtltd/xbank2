@@ -1,4 +1,4 @@
-	<?php
+<?php
 
 class page_reports_recovery extends Page {
 	public $title ="Recovery Reports";

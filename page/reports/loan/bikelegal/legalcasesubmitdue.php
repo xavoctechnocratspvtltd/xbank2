@@ -145,7 +145,7 @@ class page_reports_loan_bikelegal_legalcasesubmitdue extends Page {
 		$account_model->addCondition('is_in_legal',false);
 		$account_model->addCondition([['legal_case_not_submitted_reason',''],['legal_case_not_submitted_reason',null]]);
 		$account_model->addCondition('is_notice_sent_after_cheque_returned',true);
-		$account_model->addCondition('cheque_returned_on','<',date('Y-m-d',strtotime($this->app->today.' -25 DAYS')));
+		// $account_model->addCondition('cheque_returned_on','<',date('Y-m-d',strtotime($this->app->today.' -25 DAYS')));
 
 		$grid = $this->add('Grid_AccountsBase')->addSno();
 

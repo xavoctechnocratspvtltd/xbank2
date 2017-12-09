@@ -42,6 +42,9 @@ class page_reports_deposit_fundsflow extends Page {
 					->sum('amountCr');
 		})->caption('In Flow');
 		
+		$account_model->addExpression('pan')->set(function($m,$q){
+				return $m->refSQL('member_id')->fieldQuery('PanNo');
+		});
 
 
 		if($_GET['filter']){
@@ -71,7 +74,7 @@ class page_reports_deposit_fundsflow extends Page {
 
 		$account_model->add('Controller_Acl');
 
-		$grid->setModel($account_model,array('AccountNumber','member','agent','sum_debit','sum_credit'));
+		$grid->setModel($account_model,array('AccountNumber','member','pan','agent','sum_debit','sum_credit'));
 		$grid->addTotals(['sum_credit','sum_debit']);
 		$grid->addPaginator(500);
 

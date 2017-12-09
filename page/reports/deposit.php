@@ -19,5 +19,6 @@ class page_reports_deposit extends Page {
 		$tab1=$tabs->addTabURL('reports_deposit_matureaccountswithcrbal','Matured A/C With Cr Bal');
 		$tab1=$tabs->addTabURL('reports_deposit_tdsquaterly','TDS Quarterly');
 		$tab1=$tabs->addTabURL('reports_deposit_commission','Branch Commission Report');
+		$tab1=$tabs->addTabURL('reports_deposit_fundsflow','Funds Flow Report');
 	}
 }

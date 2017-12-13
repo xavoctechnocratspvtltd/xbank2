@@ -208,7 +208,8 @@ class page_reports_loan_emiduelist extends Page {
 			if($_GET['dealer'])
 				$account_model->addCondition('dealer_id',$_GET['dealer']);
 
-			if($_GET['bike_surrendered']==='include' AND $_GET['legal_accounts']==='include'){
+			// don't know why was this condition was made by devendra sir, but now as per again call this is commented and he says now everything is okay
+			//if($_GET['bike_surrendered']==='include' AND $_GET['legal_accounts']==='include'){
 				switch ($_GET['report_type']) {
 					case 'duelist':
 						$account_model->addCondition('due_premium_count','>',0);
@@ -233,7 +234,7 @@ class page_reports_loan_emiduelist extends Page {
 						# code...
 						break;
 				}
-			}
+			//}
 
 			switch ($_GET['loan_type']) {
 				case 'vl':

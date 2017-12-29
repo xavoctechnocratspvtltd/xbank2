@@ -98,7 +98,7 @@ class Model_Agent extends Model_Table {
 
 			return $acc->sum('crpb');
 
-		});
+		})->sortable(true);
 
 		$this->addExpression('level_1_crpb')->set(function($m,$q){
 			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
@@ -224,7 +224,7 @@ class Model_Agent extends Model_Table {
 				$acc->addCondition('created_at','<',$m->api->nextDate($m->to_date));
 			
 			return $acc->sum('Amount');
-		});
+		})->sortable(true);
 
 		$this->addExpression('level_1_self_business')->set(function($m,$q){
 			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));

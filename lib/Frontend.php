@@ -79,20 +79,23 @@ class Frontend extends ApiFrontend {
             $staff_model->addExpression('branch_login_allow')->set($staff_model->refSQL('branch_id')->fieldQuery('allow_login'));
             $staff_model->addCondition('branch_login_allow',true);
             $auth = $this->add('BasicAuth');
-            $auth->allowPage(array('corrections'));
+            $auth->allowPage(array('corrections','install'));
             $auth->setModel($staff_model,'username','password');
             $auth->check();
 
-            if(!$auth->model->tryLoad($auth->model->id)->loaded()){
-                $this->api->redirect($this->api->url('logout'));
+            if($this->page !== 'install'){
+
+                if(!$auth->model->tryLoad($auth->model->id)->loaded()){
+                    $this->api->redirect($this->api->url('logout'));
+                }
+
+                $this->currentStaff = $this->current_staff = $auth->model;
+
+                $this->currentBranch = $this->current_branch = $this->auth->model->ref('branch_id');
+                $this->title = ' :: [' . $this->api->current_branch['name'].']';
+                // die('Hi');
+                $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
             }
-
-            $this->currentStaff = $this->current_staff = $auth->model;
-
-            $this->currentBranch = $this->current_branch = $this->auth->model->ref('branch_id');
-            $this->title = ' :: [' . $this->api->current_branch['name'].']';
-            // die('Hi');
-            $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
         }
     }
 

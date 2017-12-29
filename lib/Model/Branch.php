@@ -28,7 +28,7 @@ class Model_Branch extends Model_Table {
 	}
 
 	function beforeSave(){
-		if($this['Code']=='DFL'){
+		if(!isset($this->app->is_installing) && $this['Code']=='DFL'){
 			throw $this->exception('Cannot Edit Default Branch');
 		}
 	}
@@ -71,16 +71,19 @@ class Model_Branch extends Model_Table {
 		}
 
 		$udr_branch_closing=$this->add('Model_Closing');
-		$udr_branch_closing->loadBy('branch_id',2);
-		$closing_model=$this->add('Model_Closing');
-		$closing_model['branch_id']=$id;
-		$closing_model['daily']=$udr_branch_closing['weekly'];
-		$closing_model['weekly']=$udr_branch_closing['weekly'];
-		$closing_model['monthly']=$udr_branch_closing['monthly'];
-		$closing_model['halfyearly']=$udr_branch_closing['halfyearly'];
-		$closing_model['yearly']=$udr_branch_closing['yearly'];
+		$udr_branch_closing->tryLoadBy('branch_id',2);
+		
+		if($udr_branch_closing->loaded()){
+			$closing_model=$this->add('Model_Closing');
+			$closing_model['branch_id']=$id;
+			$closing_model['daily']=$udr_branch_closing['weekly'];
+			$closing_model['weekly']=$udr_branch_closing['weekly'];
+			$closing_model['monthly']=$udr_branch_closing['monthly'];
+			$closing_model['halfyearly']=$udr_branch_closing['halfyearly'];
+			$closing_model['yearly']=$udr_branch_closing['yearly'];
 
-		$closing_model->save();
+			$closing_model->save();	
+		}
 
 	}
 

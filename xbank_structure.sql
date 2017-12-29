@@ -11,7 +11,7 @@
  Target Server Version : 100118
  File Encoding         : utf-8
 
- Date: 12/29/2017 12:20:07 PM
+ Date: 12/29/2017 12:38:15 PM
 */
 
 SET NAMES utf8;
@@ -340,6 +340,13 @@ CREATE TABLE `balance_sheet` (
   `order` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+--  Records of `balance_sheet`
+-- ----------------------------
+BEGIN;
+INSERT INTO `balance_sheet` VALUES ('1', 'Deposits - Liabilities', 'LT', '0', 'SchemeGroup', 'Cr', '2'), ('2', 'Current Assets', 'RT', '0', 'SchemeGroup', 'Dr', '5'), ('3', 'Capital Account', 'LT', '0', 'SchemeGroup', 'Cr', '1'), ('4', 'Expenses', 'LT', '1', 'Accounts', 'Dr', '9'), ('5', 'Income', 'RT', '1', 'Accounts', 'Cr', '8'), ('6', 'Suspence Account', 'LT', '0', 'SchemeGroup', 'Cr', '7'), ('7', 'Fixed Assets', 'RT', '0', 'SchemeGroup', 'Dr', '4'), ('8', 'Branch/Divisions', 'LT', '0', 'Accounts', 'Cr', '6'), ('9', 'Current Liabilities', 'LT', '0', 'SchemeGroup', 'Cr', '3');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `bank`

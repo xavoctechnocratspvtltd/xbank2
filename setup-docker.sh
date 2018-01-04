@@ -21,3 +21,7 @@ sudo add-apt-repository \
 sudo apt-get update
 
 sudo apt-get install docker-ce
+
+audo apt-get install docker-compose
+
+echo "Now run 'docker swarm init' on manager node and returned join command on other nodes"

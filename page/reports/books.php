@@ -12,5 +12,6 @@ class page_reports_books extends Page {
 		// $tab1=$tabs->addTabURL('reports_pandl','P & L');
 		$tab1=$tabs->addTabURL('reports_bs_balancesheet','Balance Sheet');
 		$tab1=$tabs->addTabURL('reports_pandl_pandl','P & L');
+		$tab1=$tabs->addTabURL('utility_vouchersearch','Voucher Search');
 	}
 }

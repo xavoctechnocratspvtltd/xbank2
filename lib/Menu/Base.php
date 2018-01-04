@@ -30,7 +30,7 @@ class Menu_Base extends Menu {
 		// $general = 	$this->addMenuItem('reports_general','General');
 		// $member_reports = 	$this->addMenuItem('reports_member','Member Reports');
 		// $deposit_reports = 	$this->addMenuItem('reports_deposit','Deposit Reports');
-		$utilities = 	$this->addMenuItem('utilities','Utilities');
+		$utilities = 	$this->addMenuItem('utilities','Pirinting');
 
 		$this->addMenuItem('logout','Logout')->addClass('atk-swatch-red');
 		// $this->addMenuItem('index','Bhawani Credit Co.Operative Society')->setStyle('text-align','center');
@@ -79,6 +79,7 @@ class Menu_Base extends Menu {
 			$admin_sub_menus->addMenuItem('balancesheet','Top Heads');
 			$admin_sub_menus->addMenuItem('accounts_locking','Lock & Unlock Accounts');
 			$admin_sub_menus->addMenuItem('agentscadre','Agents Cadres');
+			$admin_sub_menus->addMenuItem('documents','Documents Management');
 			// $admin_sub_menus->addMenuItem('operations_edit','Edit Accounts');
 			$admin_sub_menus->addMenuItem('transactions_remove','Edit/Delete Transaction');
 			$admin_sub_menus->addMenuItem('utility_premimumtable','Premimum Table');
@@ -107,6 +108,7 @@ class Menu_Base extends Menu {
 		$account_sub_menu = $account_sub_menu_popover->add('Menu_Vertical');
 		$account_sub_menu->addMenuItem('accounts','Accounts Management');
 		$account_sub_menu->addMenuItem('accounts_statement','Accounts Statement');
+		$account_sub_menu->addMenuItem('utility_accwithoutimage','Accounts Without Images');
 		$account->js('click',$account_sub_menu_popover->showJS());
 
 		$transactions_sub_menus = $transactions_sub_menus_popover->add('Menu_Vertical');
@@ -153,16 +155,13 @@ class Menu_Base extends Menu {
 
 
 		$utilities_sub_menus = $utilities_sub_menus_popover->add('Menu_Vertical');
-		if($this->api->auth->model['AccessLevel']>=100)
-			$utilities_sub_menus->addMenuItem('documents','Documents Management');
 		
 		// $utilities_sub_menus->addMenuItem('utility_setdate','Change Date');
-		$utilities_sub_menus->addMenuItem('utility_accwithoutimage','Accounts Without Images');
+		
 		$utilities_sub_menus->addMenuItem('utility_fdaccount','F.D. Bond Accounts');
 		$utilities_sub_menus->addMenuItem('utility_sharecertificate','Share Certificate Print');
 		$utilities_sub_menus->addMenuItem('utility_intrestcertificate','Intrest Certificate Print');
-		$utilities_sub_menus->addMenuItem('utility_vouchersearch','Voucher Search');
-		$utilities_sub_menus->addMenuItem('utility_activemember','Active member');
+		
 		$utilities->js('click',$utilities_sub_menus_popover->showJS());
 
 		// $member_sub_menus = $member_sub_menus_popover->add('Menu_Vertical');

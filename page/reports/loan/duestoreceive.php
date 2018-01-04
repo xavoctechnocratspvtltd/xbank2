@@ -10,9 +10,13 @@ class page_reports_loan_duestoreceive extends Page {
 		$this->app->stickyGET('acc_type');
 		$this->app->stickyGET('rep_mode');
 		$this->app->stickyGET('filter');
+		$this->app->stickyGET('dealer');
 
 
 		$form=$this->add('Form');
+		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
+		$dealer_field->setModel('Dealer');
+
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
 		$form->addField('DropDown','account_type')->setEmptyText('All')->setValueList( array_combine(explode(",", LOAN_TYPES),explode(",", LOAN_TYPES)));
@@ -63,6 +67,9 @@ class page_reports_loan_duestoreceive extends Page {
 		// $due_premiums->addCondition('Paid',0);
 		$due_premiums->addCondition('ActiveStatus',true);
 		$due_premiums->addCondition('SchemeType','Loan');
+		
+		if($_GET['dealer'])
+			$due_premiums->addCondition('dealer_id',$_GET['dealer']);
 
 		if($act = $_GET['acc_type']){						
 			$due_premiums->addCondition('account_type',$act);
@@ -74,14 +81,14 @@ class page_reports_loan_duestoreceive extends Page {
 
 		$due_premiums->add('Controller_Acl');
 
-		$grid->setModel($due_premiums,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos', 'Amount','DueDate','agent','dealer','repayment_mode','account_type'));
+		$grid->setModel($due_premiums,array('AccountNumber','member_name','FatherName','PermanentAddress','PhoneNos', 'Amount','DueDate','agent','dealer','dealer_id','repayment_mode','account_type'));
 		$grid->addSno();
 		$grid->addPaginator(500);
 
 		$grid->addTotals(array('Amount'));
 
 		if($form->isSubmitted()){			
-			$grid->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'acc_type'=>$form['account_type'],'rep_mode'=>$form['repayment_mode'], 'filer'=>1])->execute();
+			$grid->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'acc_type'=>$form['account_type'],'rep_mode'=>$form['repayment_mode'],'dealer'=>$form['dealer'], 'filer'=>1])->execute();
 		}
 
 	}

@@ -10,5 +10,6 @@ class page_reports_member extends Page {
 		$tab1=$tabs->addTabURL('reports_member_loaninsurance','Loan Member Insurance Report');
 		$tab1=$tabs->addTabURL('reports_member_depositinsurance','Deposit  Member Insurance Report');
 		$tab1=$tabs->addTabURL('reports_member_defaulter','Defaulter List');
+		$tab1=$tabs->addTabURL('utility_activemember','Active Memebr');
 	}
 }

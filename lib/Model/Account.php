@@ -639,7 +639,7 @@ class Model_Account extends Model_Table {
 			// if($agent->cadre()->get('id') == $sponsor()->cadre()->get('id')) continue;
 			
 			$percentage = $sponsor->cadre()->cumulativePercantage($agent->cadre());
-			$commissionForThisAgent = $total_commission_amount * $percentage / 100;
+			$commissionForThisAgent = round($total_commission_amount * $percentage / 100,2);
 
 			$transaction = $this->add('Model_Transaction');
 	        $transaction->createNewTransaction(TRA_ACCOUNT_OPEN_AGENT_COMMISSION, $this->ref('branch_id'), $on_date, "Agent Account openning commision for ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
@@ -649,7 +649,7 @@ class Model_Account extends Model_Table {
 	        $agent_saving_account = $sponsor->ref('account_id');
 	        $tds_account = $this->add('Model_Account')->loadBy('AccountNumber',$this['branch_code'].SP.BRANCH_TDS_ACCOUNT);
 
-	        $tds_amount = (strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * TDS_PERCENTAGE_WITH_PAN /100 : $commissionForThisAgent * TDS_PERCENTAGE_WITHOUT_PAN /100;
+	        $tds_amount = round((strlen($agent_saving_account->ref('member_id')->get('PanNo'))==10)? $commissionForThisAgent * TDS_PERCENTAGE_WITH_PAN /100 : $commissionForThisAgent * TDS_PERCENTAGE_WITHOUT_PAN /100,2);
 			
 			$saving_amount = $commissionForThisAgent - $tds_amount;
 

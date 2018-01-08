@@ -65,7 +65,7 @@ class Model_Premium extends Model_Table {
 
 		
 
-		$commissionForThisAgent = round($this->account()->agent()->cadre()->selfEfectivePercentage() * $commission / 100.00,3);
+		$commissionForThisAgent = round($this->account()->agent()->cadre()->selfEfectivePercentage() * $commission / 100.00,2);
 
 		if(!$commissionForThisAgent) return;
 

@@ -51,10 +51,27 @@ class page_members extends Page {
 			}
 
 
-			if(!$form['FilledForm60'] and !$form['PanNo'])
-				$form->displayError('PanNo','PanNo is must');
 
 			
+			if(!$form['FilledForm60'] and !$form['PanNo'])
+				$form->displayError('PanNo','PanNo is must');
+			
+			if(!$this->isPanValid($form['PanNo'])){
+				$form->displayError('PanNo','Pan Card does not looks valid');
+			}
+
+			if(!$this->isAadharValid($form['AdharNumber'])){
+				$form->displayError('AdharNumber','AdharNumber does not looks valid');
+			}
+
+			$member_old = $this->add('Model_Member');
+			$member_old->addCondition('AdharNumber',$form['AdharNumber']);
+			$member_old->tryLoadAny();
+
+			if($member_old->loaded()){
+				$form->displayError('AdharNumber','Already Exists');
+			}
+
 			try {
 				$crud->api->db->beginTransaction();
 				$new_member_model->createNewMember($form['name'], $admissionFee=10, $shareValue, $branch=null, $other_values=$form->getAllFields(),$form,$on_date=null);
@@ -172,6 +189,30 @@ class page_members extends Page {
 		}
 
 		$crud->add('Controller_Acl');
+	}
+
+	function isPanValid($value){
+		$pattern = '/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/';
+		$result = preg_match($pattern, $value);
+		if ($result) {
+		    $findme = ucfirst(substr($value, 3, 1));
+		    $mystring = 'CPHFATBLJG';
+		    $pos = strpos($mystring, $findme);
+		    if ($pos === false) {
+		        $msg = false;
+		    } else {
+		        $msg = true;
+		    }
+		} else {
+		    $msg = false;
+		}
+		return $msg;
+	}
+
+	function isAadharValid($num) {
+		$pattern = '/^([0-9]){12}?$/';
+		$result = preg_match($pattern, $num);
+		return $result;
 	}
 
 

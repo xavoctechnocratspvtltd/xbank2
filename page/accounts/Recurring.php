@@ -12,6 +12,8 @@ class page_accounts_Recurring extends Page {
 		$crud->addHook('myupdate',function($crud,$form)use($self){
 			if($crud->isEditing('edit')) return false;
 
+			
+
 			$sm_model=$self->add('Model_Account_SM');
 				$sm_model->addCondition('member_id',$form['member_id']);
 				$sm_model->tryLoadAny();
@@ -31,6 +33,7 @@ class page_accounts_Recurring extends Page {
 				$crud->api->db->beginTransaction();
 				// if(!$form['collector_id'] && $form['agent_id']) $form['collector_id'] = $form['agent_id'];
 			    $new_account->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $form['AccountNumber'],$form->getAllFields(),$form);
+			
 			    $crud->api->db->commit();
 			} catch (Exception $e) {
 			   	$crud->api->db->rollBack();

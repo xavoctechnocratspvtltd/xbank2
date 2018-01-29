@@ -8,14 +8,19 @@ class page_reports_deposit_duestogive extends Page {
 
 		$till_date = $this->api->today;
 
-		if($_GET['to_date']){
+		if($this->app->stickyGET('to_date')){
 			$till_date=$_GET['to_date'];
 		}
 		$account_type_array=array('%'=>'All','DDS'=>'DDS','FD'=>'Fixed Account','MIS'=>'MIS','Recurring'=>'Recurring');
+		
 		$form=$this->add('Form');
 		$form->addField('dropdown','account_type')->setValueList($account_type_array);
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
+			
+		if($this->app->auth->model->isSuper()){
+			$form->addField('dropdown','branch_id')->setEmptyText('All')->setModel('Branch');
+		}
 
 		$document=$this->add('Model_Document');
 		$document->depositDocuments();
@@ -28,7 +33,7 @@ class page_reports_deposit_duestogive extends Page {
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_AccountsBase');
-		$grid->add('H3',null,'grid_buttons')->set('Dues To Give Report From ' . date('01-m-Y',strtotime($_GET['from_date'])). ' to ' . date('t-m-Y',strtotime($_GET['to_date'])) );
+		$grid->add('H3',null,'grid_buttons')->set('Dues To Give Report From ' . $_GET['from_date']. ' to ' . $till_date );
 
 		$account=$this->add('Model_Account');
 		$member_join=$account->join('members','member_id');
@@ -42,6 +47,14 @@ class page_reports_deposit_duestogive extends Page {
 		$agen_member_join->addField('agent_name','name');
 		$agen_member_join->addField('agent_phoneno','PhoneNos');
 
+		
+		$account->addExpression('Loan_AccountNumber')->set(function($m,$q){
+			$loan_m = $m->add('Model_Account',['table_alias'=>'loan_acc']);
+			$loan_m->addCondition('LoanAgainstAccount_id',$q->getField('id'));
+			$loan_m->addCondition('ActiveStatus',true);
+			return $loan_m->fieldQuery('AccountNumber');
+		});
+
 		$account->addExpression('maturity_date')->set(function($m,$q){
 			return "(IF (".$q->getField('account_type')."='FD' OR ".$q->getField('account_type')."='MIS',(
 					DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +(".$m->scheme_join->table_alias.".MaturityPeriod + 0) DAY)
@@ -52,14 +65,15 @@ class page_reports_deposit_duestogive extends Page {
 				)";
 		});
 
-		$grid_column_array=array('AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','maturity_date','Amount','MaturityAmount','agent_name','agent_phoneno','ActiveStatus','account_type');
+		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','maturity_date','Amount','MaturityAmount','agent_name','agent_phoneno','ActiveStatus','account_type');
 
 
-		if($_GET['filter']){
+		if($_GET['filter']){			
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('account_type');
 			$this->api->stickyGET('from_date');
 			$this->api->stickyGET('to_date');
+			$this->api->stickyGET('branch_id');
 			if($_GET['account_type']){
 				if($_GET['account_type']=='%')
 					$account->addCondition('account_type',array_keys($account_type_array));
@@ -83,11 +97,19 @@ class page_reports_deposit_duestogive extends Page {
 				}
 			}
 			
-		}else
+			if($_GET['branch_id'] && $_GET['branch_id'] !=='null'){
+				$account->addCondition('branch_id',$_GET['branch_id']);
+			}
+		}else{			
 			$account->addCondition('id',-1);
+		}
 
 		$account->addCondition('DefaultAC',false);
-		$account->add('Controller_Acl');
+		
+		if(!$this->app->auth->model->isSuper()){
+			$account->add('Controller_Acl');
+		}
+
 		$account->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
 		$grid->setModel($account,$grid_column_array);
 		$grid->addPaginator(500);
@@ -107,11 +129,13 @@ class page_reports_deposit_duestogive extends Page {
 
 		if($form->isSubmitted()){
 			
-			$send = array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1);
+			$send = array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'branch_id'=>$form['branch_id'],'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];
 			}
+			// throw new \Exception(print_r($send,true), 1);
+			
 			$grid->js()->reload($send)->execute();
 
 			// $grid->js()->reload(array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();

@@ -40,6 +40,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$tr_account_join->addField('OpeningBalanceDr');
 		$tr_account_join->addField('OpeningBalanceCr');
 		$tr_account_join->addField('ActiveStatus');
+		$tr_account_join->addField('acc_created_at','created_at');
 
 		$scheme_join = $tr_account_join->leftJoin('schemes','scheme_id');
 		$scheme_join->addField('SchemeType');
@@ -67,6 +68,8 @@ class page_reports_general_closingbalanceofaccount extends Page {
 			}else{
 				$tr_model->addCondition('ActiveStatus',false);
 			}
+		}else{
+			$tr_model->addCondition('id',-1);
 		}
 		
 		$tr_model->addCondition('DefaultAC',0);
@@ -75,8 +78,10 @@ class page_reports_general_closingbalanceofaccount extends Page {
 
 		$tr_model->setOrder('account_id');
 		$tr_model->add('Controller_Acl');
-		$grid->setModel($tr_model,array('AccountNumber','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member'));
-		
+		$grid->setModel($tr_model,array('AccountNumber','acc_created_at','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member'));
+			
+		$grid->addPaginator(10);
+
 		if($form->isSubmitted()){
 			$grid->js()->reload(
 								array('as_on_date'=>$form['as_on_date']?:0,

@@ -52,7 +52,7 @@ class page_reports_general_periodical extends Page {
 		$dealer_join = $account_model->leftJoin('dealers','dealer_id');
 		$agent_join = $account_model->leftJoin('agents','agent_id');
 		$scheme_join = $account_model->join('schemes','scheme_id');
-		$account_model->addExpression('member_no')->set($account_model->refSQL('member_id')->fieldQuery('member_no'))->caption('Member No');
+
 
 		if($_GET['filter']){
 			$this->api->stickyGET("filter");
@@ -196,7 +196,8 @@ class page_reports_general_periodical extends Page {
 				$account_model->addExpression('phone_no')->set($account_model->refSQL('member_id')->fieldQuery('PhoneNos'));
 				$account_model->addExpression('agent_saving_acc')->set($account_model->refSQL('agent_id')->fieldQuery('account'));
 				$account_model->addExpression('agent_phone_no')->set($account_model->refSQL('agent_id')->fieldQuery('agent_phone_no'));
-
+				$account_model->addExpression('member_no')->set($account_model->refSQL('member_id')->fieldQuery('member_no'))->caption('Member No');
+				
 				$grid = $p->add('Grid_AccountsBase');
 				$grid->addSno();
 				$grid->setModel($account_model,array('member_no','sm_no','created_at','AccountNumber','scheme','Amount','pan_no','member','father_name','address','phone_no','agent','dealer','mo','team','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee','repayment_mode'));

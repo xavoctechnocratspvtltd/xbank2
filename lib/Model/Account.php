@@ -123,7 +123,7 @@ class Model_Account extends Model_Table {
 		$this->addExpression('branch_code')->set(function($m,$q){
 			return $m->refSQL('branch_id')->fieldQuery('Code');
 		});
-		$this->addExpression('member_no')->set($this->refSQL('member_id')->fieldQuery('member_no'))->caption('Member No');
+		// $this->addExpression('member_no')->set($this->refSQL('member_id')->fieldQuery('member_no'))->caption('Member No');
 		$this->addExpression('member_name_only')->set($this->refSQL('member_id')->fieldQuery('member_name_only'))->caption('Member Name');
 		$this->addExpression('name')->set(function($m,$q){
 			

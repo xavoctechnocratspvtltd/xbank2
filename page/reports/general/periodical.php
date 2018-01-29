@@ -52,6 +52,7 @@ class page_reports_general_periodical extends Page {
 		$dealer_join = $account_model->leftJoin('dealers','dealer_id');
 		$agent_join = $account_model->leftJoin('agents','agent_id');
 		$scheme_join = $account_model->join('schemes','scheme_id');
+		$account_model->addExpression('member_no')->set($account_model->refSQL('member_id')->fieldQuery('member_no'))->caption('Member No');
 
 		if($_GET['filter']){
 			$this->api->stickyGET("filter");

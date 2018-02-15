@@ -135,7 +135,8 @@ class page_reports_loan_bikelegal_legalcasenotsubmitdueto extends Page {
 			}
 		}
 
-		$account_model->addCondition('bike_surrendered',true);
+		// $account_model->addCondition('bike_surrendered',true);
+		$account_model->addCondition('is_given_for_legal_process',true);
 		$account_model->addCondition('is_in_legal',false);
 		$account_model->addCondition('legal_case_not_submitted_reason','<>','');
 		$account_model->addCondition('legal_case_not_submitted_reason','<>',null);

@@ -27,6 +27,20 @@ class page_agents extends Page{
 			if(!$m->loaded() && ($c = $m->ref('cadre_id')->get('name')) !='Advisor'){
 				throw new \Exception("Please add only as Advisor, Adding (".$c.")", 1);
 			}
+
+			if($m->loaded() && $m->isDirty('cadre_id')){
+				$old_agent = $this->add('Model_Agent')->load($m->id);
+				$old_cader = $this->add('Model_Cadre')->load($old_agent['cadre_id']);
+				$new_cader = $this->add('Model_Cadre')->load($m['cadre_id']);
+				
+				if($old_cader['total_crpb'] < $new_cader['total_crpb']){
+					if($m->ref('Agent')->count()->getOne())
+						throw new \Exception("Contains Agents and not allowed to go downgrade", 1);
+						
+				}
+
+			}
+			
 		});
 
 		// $agent->addCondition('sponsor_id','>',0);

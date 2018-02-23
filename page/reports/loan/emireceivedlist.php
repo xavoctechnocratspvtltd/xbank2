@@ -40,6 +40,7 @@ class page_reports_loan_emireceivedlist extends Page {
 		$member_join->addField('member_landmark','landmark');
 
 		$member_join->addField('FatherName');
+		$member_join->addField('PhoneNos');
 
 		$dealer_join->addField('dealer_name','name');
 		$account_join->addField('AccountNumber');
@@ -95,7 +96,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_address','member_landmark','FatherName','amountCr','Narration','created_at','dealer_name'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_address','member_landmark','FatherName','PhoneNos','amountCr','Narration','created_at','dealer_name'));
 
 		// $grid->addHook('formatRow',function($g){
 		// 	// $this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));			

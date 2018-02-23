@@ -11,7 +11,7 @@ class page_index extends xPage{
 		// $this->add('View_AccountOpenedOnDate');
 
 		$tabs=$this->add('Tabs');
-		$tab1=$tabs->addTabURL('dashboard_main','Dashboard');
+		$tab1=$tabs->addTabURL('dashboard_main','.');
 		$tab2=$tabs->addTabURL('dashboard_daily','Daily Dues');
 		$tab2=$tabs->addTabURL('dashboard_weekly','Weekly Dues');
 		$tab2=$tabs->addTabURL('dashboard_monthly','Monthly Dues');

@@ -36,6 +36,7 @@ class View_DuesGiveList extends View{
 		
 		$dds_grid->addTotals(array('MaturityAmount'));
 		$dds_heading->js('click',$dds_grid->js()->toggle());
+		$dds_grid->setFormatter('AccountNumber','template')->setTemplate('<a href="#" class="acclink" data-id="{$id}">{AccountNumber}dummy{/}</a>','AccountNumber');
 		// Recurring View
 		
 		$recurring_view = $this->add('View');
@@ -65,6 +66,8 @@ class View_DuesGiveList extends View{
 		$recurring_grid->addTotals(array('MaturityAmount'));
 
 		$recurring_heading->js('click',$recurring_grid->js()->toggle());
+		$recurring_grid->setFormatter('AccountNumber','template')->setTemplate('<a href="#" class="acclink" data-id="{$id}">{AccountNumber}dummy{/}</a>','AccountNumber');
+		
 		// FixedAndMis 
 		
 		$fd_mis_view = $this->add('View');
@@ -91,5 +94,7 @@ class View_DuesGiveList extends View{
 		$fd_mis_grid->addSno();
 		$fd_mis_grid->addTotals(array('MaturityAmount'));
 		$fd_mis_heading->js('click',$fd_mis_grid->js()->toggle());
+
+		$fd_mis_grid->setFormatter('AccountNumber','template')->setTemplate('<a href="#" class="acclink" data-id="{$id}">{AccountNumber}dummy{/}</a>','AccountNumber');
 	}
 }

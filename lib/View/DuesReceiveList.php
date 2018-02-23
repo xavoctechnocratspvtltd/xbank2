@@ -44,7 +44,11 @@ class View_DuesReceiveList extends View{
 		$grid->addSno();
 		$grid->addPaginator(50);
 
+
 		$grid->addTotals(array('Amount'));
+
+		$grid->setFormatter('AccountNumber','template')->setTemplate('<a href="#" class="acclink" data-id="{$account_id}">{AccountNumber}dummy{/}</a>','AccountNumber');
+		$grid->js('click',$grid->js()->univ()->frameURL('Account Details',[$this->app->url('reports_loan_accountdetailed'),'accounts_no'=>$grid->js()->_selectorThis()->data('id')]) )->_selector($grid->name. ' .acclink');
 
 
 	}

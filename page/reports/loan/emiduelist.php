@@ -7,6 +7,7 @@ class page_reports_loan_emiduelist extends Page {
 	function init(){
 		parent::init();
 
+
 		$form=$this->add('Form');
 		$grid=$this->add('Grid_AccountsBase'); 
 		$from_date = null;
@@ -34,6 +35,7 @@ class page_reports_loan_emiduelist extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
+		$form->addField('Number','time_collapse_nonpaid_months');
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
 		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
 		$form->addField('dropdown','bike_surrendered')->setValueList(['include'=>'Include / All','exclude'=>'Exclude','only'=>'Only']);
@@ -201,6 +203,7 @@ class page_reports_loan_emiduelist extends Page {
 			$this->api->stickyGET('report_type');
 			$this->api->stickyGET('bike_surrendered');
 			$this->api->stickyGET('legal_accounts');
+			$this->api->stickyGET('time_collapse_nonpaid_months');
 
 
 			// $account_model->addCondition('DueDate','<=',$till_date);
@@ -284,6 +287,22 @@ class page_reports_loan_emiduelist extends Page {
 				case 'include':
 				default:
 					break;
+			}
+
+			if($_GET['report_type'] == 'time_collapse' && $_GET['time_collapse_nonpaid_months']){
+				$allowed_last_date = date('Y-m-d',strtotime($this->app->today.' -'.$_GET['time_collapse_nonpaid_months'].' months'));
+				
+				$account_model->addExpression('last_transaction_date_in_time')->set(function($m,$q)use($allowed_last_date){
+					return $this->add('Model_TransactionRow',['table_alias'=>'last_cr_tr'])
+								->addCondition('account_id',$q->getField('id'))
+								->addCondition('amountCr','>',0)
+								->addCondition('created_at','>',$allowed_last_date)
+								->addCondition('transaction_type','in',[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT, TRA_PENALTY_AMOUNT_RECEIVED, TRA_OTHER_AMOUNT_RECEIVED])
+								->count();
+				})->type('boolean');
+
+				$account_model->addCondition('last_transaction_date_in_time',false);
+				$account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$allowed_last_date)));
 			}
 
 			// $grid->addMethod('format_total',function($g,$f){
@@ -370,7 +389,10 @@ class page_reports_loan_emiduelist extends Page {
 
 		if($form->isSubmitted()){
 
-			$send = array('dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'], 'filter'=>1 ,'legal_accounts'=>$form['legal_accounts'],'bike_surrendered'=>$form['bike_surrendered']);
+			// if($form['time_collapse_nonpaid_months'] && !is_integer($form['time_collapse_nonpaid_months']))
+			// 	$form->displayError('time_collapse_nonpaid_months','Only Integers');
+
+			$send = array('dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'], 'filter'=>1 ,'legal_accounts'=>$form['legal_accounts'],'bike_surrendered'=>$form['bike_surrendered'],'time_collapse_nonpaid_months'=>$form['time_collapse_nonpaid_months']);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

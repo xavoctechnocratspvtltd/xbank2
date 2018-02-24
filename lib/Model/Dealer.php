@@ -12,6 +12,8 @@ class Model_Dealer extends Model_Table {
 		$this->addField('email_id_1');
 		$this->addField('email_id_2');
 		$this->addField('product');
+
+		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		
 		$this->addField('Address')->type('text');
 		$this->addField('loan_panelty_per_day')->hint('Amount in rupees (int) no special symbol');

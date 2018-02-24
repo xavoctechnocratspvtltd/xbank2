@@ -117,6 +117,7 @@ class page_accounts_Loan extends Page {
 			}
 
 			$account_loan_model->getElement('member_id')->getModel()->addCondition('is_active',true);
+			$account_loan_model->getElement('dealer_id')->getModel()->addCondition('ActiveStatus',true);
 		}
 
 

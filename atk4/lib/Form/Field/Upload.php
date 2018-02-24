@@ -198,6 +198,7 @@ class Form_Field_Upload extends Form_Field {
     function convertToBytes($val){
         $val = trim($val);
         $last = strtolower($val[strlen($val) - 1]);
+        $val = (int) $val;
         switch($last) {
             case 'g':
                 $size = $val * 1024 * 1024 * 1024;

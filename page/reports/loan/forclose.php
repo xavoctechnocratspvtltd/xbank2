@@ -150,6 +150,8 @@ class page_reports_loan_forclose extends Page {
 		$grid->removeColumn('PaneltyCharged');
 		$grid->removeColumn('monthly_interest_months');
 
+		$grid->addFormatter('member','wrap');
+
 		$grid->addPaginator(5);
 
 		if($form->isSubmitted()){

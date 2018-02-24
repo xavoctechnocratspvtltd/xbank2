@@ -1,7 +1,8 @@
 <?php
 
 class Grid_Report_FixedAssets extends Grid_AccountsBase{
-	public $till_date;
+	public $from_date;
+	public $to_date;
 	public $scheme_type;
 	public $fixed_assets_type;
 	public $current_financial_year; 
@@ -16,6 +17,7 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 		$paginator = $this->addPaginator(50);
 		$this->skip_var = $paginator->skip_var;
 
+		$this->addColumn('purchase');
 		$this->addColumn('opening_amount');
 		$this->addColumn('depretiation_at');
 		$this->addColumn('closing_balance');
@@ -28,9 +30,11 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 		// $account_model->addCondition('dealer_id',$this->model['dealer_id']);
 		// $account_model->addCondition('SchemeType','Loan');
 		
+		$this->current_row['purchase'] = $this->model->ref('TransactionRow')->setOrder('created_at')->setLImit(1)->tryLoadAny()->get('amountDr');
+
 		$cr = 0;
 		$dr = 0;
-		$openning = $this->model->getOpeningBalance($this->api->getFinancialYear($this->till_date,'start'));
+		$openning = $this->model->getOpeningBalance($this->from_date);
 		$cr = $openning['CR'];
 		$dr = $openning['DR'];
 
@@ -41,7 +45,7 @@ class Grid_Report_FixedAssets extends Grid_AccountsBase{
 	
 		$this->current_row['opening_amount'] = $balance;
 
-		$openning = $this->model->getOpeningBalance($this->api->nextDate($this->api->getFinancialYear($this->till_date,'end')));
+		$openning = $this->model->getOpeningBalance($this->api->nextDate($this->to_date));
 		$cr = $openning['CR'];
 		$dr = $openning['DR'];
 

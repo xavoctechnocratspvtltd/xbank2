@@ -7,8 +7,17 @@ class page_reports_general_fixedassets extends Page {
 
 		$till_date="";
 		$fix_assets_type="";
-		if($_GET['till_date']){
-			$till_date = $this->api->stickyGET('till_date');			
+		
+		if($_GET['from_date']){
+			$from_date = $this->api->stickyGET('from_date');
+		}else{
+			$from_date = $this->api->getFinancialYear($this->app->now,'start');
+		}
+
+		if($_GET['to_date']){
+			$to_date = $this->api->stickyGET('to_date');			
+		}else{
+			$to_date = $this->api->getFinancialYear($this->app->now,'end');
 		}
 
 		if($_GET['fix_assets_type']){
@@ -19,10 +28,11 @@ class page_reports_general_fixedassets extends Page {
 		$assets_type_field=$form->addField('DropDown','fixed_assets_type');
 		$assets_type_field->setValueList(array('Fixed Assets'=>'Fixed Assets','plant & machionary'=>'plant & machionary','computer & printer'=>'computer & printer','furniture & fix'=>'furniture & fix','All'=>'All'));
 
-		$form->addField('DatePicker','as_on_date');
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
 		$form->addSubmit('GET List');
 
-		$grid=$this->add('Grid_Report_FixedAssets',array('till_date' => $till_date,'fixed_assets_type'=>$fix_assets_type));
+		$grid=$this->add('Grid_Report_FixedAssets',array('from_date'=>$from_date,'to_date' => $to_date,'fixed_assets_type'=>$fix_assets_type));
 
 		$account_model = $this->add('Model_Account')->addCondition('ActiveStatus',true);
 		
@@ -68,7 +78,7 @@ class page_reports_general_fixedassets extends Page {
 			$scheme->addCondition('SchemeGroup',$form['fixed_assets_type']);
 			$scheme->tryLoadAny();
 
-			$grid->js()->reload(array('scheme_id'=>$scheme->id,'till_date'=>$form['as_on_date']?:0,'filter'=>1,'fix_assets_type'=>$form['fixed_assets_type']))->execute();
+			$grid->js()->reload(array('scheme_id'=>$scheme->id,'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'filter'=>1,'fix_assets_type'=>$form['fixed_assets_type']))->execute();
 		}	
 
 	}

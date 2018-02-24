@@ -29,6 +29,11 @@ class page_reports_member_member extends Page {
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
 			$this->api->stickyGET('status');
+			$this->api->stickyGET('type');
+			$this->api->stickyGET('bank');
+			$this->api->stickyGET('pan_no');
+			$this->api->stickyGET('adhar_no');
+			
 			if($_GET['status'] !=='all')
 				$member_model->addCondition('is_active',$_GET['status']==0?false:true);
 			
@@ -58,7 +63,7 @@ class page_reports_member_member extends Page {
 		}
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
 		$grid->setModel($member_model,array('member_no','branch','name','FatherName','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter','doc_thumb_url','sig_image_id'));
-		$grid->addPaginator(50);
+		$grid->addPaginator(500);
 		$grid->addQuickSearch(array('member_no','name','PhoneNos'));
 		$self=$this;
 

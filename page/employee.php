@@ -6,7 +6,8 @@ class page_employee extends Page{
 		// parent::init();
 		$this->api->jui->addStaticStyleSheet('bank-layout','.css');
 		$tab=$this->add('Tabs');
-		$tab->addTabURL('./addEmployee','Add Employees');
+		$tab->addTabURL('./addEmployee','Add Employees (Active)');
+		$tab->addTabURL('./inactiveEmployee','Inactive Employees');
 		$tab->addTabURL('./manageSalary','Salary Structure');
 		$tab->addTabURL('./salaryRecord','Salary Managment');
 
@@ -18,10 +19,17 @@ class page_employee extends Page{
 			return;
 		}
 
-		$emp=$this->add('Model_Employee');
+		$emp=$this->add('Model_Employee')->addCondition('is_active',true);
 		// $emp->addExpression('emp_code')->set(function($m,$q){
 		// 	return $m->id;//->fieldQuery('id');
 		// });
+
+		if($_GET['DeActivate']){
+			$emp->load($_GET['DeActivate'])
+				->set('is_active',false)
+				->saveAndUnload();
+			$crud->js()->reload()->execute();
+		}
 
 		$crud=$this->add('CRUD',array('grid_class'=>'Grid_Employee'));
 		$crud->setModel($emp,array('branch_id','emp_code','name','designation',
@@ -38,6 +46,44 @@ class page_employee extends Page{
 					'is_active','effective_cl_date','opening_cl'),array());
 		// $crud->addRef('EmployeeSalary');
 
+		$crud->grid->addColumn('Button','DeActivate');
+		$crud->add('Controller_Acl');
+	}
+
+	function page_inactiveEmployee(){
+		if($this->api->auth->model['AccessLevel'] < 80 ){
+			$this->add('View_Error')->set('Not Authorized');
+			return;
+		}
+
+		$emp=$this->add('Model_Employee')->addCondition('is_active',false);
+		// $emp->addExpression('emp_code')->set(function($m,$q){
+		// 	return $m->id;//->fieldQuery('id');
+		// });
+
+		if($_GET['Activate']){
+			$emp->load($_GET['Activate'])
+				->set('is_active',true)
+				->saveAndUnload();
+			$crud->js()->reload()->execute();
+		}
+
+		$crud=$this->add('CRUD',array('grid_class'=>'Grid_Employee'));
+		$crud->setModel($emp,array('branch_id','emp_code','name','designation',
+					'contact_no','department','date_of_joining','emergency_no',
+					'father_name','mother_name','DOB','marital_status',
+					'last_qualification','email_id','permanent_address','present_address',
+					'pan_no','driving_licence_no','validity_of_driving_licence','bank_name',
+					'bank_account_no','experince','prev_company','prev_department',
+					'prev_leaving_company_date','leaving_resion','pf_joining_date','pf_no',
+					'pf_nominee','relation_with_nominee','pf_deduct','esi_no',
+					'esi_nominee','agreement_date','paymemt_mode','employee_status',
+					'basic_salary','other_allowance','society_contri','net_payable',
+					'net_salary','employee_image_photo_id','employee_image_signature_id','date_of_leaving',
+					'is_active','effective_cl_date','opening_cl'),array());
+		// $crud->addRef('EmployeeSalary');
+
+		$crud->grid->addColumn('Button','Activate');
 		$crud->add('Controller_Acl');
 	}
 

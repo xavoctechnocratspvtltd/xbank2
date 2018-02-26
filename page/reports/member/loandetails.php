@@ -114,7 +114,6 @@ class page_reports_member_loandetails extends Page {
 		
 		$grid->addFormatter('comment','comment');
 		$grid->addFormatter('landmark','wrap');
-		$grid->addFormatter('doc_thumb_url','image2');
 		
 		$grid->removeColumn('sig_image_id');
 

@@ -87,8 +87,8 @@ class page_reports_member_loandetails extends Page {
 			$member_model->addCondition('id',-1);
 		}
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
-		$grid->setModel($member_model,array('member_no','branch','name','FatherName','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','DOB','last_loan_account','last_loan_date','last_loan_amount','is_active','is_defaulter','doc_thumb_url','sig_image_id'));
-		$grid->addPaginator(50);
+		$grid->setModel($member_model,array('member_no','branch','name','FatherName','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','DOB','last_loan_account','last_loan_date','last_loan_amount','is_active','is_defaulter'));
+		$grid->addPaginator(1000);
 		$grid->addQuickSearch(array('member_no','name','PhoneNos'));
 		$self=$this;
 

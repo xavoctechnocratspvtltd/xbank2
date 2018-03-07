@@ -1,7 +1,7 @@
 <?php
 
 class page_reports_genral extends Page {
-	public $title ="Genral Reports";
+	public $title ="General Reports";
 	function init(){
 		parent::init();
 

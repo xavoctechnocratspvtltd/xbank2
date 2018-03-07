@@ -62,7 +62,7 @@ class page_reports_member_member extends Page {
 			$member_model->addCondition('id',-1);
 		}
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
-		$grid->setModel($member_model,array('member_no','branch','name','FatherName','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter','doc_thumb_url','sig_image_id'));
+		$grid->setModel($member_model,array('member_no','branch','gender','name','FatherName','RelationWithFatherField','CurrentAddress','landmark','tehsil','city','PhoneNos','created_at','is_active','is_defaulter','doc_thumb_url','sig_image_id'));
 		$grid->addPaginator(500);
 		$grid->addQuickSearch(array('member_no','name','PhoneNos'));
 		$self=$this;

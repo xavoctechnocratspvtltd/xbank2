@@ -8,6 +8,7 @@ class Model_Agent extends Model_Table {
 	function init(){
 		parent::init();
 
+		$this->hasOne('Mo','mo_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('ParentAgent','sponsor_id')->display(array('form'=>'autocomplete/Basic'))->sortable(true);
 		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'));;
@@ -324,7 +325,7 @@ class Model_Agent extends Model_Table {
 	}
 
 	function beforeSave(){
-		
+
 
 		$old_agent_username = $this->add('Model_Agent');
 		$old_agent_username->addCondition('username',$this['username']);
@@ -346,8 +347,36 @@ class Model_Agent extends Model_Table {
 
 		if(!$this->loaded()) $this['code_no']= $this->add('Model_Agent')->_dsql()->del('fields')->field('max(code_no)')->getOne() + 1;
 
-		// throw new \Exception($this->api->now, 1);
-		
+		// update mo_agent history if mo_id is changed
+		if($this->isDirty('mo_id')){
+			$current_mo_id = $this['mo_id'];
+			$old_agent = $this->add('Model_Agent')->load($this->id);
+
+			// update _to_date of last mo assocition
+			if($current_mo_id != $old_agent['mo_id']){
+				$asso = $this->add('Model_MoAgentAssociation');
+				$asso->addCondition('agent_id',$this->id);
+				$asso->addCondition('mo_id',$old_agent['mo_id']);
+				$asso->addCondition('from_date','<>',null);
+				$asso->addCondition('_to_date',null);
+				$asso->tryLoadAny();
+				if($asso->loaded()){
+					$asso['_to_date'] = $this->app->now;
+					$asso->saveAndUnload();
+				}
+			}
+
+			// new mo agent association entry
+			if($current_mo_id){
+				$new_asso = $this->add('Model_MoAgentAssociation');
+				$new_asso['agent_id'] = $this->id;
+				$new_asso['mo_id'] = $current_mo_id;
+				$new_asso['from_date'] = $this->app->now;
+				$new_asso->save();
+			}
+			
+  		}
+
 	}
 
 	function account(){

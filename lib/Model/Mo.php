@@ -12,6 +12,7 @@ class Model_Mo extends Model_Table {
 		$this->addHook('beforeDelete',$this);
 		
 		$this->hasMany('Account','mo_id');
+		$this->hasMany('Agent','mo_id');
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 

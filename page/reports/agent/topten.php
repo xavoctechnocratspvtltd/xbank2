@@ -74,6 +74,7 @@ class page_reports_agent_topten extends Page {
 
 				$model->getElement('name')->sortable(true);
 				$model->addCondition($remove_zero_condition);
+				$model->setOrder('RD_amount_compared','desc');
 				// $model->setOrder('amount_compared','desc');
 				$model->_dsql()->group('id');
 				$grid = $view->add('Grid');

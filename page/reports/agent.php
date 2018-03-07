@@ -12,7 +12,8 @@ class page_reports_agent extends Page {
 		$tab1=$tabs->addTabURL('reports_agent_crpb','Agent CRPB Report');
 		$tab1=$tabs->addTabURL('reports_agent_search','Agent Search');
 		$tab1=$tabs->addTabURL('reports_agent_activeinactiveaccount','Agent\'s Accounts');
-		$tab1=$tabs->addTabURL('reports_agent_topten','Top 10');
+		$tab1=$tabs->addTabURL('reports_agent_topten','Top 10 Business');
+		$tab1=$tabs->addTabURL('reports_agent_toptenmember','Top 10 Members');
 
 	}
 }

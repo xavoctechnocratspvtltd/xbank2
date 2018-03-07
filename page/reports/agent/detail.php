@@ -82,7 +82,7 @@ class page_reports_agent_detail extends Page {
 			$agent->addCondition('sponsor_id',$_GET['team_sponsor_id']);
 		}
 
-		$grid_column_array = array('code','agent_member_name',/*'level_1_crpb','level_2_crpb','level_3_crpb','total_group_crpb',*/'FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor','sponsor_cadre','sponsor_phone',/*'self_business','team_business','self_crpb','total_team_business','total_group_crpb',*/'added_by','ActiveStatus');
+		$grid_column_array = array('mo','code','agent_member_name',/*'level_1_crpb','level_2_crpb','level_3_crpb','total_group_crpb',*/'FatherName','PermanentAddress','PhoneNos','PanNo','account','cadre','created_at','sponsor','sponsor_cadre','sponsor_phone',/*'self_business','team_business','self_crpb','total_team_business','total_group_crpb',*/'added_by','ActiveStatus');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');

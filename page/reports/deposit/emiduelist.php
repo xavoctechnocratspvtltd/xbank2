@@ -5,10 +5,20 @@ class page_reports_deposit_emiduelist extends Page {
 
 	function init(){
 		parent::init();
+		
+		$this->app->stickyGET('mo');
+		$this->api->stickyGET('filter');
+		$this->api->stickyGET('report_type');
+		$this->api->stickyGET('on_date');
+		$this->api->stickyGET('agent');
 
 		$form=$this->add('Form');
+		$mo_field = $form->addField('autocomplete\Basic','mo');
+		$mo_field->setModel('Model_Mo');
+
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
+
 
 		$form->addField('DatePicker','on_date')->validateNotNull();
 		// $form->addField('DatePicker','on_date');
@@ -18,7 +28,8 @@ class page_reports_deposit_emiduelist extends Page {
 
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->add('H3',null,'grid_buttons')->set('Deposit Emi Due List As On ' . date('d-m-Y',strtotime($_GET['on_date']?:$this->api->today)) );
-		
+		$grid->addQuickSearch(['AccountNumber']);
+
 		$account_model=$this->add('Model_Active_Account_Recurring');
 		$member_join=$account_model->join('members','member_id');
 		$member_join->addField('member_name','name');
@@ -41,9 +52,9 @@ class page_reports_deposit_emiduelist extends Page {
 		$account_model->addExpression('due_premium_count')->set(function($m,$q){
 			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_count_table'));
 			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
-			$dpc_m->addCondition('DueDate','<=',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			$dpc_m->addCondition('DueDate','<',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
 			$dpc_m->addCondition('account_id',$q->getField('id'));
-			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn > '". ($_GET['on_date']?:$m->api->today) ."')");
+			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn >= '". ($_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today)) ."')");
 			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
 			return $dpc_m->count();
 		})->sortable(true);
@@ -61,7 +72,7 @@ class page_reports_deposit_emiduelist extends Page {
 			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
 			$dpc_m->addCondition('DueDate','<=',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
 			$dpc_m->addCondition('account_id',$q->getField('id'));
-			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn > '". ($_GET['on_date']?:$m->api->today) ."')");
+			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn >= '". ($_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->today) ."')");
 			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
 			return $dpc_m->sum('Amount');
 		});
@@ -70,20 +81,22 @@ class page_reports_deposit_emiduelist extends Page {
 		$account_model->addExpression('agent')->set($account_model->refSQL('agent_id')->fieldQuery('name'));
 		$account_model->addExpression('agent_code')->set($account_model->refSQL('agent_id')->fieldQuery('AgentCode'));
 		$account_model->addExpression('agent_phone')->set($this->add('Model_Member')->addCondition('id',$account_model->refSQL('agent_id')->fieldQuery('member_id'))->fieldQuery('PhoneNos'));
-
+		$account_model->addExpression('agent_mo_id')->set($account_model->refSQL('agent_id')->fieldQuery('mo_id'));
+		$account_model->addExpression('agent_mo_name')->set($account_model->refSQL('agent_id')->fieldQuery('mo'))->caption('Mo');
+		
 		$account_agent = $account_model->refSQL('agent_id');
 
 
+		
 		if($_GET['filter']){
-			$this->api->stickyGET('filter');
 			// ALREADY IMPLEMENTED IN EXPRESSIONS
 			if($_GET['agent']){
-				$this->api->stickyGET('agent');
 				$account_model->addCondition('agent_id',$_GET['agent']);
 			}
+			if($_GET['mo']){
+				$account_model->addCondition('agent_mo_id',$_GET['mo']);
+			}
 
-			$this->api->stickyGET('report_type');
-			$this->api->stickyGET('on_date');
 
 			switch ($_GET['report_type']) {
 				case 'duelist':
@@ -117,7 +130,7 @@ class page_reports_deposit_emiduelist extends Page {
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
-		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','agent','agent_code','agent_phone','scheme'));
+		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','paid_premium_count','due_premium_count','premium_amount','last_premium','agent','agent_code','agent_phone','scheme'));
 		$grid->addFormatter('CurrentAddress','Wrap');
 		if($_GET['agent']){
 			$grid->removeColumn('agent_code');
@@ -133,7 +146,7 @@ class page_reports_deposit_emiduelist extends Page {
 
 		// $grid->addColumn('balance','balance');
 
-		$paginator = $grid->addPaginator(200);
+		$paginator = $grid->addPaginator(500);
 		$grid->skip_var = $paginator->skip_var;
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
@@ -146,7 +159,7 @@ class page_reports_deposit_emiduelist extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('agent'=>$form['agent'],'on_date'=>$form['on_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
+			$grid->js()->reload(array('agent'=>$form['agent'],'on_date'=>$form['on_date']?:0,'report_type'=>$form['report_type'],'mo'=>$form['mo'],'filter'=>1))->execute();
 		}	
 	}
 }

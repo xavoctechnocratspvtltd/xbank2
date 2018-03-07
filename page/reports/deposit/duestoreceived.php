@@ -5,7 +5,11 @@ class page_reports_deposit_duestoreceived extends Page {
 	function init(){
 		parent::init();
 
+		$this->app->stickyGET('mo');
+		
 		$form=$this->add('Form');
+		$field_mo = $form->addField('autocomplete/Basic','mo');
+		$field_mo->setModel('Mo');
 		// $agent_field=$form->addField('autocomplete/Basic','agent');
 		// $agent_field->setModel('Agent');
 
@@ -77,6 +81,8 @@ class page_reports_deposit_duestoreceived extends Page {
 		$account_model->addExpression('agent')->set($account_model->refSQL('agent_id')->fieldQuery('name'));
 		$account_model->addExpression('agent_code')->set($account_model->refSQL('agent_id')->fieldQuery('AgentCode'));
 		$account_model->addExpression('agent_phone')->set($this->add('Model_Member')->addCondition('id',$account_model->refSQL('agent_id')->fieldQuery('member_id'))->fieldQuery('PhoneNos'));
+		$account_model->addExpression('agent_mo_id')->set($account_model->refSQL('agent_id')->fieldQuery('mo_id'));
+		$account_model->addExpression('agent_mo_name')->set($account_model->refSQL('agent_id')->fieldQuery('mo'))->caption('mo');
 
 		$account_agent = $account_model->refSQL('agent_id');
 
@@ -93,6 +99,9 @@ class page_reports_deposit_duestoreceived extends Page {
 			$this->api->stickyGET('from_date');
 			$this->api->stickyGET('to_date');
 
+			if($_GET['mo']){
+				$account_model->addCondition('agent_mo_id',$_GET['mo']);
+			}
 			// if($_GET['from_date'])
 			// 	$account_model->addCondition('created_at','>=',$_GET['on_date']);
 			// if($_GET['to_date'])
@@ -103,7 +112,7 @@ class page_reports_deposit_duestoreceived extends Page {
 
 		$account_model->addCondition('due_premium_count','>',0);
 		$account_model->add('Controller_Acl');
-		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','due_premium_count','premium_amount','total','agent','agent_code','agent_phone'));
+		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','due_premium_count','premium_amount','total','agent_mo_name','agent','agent_code','agent_phone'));
 		$grid->addSno();
 		$grid->addFormatter('CurrentAddress','Wrap');
 
@@ -128,7 +137,7 @@ class page_reports_deposit_duestoreceived extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
+			$grid->js()->reload(array('agent'=>$form['agent'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'report_type'=>$form['report_type'],'mo'=>$form['mo'],'filter'=>1))->execute();
 		}	
 
 	}

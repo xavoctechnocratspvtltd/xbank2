@@ -9,6 +9,7 @@ class Model_Member extends Model_Table {
 
 		$this->hasOne('Branch','branch_id')->defaultValue(@$this->api->current_branch->id);
 		$this->addField('title')->enum(array('Mr.','Mrs.','Miss'))->defaultValue('Mr.')->mandatory(true);
+		$this->addExpression('gender')->set(function($m,$q){return $q->expr('IF([0]="Mr.","M","F")',[$this->getElement('title')]);});
 		$this->addField('name')->mandatory(true);
 
 		$this->addField('member_no')->type('int');
@@ -23,6 +24,7 @@ class Model_Member extends Model_Table {
 		$this->addField('pin_code');
 		$this->addField('state')->mandatory(true);
 		$this->addField('FatherName')->caption('Father / Husband Name')->mandatory(true);
+		$this->addField('RelationWithFatherField')->caption('Relation')->enum(['Father','Husband'])->mandatory(true);
 		$this->addField('Cast')->mandatory(true);
 		$this->addField('PermanentAddress')->type('text')->hint('Leave Blank if same as Current Address')->display(array('grid'=>'shorttext'));
 		$this->addField('Occupation')->enum(array('Business','Service','Self-Employed','Student','House Wife'));
@@ -49,8 +51,8 @@ class Model_Member extends Model_Table {
 		$this->addField('PanNo');
 		$this->addField('AdharNumber');
 		$this->addField('Nominee');
-		$this->addField('RelationWithNominee');
-		$this->addField('NomineeAge');
+		$this->addField('RelationWithNominee')->system(true);
+		$this->addField('NomineeAge')->system(true);
 
 		// Bank Details
 		$this->hasOne('BankBranches','bankbranch_a_id','full_name');

@@ -9,7 +9,13 @@ class page_reports_agent_search extends Page {
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
 		}
+
+		$this->api->stickyGET('mo');
+
 		$form=$this->add('Form');
+		$mo_field = $form->addField('autocomplete/Basic','mo');
+		$mo_field->setModel('Mo');
+
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$branch = $this->add('Model_Branch');
@@ -38,16 +44,21 @@ class page_reports_agent_search extends Page {
 				$agent_model->addCondition('branch_id',$_GET['branch']);
 			}
 
+			if($_GET['mo']){
+				$agent_model->addCondition('mo_id',$_GET['mo']);
+			}
+
 		}else{
 			$agent_model->addCondition('id',-1);
 		}
 		
-		$grid->setModel($agent_model,array('code','agent_member_name','AccountNumber','agent_member_father_name','agent_member_address','agent_phone_no','agent_pan_no','added_by','ActiveStatus','created_at'));
+		$grid->setModel($agent_model,array('mo_id','mo','code','agent_member_name','AccountNumber','agent_member_father_name','agent_member_address','agent_phone_no','agent_pan_no','added_by','ActiveStatus','created_at'));
 
 		$paginator = $grid->addPaginator(500);
 		$grid->skip_var = $paginator->skip_var;
 
 		$grid->addSno();
+		$grid->removeColumn('mo_id');
 
 
 
@@ -64,7 +75,7 @@ class page_reports_agent_search extends Page {
 
 
 		if($form->isSubmitted()){
-			$send = array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'branch'=>$form['branch'],'filter'=>1);
+			$send = array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'branch'=>$form['branch'],'mo'=>$form['mo'],'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	

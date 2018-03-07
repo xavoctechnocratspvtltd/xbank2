@@ -6,6 +6,8 @@ class page_reports_deposit_duestogive extends Page {
 	function init(){
 		parent::init();
 
+		$mo = $this->app->stickyGET('mo');
+
 		$till_date = $this->api->today;
 
 		if($this->app->stickyGET('to_date')){
@@ -14,6 +16,9 @@ class page_reports_deposit_duestogive extends Page {
 		$account_type_array=array('%'=>'All','DDS'=>'DDS','FD'=>'Fixed Account','MIS'=>'MIS','Recurring'=>'Recurring');
 		
 		$form=$this->add('Form');
+		$field_mo = $form->addField('autocomplete/Basic','mo');
+		$field_mo->setModel('Mo');
+
 		$form->addField('dropdown','account_type')->setValueList($account_type_array);
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
@@ -65,7 +70,10 @@ class page_reports_deposit_duestogive extends Page {
 				)";
 		});
 
-		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','maturity_date','Amount','MaturityAmount','agent_name','agent_phoneno','ActiveStatus','account_type');
+		$account->addExpression('agent_mo_id')->set($account->refSQL('agent_id')->fieldQuery('mo_id'));
+		$account->addExpression('agent_mo_name')->set($account->refSQL('agent_id')->fieldQuery('mo'))->caption('Mo');
+
+		$grid_column_array=array('branch','AccountNumber','Loan_AccountNumber','scheme','member_name','FatherName','PermanentAddress','PhoneNos','maturity_date','Amount','MaturityAmount','agent_mo_name','agent_name','agent_phoneno','ActiveStatus','account_type');
 
 
 		if($_GET['filter']){			
@@ -79,6 +87,10 @@ class page_reports_deposit_duestogive extends Page {
 					$account->addCondition('account_type',array_keys($account_type_array));
 				else
 					$account->addCondition('account_type','like',$_GET['account_type']);
+			}
+
+			if($_GET['mo']){
+				$account->addCondition('agent_mo_id',$_GET['mo']);
 			}
 
 			if($_GET['from_date'])
@@ -129,7 +141,7 @@ class page_reports_deposit_duestogive extends Page {
 
 		if($form->isSubmitted()){
 			
-			$send = array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'branch_id'=>$form['branch_id'],'filter'=>1);
+			$send = array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'branch_id'=>$form['branch_id'],'mo'=>$form['mo'],'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

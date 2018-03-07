@@ -8,5 +8,7 @@ class page_reports_employee extends Page {
 		$tabs=$this->add('Tabs')->addClass('noneprintalbe-ul');
 		$tab1=$tabs->addTabURL('reports_conveyance','Conveyance Report');
 		$tab1=$tabs->addTabURL('reports_cashfuel','Fuel Report');
+		$tab1=$tabs->addTabURL('reports_moperformance','Mo Performance');
+		$tab1=$tabs->addTabURL('reports_moassociation','Mo Agent Association');
 	}
 }

@@ -5,8 +5,13 @@ class page_reports_deposit_ddsduelist extends Page {
 
 	function init(){
 		parent::init();
+		
+		$this->app->stickyGET('mo');
 
 		$form=$this->add('Form');
+		$mo_field = $form->addField('autocomplete\Basic','mo');
+		$mo_field->setModel('Model_Mo');
+
 		$agent_field=$form->addField('autocomplete/Basic','agent');
 		$agent_field->setModel('Agent');
 
@@ -45,6 +50,8 @@ class page_reports_deposit_ddsduelist extends Page {
 		$account_model->addExpression('agent')->set($account_model->refSQL('agent_id')->fieldQuery('name'));
 		$account_model->addExpression('agent_code')->set($account_model->refSQL('agent_id')->fieldQuery('AgentCode'));
 		$account_model->addExpression('agent_phone')->set($this->add('Model_Member')->addCondition('id',$account_model->refSQL('agent_id')->fieldQuery('member_id'))->fieldQuery('PhoneNos'));
+		$account_model->addExpression('agent_mo_id')->set($account_model->refSQL('agent_id')->fieldQuery('mo_id'));
+		$account_model->addExpression('agent_mo_name')->set($account_model->refSQL('agent_id')->fieldQuery('mo'))->caption('Mo');
 
 		$account_agent = $account_model->refSQL('agent_id');
 
@@ -56,7 +63,9 @@ class page_reports_deposit_ddsduelist extends Page {
 				$this->api->stickyGET('agent');
 				$account_model->addCondition('agent_id',$_GET['agent']);
 			}
-
+			if($_GET['mo']){
+				$account_model->addCondition('agent_mo_id',$_GET['mo']);
+			}
 		}
 		// else
 		// 	$account_model->addCondition('id',-1);
@@ -64,7 +73,7 @@ class page_reports_deposit_ddsduelist extends Page {
 
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
-		$grid->setModel($account_model,array('AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','Amount','total_deposit','total_due_till_date','due_amount','agent','agent_phone','scheme'));
+		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','Amount','total_deposit','total_due_till_date','due_amount','agent','agent_phone','scheme'));
 		$grid->addFormatter('CurrentAddress','Wrap');
 		if($_GET['agent']){
 			$grid->removeColumn('agent_code');
@@ -93,7 +102,7 @@ class page_reports_deposit_ddsduelist extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('agent'=>$form['agent'],'on_date'=>$form['on_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
+			$grid->js()->reload(array('mo'=>$form['mo'],'agent'=>$form['agent'],'on_date'=>$form['on_date']?:0,'report_type'=>$form['report_type'],'filter'=>1))->execute();
 		}	
 	}
 }

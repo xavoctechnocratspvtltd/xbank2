@@ -14,6 +14,8 @@ class page_dealers extends Page {
 		$crud->setModel($dealer);
 		$crud->add('Controller_Acl');
 
+		$crud->grid->addQuickSearch(['name']);
+
 		if(!$crud->isEditing()){
 			$crud->grid->addSno();
 		}

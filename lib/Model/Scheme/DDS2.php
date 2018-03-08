@@ -76,7 +76,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 		if(!$branch) $branch = $this->api->current_branch;
 		if(!$on_date) $on_date = $this->api->now;
 
-		$all_todays_matured_Accounts = $this->add('Model_Active_Account_Recurring');
+		$all_todays_matured_Accounts = $this->add('Model_Active_Account_DDS2');
 		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
 		$all_todays_matured_Accounts->addCondition('MaturedStatus',false);
 		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
@@ -91,14 +91,14 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 			// echo "workgin on ". $acc_array['AccountNumber'].'<br/>';
 			$all_todays_matured_Accounts->reAdjustPaidValue($this->app->nextDate($on_date));
 			$all_todays_matured_Accounts->markMatured($this->app->nextDate($on_date)); // peying interest in there as well
-			$this->api->markProgress('Recurring_Mark_Mature',$i++,$acc_array['AccountNumber'],$all_todays_matured_Accounts_count);
+			$this->api->markProgress('DDS2_Mark_Mature',$i++,$acc_array['AccountNumber'],$all_todays_matured_Accounts_count);
 		}
 
 	}
 	
 	function monthly( $branch=null, $on_date=null, $test_account=null ) {
 		throw new Exception("TODO", 1);
-		$allaccounts_with_thismonth_duedate = $this->add('Model_Active_Account_Recurring');
+		$allaccounts_with_thismonth_duedate = $this->add('Model_Active_Account_DDS2');
 		$premium_join = $allaccounts_with_thismonth_duedate->join('premiums.account_id');
 		$premium_join->addField('Paid');
 		$premium_join->addField('DueDate');
@@ -115,7 +115,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 		$i=1;
 		foreach ($allaccounts_with_thismonth_duedate as $junk) {			
 			$allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
-			$this->api->markProgress('Recurring_Month_PaidOn_Calculate',$i++,$junk['AccountNumber'],$allaccounts_with_thismonth_duedate_count);
+			$this->api->markProgress('DDS2_Month_PaidOn_Calculate',$i++,$junk['AccountNumber'],$allaccounts_with_thismonth_duedate_count);
 		}
 		// echo "recurring monthly done <br/>";
 	}
@@ -136,7 +136,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 
 		$fy = $this->api->getFinancialYear($on_date);
 
-		$all_accounts_paid_in_this_year = $this->add('Model_Active_Account_Recurring',array('table_alias'=>'acc_main'));
+		$all_accounts_paid_in_this_year = $this->add('Model_Active_Account_DDS2',array('table_alias'=>'acc_main'));
 		$premium_join = $all_accounts_paid_in_this_year->join('premiums.account_id');
 		$premium_join->addField('PaidOn');
 
@@ -163,7 +163,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 			// }
 			
 			$all_accounts_paid_in_this_year->payInterest();
-			$this->api->markProgress('Doing_Recurring_Interest',$i++,$all_accounts_paid_in_this_year['AccountNumber'],$total_rd_accounts);
+			$this->api->markProgress('Doing_DDS2_Interest',$i++,$all_accounts_paid_in_this_year['AccountNumber'],$total_rd_accounts);
 		}
 
 	}

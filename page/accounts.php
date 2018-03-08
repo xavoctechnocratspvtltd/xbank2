@@ -10,7 +10,13 @@ class page_accounts extends Page {
 
 		$tabs = $this->add('Tabs');
 		$tabs->addTabURL('accounts_SM','SM Accounts');
-		foreach (explode(',','SavingAndCurrent,DDS,DDS2,Recurring,FixedAndMis,Loan,Default') as $accounts) {
+		
+		$req_arr= explode(",", 'SavingAndCurrent,DDS,DDS2,Recurring,FixedAndMis,Loan,Default');
+		$config_acctype_arr =explode(",", ACCOUNT_TYPES);
+
+		$arr= array_intersect($req_arr, $config_acctype_arr);
+
+		foreach ($arr as $accounts) {
 			$accounts_display =$accounts;
 			if($accounts == 'Default') $accounts_display = 'Others';
 

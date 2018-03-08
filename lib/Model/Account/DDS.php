@@ -24,6 +24,8 @@ class Model_Account_DDS extends Model_Account{
 
 		$this->scheme_join->addField('percent_loan_on_deposit');
 		$this->scheme_join->addField('no_loan_on_deposit_till');
+		$this->scheme_join->addField('dds_type','type');
+		$this->addCondition('dds_type','DDS');
 
 
 		// $this->addHook('afterAccountDebited,afterAccountCredited',array($this,'closeIfPaidCompletely'));

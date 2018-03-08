@@ -91,7 +91,10 @@ class page_transactions_withdrawl extends Page {
 				if(!$account_model_temp->loaded())
 					$form->displayError('amount','Oops');
 
-				$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
+				$type = $account_model_temp->ref('scheme_id')->get('SchemeType');
+				if($type=='DDS') $type = $account_model_temp->ref('scheme_id')->get('type');
+				
+				$account_model = $this->add('Model_Account_'.$type);
 				$account_model->loadBy('AccountNumber',$form['account']);
 
 				if($account_model['LockingStatus']) $form->displayError('account','This account is locked, contact admin');

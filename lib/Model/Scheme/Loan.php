@@ -80,16 +80,23 @@ class Model_Scheme_Loan extends Model_Scheme {
 	}
 
 	function daily($branch= null,$on_date=null,$test_account=null){
+
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
 
 		$this->putPaneltiesOnAllUnpaidLoanPremiums($branch,$on_date,$test_account);
 		
 		$loan_accounts  = $this->add('Model_Active_Account_Loan');
+		$q= $loan_accounts->dsql();
 		
+		$dealer_join = $loan_accounts->leftJoin('dealers','dealer_id');
+		$dealer_join->addField('loan_panelty_per_day');
+
 		$loan_accounts->scheme_join->addField('Interest');
 		$loan_accounts->scheme_join->addField('NumberOfPremiums');
 		$loan_accounts->scheme_join->addField('ReducingOrFlatRate');
+		$loan_accounts->scheme_join->addField('panelty');
+		$loan_accounts->scheme_join->addField('panelty_grace');
 
 		$loan_accounts->leftJoin('premiums.account_id')
 						->addField('DueDate');
@@ -100,16 +107,22 @@ class Model_Scheme_Loan extends Model_Scheme {
 
 		$loan_accounts->addCondition('branch_id',$branch->id);
 
-        $loan_accounts->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
+        $loan_accounts->addCondition($q->expr('IF([loan_panelty_per_day] is not null,DueDate,DATE_ADD(DueDate, INTERVAL IFNULL([panelty_grace],0)+1 DAY ))',['loan_panelty_per_day'=>$loan_accounts->getElement('loan_panelty_per_day'),'panelty_grace'=>$loan_accounts->getElement('panelty_grace')]),$this->api->nextDate($on_date));
+        // $loan_accounts->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
 		if($test_account) $loan_accounts->addCondition('id',$test_account->id);
 
 		// Copy to let be Deactivated in some process in between
 		// So, its Not active account
 		// will load it by active account id in loop
 		$loan_accounts_copy  = $this->add('Model_Account_Loan');
+		$q= $loan_accounts_copy->dsql();
+		$dealer_join = $loan_accounts_copy->leftJoin('dealers','dealer_id');
+		$dealer_join->addField('loan_panelty_per_day');
 		$loan_accounts_copy->scheme_join->addField('Interest');
 		$loan_accounts_copy->scheme_join->addField('NumberOfPremiums');
 		$loan_accounts_copy->scheme_join->addField('ReducingOrFlatRate');
+		$loan_accounts_copy->scheme_join->addField('panelty');
+		$loan_accounts_copy->scheme_join->addField('panelty_grace');
 
 		$loan_accounts_copy->leftJoin('premiums.account_id')
 						->addField('DueDate');
@@ -118,9 +131,10 @@ class Model_Scheme_Loan extends Model_Scheme {
 			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
 		});
 
-		$loan_accounts_copy->addCondition('branch_id',$branch->id);
+		// $loan_accounts_copy->addCondition('branch_id',$branch->id);
 
-        $loan_accounts_copy->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
+        // $loan_accounts_copy->addCondition($q->expr('IF([loan_panelty_per_day] is not null,DueDate,DATE_ADD(DueDate, INTERVAL IFNULL([panelty_grace],0) DAY ))',['loan_panelty_per_day'=>$loan_accounts_copy->getElement('loan_panelty_per_day'),'panelty_grace'=>$loan_accounts_copy->getElement('panelty_grace')]),$this->api->nextDate($on_date));
+		// $loan_accounts_copy->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
 		// if($test_account) $loan_accounts_copy->addCondition('id',$test_account->id);
 
 
@@ -194,6 +208,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$premiums->_dsql()->set('PaneltyCharged',$this->api->db->dsql()->expr('PaneltyCharged +'. $dealer_join->table_alias.'.loan_panelty_per_day'));
 		// if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
         $premiums->_dsql()->sql_templates['update']="update [table] [join] set [set] [where]  [group] [having] [order] [limit]";
+        
         $premiums->_dsql()->update();
 
 
@@ -212,11 +227,11 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$scheme_join->addField('panelty_grace');
 
 
-		$premiums->addCondition($q->expr('DATE_ADD(DueDate, INTERVAL IFNULL([0],0) DAY ) <= [1]',[$premiums->getElement('panelty_grace'),$on_date]));
+		$premiums->addCondition($q->expr('DATE_ADD(DueDate, INTERVAL IFNULL([0],0) DAY ) <= "[1]"',[$premiums->getElement('panelty_grace'),$on_date]));
 		$premiums->addCondition('loan_panelty_per_day',null); // Assures only dealer WITHOUT loan_panelty_per_day records are affected
 		$premiums->addCondition('panelty','>',0); // Assures only accounts with schemes WITH panelty records are affected
 		
-		$panelty_to_post = $this->api->db->dsql()->expr('[0] * [1] /100',[$premiums->getElement('Amount'),$premiums->getElement('panelty')]);
+		$panelty_to_post = $this->api->db->dsql()->expr('round([0] * [1] /100)',[$premiums->getElement('Amount'),$premiums->getElement('panelty')]);
 		$premiums->addCondition('PaneltyCharged','<',$panelty_to_post);
 		$premiums->addCondition('Paid',false);
 		$premiums->addCondition('branch_id',$branch->id);
@@ -230,7 +245,6 @@ class Model_Scheme_Loan extends Model_Scheme {
 		// if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
         $premiums->_dsql()->sql_templates['update']="update [table] [join] set [set] [where]  [group] [having] [order] [limit]";
         $premiums->_dsql()->update();
-
 	}
 
 

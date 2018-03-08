@@ -18,7 +18,16 @@ class page_test  extends Page {
 
 		// echo date("t",strtotime($on_date)). ' '. $days_to_count;
 
-		$this->add('CRUD')->setModel('Model_MoAgentAssociation');
+		// $this->add('CRUD')->setModel('Model_MoAgentAssociation');
+
+		$this->add('View_Console')->set(function($c){
+			for ($i=0; $i < 100; $i++) { 
+				$c->out($i);
+				sleep(1);
+			}
+		});
+
+
 
 	}
 }

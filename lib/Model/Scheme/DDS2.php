@@ -16,6 +16,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 		$this->getElement('Interest')->group('b~3~Product Details')->mandatory(true);
 		$this->getElement('MaturityPeriod')->group('b~3~Product Details')->mandatory(true)->type('Number');
 		$this->getElement('PremiumMode')->group('b~3~Product Details')->mandatory(true)->type('Number');
+		$this->getElement('PremiumMode')->setValueList(array(RECURRING_MODE_MONTHLY=>'Monthly'));
 		
 		$this->getElement('balance_sheet_id')->group('c~3~Accounts Details')->mandatory(true);
 		$this->getElement('SchemeGroup')->group('c~3~Accounts Details')->mandatory(true);

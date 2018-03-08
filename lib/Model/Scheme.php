@@ -80,6 +80,7 @@ class Model_Scheme extends Model_Table {
 
 	function putValidDateCondition(){
 		$this->addCondition([['valid_till',null],['valid_till','>',$this->app->today]]);
+		return $this;
 	}
 
 	function updateTransactionRows(){

@@ -6,6 +6,7 @@ class page_schemes_DDS2 extends Page{
 
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Scheme'));
 		$scheme_dds2_model =$this->add('Model_Scheme_DDS2');
+		$scheme_dds2_model->addCondition('type','DDS2');
 		
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;

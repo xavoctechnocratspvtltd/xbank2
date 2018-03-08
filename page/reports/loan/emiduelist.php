@@ -7,6 +7,17 @@ class page_reports_loan_emiduelist extends Page {
 	function init(){
 		parent::init();
 
+		$this->api->stickyGET('filter');
+		$this->api->stickyGET('dealer');
+		$this->api->stickyGET('report_type');
+		$this->api->stickyGET('to_date');
+		$this->api->stickyGET('from_date');
+		$this->api->stickyGET('loan_type');
+		$this->api->stickyGET('report_type');
+		$this->api->stickyGET('bike_surrendered');
+		$this->api->stickyGET('legal_accounts');
+		$this->api->stickyGET('time_collapse_nonpaid_months');
+
 
 		$form=$this->add('Form');
 		$grid=$this->add('Grid_AccountsBase'); 
@@ -194,16 +205,7 @@ class page_reports_loan_emiduelist extends Page {
 
 		
 		if($_GET['filter']){
-			$this->api->stickyGET('filter');
-			$this->api->stickyGET('dealer');
-			$this->api->stickyGET('report_type');
-			$this->api->stickyGET('to_date');
-			$this->api->stickyGET('from_date');
-			$this->api->stickyGET('loan_type');
-			$this->api->stickyGET('report_type');
-			$this->api->stickyGET('bike_surrendered');
-			$this->api->stickyGET('legal_accounts');
-			$this->api->stickyGET('time_collapse_nonpaid_months');
+			
 
 
 			// $account_model->addCondition('DueDate','<=',$till_date);

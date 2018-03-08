@@ -13,7 +13,7 @@ class page_closing extends Page {
 			$account = null;
 			// ===== uncomment to test for scheme or account below
 			$scheme = $this->add('Model_Scheme')->load(535);
-			// $account = $this->add('Model_Account')->load();
+			$account = $this->add('Model_Account')->load(191840);
 			// ======
 
 			try{
@@ -26,6 +26,14 @@ class page_closing extends Page {
 				// throw new \Exception("Error Processing Request", 1);
 				
 				// $this->api->db->dsql()->owner->rollBack();
+
+				$p = $this->add('Model_Premium')
+				$p->addCondition('account_id',$account->id);
+				echo "<pre>";
+				print_r($p->getRows());
+				echo "</pre>";
+				throw new \Exception("Error Processing Request", 1);
+				
 				$this->api->db->dsql()->owner->commit();
 			}catch(Exception $e){
 				$this->api->db->dsql()->owner->rollBack();

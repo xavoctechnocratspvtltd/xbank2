@@ -17,6 +17,12 @@ class Model_Transaction extends Model_Table {
 
 	public $executed=false;
 
+	public $transaction_type;
+	public $branch;
+	public $transaction_date;
+	public $Narration;
+	public $options;
+
 	function init(){
 		parent::init();
 
@@ -94,7 +100,7 @@ class Model_Transaction extends Model_Table {
 		if(!$branch) $branch = $this->api->current_branch;
 
 		if(!$transaction_date) $transaction_date = $this->api->now;
-
+		// echo "createNewTransaction on date $transaction_date <br/>";
 		// Transaction TYpe Save if not available
 		$this['transaction_type_id'] = $transaction_type_model->id;
 		$this['reference_id'] = isset($options['reference_id'])?$options['reference_id']:0;
@@ -105,7 +111,6 @@ class Model_Transaction extends Model_Table {
 
 		$this->transaction_type = $transaction_type;
 		$this->branch = $branch;
-		$this->only_transaction = $only_transaction;
 		$this->transaction_date = $transaction_date;
 		$this->Narration = $Narration;
 		$this->only_transaction = $only_transaction;
@@ -235,11 +240,15 @@ class Model_Transaction extends Model_Table {
 
 		$this->save();
 
+		// echo "transaction saved data <pre>";
+		// print_r($this->data);
+		// echo "</pre>";
+
 		$total_debit_amount =0;
 		// Foreach Dr add new TransacionRow (Dr wali)
 		foreach ($this->dr_accounts as $accountNumber => $dtl) {
 			if($dtl['amount'] ==0) continue;
-			$dtl['account']->debitWithTransaction($dtl['amount'],$this->id,$this->only_transaction);
+			$dtl['account']->debitWithTransaction($dtl['amount'],$this->id,$this->only_transaction,null,$this->transaction_date);
 			$total_debit_amount += $dtl['amount'];
 		}
 
@@ -249,7 +258,7 @@ class Model_Transaction extends Model_Table {
 		foreach ($this->cr_accounts as $accountNumber => $dtl) {
 			if($dtl['amount'] ==0) continue;
 			// if(!$dtl['account'] instanceof Model_Account) echo $accountNumber .' --= problem';
-			$dtl['account']->creditWithTransaction($dtl['amount'],$this->id,$this->only_transaction);
+			$dtl['account']->creditWithTransaction($dtl['amount'],$this->id,$this->only_transaction, null,$this->transaction_date);
 			$total_credit_amount += $dtl['amount'];
 		}
 		

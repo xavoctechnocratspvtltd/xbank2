@@ -254,7 +254,8 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){
+	function debitWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null,$on_date=null){
+		if(!$on_date) $on_date = $this->app->now;
 
 		$transaction_row=$this->add('Model_TransactionRow');
 		$transaction_row['amountDr']=$amount;
@@ -263,6 +264,7 @@ class Model_Account extends Model_Table {
 		$transaction_row['account_id']=$this->id;
 		$transaction_row['scheme_id']=$this['scheme_id'];
 		$transaction_row['balance_sheet_id']=$this['balance_sheet_id'];
+		$transaction_row['created_at']=$on_date;
 		// $transaction_row['accounts_in_side']=$no_of_accounts_in_side;
 		$transaction_row->save();
 
@@ -271,7 +273,8 @@ class Model_Account extends Model_Table {
 		$this->debitOnly($amount);
 	}
 
-	function creditWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null){
+	function creditWithTransaction($amount,$transaction_id,$only_transaction=null,$no_of_accounts_in_side=null,$on_date=null){
+		if(!$on_date) $on_date = $this->app->now;
 
 		$transaction_row=$this->add('Model_TransactionRow');
 		$transaction_row['amountCr']=$amount;
@@ -280,6 +283,7 @@ class Model_Account extends Model_Table {
 		$transaction_row['account_id']=$this->id;
 		$transaction_row['scheme_id']=$this['scheme_id'];
 		$transaction_row['balance_sheet_id']=$this['balance_sheet_id'];
+		$transaction_row['created_at']=$on_date;
 		// $transaction_row['accounts_in_side']=$no_of_accounts_in_side;
 		$transaction_row->save();
 

@@ -23,6 +23,9 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$this->getElement('SchemeGroup')->group('c~3~Accounts Details')->mandatory(true);
 		$this->getElement('MinLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(0);
 		$this->getElement('MaxLimit')->group('c~3~Accounts Details')->mandatory(true)->defaultValue(-1);
+		
+		$this->getElement('panelty')->group('d~6~Scheme Panelty')->type('int')->defaultValue(null)->hint('value of percent only number like 10, 12 etc');
+		$this->getElement('panelty_grace')->group('d~6~Scheme Panelty')->defaultValue(0)->type('int')->hint('Number of grace days for panelty after premium submit');
 
 
 		$this->getElement('ProcessingFeesinPercent')->caption('Check if Processing Fee in %');
@@ -168,6 +171,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
 
+		// Works all if dealer has some loan_panelty_per_day
 		$premiums = $this->add('Model_Premium');
 		$account_join = $premiums->leftJoin('accounts','account_id');
 		$account_join->addField('branch_id');
@@ -175,6 +179,8 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 		$dealer_join->addField('loan_panelty_per_day');
 
+		$premiums->addCondition('loan_panelty_per_day','>=',0); // Assures only dealer with loan_panelty_per_day records are affected
+		
 		$premiums->addCondition('DueDate','<=',$on_date);
 		$premiums->addCondition('PaneltyCharged','<',$this->api->db->dsql()->expr('loan_panelty_per_day * 30'));
 		$premiums->addCondition('Paid',false);
@@ -186,7 +192,42 @@ class Model_Scheme_Loan extends Model_Scheme {
 		if($test_account) $premiums->addCondition('account_id',$test_account->id);
 
 		$premiums->_dsql()->set('PaneltyCharged',$this->api->db->dsql()->expr('PaneltyCharged +'. $dealer_join->table_alias.'.loan_panelty_per_day'));
-//		if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
+		// if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
+        $premiums->_dsql()->sql_templates['update']="update [table] [join] set [set] [where]  [group] [having] [order] [limit]";
+        $premiums->_dsql()->update();
+
+
+        // Works all below if scheme has some panelty defined
+        $premiums = $this->add('Model_Premium');
+        
+        $q= $premiums->dsql();
+
+		$account_join = $premiums->leftJoin('accounts','account_id');
+		$account_join->addField('branch_id');
+		$account_join->addField('LoanAgainstAccount_id');
+		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
+		$dealer_join->addField('loan_panelty_per_day');
+		$scheme_join = $account_join->join('schemes','scheme_id');
+		$scheme_join->addField('panelty');
+		$scheme_join->addField('panelty_grace');
+
+
+		$premiums->addCondition($q->expr('DATE_ADD(DueDate, INTERVAL IFNULL([0],0) DAY ) <= [1]',[$premiums->getElement('panelty_grace'),$on_date]));
+		$premiums->addCondition('loan_panelty_per_day',null); // Assures only dealer WITHOUT loan_panelty_per_day records are affected
+		$premiums->addCondition('panelty','>',0); // Assures only accounts with schemes WITH panelty records are affected
+		
+		$panelty_to_post = $this->api->db->dsql()->expr('[0] * [1] /100',[$premiums->getElement('Amount'),$premiums->getElement('panelty')]);
+		$premiums->addCondition('PaneltyCharged','<',$panelty_to_post);
+		$premiums->addCondition('Paid',false);
+		$premiums->addCondition('branch_id',$branch->id);
+
+		// No Panelties for Loan Against Deposit Accounts
+		$premiums->addCondition($premiums->dsql()->expr('([0] is null or [0] = 0)',array($premiums->getElement('LoanAgainstAccount_id'))));
+
+		if($test_account) $premiums->addCondition('account_id',$test_account->id);
+
+		$premiums->_dsql()->set('PaneltyCharged',$panelty_to_post);
+		// if($test_account) $premiums->_dsql()->where('account_id',$test_account->id);
         $premiums->_dsql()->sql_templates['update']="update [table] [join] set [set] [where]  [group] [having] [order] [limit]";
         $premiums->_dsql()->update();
 

@@ -23,6 +23,8 @@ class Model_Dealer extends Model_Table {
 		$this->hasMany('Account','dealer_id');
 
 		$this->addHook('beforeDelete',$this);
+		$this->addHook('beforeSave',function($m){if(!$this['loan_panelty_per_day']) $this['loan_panelty_per_day'] = null;});
+
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

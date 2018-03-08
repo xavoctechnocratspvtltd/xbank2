@@ -8,11 +8,19 @@ class page_closing extends Page {
 		
 		if($_GET['do']){
 			$this->api->forget('progress_data');
+			
+			$scheme = null;
+			$account = null;
+			// ===== uncomment to test for scheme or account below
+			$scheme = $this->add('Model_Scheme')->load(535);
+			// $account = $this->add('Model_Account')->load();
+			// ======
+
 			try{
 				$this->api->db->dsql()->owner->beginTransaction();
 				$this->api->closing_running =true;
 				foreach ($b=$this->add('Model_Branch')->addCondition('PerformClosings',true) as $branch_array) {
-					$b->performClosing($this->api->today);
+					$b->performClosing($this->api->today,$scheme,$account);
 				}
 				$this->api->markProgress('COMMITING IN DB',0,'ALL BRANCHES CLOSED',1);
 				// throw new \Exception("Error Processing Request", 1);

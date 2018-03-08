@@ -55,6 +55,9 @@ class Model_Scheme extends Model_Table {
 		$this->addField('CollectorCommissionRate');
 		$this->addField('ReducingOrFlatRate')->caption('Interest Type')->enum(array('Flat','Reducing'))->defaultValue('Flat');
 
+		$this->addField('panelty');
+		$this->addField('panelty_grace');
+
 		$this->hasMany('Account','scheme_id');
 		$this->hasMany('TransactionRow','transaction_row_id');
 

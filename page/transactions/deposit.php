@@ -172,7 +172,7 @@ class page_transactions_deposit extends Page {
 			$type = $account_model_temp->ref('scheme_id')->get('SchemeType');
 			if($type=='DDS') $type = $account_model_temp->ref('scheme_id')->get('type');
 
-			$account_model = $this->add('Model_Account_'.);
+			$account_model = $this->add('Model_Account_'.$type);
 			$account_model->loadBy('AccountNumber',$form['account']);
 			
 

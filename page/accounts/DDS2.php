@@ -16,7 +16,8 @@ class page_accounts_DDS2 extends Page {
 		$crud->addHook('myupdate',function($crud,$form)use($self){
 			if($crud->isEditing('edit')) return false;
 
-			
+			if($form['Amount'] < 300 && ($form['Amount']%300 !=0)) 
+				$form->displayError('Amount','Must be minimum 300 and in multiple of 300');
 
 			$sm_model=$self->add('Model_Account_SM');
 				$sm_model->addCondition('member_id',$form['member_id']);

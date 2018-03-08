@@ -194,7 +194,8 @@ class page_reports_loan_dealerwise extends Page {
 			// if($_GET['dealer'])
 			// 	$account_model->addCondition('dealer_id',$_GET['dealer']);
 
-			if($_GET['bike_surrendered']==='include' AND $_GET['legal_accounts']==='include'){
+			// done again as per devendra sir bu looking at emidue list condition 
+			// if($_GET['bike_surrendered']==='include' AND $_GET['legal_accounts']==='include'){
 				switch ($_GET['report_type']) {
 					case 'duelist':
 						$account_model->addCondition('due_premium_count','>',0);
@@ -219,7 +220,7 @@ class page_reports_loan_dealerwise extends Page {
 						# code...
 						break;
 				}
-			}
+			// }
 
 			switch ($_GET['loan_type']) {
 				case 'vl':
@@ -252,7 +253,9 @@ class page_reports_loan_dealerwise extends Page {
 					$account_model->addCondition('bike_surrendered',true);
 					break;
 				case 'exclude':
-					$account_model->addCondition('bike_surrendered',false);
+					$account_model->addCondition('bike_surrendered',true);
+					$account_model->addCondition('is_bike_returned',false);
+					$account_model->addCondition('is_given_for_legal_process',false);
 					break;
 				case 'include':
 				default:

@@ -7,8 +7,11 @@ class page_accounts_DDS extends Page {
 		$this->add('Controller_Acl');
 		
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
+		
 		$account_dds_model = $this->add('Model_Account_DDS');
 		$account_dds_model->setOrder('created_at','Desc');
+		$account_dds_model->addCondition('dds_type','DDS');
+
 		$self=$this;
 		$crud->addHook('myupdate',function($crud,$form)use($self){
 			if($crud->isEditing('edit')) return false;

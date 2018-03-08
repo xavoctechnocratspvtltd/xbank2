@@ -74,9 +74,11 @@ class Model_Premium extends Model_Table {
 
 
 		$account = $this->ref('account_id');
+		$atype='RD';
+		if($account['SchemeType']=='DDS') $atype='DDS';
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Commission ".$account['AccountNumber'], null, array('reference_id'=>$account->id));
+		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COMMISSION_DEPOSIT, $account->ref('branch_id'), $on_date, $atype." Premium Commission ".$account['AccountNumber'], null, array('reference_id'=>$account->id));
 		
 		$transaction->addDebitAccount($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'] , $commissionForThisAgent);
 		
@@ -102,6 +104,9 @@ class Model_Premium extends Model_Table {
 		$commission = 0;
 		$account = $this->account();
 
+		$atype='RD';
+		if($account['SchemeType']=='DDS') $atype='DDS';
+
 		if(!$account->collectionAgent()) return;
 
 		foreach($all_paid_noncollected_preimums as $junk){
@@ -116,7 +121,7 @@ class Model_Premium extends Model_Table {
 		$tds = round($commissionForThisAgent * $tds_percentage / 100,2);
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT, $account->ref('branch_id'), $on_date, "RD Premium Collection ".$account['AccountNumber'], null, array('reference_id'=>$account->id));
+		$transaction->createNewTransaction(TRA_PREMIUM_AGENT_COLLECTION_CHARGE_DEPOSIT, $account->ref('branch_id'), $on_date, $atype." Premium Collection ".$account['AccountNumber'], null, array('reference_id'=>$account->id));
 		
 		$transaction->addDebitAccount($account['branch_code'] . SP . COLLECTION_CHARGE_PAID_ON . SP. $account['scheme_name'] , $commissionForThisAgent);
 		

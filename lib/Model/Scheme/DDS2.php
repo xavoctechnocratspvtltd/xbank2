@@ -64,9 +64,9 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 
 	function getDefaultAccounts(){
 		return array(
-			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On RD','PAndLGroup'=>'Commission Paid On Deposit'),
-			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On RD','PAndLGroup'=>'Interest Paid On Deposit'),
-			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Collection Charges Paid On",'Group'=>'Collection Charges Paid On RD','PAndLGroup'=>'Collection Charges Paid On Deposit')
+			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Commission Paid On",'Group'=>'Commission Paid On DDS','PAndLGroup'=>'Commission Paid On Deposit'),
+			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Interest Paid On",'Group'=>'Interest Paid On DDS','PAndLGroup'=>'Interest Paid On Deposit'),
+			array('under_scheme'=>"Indirect Expenses",'intermediate_text'=>"Collection Charges Paid On",'Group'=>'Collection Charges Paid On DDS','PAndLGroup'=>'Collection Charges Paid On Deposit')
 		);
 	}
 

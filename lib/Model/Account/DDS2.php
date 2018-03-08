@@ -466,7 +466,7 @@ class Model_Account_DDS2 extends Model_Account{
 		if($account_to_credit){
 			// only for premature.. but not in maturity case if this same function is reused
 			$transaction = $this->add('Model_Transaction');
-			$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "RD Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
+			$transaction->createNewTransaction($this->transaction_withdraw_type, $this->ref('branch_id'), $on_date, "DDS Pre Mature Payment Given in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 			
 			$final_credit_amount = $amount_to_give;
 

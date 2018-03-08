@@ -140,9 +140,9 @@ define('TRA_EXCESS_AMOUNT_REVERT',  'EXCESS AMOUNT REVERT');
 
 define('MEMBER_TYPES',                         "General,VIP,VVIP");
 
-// define('ACCOUNT_TYPES',                         "DDS");
+// define('ACCOUNT_TYPES',                         "LOAN");
 // Keep Default in last as it reverts TDS ect that are not any product specific
-define('ACCOUNT_TYPES',                         "DDS,Loan,CC,FixedAndMis,SavingAndCurrent,Recurring,Default");
+define('ACCOUNT_TYPES',                         "DDS,DDS2,Loan,CC,FixedAndMis,SavingAndCurrent,Recurring,Default");
 define('ACCOUNT_TYPE_DEFAULT',                  "Default");
 define('ACCOUNT_TYPE_BANK',                     "SavingAndCurrent");
 define('ACCOUNT_TYPE_SAVING',                     "SavingAndCurrent");

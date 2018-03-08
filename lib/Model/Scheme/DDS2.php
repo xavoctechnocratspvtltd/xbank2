@@ -34,7 +34,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 		$this->getElement('ProcessingFeesinPercent')->destroy();
 		$this->getElement('InterestMode')->destroy();
 		$this->getElement('InterestRateMode')->destroy();
-		$this->getElement('type')->defaultValue('Recurring');
+		$this->getElement('type')->defaultValue('DDS2');
 		$this->getElement('Commission')->destroy();
 		$this->getElement('PostingMode')->destroy();
 		$this->getElement('ProcessingFees')->destroy();
@@ -71,7 +71,6 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 	}
 
 	function daily($branch=null,$on_date=null, $test_account=null){
-		throw new Exception("TODO", 1);
 		
 		if(!$branch) $branch = $this->api->current_branch;
 		if(!$on_date) $on_date = $this->api->now;
@@ -97,7 +96,6 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 	}
 	
 	function monthly( $branch=null, $on_date=null, $test_account=null ) {
-		throw new Exception("TODO", 1);
 		$allaccounts_with_thismonth_duedate = $this->add('Model_Active_Account_DDS2');
 		$premium_join = $allaccounts_with_thismonth_duedate->join('premiums.account_id');
 		$premium_join->addField('Paid');
@@ -121,16 +119,13 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 	}
 
 	function quarterly( $branch=null, $on_date=null, $test_account=null ) {
-		throw new Exception("TODO", 1);
 	}
 
 	function halfYearly( $branch=null, $on_date=null, $test_account=null ) {
-		throw new Exception("TODO", 1);
 	}
 
 
 	function yearly($branch, $on_date=null,$test_account=null){
-		throw new Exception("TODO", 1);
 		if(!$branch) $branch = $this->api->current_branch;
 		if(!$on_date) $on_date = $this->api->now;
 

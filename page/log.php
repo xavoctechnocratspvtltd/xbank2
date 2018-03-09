@@ -43,13 +43,17 @@ class page_log extends Page {
 		$form->addsubmit('Get Records');
 
 		$grid  = $this->add('Grid');
-		$grid->setModel($model->debug());
+		$grid->setModel($model);
 		$grid->addPaginator(100);
 		$grid->setFormatter('name','wrap');
 
 		$grid->addMethod('format_account',function($grid,$field){
 			if($grid->model['model_class']){
-				$grid->current_row[$field] = $grid->add($grid->model['model_class'])->tryLoad($grid->model['pk_id'])->get('name');
+				try{
+					$grid->current_row[$field] = $grid->add($grid->model['model_class'])->tryLoad($grid->model['pk_id'])->get('name');
+				}catch(Exception $e){
+					$grid->current_row[$field] = $e->getMessage();
+				}
 				$grid->setTDParam($field,'style/color','');
 			}
 			else{

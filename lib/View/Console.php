@@ -118,6 +118,7 @@ class View_Console extends \View {
             header('Cache-Control: private');
             header('Content-Encoding: none');
             header("Pragma: no-cache");
+            header("X-Accel-Buffering: no");
             $this->destruct_send=true;
 
 

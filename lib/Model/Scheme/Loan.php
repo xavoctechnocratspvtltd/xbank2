@@ -189,6 +189,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$premiums = $this->add('Model_Premium');
 		$account_join = $premiums->leftJoin('accounts','account_id');
 		$account_join->addField('branch_id');
+		// Now penalty should be on Loans even against Deposit account IF EFFECTED BY SCHEME PANELTY PERCENTAGES
 		$account_join->addField('LoanAgainstAccount_id');
 		$dealer_join = $account_join->leftJoin('dealers','dealer_id');
 		$dealer_join->addField('loan_panelty_per_day');
@@ -236,8 +237,9 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$premiums->addCondition('Paid',false);
 		$premiums->addCondition('branch_id',$branch->id);
 
-		// No Panelties for Loan Against Deposit Accounts
-		$premiums->addCondition($premiums->dsql()->expr('([0] is null or [0] = 0)',array($premiums->getElement('LoanAgainstAccount_id'))));
+		// No Panelties for Loan Against Deposit Accounts -- Now removed 
+		// Now penalty should be on Loans even against Deposit account IF EFFECTED BY SCHEME PANELTY PERCENTAGES
+		// $premiums->addCondition($premiums->dsql()->expr('([0] is null or [0] = 0)',array($premiums->getElement('LoanAgainstAccount_id'))));
 
 		if($test_account) $premiums->addCondition('account_id',$test_account->id);
 

@@ -136,6 +136,8 @@ class page_reports_deposit_emiduelist extends Page {
 			$grid->removeColumn('agent_code');
 		}
 		$grid->addSno();
+		$grid->addTotals(['premium_amount']);
+		$this->add('View')->set('Total Sum of Premium Amount: '.$account_model->sum('premium_amount'));
 		// $grid->removeColumn('last_premium');
 
 		// $grid->addMethod('format_balance',function($g,$f){

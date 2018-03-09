@@ -67,7 +67,9 @@ class page_accounts_Loan_bikelegal extends Page{
 						'is_bike_returned',
 						'bike_returned_on',
 						'bike_not_sold_reason',
-						'legal_case_not_submitted_reason'
+						'legal_case_not_submitted_reason',
+						'is_in_arbitration',
+						'arbitration_on'
 						];
 		$grid_fields=array_merge(['AccountNumber'],$form_fields);;
 		$crud->setModel($model,$form_fields,$grid_fields);

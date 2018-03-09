@@ -84,7 +84,10 @@ class Model_Scheme_Loan extends Model_Scheme {
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$branch) $branch = $this->api->current_branch;
 
+		$this->api->markProgress('Updating_Penalties',0);
+
 		$this->putPaneltiesOnAllUnpaidLoanPremiums($branch,$on_date,$test_account);
+		$this->api->markProgress('Updating_Penalties',null);
 		
 		$loan_accounts  = $this->add('Model_Active_Account_Loan');
 		$q= $loan_accounts->dsql();
@@ -137,13 +140,16 @@ class Model_Scheme_Loan extends Model_Scheme {
 		// $loan_accounts_copy->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
 		// if($test_account) $loan_accounts_copy->addCondition('id',$test_account->id);
 
-
+		$i=0;
+		$total_count = $loan_accounts->count()->getOne();
 		foreach ($loan_accounts as $acc_array) {
+			$this->api->markProgress('Loan_Interest_and_Panelty',$i++,$acc_array['AccountNumber'],$total_count);
 			$loan_accounts_copy->load($loan_accounts->id);
             $loan_accounts_copy->postInterestEntry($on_date);
 			if($loan_accounts_copy['due_panelty'] > 0)
 				$loan_accounts_copy->postPanelty($on_date);
 		}
+		$this->api->markProgress('Loan_Interest_and_Panelty',null);
 
 		// all accounts that has passed their last EMI and has some panelty to be posted
 		$time_over_accounts_with_panelty = $this->add('Model_Active_Account_Loan');
@@ -165,9 +171,9 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$i=1;
 		foreach ($time_over_accounts_with_panelty as $junk) {
 			$time_over_accounts_with_panelty->postPanelty($on_date);
-			$this->api->markProgress('Loan_Post_Panelty',$i++,$junk['AccountNumber'],$total_count);
+			$this->api->markProgress('Loan_Post_Panelty_For_Timeover',$i++,$junk['AccountNumber'],$total_count);
 		}
-		$this->api->markProgress('Loan_Post_Panelty',null);
+		$this->api->markProgress('Loan_Post_Panelty_For_Timeover',null);
 
 		// Shifted to post Penalty Function for each account
 		// TODOS: Bring back here for performance reason.

@@ -130,6 +130,8 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 				}
 			}
 		}
+
+		$this->api->markProgress('Doing_Provision',null);
 	}
 
 	function monthly($branch=null,$on_date=null,$test_account=null){

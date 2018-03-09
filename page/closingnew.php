@@ -33,6 +33,19 @@ class page_closingnew extends Page {
 
 		$grid->addColumn('Button','perform_closing');
 
+		$grid->addMethod('format_last_closing',function($g,$f){
+			if(strtotime($g->model['last_closing']) == strtotime($this->app->today)){
+				$g->setTDParam($f,'style/color','green');
+			}else{
+				$g->setTDParam($f,'style/color','red');
+			}
+		});
+
+		$grid->addFormatter('last_closing','last_closing');
+
+		$grid->addClass('branch-grid');
+		$grid->js('reload')->reload();
+
 		if($branch_id = $this->app->stickyGET('perform_closing')){
 			$this->js()->univ()->frameURL('Performing Closing',$this->closing_vp->getURL())->execute();
 		}
@@ -179,6 +192,8 @@ class page_closingnew extends Page {
 				throw $e;
 			}
 			unset($this->api->closing_running);
+
+			$c->jsEval($this->js()->trigger('reload')->_selector('.branch-grid'));
 		});
 	}
 

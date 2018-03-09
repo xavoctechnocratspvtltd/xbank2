@@ -103,8 +103,12 @@ class page_closingnew extends Page {
 			$scheme = null;
 			$account = null;
 		// 	// ===== uncomment to test for scheme or account below
-			$scheme = $this->add('Model_Scheme')->load(535);
-			$account = $this->add('Model_Account')->load(191841);
+			// $scheme = $this->add('Model_Scheme')->load(868); //UDRSL108
+			// $account = $this->add('Model_Account')->load(192062);
+
+			// $scheme = $this->add('Model_Scheme')->load(358); // UDRVL3687
+			// $account = $this->add('Model_Account')->load(192063);
+
 		// 	// ======
 
 			try{
@@ -126,31 +130,59 @@ class page_closingnew extends Page {
 				// throw new \Exception("Error Processing Request", 1);
 				
 				// $this->api->db->dsql()->owner->rollBack();
+				if(! is_null($scheme) || ! is_null($account)){
 
-				// $p = $this->add('Model_TransactionRow');
-				// $p->join('accounts','account_id')->addField('AccountNumber');
-				// $p->addCondition('account_id',$account->id);
-				
-				// echo "<pre>";
-				// print_r($p->getRows());
-				// echo "</pre>";
-				// $grid = $this->add('Grid');
-				// $grid->setSource($p->getRows());
-				// $grid->addColumn('voucher_no');
-				// $grid->addColumn('created_at');
-				// $grid->addColumn('Narration');
-				// $grid->addColumn('amountDr');
-				// $grid->addColumn('amountCr');
-				// $grid->addColumn('PaneltyCharged');
-				// $grid->addColumn('PaneltyPosted');
+					$statement = $this->add('Model_TransactionRow');
+					$statement->addCondition('account_id',$account->id);
+					
+					// echo "<pre>";
+					// print_r($p->getRows());
+					// echo "</pre>";
+					$grid = $this->add('Grid');
+					$grid->setSource($statement->getRows());
+					$grid->addColumn('created_at');
+					$grid->addColumn('account');
+					$grid->addColumn('amountDr');
+					$grid->addColumn('amountCr');
+					$grid->addColumn('Narration');
+					$grid->addColumn('voucher_no');
+
+					$c->out($grid->getHTML());
+
+
+					$p = $this->add('Model_Premium');
+					$p->addCondition('account_id',$account->id);
+					
+					// echo "<pre>";
+					// print_r($p->getRows());
+					// echo "</pre>";
+					$grid = $this->add('Grid');
+					$grid->setSource($p->getRows());
+					$grid->addColumn('Amount');
+					$grid->addColumn('created_at');
+					$grid->addColumn('DueDate');
+					$grid->addColumn('PaneltyCharged');
+					$grid->addColumn('PaneltyPosted');
+					$grid->addColumn('PaidOn');
+					$grid->addColumn('Paid');
+
+					$c->out($grid->getHTML());
+					// $grid->addColumn('PaneltyCharged');
+					// $grid->addColumn('PaneltyPosted');
+				}else{
+					$this->api->db->dsql()->owner->commit();
+				}
 
 				// throw new \Exception("Error Processing Request", 1);
-				$this->api->db->dsql()->owner->commit();
 			}catch(Exception $e){
 				$this->api->db->dsql()->owner->rollBack();
 				throw $e;
 			}
 			unset($this->api->closing_running);
 		});
+	}
+
+	function getTempOutPut($v){
+
 	}
 }

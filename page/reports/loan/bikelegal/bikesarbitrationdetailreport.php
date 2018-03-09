@@ -1,7 +1,7 @@
 <?php
 
-class page_reports_loan_bikelegal_legalcasesubmitdue extends Page {
-	public $title="Bike In Stock Report";
+class page_reports_loan_bikelegal_bikesarbitrationdetailreport extends Page {
+	public $title="Bike Arbitration In Stock Report";
 	
 	function init(){
 		parent::init();
@@ -116,7 +116,7 @@ class page_reports_loan_bikelegal_legalcasesubmitdue extends Page {
 			return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		});
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','bike_auctioned_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at','cheque_returned_on','notice_sent_after_cheque_returned_on'];
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at','is_in_arbitration','arbitration_on'];
 
 		if($this->api->stickyGET('filter')){
 			if($this->api->stickyGET('dealer')){
@@ -135,23 +135,14 @@ class page_reports_loan_bikelegal_legalcasesubmitdue extends Page {
 			}
 		}
 
-		$account_model->addCondition('ActiveStatus',true);
-		// $account_model->addCondition('bike_surrendered',true);
-		// $account_model->addCondition('is_bike_returned',false);
-		// $account_model->addCondition('is_bike_auctioned',true);
-		$account_model->addCondition('is_final_recovery_notice_sent',true);
-		$account_model->addCondition('is_cheque_presented_in_bank',true);
-		$account_model->addCondition('is_cheque_returned',true);
+		$account_model->addCondition('is_legal_case_finalised',false);
 		$account_model->addCondition('is_in_legal',false);
-		$account_model->addCondition('is_in_arbitration',false);
-		$account_model->addCondition([['legal_case_not_submitted_reason',''],['legal_case_not_submitted_reason',null]]);
-		$account_model->addCondition('is_notice_sent_after_cheque_returned',true);
-		// $account_model->addCondition('cheque_returned_on','<',date('Y-m-d',strtotime($this->app->today.' -25 DAYS')));
+		$account_model->addCondition('is_in_arbitration',true);
 
 		$grid = $this->add('Grid_AccountsBase')->addSno();
 
 		$grid->setModel($account_model,$grid_column_array);
-		$grid->addPaginator(100);
+		$grid->addPaginator(1);
 
 		if($form->isSubmitted()){
 			$send = array('filter'=>1,'dealer'=>$form['dealer']);

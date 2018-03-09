@@ -140,7 +140,8 @@ class page_reports_loan_bikelegal_legalcasenotsubmitdueto extends Page {
 		$account_model->addCondition('is_in_legal',false);
 		$account_model->addCondition('legal_case_not_submitted_reason','<>','');
 		$account_model->addCondition('legal_case_not_submitted_reason','<>',null);
-
+		$account_model->addCondition('is_in_arbitration',false);
+		
 		$grid = $this->add('Grid_AccountsBase')->addSno();
 
 		$grid->setModel($account_model,$grid_column_array);

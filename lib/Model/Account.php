@@ -101,7 +101,9 @@ class Model_Account extends Model_Table {
 
 		$this->addField('bike_not_sold_reason')->type('text');
 		$this->addField('legal_case_not_submitted_reason')->type('text');
-
+		
+		$this->addField('is_in_arbitration')->type('boolean')->defaultValue(false);
+		$this->addField('arbitration_on')->type('date');
 
 		
 		$this->addField('is_dirty')->type('boolean')->system(true)->defaultValue(false);

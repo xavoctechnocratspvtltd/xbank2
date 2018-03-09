@@ -273,9 +273,19 @@ class Frontend extends ApiFrontend {
 
         $this->api->memorize('progress_data',$data);
 
-        $m=new Memcache();
-        $m->addServer('localhost',11211);
-        $m->set('data',$data);
+        if(isset($this->app->sse_stream)){
+
+            // $send_queue_in_every_x_requests = 1;
+
+            // if(!isset($this->app->stream_send_queue)) $this->app->stream_send_queue = 0;
+            // $this->app->stream_send_queue++;
+            // if($this->app->stream_send_queue % $send_queue_in_every_x_requests == 0 )
+                $this->app->sse_stream->jsEval($this->js()->univ()->updateProgress($data));
+        }
+
+        // $m=new Memcache();
+        // $m->addServer('localhost',11211);
+        // $m->set('data',$data);
     }
 
     function getProgress(){

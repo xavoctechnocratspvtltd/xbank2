@@ -30,7 +30,7 @@ class page_transactions_remove extends Page {
 			$transaction->tryLoadAny();
 
 			if(!$transaction->loaded()){
-				$p->add('View_Error')->set('Could Not Load Such Transaction');
+				$p->add('View_Error')->set('Could Not Load Such Transaction, or transaction is not in current financial year');
 				return;
 			}
 

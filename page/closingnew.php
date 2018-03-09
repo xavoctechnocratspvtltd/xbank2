@@ -34,7 +34,7 @@ class page_closingnew extends Page {
 		$grid->addColumn('Button','perform_closing');
 
 		if($branch_id = $this->app->stickyGET('perform_closing')){
-			$this->js()->univ()->frameURL('Closing Of',$this->closing_vp->getURL())->execute();
+			$this->js()->univ()->frameURL('Performing Closing',$this->closing_vp->getURL())->execute();
 		}
 		
 		// if($_GET['do']){

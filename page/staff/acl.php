@@ -6,15 +6,19 @@ class page_staff_acl extends Page {
 	function init(){
 		parent::init();
 
-		$acl_model = $this->add('Model_Acl');
+		$tabs = $this->add('Tabs');
+		$data_tab = $tabs->addTab('Data');
+		$report_tab = $tabs->addTab('Report');
 
-		if($sid=$this->api->stickyGET('staff_id')){
+		$acl_model = $data_tab->add('Model_Acl');
+
+		if($sid=$data_tab->api->stickyGET('staff_id')){
 			$acl_model->addCondition('staff_id',$sid);
 		}
 
 		$acl_model->setOrder('class,staff_id');
 
-		$crud = $this->add('CRUD');
+		$crud = $data_tab->add('CRUD');
 		$crud->setModel($acl_model);
 
 		if(!$crud->isEditing()){
@@ -25,6 +29,19 @@ class page_staff_acl extends Page {
 			$crud->grid->addFormatter('allow_del','grid/inline');
 		}
 
+
+		$m = $report_tab->add('Model_StaffReportAcl');
+		$m->setOrder('staff_id,page');
+
+		$crud = $report_tab->add('CRUD',['allow_add'=>false]);
+		$crud->setModel($m);
+
+		$crud->grid->addQuickSearch(['staff','page']);
+		$crud->grid->addPaginator(200);
+
+		if(!$crud->isEditing()){
+			$crud->grid->addFormatter('is_allowed','grid/inline');
+		}
 	}
 
 

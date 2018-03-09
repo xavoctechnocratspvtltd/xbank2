@@ -97,6 +97,18 @@ class Frontend extends ApiFrontend {
                 // die('Hi');
                 $header_menu1=$header->add('Menu_Base')->addClass('mymenu');
             }
+
+            if(strpos($this->page,'reports_') === 0){
+                $acl = $this->add('Model_StaffReportAcl')
+                ->addCondition('page',$this->page)
+                ->addCondition('staff_id',$auth->model->id)
+                ->tryLoadAny();
+                ;
+                if(!$acl->loaded()) $acl->save();
+                if(!$acl['is_allowed']){
+                    $this->page='notauthorised';
+                }
+            }
         }
     }
 

@@ -142,7 +142,7 @@ class page_reports_loan_bikelegal_bikesarbitrationdetailreport extends Page {
 		$grid = $this->add('Grid_AccountsBase')->addSno();
 
 		$grid->setModel($account_model,$grid_column_array);
-		$grid->addPaginator(1);
+		$grid->addPaginator(100);
 
 		if($form->isSubmitted()){
 			$send = array('filter'=>1,'dealer'=>$form['dealer']);

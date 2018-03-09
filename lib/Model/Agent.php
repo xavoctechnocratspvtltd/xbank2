@@ -147,12 +147,446 @@ class Model_Agent extends Model_Table {
 			return $ls3->sum($q->expr('IFNULL([0],0)',array($ls3->getElement('self_crpb'))));
 		});
 
+		$this->addExpression('level_4_crpb')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls4->sum($q->expr('IFNULL([0],0)',array($ls4->getElement('self_crpb'))));
+		});
+
+		$this->addExpression('level_5_crpb')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls5->sum($q->expr('IFNULL([0],0)',array($ls5->getElement('self_crpb'))));
+		});
+
+		$this->addExpression('level_6_crpb')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls6->sum($q->expr('IFNULL([0],0)',array($ls6->getElement('self_crpb'))));
+		});
+
+		$this->addExpression('level_7_crpb')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls7->sum($q->expr('IFNULL([0],0)',array($ls7->getElement('self_crpb'))));
+		});
+
+		$this->addExpression('level_8_crpb')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls8->sum($q->expr('IFNULL([0],0)',array($ls8->getElement('self_crpb'))));
+		});
+
+		$this->addExpression('level_9_crpb')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls9 = $m->add('Model_Agent',array('table_alias'=>'l9'));
+			$ls9->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls9->getElement('sponsor_id'),
+					$ls8->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls9->sum($q->expr('IFNULL([0],0)',array($ls9->getElement('self_crpb'))));
+		});
+
+		$this->addExpression('level_10_crpb')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls9 = $m->add('Model_Agent',array('table_alias'=>'l9'));
+			$ls9->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls9->getElement('sponsor_id'),
+					$ls8->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls10 = $m->add('Model_Agent',array('table_alias'=>'l10'));
+			$ls10->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls10->getElement('sponsor_id'),
+					$ls9->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls10->sum($q->expr('IFNULL([0],0)',array($ls10->getElement('self_crpb'))));
+		});
+
 		$this->addExpression('total_group_crpb')->set(
-			$this->dsql()->expr('IFNULL([0],0) + IFNULL([1],0) + IFNULL([2],0)',
+			$this->dsql()->expr('IFNULL([0],0) + IFNULL([1],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0)',
 				array(
 					$this->getElement('level_1_crpb'), 
 					$this->getElement('level_2_crpb'),
-					$this->getElement('level_3_crpb')
+					$this->getElement('level_3_crpb'),
+					$this->getElement('level_4_crpb'),
+					$this->getElement('level_5_crpb'),
+					$this->getElement('level_6_crpb'),
+					$this->getElement('level_7_crpb'),
+					$this->getElement('level_8_crpb'),
+					$this->getElement('level_9_crpb'),
+					$this->getElement('level_10_crpb')
 					)
 				)
 			);
@@ -204,12 +638,446 @@ class Model_Agent extends Model_Table {
 			return $ls3->count();
 		});
 
+		$this->addExpression('level_4_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3c'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4c'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls4->count();
+		});
+
+		$this->addExpression('level_5_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3c'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4c'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5c'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls5->count();
+		});
+
+		$this->addExpression('level_6_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3c'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4c'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5c'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6c'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls6->count();
+		});
+
+		$this->addExpression('level_7_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3c'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4c'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5c'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6c'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7c'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls7->count();
+		});
+
+		$this->addExpression('level_8_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3c'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4c'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5c'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6c'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7c'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8c'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls8->count();
+		});
+
+		$this->addExpression('level_9_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3c'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4c'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5c'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6c'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7c'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8c'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls9 = $m->add('Model_Agent',array('table_alias'=>'l9c'));
+			$ls9->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls9->getElement('sponsor_id'),
+					$ls8->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls9->count();
+		});
+
+		$this->addExpression('level_10_count')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1c'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2c'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3c'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4c'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5c'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6c'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7c'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8c'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls9 = $m->add('Model_Agent',array('table_alias'=>'l9c'));
+			$ls9->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls9->getElement('sponsor_id'),
+					$ls8->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls10 = $m->add('Model_Agent',array('table_alias'=>'l10c'));
+			$ls10->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls10->getElement('sponsor_id'),
+					$ls9->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls10->count();
+		});
+
 		$this->addExpression('total_group_count')->set(
-			$this->dsql()->expr('IFNULL([0],0) + IFNULL([1],0) + IFNULL([2],0)',
+			$this->dsql()->expr('IFNULL([0],0) + IFNULL([1],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0)',
 				array(
 					$this->getElement('level_1_count'), 
 					$this->getElement('level_2_count'),
-					$this->getElement('level_3_count')
+					$this->getElement('level_3_count'),
+					$this->getElement('level_4_count'),
+					$this->getElement('level_5_count'),
+					$this->getElement('level_6_count'),
+					$this->getElement('level_7_count'),
+					$this->getElement('level_8_count'),
+					$this->getElement('level_9_count'),
+					$this->getElement('level_10_count')
 					)
 				)
 			);
@@ -273,13 +1141,447 @@ class Model_Agent extends Model_Table {
 			return $ls3->sum($q->expr('IFNULL([0],0)',array($ls3->getElement('self_business'))));
 		});
 
+		$this->addExpression('level_4_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3sb'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4sb'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls4->sum($q->expr('IFNULL([0],0)',array($ls4->getElement('self_business'))));
+		});
+
+		$this->addExpression('level_5_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3sb'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4sb'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5sb'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls5->sum($q->expr('IFNULL([0],0)',array($ls5->getElement('self_business'))));
+		});
+
+		$this->addExpression('level_6_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3sb'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4sb'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5sb'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6sb'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls6->sum($q->expr('IFNULL([0],0)',array($ls6->getElement('self_business'))));
+		});
+
+		$this->addExpression('level_7_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3sb'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4sb'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5sb'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6sb'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7sb'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls7->sum($q->expr('IFNULL([0],0)',array($ls7->getElement('self_business'))));
+		});
+
+		$this->addExpression('level_8_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3sb'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4sb'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5sb'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6sb'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7sb'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8sb'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls8->sum($q->expr('IFNULL([0],0)',array($ls8->getElement('self_business'))));
+		});
+
+		$this->addExpression('level_9_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3sb'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4sb'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5sb'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6sb'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7sb'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8sb'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls9 = $m->add('Model_Agent',array('table_alias'=>'l9sb'));
+			$ls9->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls9->getElement('sponsor_id'),
+					$ls8->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls9->sum($q->expr('IFNULL([0],0)',array($ls9->getElement('self_business'))));
+		});
+
+		$this->addExpression('level_10_self_business')->set(function($m,$q){
+			$ls1 = $m->add('Model_Agent',array('table_alias'=>'l1sb'));
+			$ls1->addCondition($q->expr('[0] in ([1])',array($ls1->getElement('sponsor_id'),$m->getElement('id'))));
+
+			$ls2 = $m->add('Model_Agent',array('table_alias'=>'l2sb'));
+			$ls2->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls2->getElement('sponsor_id'),
+					$ls1->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls3 = $m->add('Model_Agent',array('table_alias'=>'l3sb'));
+			$ls3->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls3->getElement('sponsor_id'),
+					$ls2->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls4 = $m->add('Model_Agent',array('table_alias'=>'l4sb'));
+			$ls4->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls4->getElement('sponsor_id'),
+					$ls3->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls5 = $m->add('Model_Agent',array('table_alias'=>'l5sb'));
+			$ls5->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls5->getElement('sponsor_id'),
+					$ls4->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls6 = $m->add('Model_Agent',array('table_alias'=>'l6sb'));
+			$ls6->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls6->getElement('sponsor_id'),
+					$ls5->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls7 = $m->add('Model_Agent',array('table_alias'=>'l7sb'));
+			$ls7->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls7->getElement('sponsor_id'),
+					$ls6->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls8 = $m->add('Model_Agent',array('table_alias'=>'l8sb'));
+			$ls8->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls8->getElement('sponsor_id'),
+					$ls7->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls9 = $m->add('Model_Agent',array('table_alias'=>'l9sb'));
+			$ls9->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls9->getElement('sponsor_id'),
+					$ls8->fieldQuery('id')
+					)
+				)
+			);
+
+			$ls10 = $m->add('Model_Agent',array('table_alias'=>'l10sb'));
+			$ls10->addCondition($q->expr('[0] in ([1])',
+				array(
+					$ls10->getElement('sponsor_id'),
+					$ls9->fieldQuery('id')
+					)
+				)
+			);
+
+			return $ls10->sum($q->expr('IFNULL([0],0)',array($ls10->getElement('self_business'))));
+		});
+
 
 		$this->addExpression('total_team_business')->set(
-			$this->dsql()->expr('IFNULL([0],0) + IFNULL([1],0) + IFNULL([2],0)',
+			$this->dsql()->expr('IFNULL([0],0) + IFNULL([1],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0) + IFNULL([2],0)',
 				array(
 					$this->getElement('level_1_self_business'), 
 					$this->getElement('level_2_self_business'),
-					$this->getElement('level_3_self_business')
+					$this->getElement('level_3_self_business'),
+					$this->getElement('level_4_self_business'),
+					$this->getElement('level_5_self_business'),
+					$this->getElement('level_6_self_business'),
+					$this->getElement('level_7_self_business'),
+					$this->getElement('level_8_self_business'),
+					$this->getElement('level_9_self_business'),
+					$this->getElement('level_10_self_business')
 					)
 				)
 			);

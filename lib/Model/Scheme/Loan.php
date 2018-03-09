@@ -102,7 +102,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 						->addField('DueDate');
 
 		$loan_accounts->addExpression('due_panelty')->set(function($m,$q)use($on_date){
-			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<=',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
 		});
 
 		$loan_accounts->addCondition('branch_id',$branch->id);
@@ -128,7 +128,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 						->addField('DueDate');
 
 		$loan_accounts_copy->addExpression('due_panelty')->set(function($m,$q)use($on_date){
-			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
+			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<=',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
 		});
 
 		// $loan_accounts_copy->addCondition('branch_id',$branch->id);

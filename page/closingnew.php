@@ -7,11 +7,19 @@ class page_closingnew extends Page {
 		ini_set('memory_limit', '2048M');
 		set_time_limit(0);
 		gc_enable();
+
 		$this->closing_vp = $this->add('VirtualPage');
 		$this->closing_vp->set([$this,'performClosing']);
 	}
 
 	function page_index(){
+
+		$closing_model = $this->add('Model_Closing');
+		$cont = $closing_model->add('Controller_ACL');
+		if(isset($cont->acl) && !$cont->acl->allowAdd()){
+			$this->add('View_Error')->set('You are not authorised to performs closing');
+			return;
+		}
 
 
 		$grid = $this->add('Grid');
@@ -96,17 +104,26 @@ class page_closingnew extends Page {
 			$account = null;
 		// 	// ===== uncomment to test for scheme or account below
 			$scheme = $this->add('Model_Scheme')->load(535);
-			// $account = $this->add('Model_Account')->load(191841);
+			$account = $this->add('Model_Account')->load(191841);
 		// 	// ======
 
 			try{
 				$this->api->db->dsql()->owner->beginTransaction();
 				$this->api->closing_running =true;
-					$branch = $this->add('Model_Branch')->load($branch_id);
-					$branch->performClosing($this->api->today,$scheme,$account);
+
+				$this->app->resetProgress();
+
+				$all_branches = $this->add('Model_Branch')
+									->addCondition('Code','<>','DFL')
+									->each(function($b){
+										$b->set('allow_login',false)->save();
+									});
+
+				$branch = $this->add('Model_Branch')->load($branch_id);
+				$branch->performClosing($this->api->today,$scheme,$account);
 
 				$this->api->markProgress('COMMITING IN DB',0,'ALL BRANCHES CLOSED',1);
-				throw new \Exception("Error Processing Request", 1);
+				// throw new \Exception("Error Processing Request", 1);
 				
 				// $this->api->db->dsql()->owner->rollBack();
 

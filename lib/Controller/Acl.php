@@ -1,8 +1,11 @@
 <?php
 
 class Controller_Acl extends AbstractController{
+	
 	public $default_view = true;
 	public $branch_field= 'branch_id';
+	public $acl;
+
 	function init(){
 		parent::init();
 
@@ -23,7 +26,7 @@ class Controller_Acl extends AbstractController{
 			$view_class = $view_class->owner;
 		}
 
-		$acl = $this->add('Model_Acl')
+		$this->acl = $acl = $this->add('Model_Acl')
 					->setStaff($this->api->currentStaff)
 					->setModelClass(get_class($model_class?:$view_class));
 

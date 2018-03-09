@@ -31,6 +31,9 @@ class page_staff_acl extends Page {
 
 
 		$m = $report_tab->add('Model_StaffReportAcl');
+		if($sid=$data_tab->api->stickyGET('staff_id')){
+			$m->addCondition('staff_id',$sid);
+		}
 		$m->setOrder('staff_id,page');
 
 		$crud = $report_tab->add('CRUD',['allow_add'=>false]);

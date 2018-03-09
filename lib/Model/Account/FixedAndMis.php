@@ -201,7 +201,7 @@ class Model_Account_FixedAndMis extends Model_Account{
 		
 		$transaction->execute();
 
-		$this->api->markProgress('Doing_Provision',$this['AccountNumber'],$on_date,5);
+		$this->api->markProgress('Doing_Provision',0,$this['AccountNumber'].$on_date);
 
 		$this->save();
 

@@ -90,6 +90,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 			$all_todays_matured_Accounts->markMatured($this->app->nextDate($on_date)); // peying interest in there as well
 			$this->api->markProgress('Recurring_Mark_Mature',$i++,$acc_array['AccountNumber'],$all_todays_matured_Accounts_count);
 		}
+		$this->api->markProgress('Recurring_Mark_Mature',null);
 
 	}
 	
@@ -114,6 +115,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 			$allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
 			$this->api->markProgress('Recurring_Month_PaidOn_Calculate',$i++,$junk['AccountNumber'],$allaccounts_with_thismonth_duedate_count);
 		}
+		$this->api->markProgress('Recurring_Month_PaidOn_Calculate',null);
 		// echo "recurring monthly done <br/>";
 	}
 
@@ -160,6 +162,7 @@ class Model_Scheme_Recurring extends Model_Scheme {
 			$all_accounts_paid_in_this_year->payInterest();
 			$this->api->markProgress('Doing_Recurring_Interest',$i++,$all_accounts_paid_in_this_year['AccountNumber'],$total_rd_accounts);
 		}
+		$this->api->markProgress('Doing_Recurring_Interest',null);
 
 	}
 }

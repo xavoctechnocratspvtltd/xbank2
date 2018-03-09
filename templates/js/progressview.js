@@ -1,5 +1,7 @@
 $.each({
         updateProgress: function(data) {
+                    // console.log('Data ');
+                    // console.log(data);
                     //called when successful
                     progress_data = data;
 
@@ -9,12 +11,24 @@ $.each({
                     $.each(progress_data, function(index, val) {
                         if ($('#pb' + index).length) {
 
-                            $('#pb' + index).parent().find('b').text(index + ' : ' + val['running'] + ' / ' + val['total'] + ' [' + val['detail'] + ']');
+                            var heading = index;
+                            if(val['running'] != undefined)
+                                heading += ' : '+val['running'];
+                            if(val['total'] != undefined)
+                                heading += ' / ' + val['total'];
+                            if(val['detail'] != undefined)
+                                heading += ' [' + val['detail'] + ']';
 
-                            if (progress_data[index]['total'] != 'undefined') {
+                            $('#pb' + index).parent().find('b').text(heading);
+
+                            if (progress_data[index]['total'] != 'undefined' && progress_data[index]['running'] > 0){
                                 var per;
                                 per = Math.floor(progress_data[index]['running'] / progress_data[index]['total'] * 100);
-                                console.log(per);
+                                // console.log('percentage');
+                                // console.log(progress_data);
+                                // console.log(per);
+                                // console.log(index);
+                                // console.log('percentage finish');
                                 $('#pb' + index).progressbar('option', {
                                     value: per
                                 });
@@ -29,7 +43,7 @@ $.each({
                                 value: 0
                             });
                             $('#pb' + index).find('.ui-progressbar-value').css('background-color', '#eef');
-                            console.log('adding');
+                            // console.log('append adding');
                         }
                         $('#pb' + index).parent().attr('token', token);
                     });

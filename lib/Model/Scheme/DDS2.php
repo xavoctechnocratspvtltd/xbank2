@@ -86,13 +86,14 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 		$i=1;
 		$all_todays_matured_Accounts_count = $all_todays_matured_Accounts->count()->getOne();
 		// echo 'found '.$all_todays_matured_Accounts_count . ' accounts on '.$on_date.' <br/>';
+		// $this->api->markProgress('DDS2_Mark_Mature',$i,'DDS2_Mark_Mature',$all_todays_matured_Accounts_count);
 		foreach ($all_todays_matured_Accounts as $acc_array) {
 			// echo "workgin on ". $acc_array['AccountNumber'].'<br/>';
 			$all_todays_matured_Accounts->reAdjustPaidValue($this->app->nextDate($on_date));
 			$all_todays_matured_Accounts->markMatured($this->app->nextDate($on_date)); // peying interest in there as well
 			$this->api->markProgress('DDS2_Mark_Mature',$i++,$acc_array['AccountNumber'],$all_todays_matured_Accounts_count);
 		}
-
+		$this->api->markProgress('DDS2_Mark_Mature',null);
 	}
 	
 	function monthly( $branch=null, $on_date=null, $test_account=null ) {
@@ -115,6 +116,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 			$allaccounts_with_thismonth_duedate->reAdjustPaidValue($on_date);
 			$this->api->markProgress('DDS2_Month_PaidOn_Calculate',$i++,$junk['AccountNumber'],$allaccounts_with_thismonth_duedate_count);
 		}
+		$this->api->markProgress('DDS2_Month_PaidOn_Calculate',null);
 		// echo "recurring monthly done <br/>";
 	}
 
@@ -160,6 +162,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 			$all_accounts_paid_in_this_year->payInterest();
 			$this->api->markProgress('Doing_DDS2_Interest',$i++,$all_accounts_paid_in_this_year['AccountNumber'],$total_rd_accounts);
 		}
+		$this->api->markProgress('Doing_DDS2_Interest',null);
 
 	}
 }

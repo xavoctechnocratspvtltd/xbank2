@@ -117,6 +117,7 @@ class Model_Scheme_SavingAndCurrent extends Model_Scheme {
 			$sbca_account->applyHalfYearlyInterest( $on_date , null, $last_halfyearly_closing);
 			$this->api->markProgress('Doing_Saving_Interest',$i++,$sbca_account['AccountNumber'],$total_sb_accounts);
 		}
+		$this->api->markProgress('Doing_Saving_Interest',null);
 		
 	}
 

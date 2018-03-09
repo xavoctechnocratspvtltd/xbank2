@@ -218,7 +218,7 @@ class Model_Branch extends Model_Table {
 	}
 
 	function performClosing($on_date=null, $test_scheme=null, $test_account = null){
-		$this->api->markProgress('branch',$this['Code']);
+		$this->api->markProgress('branch',0,$this['Code']);
 		
 		if(!$on_date) $on_date = $this->api->today;
 		if(!$this->loaded()) throw $this->exception('Branch Must be loaded to perform closing');
@@ -239,7 +239,7 @@ class Model_Branch extends Model_Table {
 		if($diff['days_total'] > 1)
 			$this->performClosing(date('Y-m-d',strtotime($on_date.'-1 days')),$test_scheme, $test_account);
 		
-		$this->api->markProgress('daily',$on_date);
+		$this->api->markProgress('daily',0,$on_date);
 		$s=1;
 		$schemeTypes = explode(',',ACCOUNT_TYPES);
 		$this->api->markProgress('schemes',$s,'About to run schemes',count($schemeTypes));
@@ -252,41 +252,46 @@ class Model_Branch extends Model_Table {
 				->setLimit(1); // We just need Model once to fire regarding functions, no need of traversing here
 
 			foreach($schemes as $schm){
-				$this->api->markProgress('schemes',$s++,null,$st);
+				$this->api->markProgress('schemes',$s++,$st,count($schemeTypes));
 				// echo $schm['name'] ."<br/>";
 				$schemes->daily($this, $on_date,$test_account);
 				// echo "Daily <br/>";
 				gc_collect_cycles();
 				if($this->isQuarterEnd($on_date)){
-					$this->api->markProgress('quarterly',$s++,$st,null);
+					$this->api->markProgress('quarterly',0,$st);
 					if(method_exists($schemes, 'quarterly'))
 						$schemes->quarterly($this, $on_date, $test_account);
+					$this->api->markProgress('quarterly',null);
 				}
 
 				gc_collect_cycles();
 
 				if($this->is_MonthEndDate($on_date)){
 					// echo "month end <br/>";
-					$this->api->markProgress('monthly',$s++,$st,null);
+					$this->api->markProgress('monthly',0,$st);
 					$schemes->monthly($this, $on_date,$test_account);
 					$this->ref('Closing')->tryLoadAny()->set('monthly',$on_date)->save();
+					$this->api->markProgress('monthly',null);
 				}
 
 				gc_collect_cycles();
 				
 				if($this->is_HalfYearEnding($on_date,$test_account)){
 					// echo "hy end <br/>";
-					$this->api->markProgress('halfyearly',$s++,$st,null);
+					$this->api->markProgress('halfyearly',0,$st);
 					$schemes->halfYearly($this, $on_date,$test_account,$last_half_yearly_closing_date);
 					$this->ref('Closing')->tryLoadAny()->set('halfyearly',$on_date)->save();
+					$this->api->markProgress('halfyearly',null);
 				}
 				
 				gc_collect_cycles();
 
 				if($this->is_YearEnd($on_date)){
 					// echo "YE end <br/>";
+					$this->api->markProgress('yearly',0,$st);
 					$schemes->yearly($this, $on_date,$test_account);
 					$this->ref('Closing')->tryLoadAny()->set('yearly',$on_date)->save();
+					$this->api->markProgress('yearly',null);
 				}
 
 				gc_collect_cycles();

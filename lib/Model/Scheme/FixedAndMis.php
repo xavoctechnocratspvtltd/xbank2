@@ -193,13 +193,14 @@ class Model_Scheme_FixedAndMis extends Model_Scheme {
 		$active_fd_accounts->addCondition('branch_id',$branch->id);
 
 		if($test_account) $active_fd_accounts->addCondition('id',$test_account->id);
-
+		$total_count = $active_fd_accounts->count()->getOne();
 		$i=1;
 		foreach ($active_fd_accounts as $active_fd_accounts_array) {
 			// $active_fd_accounts->doInterestProvision($on_date); // Already happening in Monthly so mute it here
 			$active_fd_accounts->revertProvision($on_date);
 			if($i%100 ==0) gc_collect_cycles();
-			$this->api->markProgress('Reverting_Provision',$i++,$active_fd_accounts_array['AccountNumber'],' ALL ');
+			$this->api->markProgress('Reverting_Provision',$i++,$active_fd_accounts_array['AccountNumber'],$total_count);
 		}
+		$this->api->markProgress('Reverting_Provision',null);
 	}
 }

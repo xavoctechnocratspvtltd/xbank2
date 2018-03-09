@@ -124,6 +124,8 @@ class page_closingnew extends Page {
 
 		// 	// ======
 
+			$time_start = microtime(true);
+
 			try{
 				$this->api->db->dsql()->owner->beginTransaction();
 				$this->api->closing_running =true;
@@ -192,7 +194,11 @@ class page_closingnew extends Page {
 				throw $e;
 			}
 			unset($this->api->closing_running);
+			$time_end = microtime(true);
+			
+			$execution_time = ($time_end - $time_start)/60;
 
+			$c->out('Total Execution time '. $execution_time .' Mins');
 			$c->jsEval($this->js()->trigger('reload')->_selector('.branch-grid'));
 		});
 	}

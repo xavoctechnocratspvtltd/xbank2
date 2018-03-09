@@ -15,7 +15,7 @@ class page_closingnew extends Page {
 	function page_index(){
 
 		$closing_model = $this->add('Model_Closing');
-		$cont = $closing_model->add('Controller_ACL');
+		$cont = $closing_model->add('Controller_Acl');
 		if(isset($cont->acl) && !$cont->acl->allowAdd()){
 			$this->add('View_Error')->set('You are not authorised to performs closing');
 			return;

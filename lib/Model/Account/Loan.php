@@ -301,7 +301,9 @@ class Model_Account_Loan extends Model_Account{
             $emi = ($this('Amount') * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
         } else {
 		//          FOR FLAT RATE OF INTEREST
-            $emi = (($this['Amount'] * $rate * ($premiums + 1)) / 1200 + $this['Amount']) / $premiums;
+        	$premiums_to_count_for_interest_in_emp  = $premiums + 1;
+        	if($this['account_type'] == 'Loan Against Deposit') $premiums_to_count_for_interest_in_emp  = $premiums;
+            $emi = (($this['Amount'] * $rate * $premiums_to_count_for_interest_in_emp) / 1200 + $this['Amount']) / $premiums;
         }
         $emi = round($emi);
         
@@ -372,7 +374,10 @@ class Model_Account_Loan extends Model_Account{
 	    }
 	    if ($this['ReducingOrFlatRate'] == FLAT_RATE or $this['ReducingOrFlatRate'] == 0) {
 			//    INTEREST FOR FLAT RATE OF INTEREST
-	        $interest = round(($this['Amount'] * $rate * ($premiums + 1)) / 1200) / $premiums;
+			$premiums_to_count_for_interest_in_emp  = $premiums + 1;
+        	if($this['account_type'] == 'Loan Against Deposit') $premiums_to_count_for_interest_in_emp  = $premiums;
+        	
+	        $interest = round(($this['Amount'] * $rate * $premiums_to_count_for_interest_in_emp) / 1200) / $premiums;
 	    }
 
 	    $interest = round($interest,0);

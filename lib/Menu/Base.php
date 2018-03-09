@@ -86,6 +86,7 @@ class Menu_Base extends Menu {
 			$admin_sub_menus->addMenuItem('utility_bankslist','Banks List');
 			// $admin_sub_menus->addMenuItem('utility_crpbedit','CRPB Edit');
 			$admin_sub_menus->addMenuItem('log','Log Check');
+			$admin_sub_menus->addMenuItem('closingnew','Closing');
 			$admin->js('click',$admin_sub_menus_popover->showJS());
 		}
 

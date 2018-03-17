@@ -1627,7 +1627,7 @@ class Model_Agent extends Model_Table {
 	}
 
 	function beforeSave(){
-
+		
 
 		$old_agent_username = $this->add('Model_Agent');
 		$old_agent_username->addCondition('username',$this['username']);
@@ -1651,20 +1651,23 @@ class Model_Agent extends Model_Table {
 
 		// update mo_agent history if mo_id is changed
 		if($this->isDirty('mo_id')){
-			$current_mo_id = $this['mo_id'];
-			$old_agent = $this->add('Model_Agent')->load($this->id);
 
-			// update _to_date of last mo assocition
-			if($current_mo_id != $old_agent['mo_id']){
-				$asso = $this->add('Model_MoAgentAssociation');
-				$asso->addCondition('agent_id',$this->id);
-				$asso->addCondition('mo_id',$old_agent['mo_id']);
-				$asso->addCondition('from_date','<>',null);
-				$asso->addCondition('_to_date',null);
-				$asso->tryLoadAny();
-				if($asso->loaded()){
-					$asso['_to_date'] = $this->app->now;
-					$asso->saveAndUnload();
+			$current_mo_id = $this['mo_id'];
+
+			if($this->loaded()){
+				$old_agent = $this->add('Model_Agent')->load($this->id);
+				// update _to_date of last mo assocition
+				if($current_mo_id != $old_agent['mo_id']){
+					$asso = $this->add('Model_MoAgentAssociation');
+					$asso->addCondition('agent_id',$this->id);
+					$asso->addCondition('mo_id',$old_agent['mo_id']);
+					$asso->addCondition('from_date','<>',null);
+					$asso->addCondition('_to_date',null);
+					$asso->tryLoadAny();
+					if($asso->loaded()){
+						$asso['_to_date'] = $this->app->now;
+						$asso->saveAndUnload();
+					}
 				}
 			}
 

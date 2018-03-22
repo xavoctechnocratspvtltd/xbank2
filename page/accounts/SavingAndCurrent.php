@@ -54,30 +54,30 @@ class page_accounts_SavingAndCurrent extends Page {
 		$crud->addRef('JointMember');
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'SavingAccount'));
 		
-		if($crud->isEditing()){
+		// if($crud->isEditing()){
 
-			$nominee_age_field = $crud->form->getElement('NomineeAge');			
-			$nominee_age_field->js(true)->univ()->bindConditionalShow(array(
-						''=>array(),
-						'1'=>array('MinorNomineeParentName'),
-						'2'=>array('MinorNomineeParentName'),
-						'3'=>array('MinorNomineeParentName'),
-						'4'=>array('MinorNomineeParentName'),
-						'5'=>array('MinorNomineeParentName'),
-						'6'=>array('MinorNomineeParentName'),
-						'7'=>array('MinorNomineeParentName'),
-						'8'=>array('MinorNomineeParentName'),
-						'9'=>array('MinorNomineeParentName'),
-						'10'=>array('MinorNomineeParentName'),
-						'11'=>array('MinorNomineeParentName'),
-						'12'=>array('MinorNomineeParentName'),
-						'13'=>array('MinorNomineeParentName'),
-						'14'=>array('MinorNomineeParentName'),
-						'15'=>array('MinorNomineeParentName'),
-						'16'=>array('MinorNomineeParentName'),
-						'17'=>array('MinorNomineeParentName'),
-						),'div .atk-form-row');
-		}
+		// 	$nominee_age_field = $crud->form->getElement('NomineeAge');			
+		// 	$nominee_age_field->js(true)->univ()->bindConditionalShow(array(
+		// 				''=>array(),
+		// 				'1'=>array('MinorNomineeParentName'),
+		// 				'2'=>array('MinorNomineeParentName'),
+		// 				'3'=>array('MinorNomineeParentName'),
+		// 				'4'=>array('MinorNomineeParentName'),
+		// 				'5'=>array('MinorNomineeParentName'),
+		// 				'6'=>array('MinorNomineeParentName'),
+		// 				'7'=>array('MinorNomineeParentName'),
+		// 				'8'=>array('MinorNomineeParentName'),
+		// 				'9'=>array('MinorNomineeParentName'),
+		// 				'10'=>array('MinorNomineeParentName'),
+		// 				'11'=>array('MinorNomineeParentName'),
+		// 				'12'=>array('MinorNomineeParentName'),
+		// 				'13'=>array('MinorNomineeParentName'),
+		// 				'14'=>array('MinorNomineeParentName'),
+		// 				'15'=>array('MinorNomineeParentName'),
+		// 				'16'=>array('MinorNomineeParentName'),
+		// 				'17'=>array('MinorNomineeParentName'),
+		// 				),'div .atk-form-row');
+		// }
 
 		if(!$crud->isEditing()){
 			$crud->grid->addPaginator(50);

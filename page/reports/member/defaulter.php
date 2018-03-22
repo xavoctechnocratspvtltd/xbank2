@@ -3,11 +3,18 @@
 class page_reports_member_defaulter extends Page{
 	function init(){
 		parent::init();
+		
+		$this->api->stickyGET('filter');
+		$this->api->stickyGET('from_date');
+		$this->api->stickyGET('to_date');
 
 		$member_model=$this->add('Model_Member');
 		$member_model->setOrder('created_at','desc');
 		$member_model->addCondition('is_defaulter',true);
 		$form=$this->add('Form');
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
+
 		$grid=$this->add('Grid_AccountsBase');
 		$grid_column_array = array('member_no','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','defaulter_on');
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
@@ -20,7 +27,15 @@ class page_reports_member_defaulter extends Page{
 		$form->addSubmit('GET List');
 
 		if($_GET['filter']){
-			$this->api->stickyGET('filter');
+
+			if($_GET['from_date']){
+				$member_model->addCondition('defaulter_on','>',$_GET['from_date']);
+			}
+
+			if($_GET['to_date']){
+				$member_model->addCondition('defaulter_on','<=',$this->app->nextDate($_GET['to_date']));
+			}
+
 			foreach ($document as $junk) {
 				$doc_id = $document->id;
 				if($_GET['doc_'.$document->id]){
@@ -47,7 +62,7 @@ class page_reports_member_defaulter extends Page{
 
 		if($form->isSubmitted()){
 
-			$send = array('dealer'=>$form['dealer'],'till_date'=>$form['till_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'filter'=>1);
+			$send = array('dealer'=>$form['dealer'],'till_date'=>$form['till_date']?:0,'report_type'=>$form['report_type'], 'loan_type'=>$form['loan_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

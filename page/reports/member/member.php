@@ -187,7 +187,7 @@ class page_reports_member_member extends Page {
 		});
 		// $accounts->addCondition('ActiveStatus',true);
 		// $accounts->addCondition('MaturedStatus',false);
-		$grid->setModel($accounts,array('branch','AccountNumber','LoanAgainst','scheme','agent','Amount','ActiveStatus','MaturedStatus'));
+		$grid->setModel($accounts,array('branch','AccountNumber','LoanAgainst','scheme','agent','Amount','ActiveStatus','MaturedStatus','SchemeType'));
 
 		$grid->addMethod('format_cuBal',function($g,$f){
 			$bal = $g->model->getOpeningBalance($on_date=$g->api->nextDate($g->api->today),$side='both',$forPandL=false);
@@ -200,6 +200,13 @@ class page_reports_member_member extends Page {
 			$g->current_row[$f]=$bal ;
 		});
 
+		$grid->addMethod('format_maturityDate',function($g,$f){
+			$acc = $this->add('Model_Account_'.$g->model['SchemeType']);
+			$acc->load($g->model->id);
+			$g->current_row[$f]=$acc['maturity_date'] ;
+		});
+
+		$grid->addColumn('maturityDate','maturity_date');
 		$grid->addColumn('cuBal','cur_balance');
 
 	}

@@ -65,6 +65,16 @@ class page_reports_deposit_emireceivedlist extends Page {
 				->where('SchemeType','DDS')
 			);
 
+		$transaction_row_model->addExpression('due_premium_count')->set(function($m,$q)use($till_date){
+			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_count_table'));
+			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+			$dpc_m->addCondition('DueDate','<',$m->api->nextDate($till_date));
+			$dpc_m->addCondition('account_id',$q->getField('account_id'));
+			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn >= '". ($m->api->nextDate($till_date)) ."')");
+			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			return $dpc_m->count();
+		})->sortable(true);
+
 		$transaction_row_model->getElement('amountCr')->caption('Amount Deposited');
 
 		$transaction_row_model->setOrder('account_id desc,created_at desc');
@@ -103,7 +113,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$transaction_row_model->setOrder('created_at','desc');
 		$transaction_row_model->getElement('created_at')->caption('Deposited On');
 
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','CurrentAddress','landmark','amountCr','agent_name','agent_account_number','created_at','Narration'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','CurrentAddress','landmark','due_premium_count','amountCr','agent_name','agent_account_number','created_at','Narration'));
 		// $grid->removeColumn('CurrentAddress');
 		$grid->addFormatter('CurrentAddress','Wrap');
 		$grid->addFormatter('FatherName','100Wrap');

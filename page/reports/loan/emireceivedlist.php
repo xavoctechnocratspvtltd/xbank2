@@ -52,6 +52,16 @@ class page_reports_loan_emireceivedlist extends Page {
 		$transaction_row_model->addCondition('amountCr','>',0);
 		$transaction_row_model->addCondition('SchemeType','Loan');
 
+		$transaction_row_model->addExpression('due_premium_count')->set(function($m,$q)use($till_date){
+			$dpc_m = $m->add('Model_Premium',array('table_alias'=>'due_premium_count_table'));
+			// ->addCondition('DueDate','>',$_GET['from_date']?:'1970-01-01')
+			$dpc_m->addCondition('DueDate','<',$m->api->nextDate($till_date));
+			$dpc_m->addCondition('account_id',$q->getField('account_id'));
+			$dpc_m->_dsql()->where("(PaidOn is null OR PaidOn >= '". ($m->api->nextDate($till_date)) ."')");
+			// $dpc_m->addCondition('PaidOn','>',$_GET['on_date']?$m->api->nextDate($_GET['on_date']):$m->api->nextDate($m->api->today));
+			return $dpc_m->count();
+		})->sortable(true);
+
 		$transaction_row_model->setOrder('account_id desc,created_at desc');
 
 		if($_GET['filter']){
@@ -96,7 +106,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_address','member_landmark','FatherName','PhoneNos','amountCr','Narration','created_at','dealer_name'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_address','member_landmark','FatherName','PhoneNos','amountCr','due_premium_count','Narration','created_at','dealer_name'));
 
 		// $grid->addHook('formatRow',function($g){
 		// 	// $this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));			

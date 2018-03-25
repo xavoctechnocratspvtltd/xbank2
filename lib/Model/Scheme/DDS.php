@@ -100,6 +100,7 @@ class Model_Scheme_DDS extends Model_Scheme {
         $accounts_to_work_on->addCondition('branch_id',$branch->id);
         $accounts_to_work_on->addCondition('MaturedStatus',false);
         $accounts_to_work_on->addCondition('DefaultAC',false);
+        $accounts_to_work_on->addCondition('dds_type','DDS');
 
         $accounts_to_work_on->addExpression('opening_date')->set('DAY(dds_acc.created_at)');
 
@@ -135,6 +136,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$matured_dds_accounts->addCondition('MaturedStatus',false);
 		$matured_dds_accounts->addCondition('branch_id',$branch->id);
 		$matured_dds_accounts->addCondition("maturity_date",$on_date);
+		$matured_dds_accounts->addCondition("dds_type",'DDS');
 
 		$matured_dds_accounts->join('schemes','scheme_id')->addField('Interest');
 
@@ -164,6 +166,7 @@ class Model_Scheme_DDS extends Model_Scheme {
 		$active_dds_accounts = $this->add('Model_Active_Account_DDS');
 		$active_dds_accounts->addCondition('MaturedStatus',false);
 		$active_dds_accounts->addCondition('branch_id',$branch->id);
+		$active_dds_accounts->addCondition('dds_type','DDS');
 
 		$active_dds_accounts->join('schemes','scheme_id')->addField('Interest');
 

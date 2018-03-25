@@ -79,6 +79,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
 		$all_todays_matured_Accounts->addCondition('MaturedStatus',false);
 		$all_todays_matured_Accounts->addCondition('branch_id',$branch->id);
+		$all_todays_matured_Accounts->addCondition('dds_type','DDS2');
 		$all_todays_matured_Accounts->_dsql()->where($all_todays_matured_Accounts->getElement('maturity_date'),$this->app->nextDate($on_date));
 
 		if($test_account) $all_todays_matured_Accounts->addCondition('id',$test_account->id);
@@ -104,6 +105,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 		// $allaccounts_with_thismonth_duedate->addCondition('Paid','0');
 		$allaccounts_with_thismonth_duedate->addCondition('DueDate','<=',$on_date);
 		$allaccounts_with_thismonth_duedate->addCondition('branch_id',$branch->id);
+		$allaccounts_with_thismonth_duedate->addCondition('dds_type','DDS2');
 		
 		// Don't take all premiums rows , just accounts by grouping
 		$allaccounts_with_thismonth_duedate->_dsql()->group('AccountNumber');
@@ -144,6 +146,7 @@ class Model_Scheme_DDS2 extends Model_Scheme {
 		
 		$all_accounts_paid_in_this_year->addCondition('MaturedStatus',false);
 		$all_accounts_paid_in_this_year->addCondition('branch_id',$branch->id);
+		$all_accounts_paid_in_this_year->addCondition('dds_type','DDS2');
 		$all_accounts_paid_in_this_year->_dsql()->group('acc_main.id');
 
 		if($test_account) $all_accounts_paid_in_this_year->addCondition('id',$test_account->id);

@@ -135,9 +135,10 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 			}
 		}
 
-		$account_model->addCondition([['cheque_returned_on','<>',""],['cheque_returned_on','<>',null]]);
-		$account_model->addCondition('is_in_legal',false);
-		$account_model->addCondition('is_in_arbitration',false);
+		// $account_model->addCondition([['cheque_returned_on','<>',""],['cheque_returned_on','<>',null]]);
+		$account_model->addCondition('is_given_for_legal_process',true);
+		$account_model->addCondition('is_in_legal',true);
+		$account_model->addCondition('is_in_arbitration',true);
 		$account_model->addCondition('is_legal_case_finalised',true);
 
 		$grid = $this->add('Grid_AccountsBase')->addSno();

@@ -39,7 +39,7 @@ class page_reports_general_periodical extends Page {
 		$form->addField('account_amount_from');
 		$form->addField('account_amount_to');
 
-		if($this->app->currentStaff->isSuper()){
+		if($this->app->currentStaff['AccessLevel']>=80){
 			$form->addField('DropDown','branch_id')->setEmptyText('All')->setModel('Branch');
 		}
 
@@ -101,7 +101,7 @@ class page_reports_general_periodical extends Page {
 
 		}
 
-		if(!$this->app->currentStaff->isSuper()){
+		if($this->app->currentStaff['AccessLevel'] < 80){
 			$account_model->add('Controller_Acl');
 		}
 

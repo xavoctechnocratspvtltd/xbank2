@@ -18,6 +18,12 @@ class page_reports_member_member extends Page {
 		$form->addField('dropdown','status')->setValueList(array('all'=>'All','0'=>'InActive','1'=>'Active'));
 		$form->addField('Line','pan_no');
 		$form->addField('Line','adhar_no');
+		
+		$form->addField('Line','name');
+		$form->addField('Line','mobile');
+		$form->addField('Line','landmark');
+		$form->addField('Line','address');
+
 		$form->addSubmit('Get List');
 		
 		$member_model=$this->add('Model_Member');
@@ -33,6 +39,10 @@ class page_reports_member_member extends Page {
 			$this->api->stickyGET('bank');
 			$this->api->stickyGET('pan_no');
 			$this->api->stickyGET('adhar_no');
+			$this->api->stickyGET('name');
+			$this->api->stickyGET('address');
+			$this->api->stickyGET('mobile');
+			$this->api->stickyGET('landmark');
 			
 			if($_GET['status'] !=='all')
 				$member_model->addCondition('is_active',$_GET['status']==0?false:true);
@@ -56,6 +66,22 @@ class page_reports_member_member extends Page {
 			if($_GET['adhar_no']){
 				$this->app->stickyGET('adhar_no');
 				$member_model->addCondition('AdharNumber',$_GET['adhar_no']);
+			}
+
+			if($_GET['name']){
+				$member_model->addCondition('name','like','%'.$_GET['name'].'%');
+			}
+
+			if($_GET['address']){
+				$member_model->addCondition('PermanentAddress','like','%'.$_GET['address'].'%');
+			}
+
+			if($_GET['mobile']){
+				$member_model->addCondition('PhoneNos','like','%'.$_GET['mobile'].'%');
+			}
+
+			if($_GET['landmark']){
+				$member_model->addCondition('landmark','like','%'.$_GET['landmark'].'%');
 			}
 
 		}else{
@@ -109,7 +135,7 @@ class page_reports_member_member extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$send = array('pan_no'=>$form['pan_no'],'adhar_no'=>$form['adhar_no'],'type'=>$form['type'],'bank'=>$form['bank'],'status'=>$form['status'],'filter'=>1);
+			$send = array('pan_no'=>$form['pan_no'],'adhar_no'=>$form['adhar_no'],'type'=>$form['type'],'bank'=>$form['bank'],'status'=>$form['status'],'name'=>$form['name'],'address'=>$form['address'],'landmark'=>$form['landmark'],'mobile'=>$form['mobile'],'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	

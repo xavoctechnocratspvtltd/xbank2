@@ -4,7 +4,7 @@
 * 
 */
 
-class Model_Loan_BikeLegal extends Model_Active_Account_Loan {}
+class Model_Loan_BikeLegal extends Model_Account_Loan {}
 
 class page_accounts_Loan_bikelegal extends Page{
 	

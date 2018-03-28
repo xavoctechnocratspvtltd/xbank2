@@ -92,7 +92,7 @@ class page_reports_general_periodical extends Page {
 				$account_model->addCondition('new_or_renew',$_GET['new_or_renew']);
 			}
 
-			if($this->app->currentStaff->isSuper()){
+			if($this->app->currentStaff['AccessLevel']>=80){
 				if($_GET['branch_id']){
 					$this->api->stickyGET('branch_id');
 					$account_model->addCondition('branch_id',$_GET['branch_id']);

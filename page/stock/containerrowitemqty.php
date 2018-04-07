@@ -4,7 +4,11 @@ class page_stock_containerrowitemqty extends Page {
 	function init(){
 		parent::init();
 
-		$crud=$this->add('xCRUD',array('allow_del'=>false,'allow_edit'=>false));
+		if($this->app->currentStaff->isSuper() || $this->app->currentStaff->isCEO()){
+			$crud = $this->add('CRUD',array('allow_del'=>false));
+		}else
+			$crud=$this->add('xCRUD',array('allow_del'=>false,'allow_edit'=>false));
+			
 
 		$criq=$this->add('Model_Stock_ContainerRowItemQty');
 		$criq->addCondition('branch_id',$this->api->current_branch->id);

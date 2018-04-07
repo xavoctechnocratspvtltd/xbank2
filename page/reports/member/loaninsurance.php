@@ -49,6 +49,14 @@ class page_reports_member_loaninsurance extends Page {
 			return $m->refSQL('member_id')->fieldQuery('name');
 		});
 
+		$accounts_model->addExpression('DOB')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('DOB');
+		});
+
+		$accounts_model->addExpression('gender')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('gender');
+		});
+
 		$accounts_model->addExpression('father_name')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('FatherName');
 		});
@@ -73,7 +81,7 @@ class page_reports_member_loaninsurance extends Page {
 			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
 		});
 		$accounts_model->getElement('CurrentBalanceDr')->caption('Current Balance');
-		$grid->setModel($accounts_model,array('AccountNumber','scheme','member_name','father_name','address','phone_nos','age','nominee','relation_with_nominee','Amount'));
+		$grid->setModel($accounts_model,array('AccountNumber','created_at','scheme','gender','member_name','father_name','address','phone_nos','DOB','age','nominee','relation_with_nominee','Amount'));
 		$self=$this;
 		$grid->addColumn('current_balance');
 		$grid->addMethod('format_current_balance',function($g,$f)use($self){

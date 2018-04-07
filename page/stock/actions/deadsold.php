@@ -30,7 +30,11 @@ class page_stock_actions_deadsold extends Page {
 		$form->js(true)->hide();
 
 		$this->add('View_Info')->set('Dead Item Sold - Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false,'allow_edit'=>false));
+		if($this->app->currentStaff->isSuper() || $this->app->currentStaff->isCEO()){
+			$crud = $this->add('CRUD');
+		}else
+			$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
+			
 		$sold_transaction=$this->add('Model_Stock_Transaction');
 		$sold_transaction->addCondition('transaction_type','DeadSold');
 		$sold_transaction->addCondition('branch_id',$this->api->currentBranch->id);

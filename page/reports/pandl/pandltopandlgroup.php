@@ -10,6 +10,11 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 		$to_date = $this->api->stickyGET('to_date');
 		$branch_id = $this->api->stickyGET('branch_id');
 
+		if($bs_id=='profit'){
+			$this->add('View_Error')->set('This is non diggable value, You cannot go in here');
+			return;
+		}
+
 		$op_balances_q='select a.PAndLGroup id, sum(IFNULL(OpeningBalanceDr,0)) DR, sum(IFNULL(OpeningBalanceCr,0)) CR
 						from accounts a
 						join schemes s on a.scheme_id = s.id

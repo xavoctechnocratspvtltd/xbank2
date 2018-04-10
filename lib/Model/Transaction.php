@@ -38,8 +38,13 @@ class Model_Transaction extends Model_Table {
 
 		$this->hasMany('TransactionRow','transaction_id');
 
-		$this->addExpression('cr_sum')->set($this->refSQL('TransactionRow')->sum('amountCr'));
-		$this->addExpression('dr_sum')->set($this->refSQL('TransactionRow')->sum('amountDr'));
+		$this->addExpression('cr_sum')->set(function($m,$q){
+			return $m->refSQL('TransactionRow')->sum('amountCr');
+		});
+
+		$this->addExpression('dr_sum')->set(function($m,$q){
+			return $m->refSQL('TransactionRow')->sum('amountDr');
+		});
 		
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);

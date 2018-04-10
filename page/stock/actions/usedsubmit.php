@@ -37,7 +37,10 @@ class page_stock_actions_usedsubmit extends Page {
 		$form->js(true)->hide();
 
 		$this->add('View_Info')->set('Used Stock Transation')->setStyle(array('padding'=>'2px','margin'=>'5px 0 5px 0'));
-		$crud=$this->add('CRUD',array('allow_add'=>false,'allow_del'=>false,'allow_edit'=>false));
+		if($this->app->currentStaff->isSuper() || $this->app->currentStaff->isCEO()){
+			$crud = $this->add('CRUD');
+		}else
+			$crud=$this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 
 		$used_transaction=$this->add('Model_Stock_Transaction');
 		$used_transaction->addCondition('transaction_type','UsedSubmit');

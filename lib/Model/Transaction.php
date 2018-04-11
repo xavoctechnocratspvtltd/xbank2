@@ -26,10 +26,10 @@ class Model_Transaction extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('TransactionType','transaction_type_id');
-		$this->hasOne('Staff','staff_id');
-		$this->hasOne('Account','reference_id');
-		$this->hasOne('Branch','branch_id');
+		$this->hasOne('TransactionType','transaction_type_id')->display(['form'=>'autocomplete/Basic']);;
+		$this->hasOne('Staff','staff_id')->display(['form'=>'autocomplete/Basic']);;
+		$this->hasOne('Account','reference_id')->display(['form'=>'autocomplete/Basic']);;
+		$this->hasOne('Branch','branch_id')->display(['form'=>'autocomplete/Basic']);;
 		$this->addField('voucher_no_original')->type('int'); //TODO bigint
 		$this->addField('voucher_no'); //Double as back date vouchers are now .1 .2 etc
 		$this->addField('Narration')->type('text');

@@ -3,9 +3,15 @@
 
 class page_corrections_ognvouchernos extends Page {
 	
+	public $title = "Audit Page";
 
 	function init(){
 		parent::init();
+
+		if(!$this->app->auth->model->isSuper()){
+			$this->add('View_Error')->set('Not permitted');
+			return;
+		}
 
 		$branch_id  =$this->app->stickyGET('branch');
 		$from_date = $this->app->stickyGET('from_date');
@@ -56,6 +62,7 @@ class page_corrections_ognvouchernos extends Page {
 			$crud->setModel($model,['created_at'],$model->getActualFields());
 
 			// $grid->addFormatter('created_at','grid/inline');
+			$crud->grid->addPaginator(1000);
 			$crud->grid->addSno();
 			$crud->grid->add('VirtualPage')
 				->addColumn('edit_transactions')

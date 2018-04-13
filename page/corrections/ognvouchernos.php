@@ -50,6 +50,15 @@ class page_corrections_ognvouchernos extends Page {
 			$this->add('View_Info')->set('ALL TRANSACTIONS');
 			
 			$model = $this->add('Model_Transaction');
+			$model->addHook('beforeSave',function($tr_model){
+				$m = $this->add('Model_TransactionRow');
+				$m->addCondition('transaction_id',$tr_model->id);
+
+				foreach ($m as $t) {
+					$t['created_at'] = $tr_model['created_at'];
+					$t->save();
+				}
+			});
 			// $model->addCondition([
 			// 		[$model->dsql()->expr('[0]<>[1]',[$model->getElement('cr_sum'),$model->getElement('dr_sum')])],
 			// 		[$model->dsql()->expr('([0] = 0 AND [1] = 0)',[$model->getElement('cr_sum'),$model->getElement('dr_sum')])]
@@ -59,7 +68,7 @@ class page_corrections_ognvouchernos extends Page {
 			$model->setOrder('created_at,id');
 
 			$crud = $this->add('CRUD',['allow_add'=>false,'allow_del'=>false,'grid_class'=>'Grid_AccountsBase']);
-			$crud->setModel($model,['created_at'],$model->getActualFields());
+			$crud->setModel($model,['created_at'],['transaction_type','reference','branch','voucher_no','Narration','created_at','cr_sum','dr_sum']);
 
 			// $grid->addFormatter('created_at','grid/inline');
 			$crud->grid->addPaginator(1000);
@@ -83,7 +92,10 @@ class page_corrections_ognvouchernos extends Page {
 		$m = $this->add('Model_TransactionRow');
 		$m->addCondition('transaction_id',$id);
 
-		$m->addHook('beforeSave',function($m){
+		$ref_model = $this->add('Model_Account')->tryLoad($tr_model['reference_id']);
+		$page->add('View')->set($ref_model['name'].' :: '. $ref_model['branch_code'] .' Interest Paid On '. $ref_model['scheme']);
+
+		$m->addHook('beforeSave',function($m)use($tr_model){
 			if($m['amountDr'] == $m['amountCr']){
 				throw $m->exception('Amount must only be one of Dr/CR filled','ValidityCheck')->setField('amountDr');
 			}
@@ -95,9 +107,35 @@ class page_corrections_ognvouchernos extends Page {
 			if($m['amountDr']) $m['side']='DR';
 			if($m['amountCr']) $m['side']='CR';
 
+			$m['created_at'] = $tr_model['created_at'];
+			$m['accounts_in_side'] = 1;
+
 			$t_account= $m->ref('account_id');
 			$m['scheme_id'] = $t_account['scheme_id'];
 			$m['balance_sheet_id'] = $m->ref('scheme_id')->get('balance_sheet_id');
+
+		});
+
+		$m->addHook('afterSave',function($m_prev)use($tr_model){
+
+			$ref_model = $this->add('Model_Account')->tryLoad($tr_model['reference_id']);
+			
+			$m = $this->add('Model_TransactionRow');
+			$m->addCondition('transaction_id',$tr_model->id);
+			$m->addCondition('account_id',$this->add('Model_Account')->loadBy('AccountNumber',$ref_model['branch_code'] .' Interest Paid On '. $ref_model['scheme'])->get('id'));
+			$m->tryLoadAny();
+
+			$m['amountDr']=  $m_prev['amountCr'];
+			$m['side']='DR';
+
+			$m['created_at'] = $tr_model['created_at'];
+			$m['accounts_in_side'] = 1;
+
+			$t_account= $m->ref('account_id');
+			$m['scheme_id'] = $t_account['scheme_id'];
+			$m['balance_sheet_id'] = $m->ref('scheme_id')->get('balance_sheet_id');
+
+			$m->save();
 
 		});
 

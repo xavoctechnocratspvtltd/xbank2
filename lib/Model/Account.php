@@ -42,6 +42,7 @@ class Model_Account extends Model_Table {
 		$this->addField('OpeningBalanceCr')->type('money')->defaultValue(0);
 		$this->addField('ClosingBalance')->type('money')->defaultValue(0);
 		$this->addField('CurrentBalanceDr')->type('money')->defaultValue(0);
+		$this->addField('CurrentBalanceCr')->type('money')->defaultValue(0);
 		$this->addField('CurrentInterest')->type('money')->defaultValue(0);
 		$this->addField('Nominee');
 		$this->addField('NomineeAge');
@@ -51,7 +52,6 @@ class Model_Account extends Model_Table {
 		$this->addField('DefaultAC')->type('boolean')->defaultValue(false);
 		$this->addField('created_at')->type('datetime')->sortable(true);//->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime');//->defaultValue($this->api->now);
-		$this->addField('CurrentBalanceCr')->type('money');
 		$this->addField('LastCurrentInterestUpdatedAt')->type('datetime');//->defaultValue($this->api->now);
 		// $this->addField('InterestToAccount')->type('int'); now converted to hasOne Account
 		$this->addField('Amount')->type('money')->defaultValue(0);

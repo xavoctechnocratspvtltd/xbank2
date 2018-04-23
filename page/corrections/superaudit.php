@@ -22,8 +22,9 @@ class page_corrections_superaudit extends Page {
 	}
 
 	function page_vouchernumbertab(){
+
 		ini_set("memory_limit","1000M");
-		
+
 		$tr_m = $this->add('Model_Transaction');
 		$tr_m->addCondition('branch_id',5);
 		$tr_m->addCondition('created_at','>=','2018-04-01');
@@ -42,7 +43,7 @@ class page_corrections_superaudit extends Page {
 			$i=1;
 			foreach ($tr_m as $m) {
 				$tr_m['voucher_no'] = $i++;
-				$tr_m->save()
+				$tr_m->save();
 			}
 
 			return $js->reload()->_selector($grid);

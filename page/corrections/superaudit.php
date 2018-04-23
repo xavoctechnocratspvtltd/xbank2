@@ -17,7 +17,35 @@ class page_corrections_superaudit extends Page {
 
 		$trans_tab = $tabs->addTabURL($this->app->url('./transtab'),'Transactions Tab');
 		$cr_dr_tab = $tabs->addTabURL($this->app->url('./crdrtab'),'Transaction CR/DR');
+		$voucher_no_tab = $tabs->addTabURL($this->app->url('./vouchernumbertab'),'Voucher Number Correction');
 		
+	}
+
+	function page_vouchernumbertab(){
+		$tr_m = $this->add('Model_Transaction');
+		$tr_m->addCondition('branch_id',5);
+		$tr_m->addCondition('created_at','>=','2018-04-01');
+		$tr_m->setOrder('voucher_no');
+
+		$btn = $this->add('Button')->set('Update');
+		$grid=  $this->add('Grid');
+		$grid->setModel($tr_m);
+		$grid->addPaginator(50);
+
+		$btn->on('click',function($js,$data)use($grid){
+			$tr_m = $this->add('Model_Transaction');
+			$tr_m->addCondition('branch_id',5);
+			$tr_m->addCondition('created_at','>=','2018-04-01');
+			$tr_m->setOrder('voucher_no');
+			$i=1;
+			foreach ($tr_m as $m) {
+				$tr_m['voucher_no'] = $i++;
+				$tr_m->save();
+			}
+
+			return $js->reload()->_selector($grid);
+		});
+
 	}
 
 	function page_crdrtab(){

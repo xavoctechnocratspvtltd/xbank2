@@ -78,7 +78,7 @@ class page_stock_reports_itemtransaction extends Page{
 
 			$grid->addMethod('format_totalamount',function($g,$f){
 				// throw new Exception("Error Processing Request".$g->current_row['avgrate']);
-				$g->current_row[$f] = $g->current_row['qty'] * $g->current_row['avg_rate'];				 
+				$g->current_row[$f] = (int)$g->current_row['qty'] * (int)$g->current_row['avg_rate'];				 
 			});			
 
 

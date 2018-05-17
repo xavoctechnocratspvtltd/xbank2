@@ -57,7 +57,7 @@ class page_reports_deposit_duestogive extends Page {
 			$loan_m = $m->add('Model_Account',['table_alias'=>'loan_acc']);
 			$loan_m->addCondition('LoanAgainstAccount_id',$q->getField('id'));
 			$loan_m->addCondition('ActiveStatus',true);
-			return $loan_m->fieldQuery('AccountNumber');
+			return $loan_m->_dsql()->del('fields')->field('GROUP_CONCAT(AccountNumber)');
 		});
 
 		$account->addExpression('maturity_date')->set(function($m,$q){

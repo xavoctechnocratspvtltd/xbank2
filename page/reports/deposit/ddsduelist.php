@@ -76,6 +76,7 @@ class page_reports_deposit_ddsduelist extends Page {
 		// else
 		// 	$account_model->addCondition('id',-1);
 
+		$account_model->addCondition('due_amount','>',0);
 
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);

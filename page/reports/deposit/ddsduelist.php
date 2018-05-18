@@ -30,6 +30,8 @@ class page_reports_deposit_ddsduelist extends Page {
 
 		$account_model->addCondition('DefaultAC',false);
 		$account_model->addCondition('MaturedStatus',false);
+
+		$account_model->getElement('Amount')->caption('Daily/Monthly Deposit');
 		
 		$account_model->addExpression('total_deposit')->set(function($m, $q){
 			return $m->refSQL('TransactionRow')
@@ -40,7 +42,11 @@ class page_reports_deposit_ddsduelist extends Page {
 		});
 
 		$account_model->addExpression('total_due_till_date')->set(function($m, $q){
-			return $q->expr("((DATEDIFF('[0]',[1])+1)*[2])",[$m->app->today,$m->getElement('created_at'),$m->getElement('Amount')]);
+			return $q->expr("IF(dds_type='DDS'
+					((DATEDIFF('[0]',[1])+1)*[2]),
+					(TIMESTAMPDIFF(MONTH,'[0]',[1])*[2])
+				)
+				",[$m->app->today,$m->getElement('created_at'),$m->getElement('Amount')]);
 		});
 
 		$account_model->addExpression('due_amount')->set(function($m, $q){

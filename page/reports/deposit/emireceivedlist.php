@@ -55,6 +55,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$account_join->addField('account_type');
 		$account_join->addField('dealer_id');
 		$scheme_join->addField('SchemeType');
+		$scheme_join->addField('scheme_name','name');
 		$transaction_type_join->addField('transaction_type_name','name');
 
 		$transaction_row_model->addCondition('transaction_type_name',array(TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT,TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT));
@@ -113,7 +114,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$transaction_row_model->setOrder('created_at','desc');
 		$transaction_row_model->getElement('created_at')->caption('Deposited On');
 
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','CurrentAddress','landmark','due_premium_count','amountCr','agent_name','agent_account_number','created_at','Narration'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','CurrentAddress','landmark','due_premium_count','amountCr','agent_name','agent_account_number','created_at','Narration','scheme_name'));
 		// $grid->removeColumn('CurrentAddress');
 		$grid->addFormatter('CurrentAddress','Wrap');
 		$grid->addFormatter('FatherName','100Wrap');

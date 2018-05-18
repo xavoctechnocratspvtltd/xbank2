@@ -44,7 +44,7 @@ class page_reports_deposit_ddsduelist extends Page {
 		$account_model->addExpression('total_due_till_date')->set(function($m, $q){
 			return $q->expr("IF([3]='DDS',
                                         ((DATEDIFF('[0]',[1])+1)*[2]),
-                                        (TIMESTAMPDIFF(MONTH,[1],'[0]')*[2])
+                                        ((DATEDIFF('[0]',[1])+1)*([2]/30)),
                                 )
                                 ",[$m->app->today,$m->getElement('created_at'),$m->getElement('Amount'),$m->getElement('dds_type')]);
 		});

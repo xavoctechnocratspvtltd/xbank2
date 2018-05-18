@@ -40,12 +40,12 @@ class page_reports_deposit_ddsduelist extends Page {
 		});
 
 		$account_model->addExpression('total_due_till_date')->set(function($m, $q){
-			return $q->expr("(DATEDIFF('[0]',[1])*[2])",[$m->app->today,$m->getElement('created_at'),$m->getElement('Amount')]);
+			return $q->expr("((DATEDIFF('[0]',[1])+1)*[2])",[$m->app->today,$m->getElement('created_at'),$m->getElement('Amount')]);
 		});
 
 		$account_model->addExpression('due_amount')->set(function($m, $q){
 			return $q->expr("([0]-[1])",[$m->getElement('total_due_till_date'),$m->getElement('total_deposit')]);
-		});
+		})->caption('Due Till Date');
 
 		$account_model->addExpression('agent')->set($account_model->refSQL('agent_id')->fieldQuery('name'));
 		$account_model->addExpression('agent_code')->set($account_model->refSQL('agent_id')->fieldQuery('AgentCode'));

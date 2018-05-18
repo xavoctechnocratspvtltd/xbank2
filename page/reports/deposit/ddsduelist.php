@@ -42,11 +42,11 @@ class page_reports_deposit_ddsduelist extends Page {
 		});
 
 		$account_model->addExpression('total_due_till_date')->set(function($m, $q){
-			return $q->expr("IF(dds_type='DDS'
-					((DATEDIFF('[0]',[1])+1)*[2]),
-					(TIMESTAMPDIFF(MONTH,'[0]',[1])*[2])
-				)
-				",[$m->app->today,$m->getElement('created_at'),$m->getElement('Amount')]);
+			return $q->expr("IF([3]='DDS',
+                                        ((DATEDIFF('[0]',[1])+1)*[2]),
+                                        (TIMESTAMPDIFF(MONTH,[1],'[0]')*[2])
+                                )
+                                ",[$m->app->today,$m->getElement('created_at'),$m->getElement('Amount'),$m->getElement('dds_type')]);
 		});
 
 		$account_model->addExpression('due_amount')->set(function($m, $q){
@@ -79,7 +79,7 @@ class page_reports_deposit_ddsduelist extends Page {
 
 		$account_model->add('Controller_Acl');
 		// $account_model->setLimit(10);
-		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','Amount','total_deposit','total_due_till_date','due_amount','agent','agent_phone','scheme'));
+		$grid->setModel($account_model,array('agent_mo_name','AccountNumber','created_at','member_name','FatherName','CurrentAddress','landmark','PhoneNos','Amount','total_deposit','total_due_till_date','due_amount','agent','agent_phone','scheme','dds_type'));
 		$grid->addFormatter('CurrentAddress','Wrap');
 		if($_GET['agent']){
 			$grid->removeColumn('agent_code');

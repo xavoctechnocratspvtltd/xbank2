@@ -53,7 +53,7 @@ class page_reports_loan_dispatch extends Page {
 			$guarantor_m->setLimit(1);
 			$guarantor_m->setOrder('id');
 
-			return $acc = $this->add('Model_Account_SM',['table_alias'=>'mem_sm'])->addCondition('member_id',$guarantor_m->fieldQuery('id'))->setLimit(1)->fieldQuery('AccountNumber');
+			return $acc = $this->add('Model_Account_SM',['table_alias'=>'mem_sm'])->addCondition('member_id',$guarantor_m->fieldQuery('member_id'))->setLimit(1)->fieldQuery('AccountNumber');
 		});
 		
 		$account_model->addExpression('no_of_emi')->set(function($m,$q){
@@ -71,7 +71,7 @@ class page_reports_loan_dispatch extends Page {
 			$ac_join->addField('account_id');
 			$guarantor_m->addCondition('account_id',$q->getField('id'));
 			$guarantor_m->setLimit(1);
-			$guarantor_m->setOrder('id');
+			$guarantor_m->setOrder('id','desc');
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.name');
 		});
 

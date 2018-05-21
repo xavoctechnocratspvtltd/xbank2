@@ -40,6 +40,21 @@ class page_reports_loan_dispatch extends Page {
 		$member_join->addField('FatherName');
 		$member_join->addField('CurrentAddress');
 		$member_join->addField('PhoneNos');
+
+		$account_model->addExpression('member_sm')->set(function($m,$q){
+			return $acc = $this->add('Model_Account_SM',['table_alias'=>'mem_sm'])->addCondition('member_id',$q->getField('member_id'))->setLimit(1)->fieldQuery('AccountNumber');
+		});
+
+		$account_model->addExpression('guarantor_sm')->set(function($m,$q){
+			$guarantor_m = $m->add('Model_AccountGuarantor',array('table_alias'=>'g_sm'));
+			// $ac_join = $guarantor_m->join('account_guarantors.account_id');
+			// $ac_join->addField('account_id');
+			$guarantor_m->addCondition('account_id',$q->getField('id'));
+			$guarantor_m->setLimit(1);
+			$guarantor_m->setOrder('id');
+
+			return $acc = $this->add('Model_Account_SM',['table_alias'=>'mem_sm'])->addCondition('member_id',$guarantor_m->fieldQuery('id'))->setLimit(1)->fieldQuery('AccountNumber');
+		});
 		
 		$account_model->addExpression('no_of_emi')->set(function($m,$q){
 			return $m->refSQL('Premium')->count();
@@ -96,7 +111,7 @@ class page_reports_loan_dispatch extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -199,7 +214,7 @@ class page_reports_loan_dispatch extends Page {
 			return $x->addCondition('id',$q->getField('LoanAgainstAccount_id'))->fieldQuery('AccountNumber');
 		});
 
-		$grid->setModel($account_model,$grid_array);
+		$grid->setModel($account_model->debug(),$grid_array);
 		
 		$grid->addMethod('format_myTotal',function($grid, $field){
 			$grid->current_row[$field] = $grid->current_row['no_of_emi'] * $grid->current_row['emi'];

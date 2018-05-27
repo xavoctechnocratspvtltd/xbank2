@@ -130,9 +130,15 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$loan_accounts_copy->leftJoin('premiums.account_id')
 						->addField('DueDate');
 
+		// Joining from premium will result in multiple records for sme account and hence a 
+		// load on code ...
+		$loan_accounts_copy->_dsql()->group('AccountNumber');
+
+
 		$loan_accounts_copy->addExpression('due_panelty')->set(function($m,$q)use($on_date){
 			return $m->refSQL('Premium')->addCondition('PaneltyCharged','<>',$m->api->db->dsql()->expr('PaneltyPosted'))->addCondition('DueDate','<=',$on_date)->sum($m->dsql()->expr('PaneltyCharged - PaneltyPosted'));
 		});
+
 
 		// $loan_accounts_copy->addCondition('branch_id',$branch->id);
 

@@ -19,6 +19,42 @@ class page_members extends Page {
 		$member_model->getElement('RelationWithParent')->destroy();
 		$member_model->getElement('MinorDOB')->destroy();
 		$member_model->getElement('Nominee')->destroy();
+		
+		$member_model->addExpression('sm_nominee_details')->set(function($m,$q){
+			$acc = $m->add('Model_Account_SM')
+						->addCondition('member_id',$m->getElement('id'))
+						->setLimit(1);
+			$Nominee = $acc->fieldQuery('Nominee');
+
+			$acc = $m->add('Model_Account_SM')
+						->addCondition('member_id',$m->getElement('id'))
+						->setLimit(1);
+			$NomineeAge = $acc->fieldQuery('NomineeAge');
+
+			$acc = $m->add('Model_Account_SM')
+						->addCondition('member_id',$m->getElement('id'))
+						->setLimit(1);
+			$RelationWithNominee = $acc->fieldQuery('RelationWithNominee');
+
+			$acc = $m->add('Model_Account_SM')
+						->addCondition('member_id',$m->getElement('id'))
+						->setLimit(1);
+			$MinorNomineeDOB = $acc->fieldQuery('MinorNomineeDOB');
+
+			$acc = $m->add('Model_Account_SM')
+						->addCondition('member_id',$m->getElement('id'))
+						->setLimit(1);
+			$MinorNomineeParentName = $acc->fieldQuery('MinorNomineeParentName');
+
+
+			return $acc->_dsql()->expr('concat([0]," <br/>Age: ",[1],"<br/>Relation: ",[2],"<br/>Minor DOB: ",[3],"<br/>Minor Parent ",[4])',[
+						$Nominee,
+						$NomineeAge,
+						$RelationWithNominee,
+						$MinorNomineeDOB,
+						$MinorNomineeParentName
+			]);
+		})->allowHTML(true);
 
 
 		$crud->addHook('myupdate',function($crud,$form){

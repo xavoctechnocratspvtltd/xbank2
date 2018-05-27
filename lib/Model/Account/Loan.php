@@ -376,10 +376,34 @@ class Model_Account_Loan extends Model_Account{
 	    $premiums = $this['NumberOfPremiums'];
 
 	    if ($this['ReducingOrFlatRate'] == REDUCING_RATE) {
+
+	    	// javascript code 
+	    	// bb = Loan Amount in start
+		   //  	for (var j=1;j<=numberOfMonths;j++){
+				// 	int_dd = bb * ((rateOfInterest/100)/12);
+				// 	pre_dd = emi.toFixed(2) - int_dd.toFixed(2);
+				// 	end_dd = bb - pre_dd.toFixed(2);
+				// 	detailDesc += "<tr><td>"+j+"</td><td>"+bb.toFixed(2)+"</td><td>"+emi.toFixed(2)+"</td><td>"+pre_dd.toFixed(2)+"</td><td>"+int_dd.toFixed(2)+"</td><td>"+end_dd.toFixed(2)+"</td></tr>";
+				// 	bb = bb - pre_dd.toFixed(2);
+				// }
+
 	        // INTEREST FOR REDUCING RATE OF INTEREST
-	        $emi = ($this['Amount'] * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
-	        $interest = round((($emi * $premiums) - $this['Amount']) / $premiums);
+	        $emi = round($this->pmt($rate, $premiums, $this['Amount']));
+	        $bb= $this['Amount'];
+	        $previous_premiums = $this->ref('Premium')
+	        						->addCondition('DueDate','<=',$on_date)
+	        						->setOrder('id');
+
+	        foreach ($previous_premiums as $p) {
+	        	$int_dd = $bb * (($rate/100)/12);
+	        	$pre_dd = $emi - $int_dd;
+	        	$end_dd = $bb - $pre_dd;
+	        	$bb = $bb-$pre_dd;
+	        }
+
+	        $interest = $int_dd; 
 	    }
+
 	    if ($this['ReducingOrFlatRate'] == FLAT_RATE or $this['ReducingOrFlatRate'] == 0) {
 			//    INTEREST FOR FLAT RATE OF INTEREST
 			$premiums_to_count_for_interest_in_emp  = $premiums + 1;

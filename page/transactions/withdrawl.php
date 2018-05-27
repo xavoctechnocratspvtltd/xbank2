@@ -81,7 +81,7 @@ class page_transactions_withdrawl extends Page {
 			);
 		$account_field->other_field->js('change',$js);
 		$account_field->js('change',$js);
-		$plus_btn->js('clikc',$js);
+		$plus_btn->js('click',$js);
 
 		if($form->isSubmitted()){
 			try{		

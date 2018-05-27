@@ -24,6 +24,11 @@ class page_members extends Page {
 			$acc = $m->add('Model_Account_SM')
 						->addCondition('member_id',$m->getElement('id'))
 						->setLimit(1);
+			$AccountNumber = $acc->fieldQuery('AccountNumber');
+
+			$acc = $m->add('Model_Account_SM')
+						->addCondition('member_id',$m->getElement('id'))
+						->setLimit(1);
 			$Nominee = $acc->fieldQuery('Nominee');
 
 			$acc = $m->add('Model_Account_SM')
@@ -47,12 +52,13 @@ class page_members extends Page {
 			$MinorNomineeParentName = $acc->fieldQuery('MinorNomineeParentName');
 
 
-			return $acc->_dsql()->expr('concat([0]," <br/>Age: ",[1],"<br/>Relation: ",[2],"<br/>Minor DOB: ",[3],"<br/>Minor Parent ",[4])',[
+			return $acc->_dsql()->expr('concat([5],"<br/>Nominee: ",[0]," <br/>Age: ",[1],"<br/>Relation: ",[2],"<br/>Minor DOB: ",[3],"<br/>Minor Parent ",[4])',[
 						$Nominee,
 						$NomineeAge,
 						$RelationWithNominee,
 						$MinorNomineeDOB,
-						$MinorNomineeParentName
+						$MinorNomineeParentName,
+						$AccountNumber
 			]);
 		})->allowHTML(true);
 

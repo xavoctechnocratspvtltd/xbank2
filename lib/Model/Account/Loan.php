@@ -298,7 +298,8 @@ class Model_Account_Loan extends Model_Account{
         $premiums = $scheme['NumberOfPremiums'];
         if ($scheme['ReducingOrFlatRate'] == REDUCING_RATE) {
 		//          FOR REDUCING RATE OF INTEREST
-            $emi = ($this['Amount'] * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
+            // $emi = ($this['Amount'] * ($rate / 1200) / (1 - (pow(1 / (1 + ($rate / 1200)), $premiums))));
+            $emi = $this->pmt($rate, $premiums, $this['Amount']);
         } else {
 		//          FOR FLAT RATE OF INTEREST
         	$premiums_to_count_for_interest_in_emp  = $premiums + 1;
@@ -317,6 +318,13 @@ class Model_Account_Loan extends Model_Account{
             $prem->saveAndUnload();
         }
 	}
+
+	function pmt($interest, $months, $loan) {
+       $months = $months;
+       $interest = $interest / 1200;
+       $amount = $interest * -$loan * pow((1 + $interest), $months) / (1 - pow((1 + $interest), $months));
+       return $amount;
+     }
 
 	function deposit($amount,$narration=null,$accounts_to_debit=array(),$form=null,$on_date=null,$in_branch=null){
 		if(!$on_date) $on_date = $this->api->now;

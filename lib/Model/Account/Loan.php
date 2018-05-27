@@ -375,7 +375,7 @@ class Model_Account_Loan extends Model_Account{
 		$rate = $this['Interest'];
 	    $premiums = $this['NumberOfPremiums'];
 
-	    if ($this['ReducingOrFlatRate'] == REDUCING_RATE) {
+	    if ($this['ReducingOrFlatRate'] === REDUCING_RATE) {
 
 	    	// javascript code 
 	    	// bb = Loan Amount in start
@@ -391,7 +391,7 @@ class Model_Account_Loan extends Model_Account{
 	        $emi = round($this->pmt($rate, $premiums, $this['Amount']));
 	        $bb= $this['Amount'];
 	        $previous_premiums = $this->ref('Premium')
-	        						->addCondition('DueDate','<=',$on_date)
+	        						->addCondition('DueDate','<=',$this->app->nextDate($on_date))
 	        						->setOrder('id');
 
 	        foreach ($previous_premiums as $p) {
@@ -402,9 +402,7 @@ class Model_Account_Loan extends Model_Account{
 	        }
 
 	        $interest = $int_dd; 
-	    }
-
-	    if ($this['ReducingOrFlatRate'] == FLAT_RATE or $this['ReducingOrFlatRate'] == 0) {
+	    }elseif ($this['ReducingOrFlatRate'] === FLAT_RATE or $this['ReducingOrFlatRate'] == 0) {
 			//    INTEREST FOR FLAT RATE OF INTEREST
 			$premiums_to_count_for_interest_in_emp  = $premiums + 1;
         	if($this['account_type'] == 'Loan Against Deposit') $premiums_to_count_for_interest_in_emp  = $premiums;

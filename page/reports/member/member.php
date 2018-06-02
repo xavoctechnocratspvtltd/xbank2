@@ -60,7 +60,7 @@ class page_reports_member_member extends Page {
 
 			if($_GET['pan_no']){
 				$this->app->stickyGET('pan_no');
-				$member_model->addCondition('pan_no',$_GET['pan_no']);
+				$member_model->addCondition('PanNo',$_GET['pan_no']);
 			}
 
 			if($_GET['adhar_no']){

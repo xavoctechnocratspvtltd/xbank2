@@ -17,7 +17,7 @@ class page_reports_loan_penaltyandotherreceivedlist extends Page {
 		$form->addField('DatePicker','to_date');
 
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','other'=>'Other'));
-		$form->addField('dropdown','receive_type')->setEmptyText("All")->setValueList([TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
+		$form->addField('dropdown','receive_type')->setEmptyText("All")->setValueList(array_combine([TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED],[TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]));
 		$document=$this->add('Model_Document');
 		$form->addSubmit('GET List');
 

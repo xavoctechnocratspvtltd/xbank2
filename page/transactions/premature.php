@@ -91,7 +91,7 @@ class page_transactions_premature extends Page {
 				// $img->js('mouseout',$img->js()->width('100%'));
 				$account_field->other_field->set($_GET['account_selected']);
 				$account_field->set($account->id);
-				$right_col->js(true,$amount_field_ro->js()->html(round($account_model->pre_mature($this->app->today,true)),0));
+				$right_col->js(true,$amount_field_ro->js()->html($account_model->pre_mature($this->app->today,true)),0);
 			}
 		}else{
 			$right_col->add('View_Error')->set('Select Account for Pre-Mature');

@@ -417,7 +417,7 @@ class Model_Account_Recurring extends Model_Account{
 			// $interest_total += $interest;
 		}
 
-		$amount_to_give  = $this->paidPremiums() * $this['Amount'] + $interest;
+		$amount_to_give  = round($this->paidPremiums() * $this['Amount'] + $interest);
 
 		// echo "amount to give $amount_to_give <br/>";
 
@@ -480,8 +480,7 @@ class Model_Account_Recurring extends Model_Account{
 
 			$transaction->addCreditAccount($account_to_credit, $final_credit_amount);
 			$transaction->execute();			
-		}
-		
+		}		
 
 		// mark mature and deactivate
 		$this['MaturedStatus']=true;

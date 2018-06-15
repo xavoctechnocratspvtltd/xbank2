@@ -17,6 +17,8 @@ class page_reports_loan_emireceivedlist extends Page {
 		$form->addField('DatePicker','to_date');
 
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','other'=>'Other'));
+		$form->addField('dropdown','legal_status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process'));
+		
 		$document=$this->add('Model_Document');
 		$form->addSubmit('GET List');
 
@@ -45,6 +47,9 @@ class page_reports_loan_emireceivedlist extends Page {
 		$dealer_join->addField('dealer_name','name');
 		$account_join->addField('AccountNumber');
 		$account_join->addField('dealer_id');
+		$account_join->addField('is_in_legal');
+		$account_join->addField('is_given_for_legal_process');
+
 		$scheme_join->addField('SchemeType');
 		$transaction_type_join->addField('transaction_type_name','name');
 
@@ -101,20 +106,36 @@ class page_reports_loan_emireceivedlist extends Page {
 					break;
 			}
 
+			$this->api->stickyGET('legal_status');
+			switch ($_GET['legal_status']) {
+				case 'is_in_legal':
+					$transaction_row_model->addCondition('is_in_legal',true);
+					break;
+				
+				case 'is_given_for_legal_process':
+					$transaction_row_model->addCondition('is_in_legal',false);
+					$transaction_row_model->addCondition('is_given_for_legal_process',true);
+					break;
+
+				default:
+					# code...
+					break;
+			}
+
 		}else
 			$transaction_row_model->addCondition('id',-1);
 
 
 		$transaction_row_model->add('Controller_Acl');
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_address','member_landmark','FatherName','PhoneNos','amountCr','due_premium_count','Narration','created_at','dealer_name'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','member_address','member_landmark','FatherName','PhoneNos','amountCr','due_premium_count','Narration','created_at','dealer_name','is_in_legal','is_given_for_legal_process'));
 
 		// $grid->addHook('formatRow',function($g){
 		// 	// $this->addExpression('member_name')->set('CONCAT(name," [",id, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));			
 		// 	$g->current_row_html['member_name'] = $g->model['member_name']."[".$g->model['member_id']."]"." :: " . $g->model['member_address']."  [ " .$g->model['member_landmark' ]."]";
 		// });
 
-		// $grid->removeColumn('member_landmark');
-		// $grid->removeColumn('member_address');
+		$grid->removeColumn('is_in_legal');
+		$grid->removeColumn('is_given_for_legal_process');
 		// $grid->addFormatter('member_name','wrap');
 		$grid->addFormatter('member_address','wrap');
 		$grid->addPaginator(500);
@@ -134,7 +155,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 		if($form->isSubmitted()){
 
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'loan_type'=>$form['loan_type'],'filter'=>1))->execute();
+			$grid->js()->reload(array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'loan_type'=>$form['loan_type'],'legal_status'=>$form['legal_status'],'filter'=>1))->execute();
 
 		}		
 

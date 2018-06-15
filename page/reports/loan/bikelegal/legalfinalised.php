@@ -7,6 +7,11 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 		parent::init();
 
 		$form= $this->add('Form');
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
+
+		$form->addField('dropdown','legal_status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process'));
+
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('All');
 		$dealer_field->setModel('ActiveDealer');
 
@@ -116,7 +121,7 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 		// 	return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		// });
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','created_at','legal_process_given_date','legal_filing_date','legal_case_finalised_on'];
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','created_at','legal_process_given_date','legal_filing_date','legal_case_finalised_on','is_in_legal','is_given_for_legal_process'];
 
 		if($this->api->stickyGET('filter')){
 			if($this->api->stickyGET('dealer')){
@@ -133,6 +138,33 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 					$grid_column_array[] = $this->api->normalizeName($document['name']);
 				}
 			}
+
+			if($d=$this->app->stickyGET('from_date')){
+				$account_model->addCondition('legal_case_finalised_on','>=',$d);
+			}
+
+			if($d=$this->app->stickyGET('to_date')){
+				$account_model->addCondition('legal_case_finalised_on','<',$this->app->nextDate($d));
+			}
+
+			$this->api->stickyGET('legal_status');
+			switch ($_GET['legal_status']) {
+				case 'is_in_legal':
+					$account_model->addCondition('is_in_legal',true);
+					$account_model->addCondition('is_given_for_legal_process',true);
+					$account_model->addCondition('is_legal_case_finalised',true);
+					break;
+				
+				case 'is_given_for_legal_process':
+					$account_model->addCondition('is_in_legal',false);
+					$account_model->addCondition('is_given_for_legal_process',true);
+					$account_model->addCondition('is_legal_case_finalised',true);
+					break;
+
+				default:
+					# code...
+					break;
+			}
 		}
 
 		// $account_model->addCondition([['cheque_returned_on','<>',""],['cheque_returned_on','<>',null]]);
@@ -145,8 +177,12 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(100);
 
+		$grid->removeColumn('is_in_legal');
+		$grid->removeColumn('is_given_for_legal_process');
+
+
 		if($form->isSubmitted()){
-			$send = array('filter'=>1,'dealer'=>$form['dealer']);
+			$send = array('filter'=>1,'dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'legal_status'=>$form['legal_status']);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

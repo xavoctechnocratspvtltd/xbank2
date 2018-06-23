@@ -23,6 +23,8 @@ class Page_utility_premimumtable extends Page{
 		$grid->addFormatter('PaidOn','grid/inline');
 		$grid->addFormatter('AgentCommissionSend','grid/inline');
 		$grid->addFormatter('AgentCollectionChargesSend','grid/inline');
+		$grid->addFormatter('AgentCommissionPercentage','grid/inline');
+		$grid->addFormatter('AgentCollectionChargesPercentage','grid/inline');
 
 		$grid->addOrder()
 			->move('DueDate','before','PaidOn')

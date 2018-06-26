@@ -35,12 +35,15 @@ class View_AccountDetail extends View {
 
 		$guarenters = $ac_m->ref('AccountGuarantor');
 		$g_m_join = $guarenters->join('members','member_id');
-		$g_m_join->addField('memberName','name');
-		$g_m_join->addField('member_Mobile_no','PhoneNos');
+		// $g_m_join->addField('guarantor_name','name');
+		$g_m_join->addField('guarantor_FatherName','FatherName');
+		$g_m_join->addField('guarantor_Mobile_no','PhoneNos');
 		// $g_m_join->addField('MemberID','id');
 
 		$grid= $this->add('Grid',null,'guaranters');
 		$grid->setModel($guarenters);
+		$grid->removeColumn('account');
+		$grid->addOrder()->move('created_at','last')->now();
 
 		$this->template->trySet('id',$ac_m['member_id']);
 		$this->template->trySet('amount_caption',$ac_m->getElement('Amount')->caption());

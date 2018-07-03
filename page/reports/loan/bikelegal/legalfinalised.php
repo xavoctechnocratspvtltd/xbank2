@@ -166,7 +166,7 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 					$account_model->addCondition('is_legal_case_finalised',true);
 					$account_model->addCondition('is_given_for_legal_process',true);
 				case 'all':
-					$account_model->addCondition([['is_given_for_legal_process',true]['is_in_legal',true],['is_in_arbitration',true]]);
+					$account_model->addCondition([['is_given_for_legal_process',true],['is_in_legal',true],['is_in_arbitration',true]]);
 					$account_model->addCondition('is_legal_case_finalised',true);
 				default:
 					# code...

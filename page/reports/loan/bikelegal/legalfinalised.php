@@ -10,7 +10,7 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
-		$form->addField('dropdown','legal_status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process'));
+		$form->addField('dropdown','legal_status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process','is_in_arbitration'=>'Is In Arbitration'));
 
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('All');
 		$dealer_field->setModel('ActiveDealer');
@@ -160,7 +160,14 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 					$account_model->addCondition('is_given_for_legal_process',true);
 					$account_model->addCondition('is_legal_case_finalised',true);
 					break;
-
+				case 'is_in_arbitration':
+					$account_model->addCondition('is_in_legal',false);
+					$account_model->addCondition('is_in_arbitration',true);
+					$account_model->addCondition('is_legal_case_finalised',true);
+					$account_model->addCondition('is_given_for_legal_process',true);
+				case 'all':
+					$account_model->addCondition([['is_given_for_legal_process',true]['is_in_legal',true],['is_in_arbitration',true]]);
+					$account_model->addCondition('is_legal_case_finalised',true);
 				default:
 					# code...
 					break;
@@ -168,9 +175,6 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 		}
 
 		// $account_model->addCondition([['cheque_returned_on','<>',""],['cheque_returned_on','<>',null]]);
-		$account_model->addCondition('is_given_for_legal_process',true);
-		$account_model->addCondition([['is_in_legal',true],['is_in_arbitration',true]]);
-		$account_model->addCondition('is_legal_case_finalised',true);
 
 		$grid = $this->add('Grid_AccountsBase')->addSno();
 

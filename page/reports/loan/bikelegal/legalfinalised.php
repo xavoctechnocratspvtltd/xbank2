@@ -172,6 +172,8 @@ class page_reports_loan_bikelegal_legalfinalised extends Page {
 					# code...
 					break;
 			}
+		}else{
+			$account_model->addCondition('id',-1);
 		}
 
 		// $account_model->addCondition([['cheque_returned_on','<>',""],['cheque_returned_on','<>',null]]);

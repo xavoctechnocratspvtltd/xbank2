@@ -46,7 +46,7 @@ class page_reports_loan_newNPAaccount extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_father_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges','other_charges_due','total_due');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','last_transaction_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_father_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges','other_charges_due','total_due');
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
@@ -223,6 +223,16 @@ class page_reports_loan_newNPAaccount extends Page {
 			return $guarantor_m->_dsql()->del('fields')->field($guarantor_m ->table_alias.'.FatherName');
 			return "'guarantor_father_name'";
 		});
+
+		$account_model->addExpression('last_transaction_date')->set(function($m,$q){
+			return $this->add('Model_TransactionRow',['table_alias'=>'last_cr_tr_date'])
+						->addCondition('account_id',$q->getField('id'))
+						->addCondition('amountCr','>',0)
+						->addCondition('transaction_type','in',[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT, TRA_PENALTY_AMOUNT_RECEIVED, TRA_OTHER_AMOUNT_RECEIVED])
+						->setLimit(1)
+						->setOrder('created_at','desc')
+						->fieldQuery('created_at');
+		})->type('date');
 		
 
 		

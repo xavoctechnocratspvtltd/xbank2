@@ -139,6 +139,7 @@ class page_transactions_deposit extends Page {
 					case 'Recurring':
 						$account_info->set("Paid Premiums ".$account_selected->ref('Premium')->addCondition('PaidOn','is not',null)->count());
 						$right_col->add('View')->set('Premium Amount ' . $account_selected['Amount']);
+						$right_col->add('View')->set('Last Premium Date ' . $account_selected->ref('Premium')->setOrder('DueDate','desc')->setLimit(1)->tryLoadAny()->get('DueDate'));
 						break;	
 					default:
 						$account_info->set($account_selected['scheme_name']);

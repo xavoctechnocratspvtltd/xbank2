@@ -78,7 +78,7 @@ class page_reports_loan_emiduelist extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','tehsil','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_father','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','other_received','total');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','last_transaction_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','tehsil','PhoneNos','dealer','guarantor_name','guarantor_phno','guarantor_father','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','other_received','total');
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($from_date,$to_date){
 			$p_m=$m->refSQL('Premium')
@@ -308,6 +308,16 @@ class page_reports_loan_emiduelist extends Page {
 				$account_model->addCondition('last_transaction_date_in_time',false);
 				$account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$allowed_last_date)));
 			}
+
+			$account_model->addExpression('last_transaction_date')->set(function($m,$q){
+				return $this->add('Model_TransactionRow',['table_alias'=>'last_cr_tr_date'])
+							->addCondition('account_id',$q->getField('id'))
+							->addCondition('amountCr','>',0)
+							->addCondition('transaction_type','in',[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT, TRA_PENALTY_AMOUNT_RECEIVED, TRA_OTHER_AMOUNT_RECEIVED])
+							->setLimit(1)
+							->setOrder('created_at','desc')
+							->fieldQuery('created_at');
+			})->type('date');
 
 			// $grid->addMethod('format_total',function($g,$f){
 			// 	$temp  = $g->current_row_html[$f]= ($g->model['due_premium_count'] * $g->model['emi_amount']) +$g->model['due_panelty']+$g->model['other_charges'];

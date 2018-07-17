@@ -33,7 +33,7 @@ class page_agents extends Page{
 				$old_cader = $this->add('Model_Cadre')->load($old_agent['cadre_id']);
 				$new_cader = $this->add('Model_Cadre')->load($m['cadre_id']);
 				
-				if($old_cader['total_crpb'] < $new_cader['total_crpb']){
+				if($old_cader['total_crpb'] > $new_cader['total_crpb']){
 					if($m->ref('Agent')->count()->getOne())
 						throw new \Exception("Contains Agents and not allowed to go downgrade", 1);
 						

@@ -46,7 +46,7 @@ class page_reports_loan_newNPAaccount extends Page {
 		// $account_model_j->addField('DueDate');
 		// $account_model->addCondition('MaturedStatus',false); //???
 
-		$grid_column_array = array('AccountNumber','created_at','maturity_date','last_transaction_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_father_name','guarantor_phno','guarantor_address','last_premium','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges','other_charges_due','total_due');
+		$grid_column_array = array('AccountNumber','created_at','maturity_date','last_transaction_date','due_date','scheme','member_name','FatherName','CurrentAddress','landmark','PhoneNos','dealer','guarantor_name','guarantor_father_name','guarantor_phno','guarantor_address','last_premium','last_paid_date','paid_premium_count','due_premium_count','emi_amount','emi_dueamount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges','other_charges_due','total_due');
 		
 		$account_model->addExpression('paid_premium_count')->set(function($m,$q)use($till_date){
 			return $m->refSQL('Premium')
@@ -86,6 +86,15 @@ class page_reports_loan_newNPAaccount extends Page {
 						->addCondition('PaidOn','<>',null);
 			$p_m->addCondition('DueDate','<',$m->api->nextDate($this->app->today));
 			return $p_m->count();
+		})->sortable(true);
+
+		$account_model->addExpression('last_paid_date')->set(function($m,$q){
+			$p_m=$m->refSQL('Premium')
+						->addCondition('PaidOn','<>',null)
+						->setOrder('PaidOn','desc')
+						->setLimit(1);
+			
+			return $p_m->fieldQuery('PaidOn');
 		})->sortable(true);
 
 		$account_model->addExpression('due_premium_amount')->set(function($m,$q){
@@ -257,25 +266,30 @@ class page_reports_loan_newNPAaccount extends Page {
 					$account_model->addCondition('due_premium_count',2);
 					// $account_model->addCondition('due_premium_count','<=',2);
 					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -2 MONTH"));
+					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -2 MONTH"));
 					break;
 				case 'three_month':
 					$account_model->addCondition('due_premium_count',3);
 					// $account_model->addCondition('due_premium_count','<=',4);
 					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -3 MONTH"));
+					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -3 MONTH"));
 					break;
 				case 'four_month':
 					$account_model->addCondition('due_premium_count',4);
 					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -4 MONTH"));
+					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -4 MONTH"));
 					break;
 
 				case 'five_month':
 					$account_model->addCondition('due_premium_count',5);
 					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -5 MONTH"));
+					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -5 MONTH"));
 					// $account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$till_date)));
 					break;
 				case 'five_above':
 					$account_model->addCondition('due_premium_count','>',5);
 					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -5 MONTH"));
+					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -5 MONTH"));
 					// $account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$till_date)));
 					break;
 				

@@ -16,8 +16,9 @@ class page_reports_loan_emireceivedlist extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
-		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','other'=>'Other'));
-		$form->addField('dropdown','legal_status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process'));
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','hl'=>'HL','other'=>'Other'));
+		$form->addField('dropdown','receive_type')->setEmptyText('All')->setValueList(array_combine([TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED],[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]));
+		$form->addField('dropdown','legal_status','Recovery Status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process','in_recovery'=>'Is In Recovery'));
 		
 		$document=$this->add('Model_Document');
 		$form->addSubmit('GET List');
@@ -53,7 +54,8 @@ class page_reports_loan_emireceivedlist extends Page {
 		$scheme_join->addField('SchemeType');
 		$transaction_type_join->addField('transaction_type_name','name');
 
-		$transaction_row_model->addCondition('transaction_type_name',TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT);
+		// receive type now added 
+		// $transaction_row_model->addCondition('transaction_type_name',TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT);
 		$transaction_row_model->addCondition('amountCr','>',0);
 		$transaction_row_model->addCondition('SchemeType','Loan');
 
@@ -100,10 +102,22 @@ class page_reports_loan_emireceivedlist extends Page {
 					$transaction_row_model->addCondition('AccountNumber','like','___fvl%');
 					break;
 
+				case 'hl':
+					$transaction_row_model->addCondition('AccountNumber','like','___hl%');
+					break;
+
 				case 'other':
+					$transaction_row_model->addCondition('AccountNumber','not like','%HL%');
 					$transaction_row_model->addCondition('AccountNumber','not like','%PL%');
 					$transaction_row_model->addCondition('AccountNumber','not like','%VL%');
 					break;
+			}
+
+			$this->api->stickyGET('receive_type');
+			if($_GET['receive_type']){
+				$transaction_row_model->addCondition('transaction_type_name',$_GET['receive_type']);
+			}else{
+				$transaction_row_model->addCondition('transaction_type_name',[TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]);
 			}
 
 			$this->api->stickyGET('legal_status');
@@ -116,6 +130,10 @@ class page_reports_loan_emireceivedlist extends Page {
 					$transaction_row_model->addCondition('is_in_legal',false);
 					$transaction_row_model->addCondition('is_given_for_legal_process',true);
 					break;
+
+				case 'in_recovery':
+					$transaction_row_model->addCondition('is_in_legal',false);
+					$transaction_row_model->addCondition('is_given_for_legal_process',false);
 
 				default:
 					# code...
@@ -155,7 +173,7 @@ class page_reports_loan_emireceivedlist extends Page {
 
 		if($form->isSubmitted()){
 
-			$grid->js()->reload(array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'loan_type'=>$form['loan_type'],'legal_status'=>$form['legal_status'],'filter'=>1))->execute();
+			$grid->js()->reload(array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'loan_type'=>$form['loan_type'],'legal_status'=>$form['legal_status'],'receive_type'=>$form['receive_type'],'filter'=>1))->execute();
 
 		}		
 

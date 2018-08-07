@@ -17,6 +17,12 @@ class page_reports_loan_rcduelist extends Page {
 		$form->addField('DatePicker','to_date');
 		$form->addField('dropdown','loan_type')->setValueList(array('vl'=>'VL','fvl'=>'FVL','other'=>'Other'));
 		$form->addField('dropdown','status')->setValueList(array('1'=>'Active','0'=>'De Activated'));
+
+		$document=$this->add('Model_Document');
+		$document->addCondition('LoanAccount',true);
+		foreach ($document as $junk) {
+			$form->addField('CheckBox','doc_'.$document->id, $document['name']);
+		}
 		// $form->addField('DropDown','document')->setModel($this->add('Model_Document')->loanDocuments());
 
 		$form->addSubmit('GET List');
@@ -31,6 +37,8 @@ class page_reports_loan_rcduelist extends Page {
 		$doc_submitted_j->addField('Description');
 
 		$grid = $this->add('Grid_AccountsBase');
+
+		$grid_column_array = array('AccountNumber','created_at','scheme','member','father_name','address','phone_nos','maturity_date','dealer','Description','submitted_on');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -77,6 +85,20 @@ class page_reports_loan_rcduelist extends Page {
 				$accounts_model->addCondition('created_at','<',$this->api->nextDate($_GET['to_date']));
 			// $accounts_model->addCondition($q->orExpr()->where('submitted_on','>=',$this->api->nextDate($as_on_date))->where('submitted_on is null'));
 
+
+			foreach ($document as $junk) {
+				$doc_id = $document->id;
+				if($_GET['doc_'.$document->id]){
+					$this->api->stickyGET('doc_'.$document->id);
+					$accounts_model->addExpression($this->api->normalizeName($document['name']))->set(function($m,$q)use($doc_id ){
+						return $m->refSQL('DocumentSubmitted')->addCondition('documents_id',$doc_id )->fieldQuery('Description');
+					});
+					$grid_column_array[] = $this->api->normalizeName($document['name']);
+					if(!isset($gridOrder)) $gridOrder = $grid->addOrder();
+					$gridOrder->move($this->api->normalizeName($document['name']),'last');
+				}
+			}
+
 		}else{
 			$accounts_model->addCondition('id',-1);
 		}
@@ -88,8 +110,10 @@ class page_reports_loan_rcduelist extends Page {
 		$accounts_model->addCondition('DefaultAC',false);
 		$accounts_model->add('Controller_Acl');
 
+
+
 		$accounts_model->setOrder('Description','asc');
-		$grid->setModel($accounts_model,array('AccountNumber','created_at','scheme','member','father_name','address','phone_nos','maturity_date','dealer','Description','submitted_on'));
+		$grid->setModel($accounts_model, $grid_column_array);
 
 		$grid->addPaginator(500);
 		$grid->addSno();
@@ -99,8 +123,8 @@ class page_reports_loan_rcduelist extends Page {
 		$grid->addFormatter('Description','Wrap');
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(
-					array(
+
+			$send = array(
 						'filter'=>1,
 						'from_date'=>$form['from_date']?:0,
 						'to_date'=>$form['to_date']?:0,
@@ -108,8 +132,14 @@ class page_reports_loan_rcduelist extends Page {
 						'status'=>$form['status'],
 						'document'=>$form['document'],
 						'dealer'=>$form['dealer'],
-						)
-				)->execute();
+						);
+
+			foreach ($document as $junk) {
+				if($form['doc_'.$document->id])
+					$send['doc_'.$document->id] = $form['doc_'.$document->id];
+			}
+
+			$grid->js()->reload($send)->execute();
 		}
 	}
 }

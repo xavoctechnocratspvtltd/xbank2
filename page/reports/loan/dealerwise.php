@@ -34,7 +34,7 @@ class page_reports_loan_dealerwise extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addField('dropdown','report_type')->setValueList(array('duelist'=>'Due List','hardlist'=>'Hard List','npa'=>'NPA List','time_collapse'=>'Time Collapse'));
-		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','hl'=>'HL','other'=>'Other'));
 		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
 		$form->addField('dropdown','bike_surrendered')->setValueList(['include'=>'Include / All','exclude'=>'Exclude','only'=>'Only']);
 		$form->addField('dropdown','legal_accounts')->setValueList(['include'=>'Include / All','exclude'=>'Exclude','only'=>'Only']);
@@ -235,6 +235,9 @@ class page_reports_loan_dealerwise extends Page {
 					break;
 				case 'sl':
 					$account_model->addCondition('AccountNumber','like','%SL%');
+					break;
+				case 'hl':
+					$account_model->addCondition('AccountNumber','like','%HL%');
 					break;
 				case 'other':
 					$account_model->addCondition('AccountNumber','not like','%pl%');

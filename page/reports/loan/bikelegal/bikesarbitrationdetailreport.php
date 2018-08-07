@@ -33,6 +33,30 @@ class page_reports_loan_bikelegal_bikesarbitrationdetailreport extends Page {
 			return  $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])->addCondition('member_id',$q->getField('member_id'))->setLimit(1)->fieldQuery('AccountNumber');
 		});
 
+		$account_model->addExpression('account_guarantor')->set(function($m,$q){
+			return $m->refSQL('AccountGuarantor')->setLimit(1)->fieldQuery('member');
+		});
+
+		$account_model->addExpression('guarantor_fathername')->set(function($m,$q){
+			$ag = $m->add('Model_AccountGuarantor');
+			$mj = $ag->join('members','member_id');
+			$mj->addField('FatherName');
+			
+			$ag->addCondition('account_id',$q->getField('id'));
+			return $ag->fieldQuery('FatherName');
+					
+		});
+
+		$account_model->addExpression('guarantor_phonenumber')->set(function($m,$q){
+			$ag = $m->add('Model_AccountGuarantor');
+			$mj = $ag->join('members','member_id');
+			$mj->addField('PhoneNos');
+			
+			$ag->addCondition('account_id',$q->getField('id'));
+			return $ag->fieldQuery('PhoneNos');
+					
+		});
+
 		$account_model->addExpression('no_of_emi')->set(function($m,$q){
 			return $m->refSQL('Premium')->count();
 		});
@@ -116,7 +140,7 @@ class page_reports_loan_bikelegal_bikesarbitrationdetailreport extends Page {
 			return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		});
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at','is_in_arbitration','arbitration_on'];
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at','is_in_arbitration','arbitration_on','account_guarantor','guarantor_fathername','guarantor_phonenumber'];
 
 		if($this->api->stickyGET('filter')){
 			if($this->api->stickyGET('dealer')){

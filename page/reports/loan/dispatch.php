@@ -18,7 +18,7 @@ class page_reports_loan_dispatch extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
-		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','hl'=>'HL','other'=>'Other'));
 		$form->addField('dropdown','dsa')->setEmptyText('All DSA')->setModel('DSA');
 
 		// $form->addField('DropDown','document')->setEmptyText('No Document')->setModel('Document')->addCondition('LoanAccount',true);
@@ -161,9 +161,13 @@ class page_reports_loan_dispatch extends Page {
 					$account_model->addCondition('AccountNumber','like','%SL%');
 					$account_model->addCondition('AccountNumber','not like','%VL%');
 					break;
+				case 'hl':
+					$account_model->addCondition('AccountNumber','like','%HL%');
+					break;
 				case 'other':
 					$account_model->addCondition('AccountNumber','not like','%pl%');
 					$account_model->addCondition('AccountNumber','not like','%vl%');
+					$account_model->addCondition('AccountNumber','not like','%hl%');
 					// $account_model->_dsql()->where('(accounts.AccountNumber not like "%pl%" and accounts.AccountNumber not like "%pl%")');
 					break;
 			}
@@ -214,7 +218,7 @@ class page_reports_loan_dispatch extends Page {
 			return $x->addCondition('id',$q->getField('LoanAgainstAccount_id'))->fieldQuery('AccountNumber');
 		});
 
-		$grid->setModel($account_model->debug(),$grid_array);
+		$grid->setModel($account_model,$grid_array);
 		
 		$grid->addMethod('format_myTotal',function($grid, $field){
 			$grid->current_row[$field] = $grid->current_row['no_of_emi'] * $grid->current_row['emi'];

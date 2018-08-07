@@ -16,7 +16,7 @@ class page_reports_loan_penaltyandotherreceivedlist extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 
-		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','other'=>'Other'));
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','hl'=>'HL','other'=>'Other'));
 		$form->addField('dropdown','receive_type')->setEmptyText("All")->setValueList(array_combine([TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED],[TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]));
 		$form->addField('dropdown','legal_status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process'));
 
@@ -96,7 +96,12 @@ class page_reports_loan_penaltyandotherreceivedlist extends Page {
 					$transaction_row_model->addCondition('AccountNumber','like','___fvl%');
 					break;
 
+				case 'hl':
+					$transaction_row_model->addCondition('AccountNumber','like','___hl%');
+					break;
+
 				case 'other':
+					$transaction_row_model->addCondition('AccountNumber','not like','%HL%');
 					$transaction_row_model->addCondition('AccountNumber','not like','%PL%');
 					$transaction_row_model->addCondition('AccountNumber','not like','%VL%');
 					break;

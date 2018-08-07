@@ -21,7 +21,7 @@ class page_reports_loan_newNPAaccount extends Page {
 
 		$form->addField('DatePicker','till_date');
 		$form->addField('dropdown','report_type')->setValueList(array('two_month'=>'2 Month Due','three_month'=>'3 Month Due','four_month'=>'4 Month Due','five_month'=>'5 Month Due','five_above'=>'5 Month Above Due'));
-		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','other'=>'Other'));
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','hl'=>'HL','other'=>'Other'));
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
 		foreach ($document as $junk) {
@@ -312,7 +312,11 @@ class page_reports_loan_newNPAaccount extends Page {
 				case 'sl':
 					$account_model->addCondition('AccountNumber','like','%SL%');
 					break;
+				case 'hl':
+					$account_model->addCondition('AccountNumber','like','%HL%');
+					break;
 				case 'other':
+					$account_model->addCondition('AccountNumber','not like','%hl%');
 					$account_model->addCondition('AccountNumber','not like','%pl%');
 					$account_model->addCondition('AccountNumber','not like','%vl%');
 					// $account_model->_dsql()->where('(accounts.AccountNumber not like "%pl%" and accounts.AccountNumber not like "%pl%")');

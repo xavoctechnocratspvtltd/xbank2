@@ -229,9 +229,9 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 			$account_model->addCondition('id',-1);
 		}
 
-		$account_model->addCondition([['cheque_returned_on','<>',""],['cheque_returned_on','<>',null]]);
-		$account_model->addCondition('is_legal_case_finalised',false);
-		$account_model->addCondition('is_in_arbitration',false);
+		// $account_model->addCondition([['cheque_returned_on','<>',""],['cheque_returned_on','<>',null]]);
+		// $account_model->addCondition('is_legal_case_finalised',false);
+		// $account_model->addCondition('is_in_arbitration',false);
 
 		$grid->setModel($account_model,$grid_column_array);
 		$grid->addPaginator(100);

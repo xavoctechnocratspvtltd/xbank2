@@ -191,10 +191,12 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 					$grid_column_array[]= 'arbitration_on';
 					break;
 				case 'is_in_arbitration_process':
-					$account_model->addCondition('is_in_legal',true);
+					$account_model->addCondition('is_given_for_legal_process',true);
 					$account_model->addCondition('legal_case_not_submitted_reason','<>','');
 					$account_model->addCondition('legal_case_not_submitted_reason','<>',null);
 					$account_model->addCondition('is_in_arbitration',false);
+					$account_model->addCondition('is_in_legal',false);
+					$account_model->addCondition('is_legal_case_finalised',false);
 
 					if($this->app->stickyGET('from_date'))
 						$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);

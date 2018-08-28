@@ -14,7 +14,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 		$form->addField('DatePicker','to_date');
 
 		$form->addField('DropDown','legal_status')
-				->setEmptyText('All')->setValuelist(['is_in_legal'=>'Is In Legal','is_in_arbitration'=>'Is In Arbitration','is_in_legal_process'=>'Is In Legal Process']);
+				->setEmptyText('All')->setValuelist(['is_in_legal'=>'Is In Legal','is_in_arbitration'=>'Is In Arbitration','is_in_arbitration_process'=>'Is In Atrbitration Process', 'is_in_legal_process'=>'Is In Legal Process']);
 
 		$form->addField('DropDown','account_status')->setEmptyText('All')
 									->setValuelist(['Active'=>'Active','InActive'=>'InActive']);
@@ -189,6 +189,18 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 					if($this->app->stickyGET('to_date'))
 						$account_model->addCondition('arbitration_on','<',$this->app->nextDate($_GET['to_date']));
 					$grid_column_array[]= 'arbitration_on';
+					break;
+				case 'is_in_arbitration_process':
+					$account_model->addCondition('is_in_legal',true);
+					$account_model->addCondition('legal_case_not_submitted_reason','<>','');
+					$account_model->addCondition('legal_case_not_submitted_reason','<>',null);
+					$account_model->addCondition('is_in_arbitration',false);
+
+					if($this->app->stickyGET('from_date'))
+						$account_model->addCondition('legal_filing_date','>=',$_GET['from_date']);
+					if($this->app->stickyGET('to_date'))
+						$account_model->addCondition('legal_filing_date','<',$this->app->nextDate($_GET['to_date']));
+					$grid_column_array[]= 'legal_filing_date';
 					break;
 				case 'is_in_legal_process':
 					$account_model->addCondition('is_in_legal',false);

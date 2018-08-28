@@ -139,6 +139,7 @@ class page_reports_loan_bikelegal_finalrecoverynoticedue extends Page {
 		// $account_model->addCondition('bike_surrendered',true);
 		// $account_model->addCondition('is_bike_returned',false);
 		// $account_model->addCondition('is_bike_auctioned',true);
+		$account_model->addCondition('is_in_arbitration',false);
 		$account_model->addCondition('is_final_recovery_notice_sent',false);
 		$account_model->addCondition('is_given_for_legal_process',true);
 		$account_model->addCondition('is_legal_case_finalised',false);

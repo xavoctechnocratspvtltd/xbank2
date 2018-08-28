@@ -197,10 +197,10 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 					$account_model->addCondition('is_in_arbitration',false);
 
 					if($this->app->stickyGET('from_date'))
-						$account_model->addCondition('legal_filing_date','>=',$_GET['from_date']);
+						$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);
 					if($this->app->stickyGET('to_date'))
-						$account_model->addCondition('legal_filing_date','<',$this->app->nextDate($_GET['to_date']));
-					$grid_column_array[]= 'legal_filing_date';
+						$account_model->addCondition('legal_process_given_date','<',$this->app->nextDate($_GET['to_date']));
+					$grid_column_array[]= 'legal_process_given_date';
 					break;
 				case 'is_in_legal_process':
 					$account_model->addCondition('is_in_legal',false);

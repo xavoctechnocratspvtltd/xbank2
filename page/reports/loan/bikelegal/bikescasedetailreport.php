@@ -208,6 +208,8 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 					$account_model->addCondition('is_in_legal',false);
 					$account_model->addCondition('is_in_arbitration',false);
 					$account_model->addCondition('is_given_for_legal_process',true);
+					$account_model->addCondition([['legal_case_not_submitted_reason',''],['legal_case_not_submitted_reason',null]]);
+
 					if($this->app->stickyGET('from_date'))
 						$account_model->addCondition('legal_process_given_date','>=',$_GET['from_date']);
 					if($this->app->stickyGET('to_date'))

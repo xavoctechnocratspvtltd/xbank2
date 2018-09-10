@@ -11,8 +11,8 @@ class Model_Agent extends Model_Table {
 		$this->hasOne('Mo','mo_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('ParentAgent','sponsor_id')->display(array('form'=>'autocomplete/Basic'))->sortable(true);
-		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'));;
-		$this->hasOne('Cadre','cadre_id');
+		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'))->mandatory(true);
+		$this->hasOne('Cadre','cadre_id')->mandatory(true);
 		// $this->hasOne('Tree','tree_id');
 		$this->addField('added_by');
 

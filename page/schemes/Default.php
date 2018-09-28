@@ -22,7 +22,7 @@ class page_schemes_Default extends Page{
 			return true;
 		});
 
-		if($crud->isEditing("add")){
+		if($crud->isEditing()){
 		    $o=$crud->form->add('Order');
 		}
 
@@ -38,7 +38,7 @@ class page_schemes_Default extends Page{
 			$crud->grid->addQuickSearch(array('name','SchemeGroup'));
 		}
 
-		if($crud->isEditing('add')){
+		if($crud->isEditing()){
 			$o->now();
 			$f1 = $crud->form->getElement('isDepriciable');
 		    $f1->js(true)->univ()->bindConditionalShow(array(

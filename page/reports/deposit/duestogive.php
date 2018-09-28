@@ -18,6 +18,10 @@ class page_reports_deposit_duestogive extends Page {
 		$form=$this->add('Form');
 		$field_mo = $form->addField('autocomplete/Basic','mo');
 		$field_mo->setModel('Mo');
+		$field_mem = $form->addField('autocomplete/Basic','member');
+		$field_mem->setModel('Member');
+		$field_agent = $form->addField('autocomplete/Basic','agent');
+		$field_agent->setModel('Agent');
 
 		$form->addField('dropdown','account_type')->setValueList($account_type_array);
 		$form->addField('DatePicker','from_date');
@@ -82,6 +86,8 @@ class page_reports_deposit_duestogive extends Page {
 			$this->api->stickyGET('from_date');
 			$this->api->stickyGET('to_date');
 			$this->api->stickyGET('branch_id');
+			$this->api->stickyGET('member');
+			$this->api->stickyGET('agent');
 			if($_GET['account_type']){
 				if($_GET['account_type']=='%')
 					$account->addCondition('account_type',array_keys($account_type_array));
@@ -91,6 +97,14 @@ class page_reports_deposit_duestogive extends Page {
 
 			if($_GET['mo']){
 				$account->addCondition('agent_mo_id',$_GET['mo']);
+			}
+
+			if($_GET['member']){
+				$account->addCondition('member_id',$_GET['member']);
+			}
+
+			if($_GET['agent']){
+				$account->addCondition('agent_id',$_GET['agent']);
 			}
 
 			if($_GET['from_date'])
@@ -141,7 +155,7 @@ class page_reports_deposit_duestogive extends Page {
 
 		if($form->isSubmitted()){
 			
-			$send = array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'branch_id'=>$form['branch_id'],'mo'=>$form['mo'],'filter'=>1);
+			$send = array('account_type'=>$form['account_type'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'report_type'=>$form['report_type'],'branch_id'=>$form['branch_id'],'mo'=>$form['mo'],'member'=>$form['member'],'agent'=>$form['agent'],'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

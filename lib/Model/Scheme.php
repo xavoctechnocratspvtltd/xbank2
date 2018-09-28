@@ -114,9 +114,9 @@ class Model_Scheme extends Model_Table {
 		if($this->hasElement('InterestToAnotherAccount')) $this->getElement('InterestToAnotherAccount')->system(true);
 		if($this->hasElement('NumberOfPremiums')) $this->getElement('NumberOfPremiums')->system(true);
 		if($this->hasElement('InterestToAnotherAccountPercent')) $this->getElement('InterestToAnotherAccountPercent')->system(true);
-		if($this->hasElement('isDepriciable')) $this->getElement('isDepriciable')->system(true);
-		if($this->hasElement('DepriciationPercentBeforeSep')) $this->getElement('DepriciationPercentBeforeSep')->system(true);
-		if($this->hasElement('DepriciationPercentAfterSep')) $this->getElement('DepriciationPercentAfterSep')->system(true);
+		// if($this->hasElement('isDepriciable')) $this->getElement('isDepriciable')->system(true);
+		// if($this->hasElement('DepriciationPercentBeforeSep')) $this->getElement('DepriciationPercentBeforeSep')->system(true);
+		// if($this->hasElement('DepriciationPercentAfterSep')) $this->getElement('DepriciationPercentAfterSep')->system(true);
 		if($this->hasElement('ProcessingFeesinPercent')) $this->getElement('ProcessingFeesinPercent')->system(true);
 		if($this->hasElement('ReducingOrFlatRate')) $this->getElement('ReducingOrFlatRate')->system(true);
 		if($this->hasElement('CRPB')) $this->getElement('CRPB')->system(true);

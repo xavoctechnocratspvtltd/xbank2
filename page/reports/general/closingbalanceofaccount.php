@@ -56,6 +56,13 @@ class page_reports_general_closingbalanceofaccount extends Page {
 			return $m->dsql()->expr('sum(amountCr - amountDr)'); //$m->getElement('amountCr') - $m->getElement('amountDr');
 		});
 
+		$tr_model->addExpression('sm_no')->set(function($m,$q){
+			$acc = $this->add('Model_Account',['table_alias'=>'sm_no']);
+			return $acc->addCondition('member_id',$m->getField('id'))->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('AccountNumber');
+		});
+
+		$fields_array=array('AccountNumber','acc_created_at','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member');
+
 		if($filter){
 			if($selected_account_type){
 				$tr_model->addCondition('SchemeType',$selected_account_type);
@@ -68,6 +75,10 @@ class page_reports_general_closingbalanceofaccount extends Page {
 			}else{
 				$tr_model->addCondition('ActiveStatus',false);
 			}
+
+			if($selected_account_type == 'SavingAndCurrent'){
+				$fields_array[]='sm_no';
+			}
 		}else{
 			$tr_model->addCondition('id',-1);
 		}
@@ -78,7 +89,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 
 		$tr_model->setOrder('account_id');
 		$tr_model->add('Controller_Acl');
-		$grid->setModel($tr_model,array('AccountNumber','acc_created_at','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member'));
+		$grid->setModel($tr_model,$fields_array);
 			
 		$grid->addPaginator(10);
 

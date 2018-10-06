@@ -58,7 +58,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 
 		$tr_model->addExpression('sm_no')->set(function($m,$q){
 			$acc = $this->add('Model_Account',['table_alias'=>'sm_no']);
-			return $acc->addCondition('member_id',$m->getField('id'))->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('AccountNumber');
+			return $acc->addCondition('member_id',$m->getField('member_id'))->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('AccountNumber');
 		});
 
 		$fields_array=array('AccountNumber','acc_created_at','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member');

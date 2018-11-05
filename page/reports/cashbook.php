@@ -12,6 +12,11 @@ class page_reports_cashbook extends Page {
 		$form = $this->add('Form')->addClass('noneprintalbe');
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
+
+		if($this->app->auth->model->isSuper()){
+			$form->addField('DropDown','branch')->setEmptyText('All')->setModel('Branch');
+		}
+
 		$form->addSubmit('Open Cash Book');
 		$grid = $this->add('Grid_CashBook');
 		$grid->add('H3',null,'grid_buttons')->setHtml('Cash Book  <small class="atk-move-right"> From Date: '.$_GET['from_date']."&nbsp; &nbsp; &nbsp; To Date: ".$_GET['to_date']. '</small>' );	
@@ -56,6 +61,11 @@ class page_reports_cashbook extends Page {
 				$opening_narration = "By Opening balace";
 				$opening_side = 'CR';
 			}
+
+			if($_GET['branch']){
+				$cash_transaction_model->addCondition('branch_id',$_GET['branch']);
+			}
+
 			$grid->addOpeningBalance($opening_amount,$opening_column,array('Narration'=>$opening_narration),$opening_side);
 			$grid->addCurrentBalanceInEachRow();
 		}else{
@@ -68,7 +78,7 @@ class page_reports_cashbook extends Page {
 		// $grid->addTotals(array('amountCr','amountDr'));
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0))->execute();
+			$grid->js()->reload(array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'branch'=>$form['branch']))->execute();
 		}
 	}
 }

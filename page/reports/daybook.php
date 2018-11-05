@@ -11,6 +11,10 @@ class page_reports_daybook extends Page {
 		$form->addField('DatePicker','date')->validateNotNull();
 		$form->addField('DropDown','voucher_type')->setEmptyText('All')->setModel('TransactionType');
 
+		if($this->app->auth->model->isSuper()){
+			$form->addField('DropDown','branch')->setEmptyText('All')->setModel('Branch');
+		}
+
 		$selectedVoucher = $form->addField('hidden','selected_voucher');
 
 		$open_day_book = $form->addSubmit('Open Day Book');
@@ -53,6 +57,10 @@ class page_reports_daybook extends Page {
 		if($_GET['voucher_type']){
 			$day_transaction_model->addCondition('transaction_type_id',$_GET['voucher_type']);
 		}
+
+		if($_GET['branch']){
+			$day_transaction_model->addCondition('branch_id',$_GET['branch']);
+		}
  
 		$daybook_lister_grid->setModel($day_transaction_model,array('voucher_no','Narration','member_name','PermanentAddress','PanNo','account','amountDr','amountCr'));
 		$daybook_lister_grid->removeColumn('Narration');
@@ -71,7 +79,7 @@ class page_reports_daybook extends Page {
 				$form->js()->univ()->newWindow($this->api->url('voucher_print',array('selected_voucher_list'=>$form['selected_voucher'],'hide_print_btn'=>true,'cut_page'=>0)))->execute();
 			}
 			if($form->isClicked($open_day_book)){
-				$daybook_lister_grid->js()->reload(array('date_selected'=>$form['date']?:0,'from_date'=>$form['from_date']?:0,'voucher_type'=>$form['voucher_type']))->execute();
+				$daybook_lister_grid->js()->reload(array('date_selected'=>$form['date']?:0,'from_date'=>$form['from_date']?:0,'voucher_type'=>$form['voucher_type'],'branch'=>$form['branch']))->execute();
 			}
 
 		}

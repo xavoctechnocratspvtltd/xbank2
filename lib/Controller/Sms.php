@@ -6,7 +6,7 @@ class Controller_Sms extends AbstractController{
 	}
 
 	function sendMessage($no,$msg){
-		if(!$this->app->getConfig("send_sms",true)) return;
+		if(!$this->app->getConfig("send_sms",true)) return $no.' '. $msg.'<br/>';
 		$curl=$this->add('Controller_CURL');
 		$msg=urlencode($msg);
 		$password = urlencode($this->app->getConfig('password'));

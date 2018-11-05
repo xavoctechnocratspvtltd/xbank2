@@ -67,7 +67,7 @@ class Frontend extends ApiFrontend {
         }elseif(strpos($this->page,'agent_') === 0){
             
             $auth = $this->add('BasicAuth');
-            $auth->allowPage(array('corrections'));
+            $auth->allowPage(array('duesms'));
             $auth->setModel('Agent','username','password');
             $auth->check();
 
@@ -80,11 +80,11 @@ class Frontend extends ApiFrontend {
             $staff_model->addExpression('branch_login_allow')->set($staff_model->refSQL('branch_id')->fieldQuery('allow_login'));
             $staff_model->addCondition('branch_login_allow',true);
             $auth = $this->add('BasicAuth');
-            $auth->allowPage(array('corrections','install'));
+            $auth->allowPage(array('duesms','install'));
             $auth->setModel($staff_model,'username','password');
             $auth->check();
 
-            if($this->page !== 'install'){
+            if(!in_array($this->page, ['install','duesms'])){
 
                 if(!$auth->model->tryLoad($auth->model->id)->loaded()){
                     $this->api->redirect($this->api->url('logout'));

@@ -40,7 +40,7 @@ class page_reports_transactioncount extends Page {
 		}
 
 		$grid = $this->add('Grid');
-		$grid->setModel($transaction_model->debug(),['transaction_type','count']);
+		$grid->setModel($transaction_model,['transaction_type','count']);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array('to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'voucher_type'=>$form['voucher_type'],'branch'=>$form['branch']?:0))->execute();

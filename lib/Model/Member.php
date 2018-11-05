@@ -49,7 +49,7 @@ class Model_Member extends Model_Table {
 		$this->addField('ParentAddress')->defaultValue(" ");
 		$this->addField('FilledForm60')->caption('Filled Form 60/61')->type('boolean')->mandatory(true);
 		$this->addField('PanNo');
-		$this->addField('AdharNumber');
+		$this->addField('AdharNumber')->mandatory(true);
 		$this->addField('Nominee')->system(true);
 		$this->addField('RelationWithNominee')->system(true);
 		$this->addField('NomineeAge')->system(true);

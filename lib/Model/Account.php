@@ -672,6 +672,22 @@ class Model_Account extends Model_Table {
 	}
 
 
+	function runningLoanAccountsAgainstAccount(){
+		if(!$this->loaded()) throw new \Exception("Account must be loaded to find runningLoanAccountsAgainstAccount", 1);
+		
+		$loan_acc = $this->add('Model_Account');
+		$loan_acc->addCondition('ActiveStatus',true);
+		$loan_acc->addCondition('LoanAgainstAccount_id',$this->id);
+
+		$loan_acc->tryLoadAny();
+
+		if(!$loan_acc->loaded())
+			return false;
+
+		return $loan_acc;
+	}
+
+
 
 	function conveyance($staff,$amount,$narration=null,$amount_from_account,$form=null,$transaction_date=null,$in_branch=null){
 		if(!$this->loaded()) throw $this->exception('Account must be loaded before Depositing amount');

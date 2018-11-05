@@ -84,11 +84,18 @@ class page_transactions_premature extends Page {
 				$right_col->add('View')->setHTML('<b>Pre Maturity </b> : '. ($p_info['can_premature']?'<font color="green">YES</font>':'<font color="red">NO</font>') );
 				$right_col->add('View')->setHTML('<b>Premium Paid (IF RD) </b> : '. ($p_info['premiums_paid']) );
 
+
 				// Show Signature image
 				// $img=$right_col->add('View')->setElement('img')->setAttr('src','../signatures/sig_'.$account->ref('member_id')->get('id').'.JPG');
 				$img=$right_col->add('View')->setElement('img')->setAttr('src',$account['sig_image']);
 				// $img->js('mouseover',$img->js()->width('200%'));
 				// $img->js('mouseout',$img->js()->width('100%'));
+
+				// Show loan against this account if present
+				if($loan_ag_this_acc = $account_model->runningLoanAccountsAgainstAccount()){
+					$right_col->add('View_Error')->set('Loan Against Deposit: ' . $loan_ag_this_acc['AccountNumber']);
+					return;
+				}
 				$account_field->other_field->set($_GET['account_selected']);
 				$account_field->set($account->id);
 				$right_col->js(true,$amount_field_ro->js()->html($account_model->pre_mature($this->app->today,true)),0);
@@ -114,6 +121,11 @@ class page_transactions_premature extends Page {
 
 				$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
 				$account_model->loadBy('AccountNumber',$form['account']);
+
+				// Show error if loan against deposit is running
+				if($loan_ag_this_acc = $account_model->runningLoanAccountsAgainstAccount()){
+					$form->displayError('account','Loan Against Deposit: ' . $loan_ag_this_acc['AccountNumber']);
+				}				
 
 				$account_to_credit = $this->add('Model_Account')->loadBy('AccountNumber',$form['account_to_credit']);
 

@@ -78,7 +78,7 @@ class page_reports_cashbook extends Page {
 		// $grid->addTotals(array('amountCr','amountDr'));
 
 		if($form->isSubmitted()){
-			$grid->js()->reload(array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'branch'=>$form['branch']))->execute();
+			$grid->js()->reload(array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'branch'=>$form['branch']?:0))->execute();
 		}
 	}
 }

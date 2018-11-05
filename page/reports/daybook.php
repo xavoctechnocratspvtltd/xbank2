@@ -79,7 +79,7 @@ class page_reports_daybook extends Page {
 				$form->js()->univ()->newWindow($this->api->url('voucher_print',array('selected_voucher_list'=>$form['selected_voucher'],'hide_print_btn'=>true,'cut_page'=>0)))->execute();
 			}
 			if($form->isClicked($open_day_book)){
-				$daybook_lister_grid->js()->reload(array('date_selected'=>$form['date']?:0,'from_date'=>$form['from_date']?:0,'voucher_type'=>$form['voucher_type'],'branch'=>$form['branch']))->execute();
+				$daybook_lister_grid->js()->reload(array('date_selected'=>$form['date']?:0,'from_date'=>$form['from_date']?:0,'voucher_type'=>$form['voucher_type'],'branch'=>$form['branch']?:0))->execute();
 			}
 
 		}

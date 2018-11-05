@@ -44,8 +44,14 @@ class page_agents extends Page{
 		});
 
 		// $agent->addCondition('sponsor_id','>',0);
+		$arr1 = array('mo_id','member_id','sponsor_id','account_id','cadre_id','ActiveStatus','username','added_by','code_no');
+		$arr2 = array('mo','code','created_at','member','sponsor_name','sponsor_cadre','account','cadre','current_individual_crpb','ActiveStatus','username','code_no','added_by');
+		if($this->app->auth->model->isSuper()){
+			$arr1[] = 'password';
+			$arr2[] = 'password';
+		}
 
-		$crud->setModel($agent,array('mo_id','member_id','sponsor_id','account_id','cadre_id','ActiveStatus','username','password','added_by','code_no'),array('mo','code','created_at','member','sponsor_name','sponsor_cadre','account','cadre','current_individual_crpb','ActiveStatus','username','password','code_no','added_by'));
+		$crud->setModel($agent,$arr1,$arr2);
 
 		if($crud and !$crud->isEditing('add') and ! $crud->isEditing('edit')){
 			$crud->add('Controller_DocumentsManager',array('doc_type'=>'AgentDocuments'));

@@ -135,6 +135,8 @@ class page_members extends Page {
 			$member_model->getElement('is_agent')->system(true);
 			// $member_model->getElement('is_active')->system(true);
 			$member_model->getElement('is_defaulter')->system(true);
+
+
 		}
 
 		if($crud->isEditing('edit')){
@@ -151,6 +153,9 @@ class page_members extends Page {
 		    // $crud->form->addField('Number','share_account_amount');
 		}
 
+		if(!$this->app->auth->model->isSuper()){
+			$member_model->getElement('password')->system(true);
+		}
 
 		$crud->setModel($member_model);
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'MemberDocuments'));

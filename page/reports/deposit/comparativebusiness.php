@@ -128,7 +128,7 @@ class page_reports_deposit_comparativebusiness extends Page {
 		$grid = $tab->add('Grid');
 		$grid->setModel($agent_mo_model,$grid_columns);
 
-		$grid->addPaginator(25);
+		$grid->addPaginator(100);
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date'],$model=>$form[$model]])->execute();

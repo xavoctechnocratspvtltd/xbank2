@@ -30,7 +30,8 @@ class page_mos extends Page {
 		$agent_grid->setModel($agents,['name','mo']);
 
 		$agent_change_form = $mo_change_tab->add('Form');
-		$agent_change_form->addField('DropDown','to_mo')->setEmptyText("Please Select")->validateNotNull()->setModel('Mo');
+		$agent_change_form->addField('DropDown','to_mo')->setEmptyText("Please Select")->setModel('Mo');
+		$agent_change_form->addField('Checkbox','remove_mo');
 		$agent_list_field = $agent_change_form->addField('Hidden','agent_list');
 		$agent_change_form->addSubmit('Change Mo');
 
@@ -42,7 +43,20 @@ class page_mos extends Page {
 		}
 
 		if($agent_change_form->isSubmitted()){
+			if(!$agent_change_form['remove_mo'] && !$agent_change_form['to_mo']){
+				$agent_change_form->displayError('to_mo','Select Mo or check remove_mo');
+			}
+
+			if($agent_change_form['remove_mo'] && $agent_change_form['to_mo']){
+				$agent_change_form->displayError('to_mo','Do not Select Mo if checked remove_mo');
+			}
+			
 			$agent_list = json_decode($agent_change_form['agent_list'],true);
+
+			if(count($agent_list) == 0 ){
+				throw new \Exception("No Agent Selected", 1);
+			}
+
 			foreach ($agent_list as $ag) {
 				$ag_m = $this->add('Model_Agent');
 				$ag_m->load($ag);

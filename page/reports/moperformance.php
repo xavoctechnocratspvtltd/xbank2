@@ -31,14 +31,18 @@ class page_reports_moperformance extends Page {
 				$a
 					->addCondition('agent_id',$m->getElement('agent_id'))
 					->addCondition('created_at','>=',$m->getElement('from_date'))
-					->addCondition($q->expr('[0] < DATE_ADD([1], INTERVAL 1 DAY)',[$a->getElement('created_at'),$m->getElement('to_date')]))
+					->addCondition($q->expr('[0] < [1]',[$a->getElement('created_at'),$m->getElement('to_date')]))
 					;
 				return $a->sum('crpb');
 			})->type('money');
+
+			$model->addExpression('to_date_date')->set(function($m,$q){
+				return $q->expr('Date([0])',[$m->getElement('to_date')]);
+			});
 			
 			$model->addCondition('mo_id',$mo_id);
-			$model->addCondition('from_date','>=',$from_date);
-			$model->addCondition('to_date','<',$this->app->nextDate($to_date));
+			$model->addCondition('from_date','<=',$from_date);
+			$model->addCondition('to_date_date','>=',$to_date);
 
 		}else{
 			$model->addCondition('id','-1');
@@ -46,8 +50,8 @@ class page_reports_moperformance extends Page {
 
 		$grid = $this->add('Grid');
 		$grid->setModel($model);
-		$grid->removeColumn('from_date');
-		$grid->removeColumn('to_date');
+		//$grid->removeColumn('from_date');
+		//$grid->removeColumn('to_date');
 		$grid->removeColumn('_to_date');
 		$grid->addFormatter('agent','WRAP');
 
@@ -62,6 +66,11 @@ class page_reports_moperformance extends Page {
 		}
 
 		if($form->isSubmitted()){
+
+			if(strtotime($form['from_date']) > strtotime($form['to_date']) ){
+				$form->displayError('from_date','From Date must be smaller than To date');
+			}
+
 			$grid->js()->reload(array(
 								'mo_id'=>$form['mo'],
 								'from_date'=>$form['from_date'],

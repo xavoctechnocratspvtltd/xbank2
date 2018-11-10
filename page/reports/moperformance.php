@@ -62,6 +62,7 @@ class page_reports_moperformance extends Page {
 		//$grid->removeColumn('from_date');
 		//$grid->removeColumn('to_date');
 		$grid->removeColumn('_to_date');
+		$grid->removeColumn('to_date_date');
 		$grid->addFormatter('agent','WRAP');
 
 		if($filter){

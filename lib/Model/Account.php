@@ -18,7 +18,7 @@ class Model_Account extends Model_Table {
 		$this->hasOne('Agent','agent_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Agent','collector_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Account','LoanAgainstAccount_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue('0')->sortable(true);
-		$this->hasOne('Dealer','dealer_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Dealer','dealer_id')->mandatory(true)->display(array('form'=>'autocomplete/Basic'))->defaultValue('0');
 
 		$this->hasOne('Branch','branch_id')->mandatory(true)->defaultValue(@$this->api->current_branch->id)->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('Staff','staff_id')->mandatory(true)->defaultValue(@$this->api->auth->model->id)->display(array('form'=>'autocomplete/Basic'));
@@ -221,6 +221,39 @@ class Model_Account extends Model_Table {
 			$this['Group'] = $this->add('Model_Scheme')->load($this['scheme_id'])->get('SchemeGroup');
 		if(!$this['PAndLGroup'])
 			$this['PAndLGroup'] = $this['Group'];
+
+		// update mo_agent history if mo_id is changed
+		if($this->isDirty('mo_id')){
+
+			$current_mo_id = $this['mo_id'];
+
+			if($this->loaded()){
+				$old_account = $this->add('Model_Account')->load($this->id);
+				// update _to_date of last mo assocition
+				if($current_mo_id != $old_account['mo_id']){
+					$asso = $this->add('Model_MoAccountAssociation');
+					$asso->addCondition('account_id',$this->id);
+					$asso->addCondition('mo_id',$old_account['mo_id']);
+					$asso->addCondition('from_date','<>',null);
+					$asso->addCondition('_to_date',null);
+					$asso->tryLoadAny();
+					if($asso->loaded()){
+						$asso['_to_date'] = $this->app->now;
+						$asso->saveAndUnload();
+					}
+				}
+			}
+
+			// new mo agent association entry
+			if($current_mo_id){
+				$new_asso = $this->add('Model_MoAccountAssociation');
+				$new_asso['account_id'] = $this->id;
+				$new_asso['mo_id'] = $current_mo_id;
+				$new_asso['from_date'] = $this->app->now;
+				$new_asso->save();
+			}
+			
+  		}
 
 		if($this->loaded() and $this->dirty['AccountNumber']){
 			$old_acc = $this->newInstance()->load($this->id);

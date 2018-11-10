@@ -9,6 +9,8 @@ class page_reports_employee extends Page {
 		$tab1=$tabs->addTabURL('reports_conveyance','Conveyance Report');
 		$tab1=$tabs->addTabURL('reports_cashfuel','Fuel Report');
 		$tab1=$tabs->addTabURL('reports_moperformance','Mo Performance');
-		$tab1=$tabs->addTabURL('reports_moassociation','Mo Agent Association');
+		$tab1=$tabs->addTabURL('reports_roperformance','RO Performance');
+		$tab1=$tabs->addTabURL('reports_moassociation','MO Agent Association');
+		$tab1=$tabs->addTabURL('reports_roaccountassociation','RO Account Association');
 	}
 }

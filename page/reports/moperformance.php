@@ -102,7 +102,7 @@ class page_reports_moperformance extends Page {
 		$model->addCondition('agent_id',$_GET['agent_id']);
 
 		$grid = $page->add('Grid');
-		$grid->setModel($model,['member','Amount','crpb','created_at']);
+		$grid->setModel($model,['AccountNumber','scheme','member','Amount','crpb','created_at']);
 		$grid->addFormatter('member','WRAP');
 		$grid->addPaginator(50);
 		$grid->addTotals(['crpb']);

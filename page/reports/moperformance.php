@@ -26,12 +26,21 @@ class page_reports_moperformance extends Page {
 		$model = $this->add('Model_MoAgentAssociation');
 
 		if($filter){
-			$model->addExpression('crpb_sum')->set(function($m,$q){
+
+			$model->addExpression('effective_from')->set(function($m,$q)use($from_date){
+				return $q->expr('GREATEST([0],"[1]")',[$m->getElement('from_date'),$from_date]);
+			})->type('datetime');
+
+			$model->addExpression('effective_to')->set(function($m,$q)use($to_date){
+				return $q->expr('LEAST([0],"[1]")',[$m->getElement('to_date'),$to_date]);
+			});
+
+			$model->addExpression('crpb_sum')->set(function($m,$q)use($from_date, $to_date){
 				$a = $m->add('Model_Account');
 				$a
 					->addCondition('agent_id',$m->getElement('agent_id'))
-					->addCondition('created_at','>=',$m->getElement('from_date'))
-					->addCondition($q->expr('[0] < [1]',[$a->getElement('created_at'),$m->getElement('to_date')]))
+					->addCondition($q->expr('[0] >= GREATEST([1],"[2]")',[$a->getElement('created_at'),$m->getElement('from_date'),$from_date]))
+					->addCondition($q->expr('[0] <= LEAST([1],"[2]")',[$a->getElement('created_at'),$m->getElement('to_date'),$to_date]))
 					;
 				return $a->sum('crpb');
 			})->type('money');
@@ -41,8 +50,8 @@ class page_reports_moperformance extends Page {
 			});
 			
 			$model->addCondition('mo_id',$mo_id);
-			$model->addCondition('from_date','<=',$from_date);
-			$model->addCondition('to_date_date','>=',$to_date);
+			$model->addCondition('from_date','<=',$to_date);
+			$model->addCondition('to_date_date','>=',$from_date);
 
 		}else{
 			$model->addCondition('id','-1');
@@ -56,7 +65,7 @@ class page_reports_moperformance extends Page {
 		$grid->addFormatter('agent','WRAP');
 
 		if($filter){
-			$grid->setFormatter('crpb_sum','template')->setTemplate('<a class="crbp" href="#" data-agentid="{$agent_id}" data-agentfromdate="{$from_date}" data-agenttodate="{$to_date}" >{$crpb_sum}</a>','crpb_sum');
+			$grid->setFormatter('crpb_sum','template')->setTemplate('<a class="crbp" href="#" data-agentid="{$agent_id}" data-agentfromdate="{$effective_from}" data-agenttodate="{$effective_to}" >{$crpb_sum}</a>','crpb_sum');
 			$grid->js('click')->_selector('.crbp')->univ()->frameURL([
 											$vp->getUrl(),
 											'agent_id'=>$this->js()->_selectorThis()->data('agentid'),
@@ -82,9 +91,13 @@ class page_reports_moperformance extends Page {
 	}
 
 	function displayAgentAccoutns($page){
+		$this->app->stickyGET('from_date');
+		$this->app->stickyGET('to_date');
+		$this->app->stickyGET('agent_id');
+
 		$model = $this->add('Model_Account');
-		$model->addCondition('created_at','>=',$_GET['agent_from_date']);
-		$model->addCondition('created_at','<',$this->app->nextDate($_GET['agent_to_date']));
+		$model->addCondition('created_at','>=',$_GET['from_date']);
+		$model->addCondition('created_at','<',$this->app->nextDate($_GET['to_date']));
 		$model->addCondition('agent_id',$_GET['agent_id']);
 
 		$grid = $page->add('Grid');

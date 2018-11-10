@@ -1,16 +1,18 @@
 <?php
 
 class page_mos extends Page {
-	public $title='Marketing manager (MO) Management';
+	public $title='Marketing manager (MO/RO) Management';
 
 	function init(){
 		parent::init();
 
 		$tabs = $this->add('Tabs');
-		$mo_tab = $tabs->addTab('Mo List');
-		$mo_change_tab = $tabs->addTab('Mo Update');
+		$mo_tab = $tabs->addTab('Mo/RO List');
+		$mo_change_tab = $tabs->addTab('Mo Agent Update');
+		$ro_account_tab = $tabs->addTabURL('roaccountassociation','Ro Account Association');
 
-		$crud = $mo_tab->add('CRUD');
+		// MO/RO add edit
+		$crud = $mo_tab->add('CRUD',['entity_name'=>'Mo/RO']);
 		$crud->setModel('Mo');
 
 

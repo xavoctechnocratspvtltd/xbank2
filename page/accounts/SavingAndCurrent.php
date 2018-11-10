@@ -50,7 +50,7 @@ class page_accounts_SavingAndCurrent extends Page {
 			$account_savingandcurrent_model->hook('editing');
 		}
 
-		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt','mo','team'));
+		$crud->setModel($account_savingandcurrent_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','team_id','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','CurrentInterest','LastCurrentInterestUpdatedAt','team'));
 		$crud->addRef('JointMember');
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'SavingAccount'));
 		
@@ -81,7 +81,7 @@ class page_accounts_SavingAndCurrent extends Page {
 
 		if(!$crud->isEditing()){
 			$crud->grid->addPaginator(50);
-			$crud->grid->addQuickSearch(array('AccountNumber','member_id','agent','scheme_id','agent_id','amount','mo_id','team_id'));
+			$crud->grid->addQuickSearch(array('AccountNumber','member_id','agent','scheme_id','agent_id','amount','team_id'));
 		}
 
 		if($crud->isEditing('add')){

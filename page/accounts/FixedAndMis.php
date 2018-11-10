@@ -114,7 +114,7 @@ class page_Accounts_FixedAndMis extends Page {
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
 			$account_fixedandmis_model->getElement('member_id')->getModel()->addCondition('is_active',true);
-			$account_fixedandmis_model->getElement('mo_id')->getModel()->addCondition('is_active',true);
+			// $account_fixedandmis_model->getElement('mo_id')->getModel()->addCondition('is_active',true);
 			$account_fixedandmis_model->getElement('team_id')->getModel()->addCondition('is_active',true);
 
 		}
@@ -123,7 +123,7 @@ class page_Accounts_FixedAndMis extends Page {
 			$account_fixedandmis_model->hook('editing');
 		}
 
-		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','mo_id','team_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeDOB','MinorNomineeParentName','sig_image_id','new_or_renew'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','mo','team','new_or_renew'));
+		$crud->setModel($account_fixedandmis_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','team_id','ActiveStatus','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeDOB','MinorNomineeParentName','sig_image_id','new_or_renew'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','ModeOfOperation','intrest_to_account','MaturityToAccount','Nominee','NomineeAge','RelationWithNominee','team','new_or_renew'));
 		$crud->addRef('JointMember');
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'FixedMISAccount'));
 		

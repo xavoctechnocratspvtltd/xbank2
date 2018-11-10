@@ -81,7 +81,7 @@ class page_accounts_DDS2 extends Page {
 			// $debit_account_model->add('Controller_Acl');
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
-			$account_dds2_model->getElement('mo_id')->getModel()->addCondition('is_active',true);
+			// $account_dds2_model->getElement('mo_id')->getModel()->addCondition('is_active',true);
 			$account_dds2_model->getElement('team_id')->getModel()->addCondition('is_active',true);
 		}
 
@@ -89,7 +89,7 @@ class page_accounts_DDS2 extends Page {
 			$account_dds2_model->hook('editing');
 		}
 
-		$crud->setModel($account_dds2_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','mo_id','team_id','sig_image_id','new_or_renew'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','collector','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','mo','team','new_or_renew'));
+		$crud->setModel($account_dds2_model,array('AccountNumber','member_id','scheme_id','Amount','agent_id','collector_id','ActiveStatus','ModeOfOperation','Nominee','NomineeAge','MinorNomineeParentName','RelationWithNominee','team_id','sig_image_id','new_or_renew'),array('AccountNumber','created_at','member','scheme','Amount','agent','collector','ActiveStatus','collector','ModeOfOperation','Nominee','NomineeAge','RelationWithNominee','team','new_or_renew'));
 		$crud->addRef('JointMember');
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'RDandDDSAccount'));
 		

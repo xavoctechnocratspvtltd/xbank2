@@ -6,8 +6,8 @@ class Model_MoAccountAssociation extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Mo','mo_id');
-		$this->hasOne('Account','account_id');
+		$this->hasOne('Mo','mo_id')->display(['form'=>'autocomplete/Basic'])->sortable(true);
+		$this->hasOne('Account','account_id')->display(['form'=>'autocomplete/Basic'])->sortable(true);
 		$this->addField('from_date')->type('datetime')->defaultValue($this->app->now);
 		$this->addField('_to_date')->type('datetime')->caption('Orig To Date');
 

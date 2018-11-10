@@ -9,7 +9,7 @@ class page_mos extends Page {
 		$tabs = $this->add('Tabs');
 		$mo_tab = $tabs->addTab('Mo/RO List');
 		$mo_change_tab = $tabs->addTab('Mo Agent Update');
-		$ro_account_tab = $tabs->addTabURL('roaccountassociation','Ro Account Association');
+		$association_edit = $tabs->addTabURL('romoassociationedit','MO/RO Association Edit');
 
 		// MO/RO add edit
 		$crud = $mo_tab->add('CRUD',['entity_name'=>'Mo/RO']);

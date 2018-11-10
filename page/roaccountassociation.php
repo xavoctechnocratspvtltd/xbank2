@@ -5,6 +5,8 @@ class page_roaccountassociation extends Page {
 
 	function init(){
 		parent::init();
+
+		$this->add('Controller_Acl');
 		
 		
 		$this->api->stickyGET('filter');

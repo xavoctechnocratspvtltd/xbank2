@@ -15,8 +15,12 @@ class page_duesms extends \Page{
 		// }
 
 		
-		$before_days = 3;
-		$date = date('Y-m-d',strtotime($this->app->today.' -'.$before_days.' days'));
+		$before_days = [0,5];
+		$date=[];
+
+		foreach ($before_days as $bd) {
+			$date[] = date('Y-m-d',strtotime($this->app->today.' +'.$bd.' days'));
+		}
 
 		$premium = $this->add('Model_Premium');
 
@@ -37,8 +41,11 @@ class page_duesms extends \Page{
 		$premium->addCondition('DueDate',$date);
 		$premium->addCondition('Paid',false);
 
-		// $grid = $this->add('Grid');
-		// $grid->setModel($premium,['AccountNumber','PhoneNos','Amount','DueDate','msg']);
+		if($_GET['debug']){
+			$grid = $this->add('Grid');
+			$grid->setModel($premium,['AccountNumber','PhoneNos','Amount','DueDate','msg']);
+			return;
+		}
 
 		$cont = $this->add('Controller_Sms');
 		foreach ($premium as $p) {

@@ -8,7 +8,7 @@ class Model_Agent extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Mo','mo_id')->display(array('form'=>'autocomplete/Basic'));
+		$this->hasOne('Mo','mo_id')->display(array('form'=>'autocomplete/Basic'))->sortable(true);
 		$this->hasOne('Member','member_id')->display(array('form'=>'autocomplete/Basic'));
 		$this->hasOne('ParentAgent','sponsor_id')->display(array('form'=>'autocomplete/Basic'))->sortable(true);
 		$this->hasOne('Account_SavingAndCurrent','account_id')->caption('Saving Account')->display(array('form'=>'autocomplete/Basic'))->mandatory(true);

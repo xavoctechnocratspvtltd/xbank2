@@ -62,7 +62,11 @@ class page_mos extends Page {
 			foreach ($agent_list as $ag) {
 				$ag_m = $this->add('Model_Agent');
 				$ag_m->load($ag);
-				$ag_m['mo_id'] = $agent_change_form['to_mo'];
+				
+				if($agent_change_form['remove_mo'])
+					$ag_m['mo_id'] = null;
+				else
+					$ag_m['mo_id'] = $agent_change_form['to_mo'];
 				$ag_m->save();
 			}
 			$mo_change_tab->js()->reload(['branch'=>$br])->execute();

@@ -668,7 +668,7 @@ class Model_Account extends Model_Table {
 
 	}
 
-	function propogateAgentCommission($debit_account, $total_commission_amount, $on_date=null){
+	function propogateAgentCommission($debit_account, $total_commission_amount, $on_date=null, $referance_id=null){
 		
 		if(!$on_date) $on_date= $this->api->today;
 		
@@ -696,7 +696,11 @@ class Model_Account extends Model_Table {
 	        $transaction->addCreditAccount($agent_saving_account, $saving_amount);
 	        $transaction->addCreditAccount($tds_account, $tds_amount);
 	        
-	        $transaction->execute();
+	        $transaction_id = $transaction->execute();
+
+	        $this->add('Model_AgentTDS')
+				->createNewEntry($sponsor->id,$transaction_id,$referance_id,$commissionForThisAgent,$tds_amount,$commissionForThisAgent - $tds_amount);
+
 
 	        $agent = $sponsor;
 

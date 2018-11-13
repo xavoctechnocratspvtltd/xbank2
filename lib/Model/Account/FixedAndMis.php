@@ -124,9 +124,12 @@ class Model_Account_FixedAndMis extends Model_Account{
         $transaction->addCreditAccount($agent_saving_account, $saving_amount);
         $transaction->addCreditAccount($tds_account, $tds_amount);
         
-        $transaction->execute();
+        $transaction_id = $transaction->execute();
 
-        $this->propogateAgentCommission($debit_acocunt = $this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $total_commission_amount = $commissionAmount, $on_date);
+        $this->add('Model_AgentTDS')
+			->createNewEntry($this['agent_id'],$transaction_id,$this->id,$commissionForThisAgent,$tds_amount,$commissionForThisAgent - $tds_amount);
+
+        $this->propogateAgentCommission($debit_acocunt = $this['branch_code'] . SP . COMMISSION_PAID_ON . SP. $this['scheme_name'], $total_commission_amount = $commissionAmount, $on_date, $this->id);
 
 
 	}

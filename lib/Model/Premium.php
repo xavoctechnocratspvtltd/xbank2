@@ -85,11 +85,12 @@ class Model_Premium extends Model_Table {
 		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commissionForThisAgent - $tds);
 		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
 
-		$transaction->execute();
+		$transaction_id = $transaction->execute();
 
-		
+		$this->add('Model_AgentTDS')
+			->createNewEntry($account['agent_id'],$transaction_id,$account->id,$commissionForThisAgent,$tds,$commissionForThisAgent - $tds);
 
-		$this->account()->propogateAgentCommission($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'], $total_commission_amount = $commission, $on_date);
+		$this->account()->propogateAgentCommission($account['branch_code'] . SP . COMMISSION_PAID_ON . SP. $account['scheme_name'], $total_commission_amount = $commission, $on_date,$account->id);
 		
 	}
 
@@ -128,7 +129,10 @@ class Model_Premium extends Model_Table {
 		$transaction->addCreditAccount($account->ref('agent_id')->ref('account_id'), $commissionForThisAgent -$tds);
 		$transaction->addCreditAccount($account['branch_code'].SP.BRANCH_TDS_ACCOUNT, $tds);
 		
-		$transaction->execute();
+		$transaction_id = $transaction->execute();
+
+		$this->add('Model_AgentTDS')
+			->createNewEntry($account['agent_id'],$transaction_id,$account->id,$commissionForThisAgent,$tds,$commissionForThisAgent - $tds);
 
 	}
 

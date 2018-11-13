@@ -35,6 +35,7 @@ class Model_Agent extends Model_Table {
 		$this->hasMany('AgentGuarantor','agent_id');
 		$this->hasMany('DocumentSubmitted','agent_id');
 		$this->hasMany('Agent','sponsor_id');
+		$this->hasMany('AgentTDS','agent_id');
 		
 		$this->addField('code_no');
 		$this->addExpression('code')->set('CONCAT("BCCSAG ",IFNULL(code_no,""))');

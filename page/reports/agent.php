@@ -6,6 +6,7 @@ class page_reports_agent extends Page {
 		parent::init();
 
 		$tabs=$this->add('Tabs');
+		$tab1=$tabs->addTabURL('reports_agent_tdsfromtable','New TDS Report');
 		$tab1=$tabs->addTabURL('reports_agent_tds','Agent TDS Report');
 		$tab1=$tabs->addTabURL('reports_agent_status','Active / InActive Report');
 		$tab1=$tabs->addTabURL('reports_agent_detail','Agent Detail Report');

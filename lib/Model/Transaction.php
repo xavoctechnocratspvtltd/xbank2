@@ -188,7 +188,9 @@ class Model_Transaction extends Model_Table {
 			$this->executeInterBranch();
 
 		$this->executed=true;
+		$id = $this->id;
 		$this->destroy();
+		return $id;
 	}
 
 	function senitizeTransaction(){

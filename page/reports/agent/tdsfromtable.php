@@ -55,6 +55,8 @@ class page_reports_agent_tdsfromtable extends Page {
 		$grid = $this->add('Grid');
 		$grid->setModel($model);
 
+		$grid->addPaginator(200);
+
 		$grid->removeColumn('transaction');
 
 		$model->setOrder('created_at','desc');

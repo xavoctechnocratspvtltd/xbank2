@@ -24,11 +24,11 @@ class page_reports_roaccountassociation extends Page {
 		if($mo_id){
 			$model->addCondition('mo_id',$mo_id);
 		}
-		if($from_date){
-			$model->addCondition('from_date','>=',$from_date);
-		}
 		if($to_date){
-			$model->addCondition('to_date','<',$this->app->nextDate($to_date));
+			$model->addCondition('from_date','<',$to_date);
+		}
+		if($from_date){
+			$model->addCondition('to_date','>',$from_date);
 		}
 
 		$crud = $this->add('CRUD',['allow_add'=>false]);

@@ -20,15 +20,25 @@ class page_reports_moassociation extends Page {
 		$form->addSubmit('Filter');
 
 		$model = $this->add('Model_MoAgentAssociation');
+		
+		// $model->addExpression('effective_from')->set(function($m,$q)use($from_date){
+		// 	return $q->expr('GREATEST([0],"[1]")',[$m->getElement('from_date'),$from_date]);
+		// })->type('datetime');
+
+		// $model->addExpression('effective_to')->set(function($m,$q)use($to_date){
+		// 	return $q->expr('LEAST([0],"[1]")',[$m->getElement('to_date'),$to_date]);
+		// })->type('datetime');
 
 		if($mo_id){
 			$model->addCondition('mo_id',$mo_id);
 		}
-		if($from_date){
-			$model->addCondition('from_date','>=',$from_date);
-		}
+
 		if($to_date){
-			$model->addCondition('to_date','<',$this->app->nextDate($to_date));
+			$model->addCondition('from_date','<',$to_date);
+		}
+
+		if($from_date){
+			$model->addCondition('to_date','>',$from_date);
 		}
 
 		$crud = $this->add('CRUD',['allow_add'=>false]);

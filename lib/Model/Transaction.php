@@ -153,7 +153,7 @@ class Model_Transaction extends Model_Table {
 		$this->cr_accounts += array($account['AccountNumber']=>array('amount'=>$amount,'account'=>$account));
 	}
 
-	function execute(){
+	function execute($debug=false){
 		if($this->loaded())
 			throw $this->exception('New Transaction can only be added on unLoaded Transaction Model ');
 
@@ -183,9 +183,9 @@ class Model_Transaction extends Model_Table {
 
 
 		if($this->all_debit_accounts_are_mine and $this->all_credit_accounts_are_mine)
-			$this->executeSingleBranch();
+			$this->executeSingleBranch($debug);
 		else
-			$this->executeInterBranch();
+			$this->executeInterBranch($debug);
 
 		$this->executed=true;
 		$id = $this->id;
@@ -240,7 +240,7 @@ class Model_Transaction extends Model_Table {
 		}
 	}
 
-	function executeSingleBranch(){
+	function executeSingleBranch($debug=false){
 
 		if(!count($this->dr_accounts) OR !count($this->cr_accounts))
 			return;
@@ -250,6 +250,18 @@ class Model_Transaction extends Model_Table {
 		// echo "transaction saved data <pre>";
 		// print_r($this->data);
 		// echo "</pre>";
+
+		if($debug){
+			foreach ($this->dr_accounts as $accountNumber => $dtl) {
+				unset($dtl['account']);
+			}
+			foreach ($this->cr_accounts as $accountNumber => $dtl) {
+				unset($dtl['account']);
+			}
+			var_dump($this->dr_accounts);
+			var_dump($this->cr_accounts);
+			return;
+		}
 
 		$total_debit_amount =0;
 		// Foreach Dr add new TransacionRow (Dr wali)
@@ -276,7 +288,7 @@ class Model_Transaction extends Model_Table {
 	}
 
 	
-	function executeInterBranch(){
+	function executeInterBranch($debug=false){
 
 		if(!count($this->dr_accounts) OR !count($this->cr_accounts))
 			return;

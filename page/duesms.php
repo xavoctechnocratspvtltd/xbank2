@@ -31,7 +31,7 @@ class page_duesms extends \Page{
 		$mem_j->addField('PhoneNos');
 
 		$premium->addExpression('msg',function($m,$q){
-			return $q->expr('CONCAT("Dear member, your premium of INR ",[0],"/- is due on ",DATE_FORMAT([1],"%d %b %Y")," for account ",[2],", Please pay on time to avoid penalties")',
+			return $q->expr('CONCAT("Dear member, your premium of INR ",[0],"/- is due on ",DATE_FORMAT([1],"%d %b %Y")," for account ",[2],", Please pay on time to avoid penalties. From:- Bhawani Credit Co-Operative Society Ltd. +91 8003597814")',
 				[
 					$q->getField('Amount'),
 					$m->getElement('DueDate'),

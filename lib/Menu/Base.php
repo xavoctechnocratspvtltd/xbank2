@@ -126,6 +126,7 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_bankdeposit','Cash Bank Deposit');
 		$transactions_sub_menus->addMenuItem('transactions_bankwithdrawl','Cash Bank Withdrawl');
 		$transactions_sub_menus->addMenuItem('transactions_premature','Pre Mature Payments');
+		$transactions_sub_menus->addMenuItem('transactions_salaryandallowances','Salary & Allowances');
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
 		// $books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');

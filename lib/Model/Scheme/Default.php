@@ -130,8 +130,11 @@ class Model_Scheme_Default extends Model_Scheme {
             $transaction->execute();
 		}
 
-		// Revert TDS entry for commissions less then 15,000/- or in config
 		
+		// Revert TDS entry for commissions less then 15,000/- or in config
+		// Done but commented for year 18-19... should work in 2019-2020 though
+
+		// $this->add('Model_AgentTDS')->revertTdsEntries($on_date); // Working and local - tested function
 
 	}
 }

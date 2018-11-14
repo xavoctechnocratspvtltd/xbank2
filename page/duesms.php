@@ -14,6 +14,7 @@ class page_duesms extends \Page{
 		// 	throw new Exception("Not proper way to call duesms page", 1);
 		// }
 
+		set_time_limit(0);
 		
 		$before_days = [0,5];
 		$date=[];
@@ -54,7 +55,7 @@ class page_duesms extends \Page{
 			$no = explode("/", $no);
 			$no = $no[0];
 			$return = $cont->sendMessage($no,$p['msg']);
-			if(!$this->app->getConfig("send_sms",true)) echo $return;
+			echo $no.' '. $p['msg']. '<br/>'.$return.'<hr/>';
 		}
 
 	}

@@ -47,7 +47,7 @@ class page_reports_deposit_comparativebusiness extends Page {
 			$grid_columns = ['agent_member_name'];
 
 		if($from_date){
-			$date_range = $this->get_date_ranges($from_date,$to_date);
+			$date_range = $this->app->get_date_ranges($from_date,$to_date);
 			// var_dump($date_range);
 			foreach ($account_types as $type) {
 				foreach ($date_range as $dr) {
@@ -133,51 +133,6 @@ class page_reports_deposit_comparativebusiness extends Page {
 		if($form->isSubmitted()){
 			$grid->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date'],$model=>$form[$model]])->execute();
 		}
-	}
-
-	function get_months($date1, $date2) { 
-	   $time1  = strtotime($date1); 
-	   $time2  = strtotime($date2); 
-	   $my     = date('n-Y', $time2); 
-	   $mesi = array('01','02','03','04','05','06','07','08','09','10','11','12');
-
-	   //$months = array(date('F', $time1)); 
-	   $months = array(); 
-	   $f      = ''; 
-
-	   while($time1 < $time2) { 
-	      if(date('n-Y', $time1) != $f) { 
-	         $f = date('n-Y', $time1); 
-	         if(date('n-Y', $time1) != $my && ($time1 < $time2)) {
-	         	$str_mese=$mesi[(date('n', $time1)-1)];
-	            $months[] = date('Y', $time1)."-".$str_mese; 
-	         }
-	      } 
-	      $time1 = strtotime((date('Y-n-d', $time1).' +15days')); 
-	   } 
-
-	   $str_mese=$mesi[(date('n', $time2)-1)];
-	   $months[] = date('Y', $time2)."-".$str_mese; 
-	   return $months; 
-	} 
-
-	function get_date_ranges($date1,$date2){
-		$months_list = $this->get_months($date1, $date2);
-		$start=true;
-		$date_ranges=[];
-		foreach ($months_list as $ml) {
-			if($start){
-				$date_ranges[]=['start'=>$date1,'end'=>date('Y-m-t',strtotime($date1))];
-				$start=false;
-			}elseif($ml==$months_list[count($months_list)-1]) {
-				// It is last
-				$date_ranges[]=['start'=>date('Y-m-01',strtotime($date2)),'end'=>$date2];
-			}else{
-				$date_ranges[]=['start'=>$ml.'-01','end'=>date('Y-m-t',strtotime($ml.'-01'))];
-			}
-		}
-
-		return $date_ranges;
 	}
 
 }

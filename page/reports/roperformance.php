@@ -32,7 +32,7 @@ class page_reports_roperformance extends Page {
 			})->type('datetime');
 
 			$model->addExpression('effective_to')->set(function($m,$q)use($to_date){
-				return $q->expr('LEAST([0],"[1]")',[$m->getElement('to_date'),$to_date]);
+				return $q->expr('LEAST([0],"[1]")',[$m->getElement('to_date'),$this->app->nextDate($to_date)]);
 			})->type('datetime');
 
 			// [TRA_LOAN_ACCOUNT_AMOUNT_DEPOSIT,TRA_PENALTY_AMOUNT_RECEIVED,TRA_OTHER_AMOUNT_RECEIVED]
@@ -90,8 +90,24 @@ class page_reports_roperformance extends Page {
 			$model->addCondition('id','-1');
 		}
 
+		$documents=['BIKE SURRENDER','BIKE LOCATION','VISIT CHARGE','Recovery Status'];
+
+		foreach ($documents as $dc) {
+			$model->addExpression($this->app->normalizeName($dc))->set(function($m,$q)use($dc){
+				return $this->add('Model_DocumentSubmitted')
+							->addCondition('accounts_id',$q->getField('account_id'))
+							->addCondition('documents',$dc)
+							->fieldQuery('Description');
+			});
+		}
+
 		$grid = $this->add('Grid');
 		$grid->setModel($model);
+
+		foreach ($documents as $dc) {
+			$grid->addFormatter($this->app->normalizeName($dc),'wrap');
+		}
+
 		//$grid->removeColumn('from_date');
 		//$grid->removeColumn('to_date');
 		$grid->removeColumn('_to_date');

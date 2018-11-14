@@ -24,7 +24,7 @@ class Model_AgentTDS extends Model_Table {
 	}
 
 	// $this->add('Model_AgentTDS')->createNewEntry($agent_id,$transaction_id$related_account_id,$total_commission,$tds,$net_commission);
-	function createNewEntry($agent_id,$transaction_id,$related_account_id,$total_commission,$tds,$net_commission,$branch_id){
+	function createNewEntry($agent_id,$transaction_id,$related_account_id,$total_commission,$tds,$net_commission){
 		if($this->loaded()) throw new \Exception("Record already loaded, cannot create new", 1);
 
 		if($total_commission == 0) return;

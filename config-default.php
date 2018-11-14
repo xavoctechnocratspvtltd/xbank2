@@ -235,6 +235,7 @@ define('ABSENT',   'A');
 define('RATE_PER_SHARE',        100);
 define('TDS_PERCENTAGE_WITHOUT_PAN',   '20');
 define('TDS_PERCENTAGE_WITH_PAN',   '5');
+define('TDS_ON_COMMISSION',   '15000');
 // define('xBANKSCHEMEPATH', constant($xCICurrentExtension.'APPPATH')."controllers/xbankschemes");
 
 define('SET_COMMISSIONS_IN_MONTHLY',    false);

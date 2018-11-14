@@ -68,7 +68,7 @@ class Model_AgentTDS extends Model_Table {
 		});
 
 
-		$agent->addCondition('yearly_commission','<',15000);
+		$agent->addCondition('yearly_commission','<',TDS_ON_COMMISSION);
 		$agent->_dsql()->group('agent_id,branch_id');
 
 		// $grid = $this->add('Grid');

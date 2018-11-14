@@ -42,7 +42,7 @@ class page_duesms extends \Page{
 		$premium->addCondition('DueDate',$date);
 		$premium->addCondition('Paid',false);
 
-		if($_GET['debug']){
+		if($this->app->stickyGET('debug')){
 			$grid = $this->add('Grid');
 			$grid->setModel($premium,['AccountNumber','PhoneNos','Amount','DueDate','msg']);
 			return;
@@ -56,6 +56,7 @@ class page_duesms extends \Page{
 			$no = $no[0];
 			$return = $cont->sendMessage($no,$p['msg']);
 			echo $no.' '. $p['msg']. '<br/>'.$return.'<hr/>';
+			if($_GET['test']) break;
 		}
 
 	}

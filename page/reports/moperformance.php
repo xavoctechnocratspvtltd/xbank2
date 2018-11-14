@@ -32,7 +32,7 @@ class page_reports_moperformance extends Page {
 			})->type('datetime');
 
 			$model->addExpression('effective_to')->set(function($m,$q)use($to_date){
-				return $q->expr('LEAST([0],"[1]")',[$m->getElement('to_date'),$to_date]);
+				return $q->expr('LEAST([0],"[1]")',[$m->getElement('to_date'),$this->app->nextDate($to_date)]);
 			});
 
 			$model->addExpression('crpb_sum')->set(function($m,$q)use($from_date, $to_date){

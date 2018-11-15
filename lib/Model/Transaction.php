@@ -252,10 +252,10 @@ class Model_Transaction extends Model_Table {
 		// echo "</pre>";
 
 		if($debug){
-			foreach ($this->dr_accounts as $accountNumber => $dtl) {
+			foreach ($this->dr_accounts as $accountNumber => &$dtl) {
 				unset($dtl['account']);
 			}
-			foreach ($this->cr_accounts as $accountNumber => $dtl) {
+			foreach ($this->cr_accounts as $accountNumber => &$dtl) {
 				unset($dtl['account']);
 			}
 			var_dump($this->dr_accounts);

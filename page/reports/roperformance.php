@@ -113,6 +113,8 @@ class page_reports_roperformance extends Page {
 				$field=$this->app->normalizeName($dc);
 				$g->current_row_html[$field] = '<div style="width:500px;">'.$g->current_row[$field].'</div>';
 			}
+			$field='account';
+			$g->current_row_html[$field] = '<div style="width:500px;">'.$g->current_row[$field].'</div>';
 		});
 
 		//$grid->removeColumn('from_date');

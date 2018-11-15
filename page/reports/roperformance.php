@@ -108,6 +108,13 @@ class page_reports_roperformance extends Page {
 			$grid->addFormatter($this->app->normalizeName($dc),'wrap');
 		}
 
+		$grid->addHook('formatRow',function($g)use($documents){
+			foreach ($documents as $dc) {
+				$field=$this->app->normalizeName($dc);
+				$g->current_row_html[$field] = '<div style="width:500px;">'.$g->current_row[$field].'</div>';
+			}
+		});
+
 		//$grid->removeColumn('from_date');
 		//$grid->removeColumn('to_date');
 		$grid->removeColumn('_to_date');

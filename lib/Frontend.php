@@ -45,7 +45,9 @@ class Frontend extends ApiFrontend {
         $this->now = date('Y-m-d H:i:s',strtotime($this->recall('current_date',date('Y-m-d H:i:s'))));
         $this->jui->addStaticStylesheet('hindi');
 
-        if(strpos($this->page,'dsa_') === 0){
+        $mode= $this->recall('login_mode',null);
+
+        if($mode=='dsa' || strpos($this->page,'dsa_') === 0){
             $auth = $this->add('BasicAuth');
             $auth->allowPage(array('corrections'));
             $auth->setModel('DSA','username','password');
@@ -53,8 +55,9 @@ class Frontend extends ApiFrontend {
             
             $dsa_menu=$header->add('Menu')->addClass('mymenu');
             $dsa_menu->addMenuItem('dsa_logout','Logout');
+            $this->memorize('login_mode','dsa');
 
-        }elseif(strpos($this->page,'member_') === 0){
+        }elseif($mode=='member' || strpos($this->page,'member_') === 0){
             
             $auth = $this->add('BasicAuth');
             $auth->allowPage(array('corrections'));
@@ -63,8 +66,9 @@ class Frontend extends ApiFrontend {
             
             $member_menu=$header->add('Menu')->addClass('mymenu');
             $member_menu->addMenuItem('member_logout','Logout');
+            $this->memorize('login_mode','member');
                         
-        }elseif(strpos($this->page,'agent_') === 0){
+        }elseif($mode=='agent' || strpos($this->page,'agent_') === 0){
             
             $auth = $this->add('BasicAuth');
             $auth->allowPage(array('duesms'));
@@ -73,8 +77,10 @@ class Frontend extends ApiFrontend {
 
             $agent_menu=$header->add('Menu')->addClass('mymenu');
             $agent_menu->addMenuItem('logout','Logout');
+            $this->memorize('login_mode','agent');
         }
         else{
+            $this->memorize('login_mode','staff');
             $staff_model = $this->add('Model_Staff');
             $staff_model->addCondition('is_active',true);
             $staff_model->addExpression('branch_login_allow')->set($staff_model->refSQL('branch_id')->fieldQuery('allow_login'));

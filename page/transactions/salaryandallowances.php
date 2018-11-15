@@ -7,9 +7,6 @@ class page_transactions_salaryandallowances extends Page {
 	function init(){
 		parent::init();
 
-		echo "Under construction";
-		return;
-		
 		$this->add('Controller_Acl');
 
 		$salary_account = $this->add('Model_Account');
@@ -68,6 +65,7 @@ class page_transactions_salaryandallowances extends Page {
 
 				$transaction->addDebitAccount($dr,$dr_amount);
 				$transaction->execute();
+				
 				$this->api->db->commit();
 			} catch (Exception $e) {
 			   	$this->api->db->rollBack();

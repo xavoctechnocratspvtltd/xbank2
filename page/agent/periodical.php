@@ -134,7 +134,7 @@ class page_agent_periodical extends Page {
 
 				$grid = $p->add('Grid_AccountsBase');
 				$grid->addSno();
-				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','member','father_name','address','phone_no','agent','dealer','agent_saving_acc','agent_phone_no','Nominee','NomineeAge','RelationWithNominee'));
+				$grid->setModel($account_model,array('member_id','sm_no','created_at','AccountNumber','scheme','Amount','member','father_name','phone_no','dealer','Nominee','NomineeAge','RelationWithNominee'));
 
 				$grid->addPaginator(500);
 			});

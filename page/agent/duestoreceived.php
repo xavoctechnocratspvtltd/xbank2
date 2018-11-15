@@ -116,6 +116,7 @@ class page_agent_duestoreceived extends Page {
 		// $grid->addColumn('balance','balance');
 
 		$grid->addPaginator(500);
+		$grid->addTotals(['total']);
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),

@@ -43,7 +43,7 @@ class page_agent_duestogive extends Page {
 				)
 				)
 				)";
-		});
+		})->sortable(true);
 
 
 		if($_GET['filter']){

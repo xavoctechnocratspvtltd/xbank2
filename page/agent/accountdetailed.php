@@ -27,7 +27,7 @@ class page_agent_accountdetailed extends Page {
 
 		}
 
-		$account_view = $this->add('View_AccountDetail',array('account'=>$accounts_model));
+		$account_view = $this->add('View_AccountDetail',array('account'=>$accounts_model,'show_pan_adhaar'=>false));
 		
 		// $grid->setModel($accounts_model);
 

@@ -24,6 +24,7 @@ class page_reports_recovery extends Page {
 		$tab1=$tabs->addTabURL('reports_loan_dealerwise','Dealer Wise Recovery');
 		$tab1=$tabs->addTabURL('reports_loan_dealerwisereceived','Dealer Wise Received');
 		$tab1=$tabs->addTabURL('roaccountassociation','Ro Account Association');
+		$tab1=$tabs->addTabURL('reports_recoveryandlegalcharges','Recovery & Legal Charges Report');
 			
 
 	}

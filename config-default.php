@@ -138,6 +138,28 @@ define('TRA_EXCESS_AMOUNT_REVERT',  'EXCESS AMOUNT REVERT');
 define('TRA_TDS_REVERT',  'TDS REVERT TRANSACTION');
 define('TRA_SALARY_AND_ALLOWENCES',  'Salary and Allowances Transaction');
 
+define('TRA_GODOWNCHARGE_DEBITED',  'GODOWN CHARGE DEBITED');
+define('TRA_LEGAL_NOTICE_SENT_FOR_BIKE_AUCTION',  'LEGAL NOTICE SENT FOR BIKE AUCTION');
+define('TRA_FINAL_RECOVERY_NOTICE_SENT',  'FINAL RECOVERY NOTICE SENT');
+define('TRA_CHEQUE_RETURNED',  'CHEQUE RETURNED');
+define('TRA_NOTICE_SENT_AFTER_CHEQUE_RETURNED',  'NOTICE SENT AFTER CHEQUE RETURNED');
+define('TRA_SOCIETY_NOTICE_SENT',  'SOCIETY NOTICE SENT');
+define('TRA_NOC_HANDLING_CHARGE_RECEIVED',  'NOC HANDLING CHARGE RECEIVED');
+define('TRA_LEGAL_NOTICE_SENT',  'LEGAL NOTICE SENT');
+
+define('RECOEVRY_ANY_LEGAL_CHARGES_ACCOUNT_TRA_ARRAY',[
+														'godowncharge_debited'=>['VECHICLE GODOWN RENT RECEIVED',TRA_GODOWNCHARGE_DEBITED],
+														'legal_notice_sent_for_bike_auction'=>['LEGAL NOTICE SENT FOR BIKE AUCTION CHARGE RECEIVED',TRA_LEGAL_NOTICE_SENT_FOR_BIKE_AUCTION],
+														'final_recovery_notice_sent'=>['FINAL RECOVERY NOTICE CHARGE RECEIVED',TRA_FINAL_RECOVERY_NOTICE_SENT],
+														'cheque_returned'=>['CHEQUE RETURN CHARGES RECEIVED',TRA_CHEQUE_RETURNED],
+														'notice_sent_after_cheque_returned'=>['CHEQUE RETURN NOTICE CHARGE RECEIVED',TRA_NOTICE_SENT_AFTER_CHEQUE_RETURNED],
+														'society_notice_sent'=>['SOCIETY NOTICE CHARGE RECEIVED',TRA_SOCIETY_NOTICE_SENT],
+														'noc_handling_charge_received'=>['NOC HANDLING CHARGE',TRA_NOC_HANDLING_CHARGE_RECEIVED],
+														'legal_notice_sent'=>['LEGAL NOTICE CHARGE RECEIVED',TRA_LEGAL_NOTICE_SENT],
+														'visit_done'=>['Visit Charge',TRA_VISIT_CHARGE],
+													]
+);
+
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')
 
@@ -182,6 +204,8 @@ define('TRA_INTEREST_POSTING_IN_CC_ACCOUNT', 'InterestPostingsInCCAccounts');
 define('TRA_INTEREST_POSTING_IN_RECURRING',     'InterestPostingsInREcurringAccounts');
 define('TRA_INTEREST_POSTING_IN_DDS',     'InterestPostingsInDDSAccounts');
 define('TRA_INTEREST_POSTING_IN_LOAN',     'InterestPostingsInLoanAccounts');
+
+define('MANAGE_SURRENDER_HISTORY_FIELDS',['godowncharge_debited','legal_notice_sent_for_bike_auction','final_recovery_notice_sent','notice_sent_after_cheque_returned','society_notice_sent','visit_done','legal_notice_sent','noc_handling_charge_received_on']);
 
 
 define('FIELD_TEMP_PENALTY',                    'CurrentInterest');

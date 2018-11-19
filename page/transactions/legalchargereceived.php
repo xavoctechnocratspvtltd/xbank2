@@ -53,6 +53,11 @@ class page_transactions_legalchargereceived extends Page {
 			try {
 				$this->api->db->beginTransaction();
 			    $account_model->legalChargeReceived($form['amount'],$form['narration'],$form['amount_from_account'],$form);
+			    
+			    $account_model_temp['is_in_legal']=true;
+			    $account_model_temp['legal_filing_date']=$this->app->now;
+			    $account_model_temp->save();
+			    
 			    $this->api->db->commit();
 			} catch (Exception $e) {
 			   	$this->api->db->rollBack();

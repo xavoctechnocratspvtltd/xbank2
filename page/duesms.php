@@ -40,7 +40,7 @@ class page_duesms extends \Page{
 		});
 
 		$premium->addCondition('DueDate',$date);
-		$premium->addCondition('Paid',false);
+		$premium->addCondition('PaidOn','is',null);
 
 		if($this->app->stickyGET('debug')){
 			$grid = $this->add('Grid');

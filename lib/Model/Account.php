@@ -72,15 +72,18 @@ class Model_Account extends Model_Table {
 		$this->addField('is_in_legal')->type('boolean')->defaultValue(false);
 		$this->addField('legal_filing_date')->type('date');
 
+		// multiple to do
 		$this->addField('is_godowncharge_debited')->type('boolean')->defaultValue(false);;
 		$this->addField('godowncharge_debited_on')->type('date');
 
+		// multiple to do
 		$this->addField('is_legal_notice_sent_for_bike_auction')->type('boolean')->defaultValue(false);;
 		$this->addField('legal_notice_sent_for_bike_auction_on')->type('date');
 
 		$this->addField('is_bike_auctioned')->type('boolean')->defaultValue(false);;
 		$this->addField('bike_auctioned_on')->type('date');
 
+		// multiple to do
 		$this->addField('is_final_recovery_notice_sent')->type('boolean')->defaultValue(false);;
 		$this->addField('final_recovery_notice_sent_on')->type('date');
 
@@ -90,6 +93,7 @@ class Model_Account extends Model_Table {
 		$this->addField('is_cheque_returned')->type('boolean')->defaultValue(false);;
 		$this->addField('cheque_returned_on')->type('date');
 
+		// multiple to do
 		$this->addField('is_notice_sent_after_cheque_returned')->type('boolean')->defaultValue(false);;
 		$this->addField('notice_sent_after_cheque_returned_on')->type('date');
 
@@ -105,6 +109,17 @@ class Model_Account extends Model_Table {
 		$this->addField('is_in_arbitration')->type('boolean')->defaultValue(false);
 		$this->addField('arbitration_on')->type('date');
 
+		$this->addField('is_society_notice_sent')->type('boolean')->defaultValue(false);
+		$this->addField('society_notice_sent_on')->type('date');
+
+		$this->addField('is_legal_notice_sent')->type('boolean')->defaultValue(false);
+		$this->addField('legal_notice_sent_on')->type('date');
+
+		$this->addField('is_visit_done')->type('boolean')->defaultValue(false);
+		$this->addField('visit_done_on')->type('date');		
+
+		$this->addField('is_noc_handling_charge_received')->type('boolean')->defaultValue(false);
+		$this->addField('noc_handling_charge_received_on')->type('date');
 		
 		$this->addField('is_dirty')->type('boolean')->system(true)->defaultValue(false);
 		$this->addField('new_or_renew')->enum(['New','ReNew'])->defaultValue('New');
@@ -170,6 +185,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('Account','related_account_id',null,'RelatedAccounts');
 		$this->hasMany('Transaction','reference_id',null,'RelatedTransactions');
 		$this->hasMany('Comment','account_id');
+		$this->hasMany('BikeSurrenderHistory','account_id');
 
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
 		$this->addHook('beforeSave',array($this,'updateTransactionRows'));
@@ -261,6 +277,18 @@ class Model_Account extends Model_Table {
 			$transactions->dsql()->expr('UPDATE transactions SET Narration=REPLACE(Narration,"'.$old_acc['AccountNumber'].'","'.$this['AccountNumber'].'") WHERE Narration like "%'.$old_acc['AccountNumber'].'%"')->execute();
 		}
 
+		foreach (MANAGE_SURRENDER_HISTORY_FIELDS as $field) {
+			if($this->loaded() && $this->isDirty($field.'_on') && $this[$field.'_on'] ){
+
+				$bshistory = $this->add('Model_BikeSurrenderHistory');
+				$bshistory['account_id'] = $this->id;
+				$bshistory['type'] = $field;
+				$bshistory['new_date_value'] = $this[$field.'_on'];
+
+				$bshistory->save();
+			}
+		}
+
 	}
 
 	function defaultBeforeDelete(){
@@ -286,6 +314,7 @@ class Model_Account extends Model_Table {
 		$this->ref('AccountGuarantor')->deleteAll();
 		$this->ref('Comment')->deleteAll();
 		$this->ref('RelatedTransactions')->deleteAll();
+		$this->ref('BikeSurrenderHistory')->deleteAll();
 
 	}
 

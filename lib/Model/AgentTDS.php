@@ -7,9 +7,9 @@ class Model_AgentTDS extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Agent','agent_id');
-		$this->hasOne('Transaction','transaction_id');
-		$this->hasOne('Account','related_account_id');
+		$this->hasOne('Agent','agent_id')->display(['form'=>'autocomplete/Basic']);
+		// $this->hasOne('Transaction','transaction_id');
+		$this->hasOne('Account','related_account_id')->display(['form'=>'autocomplete/Basic']);
 
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 
@@ -30,7 +30,7 @@ class Model_AgentTDS extends Model_Table {
 		if($total_commission == 0) return;
 		
 		$this['agent_id']=$agent_id;
-		$this['transaction_id']=$transaction_id;
+		// $this['transaction_id']=$transaction_id; // not used now, we are dependent on related_account_id now
 		$this['related_account_id']=$related_account_id;
 		$this['total_commission']=$total_commission;
 		$this['tds']=$tds;

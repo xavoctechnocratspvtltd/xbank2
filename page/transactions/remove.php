@@ -8,7 +8,12 @@ class page_transactions_remove extends Page {
 
 		$this->add('Controller_Acl',array('default_view'=>false));
 
-		$columns = $this->add('Columns');
+		$tabs = $this->add('Tabs');
+
+		$tr_rev_tab = $tabs->addTab('Transaction Remove');
+		$agent_tds_remove_tab = $tabs->addTab('Agent TDS Entry Remove');
+
+		$columns = $tr_rev_tab->add('Columns');
 
 		$remove_col= $columns->addColumn(6);
 		$edit_col= $columns->addColumn(6);
@@ -16,7 +21,7 @@ class page_transactions_remove extends Page {
 
 		// ================  DELETE VOUCHER =====================
 
-		$delete_voucher_vp = $this->add('VirtualPage')->set(function($p){
+		$delete_voucher_vp = $tr_rev_tab->add('VirtualPage')->set(function($p){
 			$f_year = $p->api->getFinancialYear($p->api->today);	
 			$start_date = $f_year['start_date'];
 			$end_date = $f_year['end_date'];
@@ -163,13 +168,13 @@ class page_transactions_remove extends Page {
 
 		// DIRTY ACCOUNTS 
 
-		$this->add('HR');
-		$this->add('H3')->set('Dirty Accounts');
+		$tr_rev_tab->add('HR');
+		$tr_rev_tab->add('H3')->set('Dirty Accounts');
 		
-		$dirty_accounts = $this->add('Model_Account');
+		$dirty_accounts = $tr_rev_tab->add('Model_Account');
 		$dirty_accounts->addCondition('is_dirty',true);
 
-		$crud = $this->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
+		$crud = $tr_rev_tab->add('CRUD',array('allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 		$crud->setModel($dirty_accounts,array('AccountNumber','member','scheme'));
 
 		$p = $crud->addFrame('Premiums');
@@ -187,5 +192,32 @@ class page_transactions_remove extends Page {
 			}
 		}
 		$crud->grid->addPaginator(100);
+
+		// ==================  Agent TDS Entry Remove =======
+
+		$form = $agent_tds_remove_tab->add('Form');
+		$form->addField('autocomplete/Basic','agent')->setModel('Agent');
+		$form->addField('autocomplete/Basic','related_account')->setModel('Account');
+		$form->addSubmit('Filter');
+
+		$agent_tds_model = $agent_tds_remove_tab->add('Model_AgentTDS');
+		
+		if($ag=$this->app->stickyGET('agent')){
+			$agent_tds_model->addCondition('agent_id',$ag);
+		}
+
+		if($ra=$this->app->stickyGET('related_account')){
+			$agent_tds_model->addCondition('related_account_id',$ra);
+		}
+
+		$agent_tds_grid = $agent_tds_remove_tab->add('CRUD');
+		$agent_tds_grid->setModel($agent_tds_model);
+		$agent_tds_grid->grid->addPaginator(50);
+
+
+		if($form->isSubmitted()){
+			$agent_tds_grid->js()->reload($form->get())->execute();
+		}
+
 	}
 }

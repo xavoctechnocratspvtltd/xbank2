@@ -122,7 +122,8 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_penalty','Penalty');
 		$transactions_sub_menus->addMenuItem('transactions_legalchargepaid','Legal Charge Paid');
 		$transactions_sub_menus->addMenuItem('transactions_legalchargereceived','Legal Charge Received');
-		$transactions_sub_menus->addMenuItem('transactions_visitcharge','Visit Charge');
+		// $transactions_sub_menus->addMenuItem('transactions_visitcharge','Visit Charge');
+		$transactions_sub_menus->addMenuItem('transactions_recoveryandlegaltransactions','Recovery and Legal Transaction');
 		$transactions_sub_menus->addMenuItem('transactions_bankdeposit','Cash Bank Deposit');
 		$transactions_sub_menus->addMenuItem('transactions_bankwithdrawl','Cash Bank Withdrawl');
 		$transactions_sub_menus->addMenuItem('transactions_premature','Pre Mature Payments');

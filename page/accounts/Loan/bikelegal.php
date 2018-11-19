@@ -30,7 +30,10 @@ class page_accounts_Loan_bikelegal extends Page{
 				'is_cheque_returned'=>'cheque_returned_on',
 				'is_notice_sent_after_cheque_returned'=>'notice_sent_after_cheque_returned_on',
 				'is_legal_case_finalised'=>'legal_case_finalised_on',
-				'is_bike_returned'=>'bike_returned_on'
+				'is_bike_returned'=>'bike_returned_on',
+				'is_society_notice_sent'=>'society_notice_sent_on',
+				'is_visit_done'=>'visit_done_on',
+				'is_noc_handling_charge_received'=>'noc_handling_charge_received_on',
 			];
 
 			foreach ($check_date as $key => $value) {
@@ -69,8 +72,17 @@ class page_accounts_Loan_bikelegal extends Page{
 						'bike_not_sold_reason',
 						'legal_case_not_submitted_reason',
 						'is_in_arbitration',
-						'arbitration_on'
+						'arbitration_on',
+						'is_society_notice_sent',
+						'society_notice_sent_on',
+						'is_legal_notice_sent',
+						'legal_notice_sent_on',
+						'is_visit_done',
+						'visit_done_on',
+						'is_noc_handling_charge_received',
+						'noc_handling_charge_received_on',
 						];
+						
 		$grid_fields=array_merge(['AccountNumber'],$form_fields);;
 		$crud->setModel($model,$form_fields,$grid_fields);
 		$crud->add('Controller_Acl');

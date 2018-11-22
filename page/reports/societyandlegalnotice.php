@@ -306,7 +306,36 @@ class page_reports_societyandlegalnotice extends Page {
 
 				case 'legal_notice':
 					$account_model->addExpression('include')->set(function($m,$q){
-
+						return $q->expr(
+							'IF(
+								[created_at]>="2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= "[last_premium_value_3_month]" AND [last_paid_date_field] < "[last_paid_date_value_3_month]" AND ([legal_notice_sent_on] < "[today_minus_120_days]" OR [legal_notice_sent_on] is null) AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
+								1,
+								IF(
+									[created_at]<"2018-04-01" AND [due_premium_count] = 4 AND [last_premium_field] >= "[last_premium_value_4_month]" AND [last_paid_date_field] < "[last_paid_date_value_4_month]" AND ([legal_notice_sent_on] < "[today_minus_180_days]" OR [legal_notice_sent_on] is null) AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
+									1,
+									0
+								)
+							)',
+							[
+								'created_at' => $m->getElement('created_at'),
+								'due_premium_count'=>$m->getElement('due_premium_count'),
+								'last_premium_field'=>$m->getElement('last_premium'),
+								'last_paid_date_field'=>$m->getElement('last_paid_date'),
+								'paid_premium_count'=>$m->getElement('paid_premium_count'),
+								'paid_premium_count_value'=>5,
+								'legal_notice_sent_on'=>$m->getElement('legal_notice_sent_on'),
+								'today_minus_120_days'=> date('Y-m-d',strtotime("-120 days",strtotime($this->app->today))),
+								'today_minus_180_days'=> date('Y-m-d',strtotime("-180 days",strtotime($this->app->today))),
+								'recent_due_premium_date'=>$m->getElement('recent_due_premium_date'),
+								'today_minus_15_days'=>date('Y-m-d',strtotime("-15 days",strtotime($this->app->today))),
+								'last_premium_value_3_month'=>$this->api->previousMonth($this->api->today. " -3 MONTH"),
+								'last_paid_date_value_3_month'=>$this->api->previousMonth($this->api->today. " -3 MONTH"),
+								'last_premium_value_4_month'=>$this->api->previousMonth($this->api->today. " -4 MONTH"),
+								'last_paid_date_value_4_month'=>$this->api->previousMonth($this->api->today. " -4 MONTH"),
+								'bike_surrendered'=>$m->getElement('bike_surrendered'),
+								'is_given_for_legal_process'=>$m->getElement('is_given_for_legal_process')
+							]
+						);
 					})->type('boolean');
 				break;
 			}
@@ -435,7 +464,7 @@ class page_reports_societyandlegalnotice extends Page {
 
 
 
-		$grid->setModel($account_model->debug(),$grid_column_array);
+		$grid->setModel($account_model,$grid_column_array);
 
 		if($_GET['filter']){
 			// $grid->addColumn('emidue','emi_dueamount');

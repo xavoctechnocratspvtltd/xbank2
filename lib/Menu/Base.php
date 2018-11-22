@@ -87,6 +87,7 @@ class Menu_Base extends Menu {
 			// $admin_sub_menus->addMenuItem('utility_crpbedit','CRPB Edit');
 			$admin_sub_menus->addMenuItem('log','Log Check');
 			$admin_sub_menus->addMenuItem('closingnew','Closing');
+			$admin_sub_menus->addMenuItem('contentmanagement','Content Management');
 			$admin->js('click',$admin_sub_menus_popover->showJS());
 		}
 

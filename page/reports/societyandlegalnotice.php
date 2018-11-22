@@ -273,7 +273,7 @@ class page_reports_societyandlegalnotice extends Page {
 					$account_model->addExpression('include')->set(function($m,$q){
 						return $q->expr(
 							'IF(
-								[created_at]>="2018-04-01" AND [due_premium_count] = 1 AND [last_premium_field] >= "[last_premium_value_1_month]" AND [last_paid_date_field] < "[last_paid_date_value_1_month]" AND [paid_premium_count] <= [paid_premium_count_value] AND ([society_notice_sent_on] < "[today_minus_30_days]" OR [society_notice_sent_on] is null) AND [recent_due_premium_date] >= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
+								[created_at]>="2018-04-01" AND [due_premium_count] = 1 AND [last_premium_field] >= "[last_premium_value_1_month]" AND [last_paid_date_field] < "[last_paid_date_value_1_month]" AND [paid_premium_count] <= [paid_premium_count_value] AND ([society_notice_sent_on] < "[today_minus_30_days]" OR [society_notice_sent_on] is null) AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
 								1,
 								IF(
 									[created_at]<"2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= "[last_premium_value_3_month]" AND [last_paid_date_field] < "[last_paid_date_value_3_month]" AND ([society_notice_sent_on] < "[today_minus_60_days]" OR [society_notice_sent_on] is null) AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,

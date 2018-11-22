@@ -64,8 +64,11 @@ class page_reports_societyandlegalnotice extends Page {
 						->addCondition('PaidOn',null)
 						->addCondition('DueDate','<',$m->api->nextDate($till_date))
 						->setLimit(1)
-						->setOrder('DueDate','desc')
-						->fieldQuery('DueDate');
+						// ->setOrder('DueDate','desc')
+						->fieldQuery('DueDate')
+						->del('order')
+						->order('DueDate desc');
+						;
 		});
 
 
@@ -95,10 +98,10 @@ class page_reports_societyandlegalnotice extends Page {
 		$account_model->addExpression('last_paid_date')->set(function($m,$q){
 			$p_m=$m->refSQL('Premium')
 						->addCondition('PaidOn','<>',null)
-						->setOrder('PaidOn','desc')
+						// ->setOrder('PaidOn','desc')
 						->setLimit(1);
 			
-			return $p_m->fieldQuery('PaidOn');
+			return $p_m->fieldQuery('PaidOn')->del('order')->order('PaidOn desc');
 		})->sortable(true);
 
 		$account_model->addExpression('due_premium_amount')->set(function($m,$q){
@@ -112,7 +115,7 @@ class page_reports_societyandlegalnotice extends Page {
 		});
 
 		$account_model->addExpression('last_premium')->set(function($m,$q){
-			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('DueDate');
+			return $m->RefSQL('Premium')->setLimit(1)->fieldQuery('DueDate')->del('order')->order('id desc');
 			return "'last_premium'";
 		});
 
@@ -270,10 +273,10 @@ class page_reports_societyandlegalnotice extends Page {
 					$account_model->addExpression('include')->set(function($m,$q){
 						return $q->expr(
 							'IF(
-								[created_at]>="2018-04-01" AND [due_premium_count] = 1 AND [last_premium_field] >= [last_premium_value_1_month] AND [last_paid_date_field] < [last_paid_date_value_1_month] AND [paid_premium_count] <= [paid_premium_count_value] AND [society_notice_sent_on] < [today_minus_30_days] AND [recent_due_premium_date] >= [today_minus_15_days] AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
+								[created_at]>="2018-04-01" AND [due_premium_count] = 1 AND [last_premium_field] >= "[last_premium_value_1_month]" AND [last_paid_date_field] < "[last_paid_date_value_1_month]" AND [paid_premium_count] <= [paid_premium_count_value] AND [society_notice_sent_on] < "[today_minus_30_days]" AND [recent_due_premium_date] >= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
 								1,
 								IF(
-									[created_at]<"2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= [last_premium_value_3_month] AND [last_paid_date_field] < [last_paid_date_value_3_month] AND [paid_premium_count] <= [paid_premium_count_value] AND [society_notice_sent_on] < [today_minus_30_days] AND [recent_due_premium_date] >= [today_minus_15_days] AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
+									[created_at]<"2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= "[last_premium_value_3_month]" AND [last_paid_date_field] < "[last_paid_date_value_3_month]" AND [paid_premium_count] <= [paid_premium_count_value] AND [society_notice_sent_on] < "[today_minus_30_days]" AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
 									1,
 									0
 								)
@@ -431,7 +434,7 @@ class page_reports_societyandlegalnotice extends Page {
 
 
 
-		$grid->setModel($account_model,$grid_column_array);
+		$grid->setModel($account_model->debug(),$grid_column_array);
 
 		if($_GET['filter']){
 			// $grid->addColumn('emidue','emi_dueamount');

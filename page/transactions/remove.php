@@ -11,6 +11,7 @@ class page_transactions_remove extends Page {
 		$tabs = $this->add('Tabs');
 
 		$tr_rev_tab = $tabs->addTab('Transaction Remove');
+		$naration_edit = $tabs->addTab('Narration Edit');
 		$agent_tds_remove_tab = $tabs->addTab('Agent TDS Entry Remove');
 
 		$columns = $tr_rev_tab->add('Columns');
@@ -82,6 +83,42 @@ class page_transactions_remove extends Page {
 			$this->js()->univ()->frameURL('TRANSACTION',$this->api->url($delete_voucher_vp->getURL(),array('branch_id'=>$form['branch'],'voucher_no'=>$form['voucher_no'],'voucher_uuid'=>$form['voucher_uuid'])))->execute();
 		}
 
+		// ================  $naration_edit =================
+		$edit_narration_vp = $tr_rev_tab->add('VirtualPage')->set(function($p){
+
+			$f_year = $p->api->getFinancialYear($p->api->today);	
+			$start_date = $f_year['start_date'];
+			$end_date = $f_year['end_date'];
+
+			$transaction = $p->add('Model_Transaction');
+			$transaction->addCondition('id',$p->api->stickyGET('voucher_uuid'));
+			$transaction->addCondition('voucher_no',$p->api->stickyGET('voucher_no'));
+			$transaction->addCondition('created_at','>=',$start_date);
+			$transaction->addCondition('created_at','<',$p->api->nextDate($end_date));
+			$transaction->addCondition('branch_id',$p->api->stickyGET('branch_id'));
+			$transaction->tryLoadAny();
+
+			if(!$transaction->loaded()){
+				$p->add('View_Error')->set('Could Not Load Such Transaction, or transaction is not in current financial year');
+				return;
+			}
+			$form = $p->add('Form');
+			$form->setModel($transaction,['Narration']);
+			$form->addSubmit("UPDATE");
+			if($form->isSubmitted()){
+				$form->save();
+				$form->js(null,$form->js()->univ()->successMessage('Updated'))->reload()->execute();
+			}
+		});
+		$form = $naration_edit->add('Form');
+		$form->addField('autocomplete/Basic','branch')->validateNotNull()->setModel('Branch');
+		$form->addField('line','voucher_no')->validateNotNull();
+		$form->addField('line','voucher_uuid')->validateNotNull();
+		$form->addSubmit('Get Voucher');
+
+		if($form->isSubmitted()){
+			$this->js()->univ()->frameURL('EDIT NARRATION',$this->api->url($edit_narration_vp->getURL(),array('branch_id'=>$form['branch'],'voucher_no'=>$form['voucher_no'],'voucher_uuid'=>$form['voucher_uuid'])))->execute();
+		}
 		// ================  EDIT VOUCHER =====================
 
 		// $edit_voucher_vp = $this->add('VirtualPage')->set(function($p){

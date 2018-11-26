@@ -505,24 +505,45 @@ class page_reports_societyandlegalnotice extends Page {
 			// }
 			$grid->js()->reload($send)->execute();
 
-		}		
+		}
+
+		$content_files = $this->add('Model_ContentFile');
 
 		$print_form = $this->add('Form');
 		$print_accounts_fields = $print_form->addField('Text','accounts');
-		$print_form->addField('DropDown','select_details')->setValueList(['owner'=>'Owner','gurantor'=>'Gurantor','both'=>'Both']);
+		$print_form->addField('DropDown','content_file')->setEmptyText('Please select content file')->validateNotNull()->setModel($content_files);
 		$print_form->addSubmit('Print');
 
 		$grid->addSelectable($print_accounts_fields);
 
 		if($print_form->isSubmitted()){
+			$this->app->memorize('content_print_data',json_encode($print_form->get()));
 			$this->js()->univ()->location($this->app->url('./print',['cut_page'=>1,'form_values'=>json_encode($print_form->get())]))->execute();
 		}
 
 	}
 
 	function page_print(){
-		var_dump($_GET['form_values']);
-		var_dump(json_decode($_GET['form_values'],true));
+		$form_values = $this->app->recall('content_print_data');
+		$form_values = json_decode($form_values,true);
+		$accounts = json_decode($form_values['accounts']);
+
+		// $this->app->forget('content_print_data');
+		// var_dump($form_values);
+		// var_dump($accounts);
+		$content_file = $this->add('Model_ContentFile')->load($form_values['content_file']);//->getAccountModel();
+		$content = $content_file->getContent();
+		$template = $this->add('GiTemplate');
+		$template->loadTemplateFromString($content);
+
+		foreach ($accounts as $acid) {
+			$account_model = $content_file->getAccountModel($acid);
+
+			$template->setHTML($account_model->get());
+			echo $template->render();
+			echo "<p style='page-break-before: always'></p>";
+		}
+
 	}
 
 }

@@ -191,6 +191,10 @@ class Model_ContentFile extends Model_Table {
 			return  $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])->addCondition('member_id',$q->getField('member_id'))->setLimit(1)->fieldQuery('AccountNumber');
 		});
 
+		$model->addExpression('account_created_date')->set(function($m,$q){
+			return  $q->expr('DATE([0])',[$m->getElement('created_at')]);
+		});
+
 		foreach ($member_fields as $mf) {
 			if(in_array($mf, ['id'])) continue;
 			$model->addExpression('member_'.$mf)->set(function($m,$q)use($mf){

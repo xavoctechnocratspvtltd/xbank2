@@ -1,0 +1,20 @@
+<table style="height: 187px;" width="641">
+<tbody>
+<tr>
+<td style="padding-left: 60px;">
+<p>To,</p>
+<p>{$member_name} S/o {$member_FatherName}</p>
+<p>Address - Vill &amp; Post - {$member_landmark},</p>
+<p>Teh- {$member_tehsil}, Distt. {$member_district}</p>
+<p>(RAJ.) - {$member_pincode}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;खाता संख्या - {$AccountNumber}</p>
+<p>&nbsp;</p>
+<p>&nbsp;Advocate</p>
+<p>&nbsp;Rajesh Choudhary</p>
+<p>Bhawani Credit Co-operative Society Ltd.</p>
+<p>7, Amrit Shree Plaza, Dudhiya Ganesh Ji,</p>
+<p>Sajjan Garh Road, Udaipur (Raj.) 313001&nbsp;</p>
+<p>&nbsp;</p>
+</td>
+</tr>
+</tbody>
+</table>

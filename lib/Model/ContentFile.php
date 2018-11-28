@@ -96,6 +96,16 @@ class Model_ContentFile extends Model_Table {
 			return $p_m->count();
 		});
 
+		$model->addExpression('overdue_premium_count')->set(function($m,$q){
+			$p_m = $m->refSQL('Premium')
+						->addCondition('PaidOn',null);
+			// if($from_date)
+			// 	$p_m->addCondition('DueDate','>=',$from_date);
+			// if($to_date)
+			$p_m->addCondition('DueDate','<',$m->api->nextDate($this->app->today));
+			return $p_m->count();
+		});
+
 		$model->addExpression('due_premium_amount')->set(function($m,$q){
 			$p_m = $m->refSQL('Premium')
 						->addCondition('PaidOn',null);

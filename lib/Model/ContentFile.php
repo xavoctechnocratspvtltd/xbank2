@@ -96,6 +96,16 @@ class Model_ContentFile extends Model_Table {
 			return $p_m->count();
 		});
 
+		$model->addExpression('due_premium_amount')->set(function($m,$q){
+			$p_m = $m->refSQL('Premium')
+						->addCondition('PaidOn',null);
+			// if($from_date)
+			// 	$p_m->addCondition('DueDate','>=',$from_date);
+			// if($to_date)
+			// 	$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+			return $p_m->sum('Amount');
+		});		
+
 		$model->addExpression('due_date')->set(function($m,$q){
 			$t = $m->refSQL('Premium')->setLimit(1);
 			return $q->expr("DAY([0])",array($t->fieldQuery('DueDate')));
@@ -148,6 +158,10 @@ class Model_ContentFile extends Model_Table {
 			$premium_paid = $q->expr('([0]*[1])',[$m->getElement('paid_premium_count'),$m->getElement('emi_amount')]);
 			return $q->expr('([0]-[1])',[$received,$premium_paid]);
 		});
+
+		$model->addExpression('total_due_amount')->set(function($m,$q){
+			return $q->expr('[0]+[1]+[2]',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges')]);
+		});		
 
 		$model->addExpression('member_sm_account')->set(function($m,$q){
 			return  $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])->addCondition('member_id',$q->getField('member_id'))->setLimit(1)->fieldQuery('AccountNumber');

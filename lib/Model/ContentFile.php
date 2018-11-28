@@ -66,6 +66,16 @@ class Model_ContentFile extends Model_Table {
 			return "'templates/images/logo.jpg'";
 		});
 
+		$model->addExpression('emi_count')->set(function($m,$q){
+			$p_m=$m->refSQL('Premium');
+						// ->addCondition('PaidOn','<>',null);
+			// if($from_date)
+			// 	$p_m->addCondition('DueDate','>=',$from_date);
+			// if($to_date)
+			// 	$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+			return $p_m->count();
+		})->sortable(true);
+
 		$model->addExpression('paid_premium_count')->set(function($m,$q){
 			$p_m=$m->refSQL('Premium')
 						->addCondition('PaidOn','<>',null);

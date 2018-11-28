@@ -66,6 +66,83 @@ class Model_ContentFile extends Model_Table {
 			return "'templates/images/logo.jpg'";
 		});
 
+		$model->addExpression('paid_premium_count')->set(function($m,$q){
+			$p_m=$m->refSQL('Premium')
+						->addCondition('PaidOn','<>',null);
+			// if($from_date)
+			// 	$p_m->addCondition('DueDate','>=',$from_date);
+			// if($to_date)
+			// 	$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+			return $p_m->count();
+		})->sortable(true);
+
+		$model->addExpression('due_premium_count')->set(function($m,$q){
+			$p_m = $m->refSQL('Premium')
+						->addCondition('PaidOn',null);
+			// if($from_date)
+			// 	$p_m->addCondition('DueDate','>=',$from_date);
+			// if($to_date)
+			// 	$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+			return $p_m->count();
+		});
+
+		$model->addExpression('due_date')->set(function($m,$q){
+			$t = $m->refSQL('Premium')->setLimit(1);
+			return $q->expr("DAY([0])",array($t->fieldQuery('DueDate')));
+			return "'due_premium_count'";
+		});
+
+		$model->addExpression('last_premium')->set(function($m,$q){
+			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('DueDate');
+			return "'last_premium'";
+		});
+
+		$model->addExpression('emi_amount')->set(function($m,$q){
+			return $m->RefSQL('Premium')->setOrder('id','desc')->setLimit(1)->fieldQuery('Amount');
+			return "'emi_amount'";
+		});
+
+		$model->addExpression('due_panelty')->set(function($m,$q){
+			$trans_type = $this->add('Model_TransactionType')->tryLoadBy('name',TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT);
+			
+			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'due_panelty_tr'));
+			$tr_m->addCondition('transaction_type_id',$trans_type->id); 
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			// $tr_m->addCondition('created_at','>=',$from_date);
+			// $tr_m->addCondition('created_at','<',$this->app->nextDate($to_date));
+
+			return $tr_m->sum('amountDr');
+
+			// Previously this was running, and was including un entered amount also, but
+			// this was changed as per request ... 
+			// Reason, old accounts was not included in penalty
+			$p_m = $m->refSQL('Premium');
+			// if($from_date)
+			// 	$p_m->addCondition('DueDate','>=',$from_date);
+			// if($to_date)
+			// 	$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
+			return $p_m->sum($m->dsql()->expr('IFNULL(PaneltyCharged,0)'));
+		});
+
+		$model->addExpression('other_charges')->set(function($m,$q){
+			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+			$tr_m->addCondition('transaction_type_id',[13, 46, 39]); // JV, TRA_VISIT_CHARGE, LegalChargeReceived
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			return $tr_m->sum('amountDr');
+		});
+
+		$model->addExpression('other_received')->set(function($m,$q){
+			$tr_m = $m->add('Model_TransactionRow',array('table_alias'=>'other_charges_tr'));
+			$tr_m->addCondition('account_id',$q->getField('id'));
+			$received = $tr_m->sum('amountCr');
+			$premium_paid = $q->expr('([0]*[1])',[$m->getElement('paid_premium_count'),$m->getElement('emi_amount')]);
+			return $q->expr('([0]-[1])',[$received,$premium_paid]);
+		});
+
+		$model->addExpression('member_sm_account')->set(function($m,$q){
+			return  $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])->addCondition('member_id',$q->getField('member_id'))->setLimit(1)->fieldQuery('AccountNumber');
+		});
+
 		foreach ($member_fields as $mf) {
 			if(in_array($mf, ['id'])) continue;
 			$model->addExpression('member_'.$mf)->set(function($m,$q)use($mf){

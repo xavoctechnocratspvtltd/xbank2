@@ -114,7 +114,17 @@ class Model_ContentFile extends Model_Table {
 			// if($to_date)
 			// 	$p_m->addCondition('DueDate','<',$m->api->nextDate($to_date));
 			return $p_m->sum('Amount');
-		});		
+		});
+
+		$model->addExpression('overdue_premium_amount')->set(function($m,$q){
+			$p_m = $m->refSQL('Premium')
+						->addCondition('PaidOn',null);
+			// if($from_date)
+			// 	$p_m->addCondition('DueDate','>=',$from_date);
+			// if($to_date)
+			$p_m->addCondition('DueDate','<',$m->api->nextDate($this->app->today));
+			return $p_m->sum('Amount');
+		});
 
 		$model->addExpression('due_date')->set(function($m,$q){
 			$t = $m->refSQL('Premium')->setLimit(1);
@@ -171,6 +181,10 @@ class Model_ContentFile extends Model_Table {
 
 		$model->addExpression('total_due_amount')->set(function($m,$q){
 			return $q->expr('[0]+[1]+[2]',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges')]);
+		});
+
+		$model->addExpression('total_overdue_amount')->set(function($m,$q){
+			return $q->expr('[0]+[1]+[2]',[$m->getElement('overdue_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges')]);
 		});		
 
 		$model->addExpression('member_sm_account')->set(function($m,$q){

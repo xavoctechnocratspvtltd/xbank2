@@ -319,7 +319,9 @@ class DB extends AbstractController
     public function rollBack()
     {
         $this->transaction_depth = 0;
-        return $this->dbh->rollBack();
+        if($this->inTransaction())
+            return $this->dbh->rollBack();
+        
     }
     // }}}
 }

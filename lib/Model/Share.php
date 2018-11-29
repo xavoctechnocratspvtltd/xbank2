@@ -168,10 +168,10 @@ class Model_Share extends Model_Table {
 		$share_amount = count($shares_array) * RATE_PER_SHARE ;
 		
 	
-		$narration = 'Share Transferred of '.$share_amount.' from '. $from_sm_account['AccountNumber']. ' to '. $to_sm_account['AccountNumber']. ' ['.implode(",", $shares_array).']';
+		$narration = 'Share Transferred of Rs '.$share_amount.' from '. $from_sm_account['AccountNumber']. ' to '. $to_sm_account['AccountNumber']. ' ['.implode(",", $shares_array).']';
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_SHARE_TRANSFER,$from_sm_account->ref('branch_id'),$this->app->today,$narration);
+		$transaction->createNewTransaction(TRA_SHARE_TRANSFER,$from_sm_account->ref('branch_id'),$this->app->now,$narration);
 		
 		$transaction->addDebitAccount($from_sm_account,$share_amount);
 		$transaction->addCreditAccount($to_sm_account,$share_amount);
@@ -184,10 +184,10 @@ class Model_Share extends Model_Table {
 	function buyBack($from_sm_account,$to_account,$shares_array){
 		$share_amount = count($shares_array) * RATE_PER_SHARE ;
 		
-		$narration = 'Share Buy Backed of '.$share_amount.' from '. $from_sm_account['AccountNumber']. ' to '. $to_account['AccountNumber']. ' ['.implode(",", $shares_array).']';
+		$narration = 'Share Buy Backed of Rs '.$share_amount.' from '. $from_sm_account['AccountNumber']. ' to '. $to_account['AccountNumber']. ' ['.implode(",", $shares_array).']';
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_SHARE_BUYBACK,$from_sm_account->ref('branch_id'),$this->app->today,$narration);
+		$transaction->createNewTransaction(TRA_SHARE_BUYBACK,$from_sm_account->ref('branch_id'),$this->app->now,$narration);
 		
 		$transaction->addDebitAccount($from_sm_account,$share_amount);
 		$transaction->addCreditAccount($to_account,$share_amount);

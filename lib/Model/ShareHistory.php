@@ -21,27 +21,27 @@ class Model_ShareHistory extends Model_Table {
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function createNew($no_of_shares,$to_member_id=null,$start_no=null){
-		if(!$start_no) {
-			$start_no = ($this->add('Model_Share')->setOrder('no','desc')->tryLoadAny()->get('no') + 1);
-		}
+	// function createNew($no_of_shares,$to_member_id=null,$start_no=null){
+	// 	if(!$start_no) {
+	// 		$start_no = ($this->add('Model_Share')->setOrder('no','desc')->tryLoadAny()->get('no') + 1);
+	// 	}
 
-		$status='Available';
-		if($to_member_id) $status='Issued';
+	// 	$status='Available';
+	// 	if($to_member_id) $status='Issued';
 
-		for ($i=0; $i < $no_of_shares; $i++) { 
-			$new_m = $this->add('Model_Share');
-			$new_m['no'] = $start_no;
-			$new_m['status'] = $status;
-			if($to_member_id) $new_m['current_member_id'] = $to_member_id;
-			$new_m->save();
+	// 	for ($i=0; $i < $no_of_shares; $i++) { 
+	// 		$new_m = $this->add('Model_Share');
+	// 		$new_m['no'] = $start_no;
+	// 		$new_m['status'] = $status;
+	// 		if($to_member_id) $new_m['current_member_id'] = $to_member_id;
+	// 		$new_m->save();
 
-			$start_no++;
-		}
-	}
+	// 		$start_no++;
+	// 	}
+	// }
 
-	function transfer($share_nos=[],$from_member,$to_member){
+	// function transfer($share_nos=[],$from_member,$to_member){
 
-	}
+	// }
 
 }

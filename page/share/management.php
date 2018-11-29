@@ -12,6 +12,8 @@ class page_share_management extends Page {
 
 		$crud->setModel($model);
 
+		$crud->grid->addPaginator(200);
+
 		$his_crud = $crud->addRef('ShareHistory');
 
 	}

@@ -12,7 +12,7 @@ class Model_Member extends Model_Table {
 		$this->addExpression('gender')->set(function($m,$q){return $q->expr('IF([0]="Mr.","M","F")',[$this->getElement('title')]);});
 		$this->addField('name')->mandatory(true);
 
-		$this->addField('member_no')->type('int');
+		$this->addField('member_no')->type('int')->sortable(true);
 
 		$this->addField('username');
 		$this->addField('password');
@@ -37,7 +37,7 @@ class Model_Member extends Model_Table {
 		$this->addField('Witness2Name');
 		$this->addField('Witness2FatherName');
 		$this->addField('Witness2Address');
-		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->group('system');
+		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->group('system')->sortable(true);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now)->group('system');
 		$this->addField('IsMinor')->type('boolean');
 		$this->addField('is_active')->type('boolean')->defaultValue(true);

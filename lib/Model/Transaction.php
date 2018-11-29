@@ -181,11 +181,17 @@ class Model_Transaction extends Model_Table {
 					;
 		}
 
-
-		if($this->all_debit_accounts_are_mine and $this->all_credit_accounts_are_mine)
-			$this->executeSingleBranch($debug);
-		else
-			$this->executeInterBranch($debug);
+		try{
+			$this->api->db->beginTransaction();
+			if($this->all_debit_accounts_are_mine and $this->all_credit_accounts_are_mine)
+				$this->executeSingleBranch($debug);
+			else
+				$this->executeInterBranch($debug);
+			$this->api->db->commit();
+		}catch(Exception $e){
+			$this->api->db->rollback();
+			throw $e;
+		}
 
 		$this->executed=true;
 		$id = $this->id;

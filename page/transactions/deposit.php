@@ -60,6 +60,7 @@ class page_transactions_deposit extends Page {
 		$form->addField('autocomplete/Basic','account_to_debit')->setModel($account_to_debit_model,'AccountNumber');
 		
 		$form->addField('Text','narration');
+		$form->addField('Checkbox','confirm_sm_account','Confirm SM Account, Will allot shares as well');
 		$form->addSubmit('Deposit');
 
 		if($_GET['account_selected']){
@@ -172,12 +173,24 @@ class page_transactions_deposit extends Page {
 
 			$type = $account_model_temp->ref('scheme_id')->get('SchemeType');
 			if($type=='DDS') $type = $account_model_temp->ref('scheme_id')->get('type');
+			$sm_account_deposited = ($account_model_temp['scheme_name']==CAPITAL_ACCOUNT_SCHEME);
+			$amount_not_in_multiple_of_100 = ($form['amount'] % RATE_PER_SHARE != 0);
+
+			if($sm_account_deposited && $amount_not_in_multiple_of_100){
+				$form->displayError('amount','SM Account amounts must be in multiple of '.RATE_PER_SHARE);
+			}
+
+			if($sm_account_deposited && !$form['confirm_sm_account']){
+				$form->displayError('confirm_sm_account','Please confirm if you really want to deposit in SM Account, It will allot shares as well');
+			}
+
+			if($sm_account_deposited) $type="SM";			
 
 			$account_model = $this->add('Model_Account_'.$type);
 			$account_model->loadBy('AccountNumber',$form['account']);
 			
 
-			try {
+			try {				
 				$this->api->db->beginTransaction();
 			    $account_model->deposit($form['amount'],$form['narration'],$form['account_to_debit']?array(array($form['account_to_debit']=>$form['amount'])):array(),$form);
 			    $this->api->db->commit();

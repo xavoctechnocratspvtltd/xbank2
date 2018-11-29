@@ -136,6 +136,12 @@ class Frontend extends ApiFrontend {
         return $date;
     }
 
+    function addDateDuration($duration,$date=null){
+        if(!$date) $date = $this->api->today;
+        $date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " ".$duration));    
+        return $date;
+    }
+
     function monthFirstDate($date=null){
         if(!$date) $date = $this->api->now;
 

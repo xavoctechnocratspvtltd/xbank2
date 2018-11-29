@@ -62,6 +62,8 @@ class page_members extends Page {
 			]);
 		})->allowHTML(true);
 
+		$member_model->addExpression('shares_count')->set($member_model->refSQL('Share')->count());
+
 
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;

@@ -12,6 +12,8 @@ class page_transactions_withdrawl extends Page {
 		
 		// Loan PL and VL not allowed
 		$account_model->addCondition('SchemeType','<>',ACCOUNT_TYPE_LOAN);
+		// No withdrawl from SM accounts also, use share buy back and transfer transactions
+		$account_model->addCondition('scheme_name','<>','Share Capital');
 		// CC Allowed
 
 		// Recurring, MIS, FD and DDS only if deactivated

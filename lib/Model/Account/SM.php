@@ -31,6 +31,20 @@ class Model_Account_SM extends Model_Account_Default{
 		$form->addField('CheckBox','do_calculations');
 	}
 
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
+		if($form['Amount'] % RATE_PER_SHARE !=0) {
+			throw $this->exception('Amount must be multiple of '.RATE_PER_SHARE,'ValidityCheck')->setField('Amount');
+		}
+		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
+	}
+
+	function deposit($amount,$narration=null,$accounts_to_debit=null,$form=null,$transaction_date=null,$in_branch=null){
+		$member_id = $this['member_id']?:$form['member_id'];
+		if(!$member_id) throw new \Exception("No member found to transfer share", 1);
+		$this->add('Model_Share')->createNew($amount / RATE_PER_SHARE,$member_id);
+		return parent::deposit($amount,$narration,$accounts_to_debit,$form,$transaction_date,$in_branch);
+	}
+
 	function getNewAccountNumber($account_type=null,$branch=null){
 		
 		if(!$account_type) $account_type = $this['account_type'];

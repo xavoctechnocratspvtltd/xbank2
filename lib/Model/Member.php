@@ -97,6 +97,8 @@ class Model_Member extends Model_Table {
 		$this->hasMany('AccountGuarantor','member_id');
 		$this->hasMany('DocumentSubmitted','member_id');
 		$this->hasMany('Comment','member_id');
+		$this->hasMany('Share','current_member_id');
+		$this->hasMany('ShareHistory','member_id');
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('beforeDelete',$this);

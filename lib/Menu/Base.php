@@ -66,6 +66,7 @@ class Menu_Base extends Menu {
 		$reports_sub_menu->addMenuItem('reports_books','Books');
 		$reports_sub_menu->addMenuItem('reports_employee','Employee');
 		$reports_sub_menu->addMenuItem('reports_loan_bikelegal','Bike & Legal Reports');
+		$reports_sub_menu->addMenuItem('reports_share_sharereports','Share Reports');
 		// $reports_sub_menu->addMenuItem('reports_search','Search Accounts');
 		$reports->js('click',$reports_sub_menu_popover->showJS());
 		
@@ -88,6 +89,7 @@ class Menu_Base extends Menu {
 			$admin_sub_menus->addMenuItem('log','Log Check');
 			$admin_sub_menus->addMenuItem('closingnew','Closing');
 			$admin_sub_menus->addMenuItem('contentmanagement','Content Management');
+			$admin_sub_menus->addMenuItem('share_management','Share Management');
 			$admin->js('click',$admin_sub_menus_popover->showJS());
 		}
 
@@ -129,6 +131,7 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_bankwithdrawl','Cash Bank Withdrawl');
 		$transactions_sub_menus->addMenuItem('transactions_premature','Pre Mature Payments');
 		$transactions_sub_menus->addMenuItem('transactions_salaryandallowances','Salary & Allowances');
+		$transactions_sub_menus->addMenuItem('transactions_sharetransactions','Share Transactions');
 		$transaction->js('click',$transactions_sub_menus_popover->showJS());
 		
 		// $books_sub_menus = $books_sub_menus_popover->add('Menu_Vertical');

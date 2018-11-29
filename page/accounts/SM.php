@@ -23,8 +23,9 @@ class page_accounts_SM extends Page {
 			try {
 				$crud->api->db->beginTransaction();
 			    $Default_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $Default_account_model->getNewAccountNumber() ,$form->getAllFields(),$form);
-			    $Default_account_model->deposit($form['Amount'],$narration='Share Account Opened for member '. $form['member'],$form['debit_account']?[ [ $form['debit_account']=>$form['Amount'] ] ]:null,$form,$transaction_date=null,$in_branch=null);
+			    $Default_account_model->deposit($form['Amount'],$narration='Share Account Opened for member '. $form['member'],$form['debit_account']?[ [ $form['debit_account']=>$form['Amount'] ] ]:null,$form,$transaction_date=null,$in_branch=null);			    
 			    $crud->api->db->commit();
+			} catch(Exception_ValidityCheck $e){
 			} catch (Exception $e) {
 			   	$crud->api->db->rollBack();
 			   	throw $e;

@@ -44,6 +44,13 @@ class Model_Account_Recurring extends Model_Account{
 		}
 		
 		if(isset($otherValues['initial_opening_amount']) and $otherValues['initial_opening_amount']){
+
+			if($otherValues['debit_account']){
+				$credit_balance = $this->add('Model_Account',['with_balance_cr'=>true])->setActualFields(['balance_cr'])->loadBy('AccountNumber',$otherValues['debit_account'])->get('balance_cr');
+				if($credit_balance < $otherValues['initial_opening_amount']) throw $this->exception('Insufficient Amount, Current Balance Cr.'. $credit_balance,'ValidityCheck')->setField('initial_opening_amount');
+			}
+			
+
 			$this->deposit($otherValues['initial_opening_amount'],null,$otherValues['debit_account']?[ [ $otherValues['debit_account']=>$otherValues['initial_opening_amount'] ] ]:null,null, $on_date);
 
 			$member=$this->add('Model_Member')->load($member_id);

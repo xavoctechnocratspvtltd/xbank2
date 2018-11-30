@@ -41,16 +41,7 @@ class page_reports_member_smaudit extends Page {
 		// $this->grid->setModel($this->member,['name','sm_accounts']);
 		// $this->grid->addPaginator(10);
 		$this->grid->destroy();
-		$sm_accounts = $this->add('Model_Account_SM',['with_balance_cr'=>true]);
-
-		$sm_accounts->addExpression('balance_dr')->set(function($m,$q){
-			return $q->expr('(IFNULL([0],0)+IFNULL([1],0))-(IFNULL([2],0)+IFNULL([3],0))',[
-				$q->getField('OpeningBalanceDr'),
-				$m->getElement('tra_dr'),
-				$q->getField('OpeningBalanceCr'),
-				$m->getElement('tra_cr')
-			]);
-		})->sortable(true);
+		$sm_accounts = $this->add('Model_Account_SM',['with_balance_dr'=>true]);
 
 		$sm_accounts->addCondition('balance_dr',0);
 		// $sm_accounts->addCondition('tra_dr',0);

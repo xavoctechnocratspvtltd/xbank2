@@ -173,6 +173,14 @@ class page_transactions_deposit extends Page {
 
 			$type = $account_model_temp->ref('scheme_id')->get('SchemeType');
 			if($type=='DDS') $type = $account_model_temp->ref('scheme_id')->get('type');
+
+			// IF LOAN CHECK FOR LEAGAL
+			$ifLoan = ($type=="Loan");
+			$is_in_legal = $account_model_temp['is_in_legal'];
+
+			if($ifLoan && $is_in_legal) $form->displayError('account','This account is in legal, cannot deposit');
+									
+			// IF SM 
 			$sm_account_deposited = ($account_model_temp['scheme_name']==CAPITAL_ACCOUNT_SCHEME);
 			$amount_not_in_multiple_of_100 = ($form['amount'] % RATE_PER_SHARE != 0);
 
@@ -182,6 +190,10 @@ class page_transactions_deposit extends Page {
 
 			if($sm_account_deposited && !$form['confirm_sm_account']){
 				$form->displayError('confirm_sm_account','Please confirm if you really want to deposit in SM Account, It will allot shares as well');
+			}
+
+			if(!$sm_account_deposited && $form['confirm_sm_account']){
+				$form->displayError('confirm_sm_account','Selected account is not SM account, please uncheck');
 			}
 
 			if($sm_account_deposited) $type="SM";			

@@ -260,8 +260,8 @@ define('ABSENT',   'A');
 //define('TEMP_HID_FIELD',    'PostingMode');
 
 define('RATE_PER_SHARE',        100);
-define('BUYBACK_LOCKING_MONTHS',12);
-define('TRANSFER_LOCKING_MONTHS',12);
+define('BUYBACK_LOCKING_MONTHS',36);
+define('TRANSFER_LOCKING_MONTHS',36);
 
 define('TDS_PERCENTAGE_WITHOUT_PAN',   '20');
 define('TDS_PERCENTAGE_WITH_PAN',   '5');

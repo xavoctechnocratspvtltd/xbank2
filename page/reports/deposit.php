@@ -21,5 +21,6 @@ class page_reports_deposit extends Page {
 		$tab1=$tabs->addTabURL('reports_deposit_commission','Branch Commission Report');
 		$tab1=$tabs->addTabURL('reports_deposit_fundsflow','Funds Flow Report');
 		$tab1=$tabs->addTabURL('reports_deposit_comparativebusiness','Comparative Business Report');
+		$tab1=$tabs->addTabURL('reports_deposit_nonactiverdaccountholders','Non Active RD Holders');
 	}
 }

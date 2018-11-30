@@ -41,6 +41,10 @@ class page_transactions_sharetransactions extends Page {
 				$form->displayError('from_account','Insufficient Cr Balance :' . $cr_bal. ' Required '. $share_amount);
 			}
 
+			if($cr_bal == $share_amount ){
+				$form->displayError('from_account','Cannot transfer all shares, have to keep one minimum');
+			}
+
 			// TRA_SHARE_TRANSFER
 			$share_m = $this->add('Model_Share');
 			$ownership_check = $share_m->hasOwnership($shares,$from_account['member_id']);
@@ -70,6 +74,7 @@ class page_transactions_sharetransactions extends Page {
 		$from_field->setModel($sm_accounts);
 
 		$buyback_accounts = $this->add('Model_Account');
+		$buyback_accounts->addCondition('AccountNumber',$this->api->current_branch['Code'] .SP . CASH_ACCOUNT);
 
 		$to_field->setModel($buyback_accounts);
 
@@ -83,6 +88,10 @@ class page_transactions_sharetransactions extends Page {
 			$cr_bal = $bal['Cr']- $bal['Dr'];
 			if($cr_bal < $share_amount ){
 				$form->displayError('from_account','Insufficient Cr Balance :' . $cr_bal. ' Required '. $share_amount);
+			}
+
+			if($cr_bal == $share_amount ){
+				$form->displayError('from_account','Cannot transfer all shares, have to keep one minimum');
 			}
 
 			// TRA_SHARE_TRANSFER

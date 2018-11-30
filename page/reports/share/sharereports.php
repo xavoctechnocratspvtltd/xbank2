@@ -13,7 +13,7 @@ class page_reports_share_sharereports extends Page {
 
 		$g = $share_list_tab->add('Grid');
 		$g->setModel('Share')->setOrder('current_member_id');
-		$g->addPaginator(50);
+		$g->addPaginator(200);
 
 		$g->add('VirtualPage')->addColumn('share_history','Share History')->set(function($p){
 			$grid = $p->add('Grid');

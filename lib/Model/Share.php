@@ -112,13 +112,13 @@ class Model_Share extends Model_Table {
 	function isTransferable($share_no){
 		$m = $this->add('Model_Share')->loadBy('no',$share_no);
 		// if set forced transfer or buyback as status
-		$status_ok = (in_array($m['status'],['Available','AllowTransfer','AllowBuyBack']));
+		$status_ok = (in_array($m['status'],['Issued','Available','AllowTransfer','AllowBuyBack']));
 		// if not under locking period
 		$buybacklocking_ok = strtotime($this->app->now) > strtotime($this->app->addDateDuration($m['buyback_locking_months'].' Months',$m['recent_from_date']));
 		$transferlocking_ok = strtotime($this->app->now) > strtotime($this->app->addDateDuration($m['transfer_locking_months'].' Months',$m['recent_from_date']));
 		
 		// no liability
-		$liability_ok = true;
+		$liability_ok = $this->add('Model_Active_Account_Loan')->addCondition('member_id',$m['current_member_id'])->count()->getOne() == 0;
 
 		$force_Allow = (in_array($m['status'], ['AllowTransfer','AllowBuyBack']));
 
@@ -137,11 +137,12 @@ class Model_Share extends Model_Table {
 		return $this['status'] =='Available';
 	}
 
-	function transferOwnerShip($share_nos=[],$to_member_id){
+	function transferOwnerShip($shares_array=[],$to_member_id){
+		$shares_array = $this->convertShareArray($shares_array);
 		try{
 			$this->api->db->beginTransaction();
-			foreach ($share_nos as $sno) {
-				if(!$this->isTransferable($sno)) throw new \Exception("Share no ". $sno.' is non transferrable', 1);
+			foreach ($shares_array as $sno) {
+				if(!$this->isTransferable($sno)) throw new \Exception("Share no ". $sno.' is non transferrable, Check Status, Lock Period or Loan Account for member', 1);
 				$m = $this->add('Model_Share')->loadBy('no',$sno);
 				if($m->isAvalibale()) throw new Exception("Share is available, issue it, not transfer - ".$sno, 1);
 				$m['current_member_id'] = $to_member_id;
@@ -156,6 +157,7 @@ class Model_Share extends Model_Table {
 	}
 
 	function markAvailable($shares_array){
+		$shares_array = $this->convertShareArray($shares_array);
 		$model = $this->add('Model_Share')->addCondition('no',$shares_array);
 		foreach ($model as $shares) {
 			$shares['current_member_id'] = null;
@@ -165,36 +167,52 @@ class Model_Share extends Model_Table {
 	}
 
 	function transfer($from_sm_account, $to_sm_account, $shares_array){
-		$share_amount = count($shares_array) * RATE_PER_SHARE ;
+		try{
+			$this->api->db->beginTransaction();
+			$shares_array = $this->convertShareArray($shares_array);
+			$share_amount = count($shares_array) * RATE_PER_SHARE ;
 		
-	
-		$narration = 'Share Transferred of Rs '.$share_amount.' from '. $from_sm_account['AccountNumber']. ' to '. $to_sm_account['AccountNumber']. ' ['.implode(",", $shares_array).']';
-		$transaction = $this->add('Model_Transaction');
-		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_SHARE_TRANSFER,$from_sm_account->ref('branch_id'),$this->app->now,$narration);
-		
-		$transaction->addDebitAccount($from_sm_account,$share_amount);
-		$transaction->addCreditAccount($to_sm_account,$share_amount);
+			$narration = 'Share Transferred of Rs '.$share_amount.' from '. $from_sm_account['AccountNumber']. ' to '. $to_sm_account['AccountNumber']. ' ['.implode(",", $shares_array).']';
+			$transaction = $this->add('Model_Transaction');
+			// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
+			$transaction->createNewTransaction(TRA_SHARE_TRANSFER,$from_sm_account->ref('branch_id'),$this->app->now,$narration);
+			
+			$transaction->addDebitAccount($from_sm_account,$share_amount);
+			$transaction->addCreditAccount($to_sm_account,$share_amount);
 
-		$transaction->execute();
+			$transaction->execute();
 
-		$this->transferOwnerShip($shares_array,$to_sm_account['member_id']);
+			$this->transferOwnerShip($shares_array,$to_sm_account['member_id']);
+			$this->api->db->commit();
+		}catch(Exception $e){
+			$this->api->db->rollback();
+			throw $e;
+		}
 	}
 
 	function buyBack($from_sm_account,$to_account,$shares_array){
-		$share_amount = count($shares_array) * RATE_PER_SHARE ;
-		
-		$narration = 'Share Buy Backed of Rs '.$share_amount.' from '. $from_sm_account['AccountNumber']. ' to '. $to_account['AccountNumber']. ' ['.implode(",", $shares_array).']';
-		$transaction = $this->add('Model_Transaction');
-		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_SHARE_BUYBACK,$from_sm_account->ref('branch_id'),$this->app->now,$narration);
-		
-		$transaction->addDebitAccount($from_sm_account,$share_amount);
-		$transaction->addCreditAccount($to_account,$share_amount);
+		try{
+			$this->api->db->beginTransaction();
+			$shares_array = $this->convertShareArray($shares_array);
 
-		$transaction->execute();
+			$share_amount = count($shares_array) * RATE_PER_SHARE ;
+			
+			$narration = 'Share Buy Backed of Rs '.$share_amount.' from '. $from_sm_account['AccountNumber']. ' to '. $to_account['AccountNumber']. ' ['.implode(",", $shares_array).']';
+			$transaction = $this->add('Model_Transaction');
+			// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
+			$transaction->createNewTransaction(TRA_SHARE_BUYBACK,$from_sm_account->ref('branch_id'),$this->app->now,$narration);
+			
+			$transaction->addDebitAccount($from_sm_account,$share_amount);
+			$transaction->addCreditAccount($to_account,$share_amount);
 
-		$this->markAvailable($shares_array);
+			$transaction->execute();
+
+			$this->markAvailable($shares_array);
+			$this->api->db->commit();
+		}catch(Exception $e){
+			$this->api->db->rollback();
+			throw $e;
+		}
 	}
 
 
@@ -207,6 +225,7 @@ class Model_Share extends Model_Table {
 	}
 
 	function hasOwnership($shares_array,$member_id){
+		$shares_array = $this->convertShareArray($shares_array);
 		if(!is_array($shares_array) OR count($shares_array)==0){
 			throw new \Exception("Share array must be an array of atleast one element", 1);			
 		}
@@ -221,6 +240,25 @@ class Model_Share extends Model_Table {
 		if(count($not_owned)==0)
 			return true;
 		return $not_owned;
+	}
+
+	function convertShareArray($shares_array){
+		$final_array=[];
+		foreach ($shares_array as $sa) {
+			if(strpos($sa, '-')){
+				$range = array_map('trim', explode("-", $sa));
+				if(count($range) !=2) throw new Exception("Range must be in format 'start-end'", 1);
+				if($range[0] > $range[1]) throw new Exception("Range start must be lower than end", 1);
+				for ($i=$range[0]; $i <= $range[1]; $i++) { 
+					$final_array[] = $i;
+				}
+				
+			}else{
+				$final_array[] = (int)$sa;
+			}
+		}
+
+		return array_unique($final_array);
 	}
 
 }

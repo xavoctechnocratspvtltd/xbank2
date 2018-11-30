@@ -4,6 +4,8 @@ class Model_Account extends Model_Table {
 	var $table= "accounts";
 	public $scheme_join=null;
 	public $allow_any_name = false;
+
+	public $with_balance_cr=false;
 	
 	function init(){
 		parent::init();
@@ -192,8 +194,37 @@ class Model_Account extends Model_Table {
 		$this->addHook('beforeDelete',array($this,'defaultBeforeDelete'));
 		$this->addHook('editing',array($this,'editing_default'));
 
-
+		if($this->with_balance_cr)
+			$this->addBalanceExpressions();
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function addBalanceExpressions(){
+		$account = $this;
+		$account->addExpression('tra_cr')->set(function($m,$q){
+			return $this->add('Model_TransactionRow')
+						->addCondition('account_id',$q->getField('id'))
+						->addCondition('amountCr','>',0)
+						->sum('amountCr')
+						;
+		});
+
+		$account->addExpression('tra_dr')->set(function($m,$q){
+			return $this->add('Model_TransactionRow')
+						->addCondition('account_id',$q->getField('id'))
+						->addCondition('amountDr','>',0)
+						->sum('amountDr')
+						;
+		});
+
+		$account->addExpression('balance_cr')->set(function($m,$q){
+			return $q->expr('(IFNULL([0],0)+IFNULL([1],0))-(IFNULL([2],0)+IFNULL([3],0))',[
+				$q->getField('OpeningBalanceCr'),
+				$m->getElement('tra_cr'),
+				$q->getField('OpeningBalanceDr'),
+				$m->getElement('tra_dr')
+			]);
+		})->sortable(true);
 	}
 
 	function updateTransactionRows(){

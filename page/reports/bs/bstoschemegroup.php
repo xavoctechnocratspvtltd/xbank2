@@ -130,9 +130,9 @@ class page_reports_bs_bstoschemegroup extends Page{
 
 		// $grid->addTotals(['ClosingBalanceDr','ClosingBalanceCr']);
         if($branch_id)
-        	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Groups And Ledger',[$this->api->url('reports_bs_schemegrouptoaccounts'),'scheme_group'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
+        	$this->js('click',$this->js()->_selector('.xepan-accounts-bs-subgroup')->addClass('addedevent'))->_selector('.xepan-accounts-bs-subgroup:not(.addedevent)')->univ()->frameURL('Groups And Ledger',[$this->api->url('reports_bs_schemegrouptoaccounts'),'scheme_group'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
 		else
-        	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Groups And Ledger',[$this->api->url('reports_bs_schemegrouptoaccounts'),'scheme_group'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
+        	$this->js('click',$this->js()->_selector('.xepan-accounts-bs-subgroup')->addClass('addedevent'))->_selector('.xepan-accounts-bs-subgroup:not(.addedevent)')->univ()->frameURL('Groups And Ledger',[$this->api->url('reports_bs_schemegrouptoaccounts'),'scheme_group'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date]);
 	}
 
 	function defaultTemplate(){

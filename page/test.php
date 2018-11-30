@@ -63,6 +63,8 @@ class page_test  extends Page {
 
 		$btn = $this->add('Button')->set("Allot Share");
 		$btn->on('click',$this->js()->univ()->frameURL($this->vp->getURL()));
+		
+		$safe_app_now = $this->app->now;
 
 		$this->vp->set(function($page)use($account){
 			$page->add('View_Console')->set(function($c)use($account){
@@ -80,6 +82,7 @@ class page_test  extends Page {
 						continue;
 					}
 					$sm = $this->add('Model_Share');
+					$this->app->now = $acc['created_at'];
 					$sm->createNew($no_of_shares,$acc['member_id']);
 					
 					if( ((int)($i/$total*100)) > $per ){

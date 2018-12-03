@@ -308,7 +308,7 @@ class page_reports_societyandlegalnotice extends Page {
 					$account_model->addExpression('include')->set(function($m,$q){
 						return $q->expr(
 							'IF(
-								[created_at]>="2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= "[last_premium_value_3_month]" AND [last_paid_date_field] < "[last_paid_date_value_3_month]" AND ([legal_notice_sent_on] < "[today_minus_120_days]" OR [legal_notice_sent_on] is null) AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
+								[created_at]>="2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= "[last_premium_value_3_month]" AND ([legal_notice_sent_on] < "[today_minus_120_days]" OR [legal_notice_sent_on] is null) AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
 								1,
 								IF(
 									[created_at]<"2018-04-01" AND [due_premium_count] = 4 AND [last_premium_field] >= "[last_premium_value_4_month]" AND ([legal_notice_sent_on] < "[today_minus_180_days]" OR [legal_notice_sent_on] is null) AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,

@@ -16,7 +16,7 @@ class Model_Member extends Model_Table {
 
 		$this->addField('username');
 		$this->addField('password');
-		$this->addField('CurrentAddress')->type('text')->mandatory(true);
+		$this->addField('CurrentAddress')->type('text');
 		$this->addField('landmark');
 		$this->addField('tehsil');
 		$this->addField('district');
@@ -142,6 +142,7 @@ class Model_Member extends Model_Table {
 								->getOne() + 1);
 		}
 
+		if(!$this['CurrentAddress']) $this['CurrentAddress']= 'Landmark: '.$this['landmark'].', Tehsil: '. $this['tehsil'].', City: '. $this['city']. ', District: '. $this['district']. ', State: ' . $this['state']. ', Pin Code: '.$this['pin_code'];
 		if(!$this['PermanentAddress']) $this['PermanentAddress']= $this['CurrentAddress'];
 
 		// if(!$this['title'])

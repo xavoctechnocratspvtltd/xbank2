@@ -276,7 +276,7 @@ class page_reports_societyandlegalnotice extends Page {
 								[created_at]>="2018-04-01" AND [due_premium_count] = 1 AND [last_premium_field] >= "[last_premium_value_1_month]" AND [last_paid_date_field] < "[last_paid_date_value_1_month]" AND [paid_premium_count] <= [paid_premium_count_value] AND ([society_notice_sent_on] < "[today_minus_30_days]" OR [society_notice_sent_on] is null) AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
 								1,
 								IF(
-									[created_at]<"2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= "[last_premium_value_3_month]" AND [last_paid_date_field] < "[last_paid_date_value_3_month]" AND ([society_notice_sent_on] < "[today_minus_60_days]" OR [society_notice_sent_on] is null) AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
+									[created_at]<"2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= "[last_premium_value_3_month]" AND ([society_notice_sent_on] < "[today_minus_60_days]" OR [society_notice_sent_on] is null) AND  [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
 									1,
 									0
 								)
@@ -311,7 +311,7 @@ class page_reports_societyandlegalnotice extends Page {
 								[created_at]>="2018-04-01" AND [due_premium_count] = 3 AND [last_premium_field] >= "[last_premium_value_3_month]" AND [last_paid_date_field] < "[last_paid_date_value_3_month]" AND ([legal_notice_sent_on] < "[today_minus_120_days]" OR [legal_notice_sent_on] is null) AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
 								1,
 								IF(
-									[created_at]<"2018-04-01" AND [due_premium_count] = 4 AND [last_premium_field] >= "[last_premium_value_4_month]" AND [last_paid_date_field] < "[last_paid_date_value_4_month]" AND ([legal_notice_sent_on] < "[today_minus_180_days]" OR [legal_notice_sent_on] is null) AND [recent_due_premium_date] <= "[today_minus_15_days]" AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
+									[created_at]<"2018-04-01" AND [due_premium_count] = 4 AND [last_premium_field] >= "[last_premium_value_4_month]" AND ([legal_notice_sent_on] < "[today_minus_180_days]" OR [legal_notice_sent_on] is null) AND [bike_surrendered]=0 AND [is_given_for_legal_process]=0,
 									1,
 									0
 								)
@@ -338,50 +338,6 @@ class page_reports_societyandlegalnotice extends Page {
 						);
 					})->type('boolean');
 				break;
-			}
-
-			switch ($_GET['report_type']) {
-				
-				case 'one_month':
-					$account_model->addCondition('due_premium_count',1);
-					// $account_model->addCondition('due_premium_count','<=',2);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -1 MONTH"));
-					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -1 MONTH"));
-					break;
-				case 'two_month':
-					$account_model->addCondition('due_premium_count',2);
-					// $account_model->addCondition('due_premium_count','<=',2);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -2 MONTH"));
-					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -2 MONTH"));
-					break;
-				case 'three_month':
-					$account_model->addCondition('due_premium_count',3);
-					// $account_model->addCondition('due_premium_count','<=',4);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -3 MONTH"));
-					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -3 MONTH"));
-					break;
-				case 'four_month':
-					$account_model->addCondition('due_premium_count',4);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -4 MONTH"));
-					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -4 MONTH"));
-					break;
-
-				case 'five_month':
-					$account_model->addCondition('due_premium_count',5);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -5 MONTH"));
-					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -5 MONTH"));
-					// $account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$till_date)));
-					break;
-				case 'five_above':
-					$account_model->addCondition('due_premium_count','>',5);
-					$account_model->addCondition('last_premium','>=',$this->api->previousMonth($this->api->today. " -5 MONTH"));
-					$account_model->addCondition('last_paid_date','<',$this->api->previousMonth($this->api->today. " -5 MONTH"));
-					// $account_model->addCondition($account_model->dsql()->expr('[0] < "[1]"',array($account_model->getElement('last_premium'),$till_date)));
-					break;
-				
-				default:
-					# code...
-					break;
 			}
 
 			switch ($_GET['loan_type']) {

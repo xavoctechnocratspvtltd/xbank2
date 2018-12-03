@@ -229,7 +229,7 @@ class Model_Account extends Model_Table {
 			})->sortable(true);
 		}
 
-		if($this->with_balance_dr){
+		if($this->with_balance_dr){			
 			$account->addExpression('balance_dr')->set(function($m,$q){
 				return $q->expr('(IFNULL([0],0)+IFNULL([1],0))-(IFNULL([2],0)+IFNULL([3],0))',[
 					$q->getField('OpeningBalanceDr'),

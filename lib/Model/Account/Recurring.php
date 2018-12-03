@@ -46,10 +46,18 @@ class Model_Account_Recurring extends Model_Account{
 		if(isset($otherValues['initial_opening_amount']) and $otherValues['initial_opening_amount']){
 
 			if($otherValues['debit_account']){
-				$credit_balance = $this->add('Model_Account',['with_balance_cr'=>true])->setActualFields(['balance_cr'])->loadBy('AccountNumber',$otherValues['debit_account'])->get('balance_cr');
-				if($credit_balance < $otherValues['initial_opening_amount']) throw $this->exception('Insufficient Amount, Current Balance Cr.'. $credit_balance,'ValidityCheck')->setField('initial_opening_amount');
-			}
-			
+				$db_acc = $this->add('Model_Account',['with_balance_cr'=>true,'with_balance_dr'=>true])->setActualFields(['balance_cr','balance_dr'])->loadBy('AccountNumber',$form['debit_account']);
+				$credit_balance = $db_acc['balance_cr'];
+				$debit_balance = $db_acc['balance_dr'];	
+				$compare_with = $otherValues['initial_opening_amount'];
+				$error_field='initial_opening_amount';
+
+				if(in_array($db_acc->ref('scheme_id')->get('name'),[BANK_ACCOUNTS_SCHEME,BANK_OD_SCHEME])){
+					if($debit_balance < $compare_with) throw $this->exception('Insufficient Amount, Current Balance Dr.'. $debit_balance,'ValidityCheck')->setField($error_field);
+				}else{
+					if($credit_balance < $compare_with) throw $this->exception('Insufficient Amount, Current Balance Cr.'. $credit_balance,'ValidityCheck')->setField($error_field);
+				}
+			}			
 
 			$this->deposit($otherValues['initial_opening_amount'],null,$otherValues['debit_account']?[ [ $otherValues['debit_account']=>$otherValues['initial_opening_amount'] ] ]:null,null, $on_date);
 

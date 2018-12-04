@@ -8,7 +8,7 @@ class page_reports_bs_bstoschemegroup extends Page{
 		$bs_id = $this->api->stickyGET('_id');
 		$from_date = $this->api->stickyGET('from_date');
 		$to_date = $this->api->stickyGET('to_date');
-		$branch_id = $this->api->stickyGET('branch_id');
+		$branch_id = $this->api->stickyGET('branch_id');		
 
 		$op_balances_q='select s.SchemeGroup id, sum(IFNULL(OpeningBalanceDr,0)) DR, sum(IFNULL(OpeningBalanceCr,0)) CR
 						from accounts a

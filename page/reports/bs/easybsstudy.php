@@ -18,13 +18,13 @@ class page_reports_bs_easybsstudy extends Page {
 			$view->add('page_reports_bs_bstoschemegroup');
 		}
 
-		if($form->isSubmitted()){
+		if($form->isSubmitted()){			
 			$view->js()->reload(
 				[
 					'_id'=>$form['balance_sheet_heads'],
 					'from_date'=>$form['from_date'],
 					'to_date'=>$form['to_date'],
-					'branch_id'=>($this->app->current_branch->id == 1 ? null:$this->app->current_branch->id)
+					'branch_id'=>($this->app->current_branch->id == 1 ? 0:$this->app->current_branch->id)
 				])->execute();
 		}
 	}

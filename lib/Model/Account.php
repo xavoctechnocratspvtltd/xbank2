@@ -28,7 +28,7 @@ class Model_Account extends Model_Table {
 		
 		$this->hasOne('Mo','mo_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue(0);
 		$this->hasOne('Team','team_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue(0);
-		// $this->hasOne('TeleCaller','telecaller_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue(0);
+		$this->hasOne('TeleCaller','telecaller_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue(0);
 		// $this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));		
 		
 		//New Fields added//
@@ -318,6 +318,41 @@ class Model_Account extends Model_Table {
 			}
 			
   		}
+
+
+  		// update telecaller history if telecaller_id is changed
+		if($this->isDirty('telecaller_id')){
+
+			$current_telecaller_id = $this['telecaller_id'];
+
+			if($this->loaded()){
+				$old_telecaller = $this->add('Model_Account')->setActualFields(['telecaller_id'])->load($this->id);
+				// update _to_date of last mo assocition
+				if($current_telecaller_id != $old_telecaller['telecaller_id']){
+					$asso = $this->add('Model_TeleCallerAccountHistory');
+					$asso->addCondition('account_id',$this->id);
+					$asso->addCondition('telecaller_id',$old_telecaller['telecaller_id']);
+					$asso->addCondition('from_date','<>',null);
+					$asso->addCondition('final_to_date',null);
+					$asso->tryLoadAny();
+					if($asso->loaded()){
+						$asso['final_to_date'] = $this->app->now;
+						$asso->saveAndUnload();
+					}
+				}
+			}
+
+			// new telecaller history entry
+			if($current_telecaller_id){
+				$this->addHook('afterSave',function($m)use($current_telecaller_id){
+					$new_asso = $this->add('Model_TeleCallerAccountHistory');
+					$new_asso['account_id'] = $m->id;
+					$new_asso['telecaller_id'] = $current_telecaller_id;
+					$new_asso['from_date'] = $m->app->now;
+					$new_asso->save();
+				});
+			}
+		}
 
 		if($this->loaded() and $this->dirty['AccountNumber']){
 			$old_acc = $this->newInstance()->load($this->id);

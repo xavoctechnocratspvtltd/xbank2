@@ -75,7 +75,7 @@ class Menu_Base extends Menu {
 			$admin_sub_menus->addMenuItem('staff_main','Staff');
 			$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
 			$admin_sub_menus->addMenuItem('branches','Branches');
-			$admin_sub_menus->addMenuItem('mos','Mos/Ros');
+			$admin_sub_menus->addMenuItem('mos','Mos/Ros/TeleCallers');
 			$admin_sub_menus->addMenuItem('team','Teams');
 			$admin_sub_menus->addMenuItem('balancesheet','Top Heads');
 			$admin_sub_menus->addMenuItem('accounts_locking','Lock & Unlock Accounts');

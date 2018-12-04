@@ -22,6 +22,10 @@ class page_share_management extends Page {
 
 		$his_crud = $crud->addRef('ShareHistory');
 
+		// if($his_crud){
+		// 	$his_crud->getModel()->debug();
+		// }
+
 	}
 
 	function page_certificate(){
@@ -32,5 +36,7 @@ class page_share_management extends Page {
 		$crud->setModel($model);
 
 		$crud->grid->addPaginator(200);
+		$crud->grid->addQuickSearch(['name']);
+		$his_crud = $crud->addRef('Share');
 	}
 }

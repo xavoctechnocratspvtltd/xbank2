@@ -16,7 +16,8 @@ class Model_Share extends Model_Table {
 		$this->addField('status')->enum(['Available','Reserved','Issued','AllowBuyBack','AllowTransfer'])->defaultValue('Available');
 
 		$this->addExpression('recent_from_date')->set(function($m,$q){
-			return $m->refSQL('ShareHistory')->setLimit(1)->setOrder('id','desc')->fieldQuery('from_date');
+			$his_m = $this->add('Model_ShareHistory',['rfd']);
+			return $his_m->addCondition('share_id',$q->getField('id'))->setLimit(1)->setOrder('id','desc')->fieldQuery('from_date');
 		})->sortable(true);
 
 		$this->addExpression('member_sm_account')->set(function($m,$q){
@@ -229,9 +230,10 @@ class Model_Share extends Model_Table {
 		if(!is_array($shares_array)) throw new \Exception("Shares Array must be an array", 1);
 		
 		$m=$this->add('Model_Share');
-		$m->addCondition('no',$shares_array);
+		$m->addCondition('no',$shares_array);		
 
 		$certificates = array_column($m->getRows(), 'share_certificate');
+		$certificates = array_unique($certificates);
 		return $certificates;
 	}
 

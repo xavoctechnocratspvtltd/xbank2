@@ -97,11 +97,11 @@ class page_members extends Page {
 
 
 			
-			if(!$form['FilledForm60'] and !$form['PanNo'])
-				$form->displayError('PanNo','PanNo is must');
+			// if(!$form['FilledForm60'] and !$form['PanNo'])
+			// 	$form->displayError('PanNo','PanNo is must');
 			
-			if(!$form['FilledForm60'] && !$this->isPanValid($form['PanNo'])){
-				$form->displayError('PanNo','Pan Card does not looks valid');
+			if(!$this->isPanValid($form['PanNo']) || $this->isPanExists($form['PanNo']) ){
+				$form->displayError('PanNo','Pan Card does not looks valid, or already used');
 			}
 
 			if(!$this->isAadharValid($form['AdharNumber'])){
@@ -239,6 +239,10 @@ class page_members extends Page {
 		}
 
 		$crud->add('Controller_Acl');
+	}
+
+	function isPanExists($value){
+		return $this->add('Model_Member')->tryLoadBy('PanNo',$value)->count()->getOne();
 	}
 
 	function isPanValid($value){

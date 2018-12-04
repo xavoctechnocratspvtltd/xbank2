@@ -100,7 +100,7 @@ class page_members extends Page {
 			// if(!$form['FilledForm60'] and !$form['PanNo'])
 			// 	$form->displayError('PanNo','PanNo is must');
 			
-			if(!$this->isPanValid($form['PanNo']) || $this->isPanExists($form['PanNo']) ){
+			if($form['PanNo'] && (!$this->isPanValid($form['PanNo']) || $this->isPanExists($form['PanNo'])) ){
 				$form->displayError('PanNo','Pan Card does not looks valid, or already used');
 			}
 

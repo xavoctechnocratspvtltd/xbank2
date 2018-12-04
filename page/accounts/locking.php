@@ -20,8 +20,9 @@ class page_accounts_locking extends Page {
 			$accounts->addCondition('id',-1);
 
 		if($_GET['swap_locking_status']){
+			if(!$_GET['value']) throw new Exception("Specify reason when changing lock status", 1);
 			$accounts->load($_GET['swap_locking_status']);
-			$accounts->swapLockingStatus();
+			$accounts->swapLockingStatus($_GET['value']);
 			$grid->js()->reload()->execute();
 		}
 
@@ -38,9 +39,9 @@ class page_accounts_locking extends Page {
 			$grid->js()->reload()->execute();
 		}
 
-		$grid->setModel($accounts,array('AccountNumber','branch','staff','member','LockingStatus','ActiveStatus','MaturedStatus'));
+		$grid->setModel($accounts,array('AccountNumber','branch','staff','member','LockingStatus','lock_status_changed_reason','ActiveStatus','MaturedStatus'));
 		$grid->addPaginator(10);
-		$grid->addColumn('button','swap_locking_status');
+		$grid->addColumn('Prompt','swap_locking_status');
 		$grid->addColumn('button','swap_active_status');
 		$grid->addColumn('button','swap_matured_status');
 

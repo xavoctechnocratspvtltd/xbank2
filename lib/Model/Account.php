@@ -127,6 +127,8 @@ class Model_Account extends Model_Table {
 		$this->addField('is_dirty')->type('boolean')->system(true)->defaultValue(false);
 		$this->addField('new_or_renew')->enum(['New','ReNew'])->defaultValue('New');
 		
+		$this->addField('lock_status_changed_reason');
+		
 		$this->addField('extra_info')->type('text')->system(true); // Put json style extra info in this field
 
 		$this->scheme_join = $this->leftJoin('schemes','scheme_id');
@@ -1194,8 +1196,9 @@ class Model_Account extends Model_Table {
 		$this->save();
 	}
 
-	function swapLockingStatus(){
+	function swapLockingStatus($value){
 		$this['LockingStatus']=!$this['LockingStatus'];
+		$this['lock_status_changed_reason'] = $value;
 		$this->save();
 	}
 

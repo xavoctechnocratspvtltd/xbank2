@@ -28,6 +28,7 @@ class Model_Account extends Model_Table {
 		
 		$this->hasOne('Mo','mo_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue(0);
 		$this->hasOne('Team','team_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue(0);
+		// $this->hasOne('TeleCaller','telecaller_id')->display(array('form'=>'autocomplete/Basic'))->defaultValue(0);
 		// $this->hasOne('Member','collector_id')->display(array('form'=>'autocomplete/Basic'));		
 		
 		//New Fields added//

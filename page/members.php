@@ -159,7 +159,10 @@ class page_members extends Page {
 			$member_model->getElement('password')->system(true);
 		}
 
-		$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active'];
+		$form_fields=null;
+		if($crud->isEditing()){
+			$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active'];
+		}
 		$crud->setModel($member_model,$form_fields);
 		$crud->add('Controller_DocumentsManager',array('doc_type'=>'MemberDocuments'));
 

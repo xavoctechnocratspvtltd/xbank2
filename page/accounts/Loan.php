@@ -159,7 +159,7 @@ class page_accounts_Loan extends Page {
 			// $account_loan_model->hook('editing');
 		}
 		
-		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','sm_amount','agent_id','repayment_mode','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id','doc_image_id','sig_image_id'),array('AccountNumber','created_at','member','scheme','Amount','agent','repayment_mode','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','LoanInsurranceDate','LoanAgainstAccount','dealer','doc_image','sig_image'));
+		$crud->setModel($account_loan_model,array('account_type','AccountNumber','member_id','scheme_id','Amount','sm_amount','agent_id','repayment_mode','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','loan_from_account_id','LoanInsurranceDate','LoanAgainstAccount_id','dealer_id','doc_image_id','sig_image_id'),array('AccountNumber','branch','created_at','member','scheme','Amount','agent','repayment_mode','ActiveStatus','gaurantor','gaurantorAddress','gaurantorPhNo','ModeOfOperation','LoanInsurranceDate','LoanAgainstAccount','dealer','doc_image','sig_image'));
 
 		if($crud->isEditing()){			//TODO 
 			$loan_against_account_field = $crud->form->getElement('LoanAgainstAccount_id');

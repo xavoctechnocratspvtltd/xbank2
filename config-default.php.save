@@ -1,7 +1,7 @@
 <?php
 
 $config['atk']['base_path']='./atk4/';
-$config['dsn']='mysql://root:winserver@127.0.0.1_bank';
+$config['dsn']='mysql://root:winserver@127.0.0.1/bhawani_xbank';
 
 $config['js']['versions']['jquery']='1.8.2.min';
 
@@ -13,6 +13,8 @@ define('FILE_WRITE_MODE', 0666);
 define('DIR_READ_MODE', 0755);
 define('DIR_WRITE_MODE', 0777);
 
+$config['enable_api']=true;
+$config['account_create_api_url']='http://epan.xepan-local.org/xepan2/api/v1/customer';
 
 $config['autocreator']=false;
 
@@ -112,7 +114,10 @@ define('TRA_JV_ENTRY',                          'Journal Voucher Entry');
 define('TRA_DEFAULT_ACCOUNT_DEPOSIT_ENTRY',             'Default Account Deposit Enrty');
 define('TRA_SM_ACCOUNT_DEPOSIT_ENTRY',             'Default SM Deposit Enrty');
 define('TRA_NEW_MEMBER_REGISTRATIO_AMOUNT',     'NewMemberRegistrationAmount');
-define('TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT',	'PenaltyAccountAmountDeposit');
+define('TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT',	'PenaltyAccountAmountDeposit'); // This is charge actually ... (Devendra sir ne bahut samay baad bataya ...)
+define('TRA_PENALTY_ACCOUNT_AMOUNT_CHARGE',	 'PenaltyAccountAmountDeposit'); // added just for next codes in case.. key is changed but value is same
+define('TRA_PENALTY_AMOUNT_RECEIVED',			'PenaltyAmountReceived');
+define('TRA_OTHER_AMOUNT_RECEIVED',	'OtherAmountReceived');
 define('TRA_FOR_CLOSE_ACCOUNT_AMOUNT_DEPOSIT',	'ForCloseAccountAmountDeposit');
 define('TRA_CC_ACCOUNT_AMOUNT_DEPOSIT',         'CCAccountAmountDeposit');
 define('TRA_CC_ACCOUNT_AMOUNT_WITHDRAWL',	'CCAccountAmountWithdrawl');
@@ -128,12 +133,43 @@ define('TRA_VISIT_CHARGE',  'VisitCharge');
 define('TRA_FORCLOSE_CHARGE',  'ForCloseTransaction');
 define('TRA_BANK_DEPOSIT',  'BANK DEPOSIT');
 define('TRA_BANK_WITHDRAWL',  'BANK WITHDRAWL');
+define('TRA_EXCESS_AMOUNT_REVERT',  'EXCESS AMOUNT REVERT');
+
+define('TRA_TDS_REVERT',  'TDS REVERT TRANSACTION');
+define('TRA_SALARY_AND_ALLOWENCES',  'Salary and Allowances Transaction');
+
+define('TRA_GODOWNCHARGE_DEBITED',  'GODOWN CHARGE DEBITED');
+define('TRA_LEGAL_NOTICE_SENT_FOR_BIKE_AUCTION',  'LEGAL NOTICE SENT FOR BIKE AUCTION');
+define('TRA_FINAL_RECOVERY_NOTICE_SENT',  'FINAL RECOVERY NOTICE SENT');
+define('TRA_CHEQUE_RETURNED',  'CHEQUE RETURNED');
+define('TRA_NOTICE_SENT_AFTER_CHEQUE_RETURNED',  'NOTICE SENT AFTER CHEQUE RETURNED');
+define('TRA_SOCIETY_NOTICE_SENT',  'SOCIETY NOTICE SENT');
+define('TRA_NOC_HANDLING_CHARGE_RECEIVED',  'NOC HANDLING CHARGE RECEIVED');
+define('TRA_LEGAL_NOTICE_SENT',  'LEGAL NOTICE SENT');
+define('TRA_SHARE_TRANSFER',  'SHARE TRANSFER');
+define('TRA_SHARE_BUYBACK',  'SHARE BUY BACK');
+
+define('RECOEVRY_ANY_LEGAL_CHARGES_ACCOUNT_TRA_ARRAY',[
+														'godowncharge_debited'=>['VECHICLE GODOWN RENT RECEIVED',TRA_GODOWNCHARGE_DEBITED],
+														'legal_notice_sent_for_bike_auction'=>['LEGAL NOTICE SENT FOR BIKE AUCTION CHARGE RECEIVED',TRA_LEGAL_NOTICE_SENT_FOR_BIKE_AUCTION],
+														'final_recovery_notice_sent'=>['FINAL RECOVERY NOTICE CHARGE RECEIVED',TRA_FINAL_RECOVERY_NOTICE_SENT],
+														'cheque_returned'=>['CHEQUE RETURN CHARGES RECEIVED',TRA_CHEQUE_RETURNED],
+														'notice_sent_after_cheque_returned'=>['CHEQUE RETURN NOTICE CHARGE RECEIVED',TRA_NOTICE_SENT_AFTER_CHEQUE_RETURNED],
+														'society_notice_sent'=>['SOCIETY NOTICE CHARGE RECEIVED',TRA_SOCIETY_NOTICE_SENT],
+														'noc_handling_charge_received'=>['NOC HANDLING CHARGE',TRA_NOC_HANDLING_CHARGE_RECEIVED],
+														'legal_notice_sent'=>['LEGAL NOTICE CHARGE RECEIVED',TRA_LEGAL_NOTICE_SENT],
+														'visit_done'=>['Visit Charge',TRA_VISIT_CHARGE],
+													]
+);
 
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')
 
-// define('ACCOUNT_TYPES',                         "DDS");
-define('ACCOUNT_TYPES',                         "DDS,Loan,CC,Default,FixedAndMis,SavingAndCurrent,Recurring");
+define('MEMBER_TYPES',                         "General,VIP,VVIP");
+
+// define('ACCOUNT_TYPES',                         "LOAN");
+// Keep Default in last as it reverts TDS ect that are not any product specific
+define('ACCOUNT_TYPES',                         "DDS,DDS2,Loan,CC,FixedAndMis,SavingAndCurrent,Recurring,Default");
 define('ACCOUNT_TYPE_DEFAULT',                  "Default");
 define('ACCOUNT_TYPE_BANK',                     "SavingAndCurrent");
 define('ACCOUNT_TYPE_SAVING',                     "SavingAndCurrent");
@@ -170,6 +206,8 @@ define('TRA_INTEREST_POSTING_IN_CC_ACCOUNT', 'InterestPostingsInCCAccounts');
 define('TRA_INTEREST_POSTING_IN_RECURRING',     'InterestPostingsInREcurringAccounts');
 define('TRA_INTEREST_POSTING_IN_DDS',     'InterestPostingsInDDSAccounts');
 define('TRA_INTEREST_POSTING_IN_LOAN',     'InterestPostingsInLoanAccounts');
+
+define('MANAGE_SURRENDER_HISTORY_FIELDS',['godowncharge_debited','legal_notice_sent_for_bike_auction','final_recovery_notice_sent','notice_sent_after_cheque_returned','society_notice_sent','visit_done','legal_notice_sent','noc_handling_charge_received_on']);
 
 
 define('FIELD_TEMP_PENALTY',                    'CurrentInterest');
@@ -222,7 +260,12 @@ define('ABSENT',   'A');
 //define('TEMP_HID_FIELD',    'PostingMode');
 
 define('RATE_PER_SHARE',        100);
-define('TDS_PERCENTAGE',   '10');
+define('BUYBACK_LOCKING_MONTHS',36);
+define('TRANSFER_LOCKING_MONTHS',36);
+
+define('TDS_PERCENTAGE_WITHOUT_PAN',   '20');
+define('TDS_PERCENTAGE_WITH_PAN',   '5');
+define('TDS_ON_COMMISSION',   '15000');
 // define('xBANKSCHEMEPATH', constant($xCICurrentExtension.'APPPATH')."controllers/xbankschemes");
 
 define('SET_COMMISSIONS_IN_MONTHLY',    false);

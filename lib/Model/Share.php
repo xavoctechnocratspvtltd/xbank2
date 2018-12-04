@@ -9,6 +9,7 @@ class Model_Share extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Member','current_member_id')->display(['form'=>'autocomplete/Basic'])->sortable(true);
+		$this->hasOne('ShareCertificate','share_certificate_id')->display(['form'=>'autocomplete/Basic'])->sortable(true);
 		$this->addField('no')->type('number')->sortable(true);
 		$this->addField('buyback_locking_months')->type('number')->defaultValue(BUYBACK_LOCKING_MONTHS);
 		$this->addField('transfer_locking_months')->type('number')->defaultValue(TRANSFER_LOCKING_MONTHS);
@@ -73,7 +74,7 @@ class Model_Share extends Model_Table {
 		}
 	}
 
-	function createNew($no_of_shares,$to_member_id=null,$start_no=null){
+	function createNew($no_of_shares,$to_member_id=null,$start_no=null,$allot_share_certificate=true){
 
 		try{
 		
@@ -102,6 +103,9 @@ class Model_Share extends Model_Table {
 
 				$start_no++;
 			}
+
+			$this->issueNewCertificates($to_member_id);
+
 			$this->api->db->commit();
 		}catch(Exception $e){
 			$this->api->db->rollback();
@@ -162,11 +166,12 @@ class Model_Share extends Model_Table {
 		foreach ($model as $shares) {
 			$shares['current_member_id'] = null;
 			$shares['status']='Available';
+			$shares['share_certificate_id']=null;
 			$shares->save();
 		}
 	}
 
-	function transfer($from_sm_account, $to_sm_account, $shares_array){
+	function transfer($from_sm_account, $to_sm_account, $shares_array, $submitted_certificates){
 		try{
 			$this->api->db->beginTransaction();
 			$shares_array = $this->convertShareArray($shares_array);
@@ -183,6 +188,9 @@ class Model_Share extends Model_Table {
 			$transaction->execute();
 
 			$this->transferOwnerShip($shares_array,$to_sm_account['member_id']);
+			$this->submitCertificates($submitted_certificates);
+			$this->issueNewCertificates($from_sm_account['member_id']);
+			$this->issueNewCertificates($to_sm_account['member_id']);
 			$this->api->db->commit();
 		}catch(Exception $e){
 			$this->api->db->rollback();
@@ -190,7 +198,7 @@ class Model_Share extends Model_Table {
 		}
 	}
 
-	function buyBack($from_sm_account,$to_account,$shares_array){
+	function buyBack($from_sm_account,$to_account,$shares_array, $submitted_certificates){
 		try{
 			$this->api->db->beginTransaction();
 			$shares_array = $this->convertShareArray($shares_array);
@@ -208,6 +216,8 @@ class Model_Share extends Model_Table {
 			$transaction->execute();
 
 			$this->markAvailable($shares_array);
+			$this->submitCertificates($submitted_certificates);
+			$this->issueNewCertificates($from_sm_account['member_id']);
 			$this->api->db->commit();
 		}catch(Exception $e){
 			$this->api->db->rollback();
@@ -215,13 +225,72 @@ class Model_Share extends Model_Table {
 		}
 	}
 
+	function getCertificates($shares_array){
+		if(!is_array($shares_array)) throw new \Exception("Shares Array must be an array", 1);
+		
+		$m=$this->add('Model_Share');
+		$m->addCondition('no',$shares_array);
 
+		$certificates = array_column($m->getRows(), 'share_certificate');
+		return $certificates;
+	}
 
 	function getOwnedShares($member_id){
 		$m=$this->add('Model_Share');
 		$m->addCondition('current_member_id',$member_id);
 		$owned_share_nos = array_column($m->getRows(),'no');
 		return $owned_share_nos;
+	}
+
+	function submitCertificates($submitted_certificates){
+		$shares = $this->add('Model_Share')
+			->addCondition('share_certificate',$submitted_certificates);
+
+		foreach ($shares as $sh) {
+			$sh['share_certificate_id'] = 0;
+			$sh->saveAndUnload();
+		}
+
+		$this->add('Model_ShareCertificate')
+			->addCondition('name',$submitted_certificates)
+			->_dsql()
+			->set('status','Submitted')
+			->update();
+	}
+
+	// LOGIC: 
+	// First we submit all certificates and marks share_certificates_id to null in all shares
+	// Now we have empty values for these share_certificate_id scattered, so
+	// just re issue A NE CERTIFICATE PER SHARES_LINE_IN_CERTIFICATE (4 in config now) shares
+	// also mark this new certificate to current history of share to maintain history of certificate also
+
+	function issueNewCertificates($member_id){
+		// SHARES_LINE_IN_CERTIFICATE : constant
+		$no_certificate_shares = $this->add('Model_Share');
+		$no_certificate_shares->addCondition('current_member_id',$member_id);
+		$no_certificate_shares->addCondition([['share_certificate_id',null],['share_certificate_id',0]]);
+		$no_certificate_shares->setOrder('no asc');
+
+		$shares_to_settle = $no_certificate_shares->count()->getOne();
+
+		$i=0;
+		$previous_no = 0;
+		$new_certificate = null;
+		foreach ($no_certificate_shares as $sh) {
+			if(!$new_certificate){
+				$new_certificate = $this->add('Model_ShareCertificate')->createNew();
+			}
+			$sh['share_certificate_id'] = $new_certificate->id;
+			$sh->currentHistoryEntry()->set('share_certificate_id',$new_certificate->id)->save();
+			$sh->saveAndUnload();
+			if($sh['no'] != ($previous_no+1)) {
+				$i++;
+				if($i % SHARES_LINE_IN_CERTIFICATE == 0){
+					$new_certificate = null;
+				}
+			}
+		}
+
 	}
 
 	function hasOwnership($shares_array,$member_id){
@@ -240,6 +309,14 @@ class Model_Share extends Model_Table {
 		if(count($not_owned)==0)
 			return true;
 		return $not_owned;
+	}
+	function currentHistoryEntry(){
+		return $this->ref('ShareHistory')
+					->setLimit(1)
+					->setOrder('from_date desc')
+					->addCondition('final_to_date',null)
+					->tryLoadAny()
+					;
 	}
 
 	function convertShareArray($shares_array){

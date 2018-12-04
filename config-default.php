@@ -260,6 +260,7 @@ define('ABSENT',   'A');
 //define('TEMP_HID_FIELD',    'PostingMode');
 
 define('RATE_PER_SHARE',        100);
+define('SHARES_LINE_IN_CERTIFICATE', 4);
 define('BUYBACK_LOCKING_MONTHS',36);
 define('TRANSFER_LOCKING_MONTHS',36);
 

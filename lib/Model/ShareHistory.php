@@ -9,6 +9,7 @@ class Model_ShareHistory extends Model_Table {
 
 		$this->hasOne('Member','member_id')->display(['form'=>'autocomplete/Basic'])->sortable(true);
 		$this->hasOne('Share','share_id')->display(['form'=>'autocomplete/Basic'])->sortable(true);
+		$this->hasOne('ShareCertificate','share_certificate_id')->display(['form'=>'autocomplete/Basic'])->sortable(true);
 		$this->addField('from_date')->type('datetime')->defaultValue($this->app->now)->sortable(true);
 		$this->addField('final_to_date')->type('datetime')->caption('Orig To Date')->sortable(true);
 

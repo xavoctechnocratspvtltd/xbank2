@@ -23,6 +23,7 @@ class page_transactions_sharetransactions extends Page {
 		$to_field = $form->addField('autocomplete/Basic','to_account')->validateNotNull();
 
 		$form->addField('Text','shares')->validateNotNull()->setFieldHint('Comma seperated share numbers');
+		$form->addField('Text','submitted_certificates')->validateNotNull()->setFieldHint('Comma seperated share certificate numbers');
 		$form->addSubmit('Transfer');
 
 		$sm_accounts = $this->add('Model_Account_SM')->addCondition('ActiveStatus',true);
@@ -31,6 +32,7 @@ class page_transactions_sharetransactions extends Page {
 
 		if($form->isSubmitted()){
 			$shares = array_map('trim', explode(",", $form['shares']));
+			$submitted_certificates = array_map('trim', explode(",", $form['submitted_certificates']));
 			$share_amount = count($shares) * RATE_PER_SHARE ;
 			
 			$from_account = $this->add('Model_Account_SM')->load($form['from_account']);
@@ -52,8 +54,14 @@ class page_transactions_sharetransactions extends Page {
 				$form->displayError('shares','Following Shares are not owned by '. $from_account['member'].' => '. implode(", ", $ownership_check));
 			}
 
+			$actual_certifictes = $share_m->getCertificates($shares);
+			if($actual_certifictes != $submitted_certificates ){
+				$form->displayError('submitted_certificates','Required Certificates Nos are => '. implode(", ", $actual_certifictes));
+			}
+			
+
 			$to_account = $this->add('Model_Account_SM')->load($form['to_account']);
-			$share_m->transfer($from_account, $to_account, $shares);
+			$share_m->transfer($from_account, $to_account, $shares, $submitted_certificates);
 
 			$form->js(null, $form->js()->univ()->successMessage('Share Transered'))->reload()->execute();
 
@@ -68,6 +76,7 @@ class page_transactions_sharetransactions extends Page {
 		$to_field = $form->addField('autocomplete/Basic','to_account')->validateNotNull();
 
 		$form->addField('Text','shares')->validateNotNull()->setFieldHint('Comma seperated share numbers');
+		$form->addField('Text','submitted_certificates')->validateNotNull()->setFieldHint('Comma seperated share certificate numbers');
 		$form->addSubmit('Buy Back');
 
 		$sm_accounts = $this->add('Model_Account_SM')->addCondition('ActiveStatus',true);
@@ -80,6 +89,7 @@ class page_transactions_sharetransactions extends Page {
 
 		if($form->isSubmitted()){
 			$shares = array_map('trim', explode(",", $form['shares']));
+			$submitted_certificates = array_map('trim', explode(",", $form['submitted_certificates']));
 			$share_amount = count($shares) * RATE_PER_SHARE ;
 			
 			$from_account = $this->add('Model_Account_SM')->load($form['from_account']);
@@ -101,8 +111,13 @@ class page_transactions_sharetransactions extends Page {
 				$form->displayError('shares','Following Shares are not owned by '. $from_account['member'].' => '. implode(", ", $ownership_check));
 			}
 
+			$actual_certifictes = $share_m->getCertificates($shares);
+			if($actual_certifictes != $submitted_certificates ){
+				$form->displayError('submitted_certificates','Required Certificates Nos are => '. implode(", ", $actual_certifictes));
+			}
+
 			$to_account = $this->add('Model_Account')->load($form['to_account']);
-			$share_m->buyBack($from_account, $to_account, $shares);
+			$share_m->buyBack($from_account, $to_account, $shares, $submitted_certificates);
 
 			$form->js(null, $form->js()->univ()->successMessage('Share Buy Back Complete'))->reload()->execute();
 

@@ -68,13 +68,13 @@ class page_test  extends Page {
 
 		$this->vp->set(function($page)use($account){
 			$page->add('View_Console')->set(function($c)use($account){
+				$account->setActualFields(['AccountNumber','total_cr','existing_share_count','created_at','member_id']);
 				$total = $account->count()->getOne();
 				$per=0;
 
 				$i=0;
 
 				$c->out('Total '. $total.' accounts');
-				$account->setActualFields(['AccountNumber','total_cr','existing_share_count']);
 				foreach ($account as $acc) {
 					$no_of_shares = (int) $acc['total_cr']/100;
 					if($acc['existing_share_count'] >= $no_of_shares) {

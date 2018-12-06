@@ -56,7 +56,7 @@ class Model_Share extends Model_Table {
 
 			// new share history entry
 			if($current_member_id){
-				$this->addHook('afterSave',function($m)use($current_member_id){
+				$this->addHook('afterSave',function($m)use($current_member_id){					
 					$new_asso = $this->add('Model_ShareHistory');
 					$new_asso['share_id'] = $m->id;
 					$new_asso['member_id'] = $current_member_id;

@@ -53,6 +53,14 @@ class page_transactions_recoveryandlegaltransactions extends Page {
 			$account_model = $this->add('Model_Account_'.$account_model_temp->ref('scheme_id')->get('SchemeType'));
 			$account_model->loadBy('AccountNumber',$form['amount_from_account']);
 
+			// Visit charge condition, must not be withing 15 days of same month based on account model visit_done_on field
+			$last_visit_in_same_month = (date('m',strtotime($account_model['visit_done_on'])) == date('m',strtotime($this->app->now)));
+			$last_visit_within_last_15_days = ($this->app->my_date_diff($account_model['visit_done_on'],$this->app->today)['days_total'] < 15);
+
+			if($last_visit_in_same_month && $last_visit_within_last_15_days){
+				$form->displayError('type','Visit must not be within 15 days in same month');
+			}
+			
 			try {
 				$this->api->db->beginTransaction();
 

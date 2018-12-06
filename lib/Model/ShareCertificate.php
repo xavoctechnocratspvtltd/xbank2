@@ -31,7 +31,7 @@ class Model_ShareCertificate extends Model_Table {
 			return $m->add('Model_Share')
 					->addCondition('share_certificate_id',$q->getField('id'))
 					->setLimit(1)
-					->fieldQuery('current_member_id');
+					->fieldQuery('current_member');
 		});
 
 		$this->hasMany('Share','share_certificate_id');

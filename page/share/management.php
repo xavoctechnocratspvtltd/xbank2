@@ -13,6 +13,8 @@ class page_share_management extends Page {
 
 	function page_share(){
 
+		$this->add('Controller_Acl');
+
 		$model = $this->add('Model_Share');
 		$crud = $this->add('CRUD');
 
@@ -20,6 +22,7 @@ class page_share_management extends Page {
 
 		$crud->grid->addPaginator(200);
 
+		$crud->grid->addQuickSearch(['no','current_member']);
 		$his_crud = $crud->addRef('ShareHistory');
 
 		// if($his_crud){
@@ -29,6 +32,7 @@ class page_share_management extends Page {
 	}
 
 	function page_certificate(){
+		$this->add('Controller_Acl');
 
 		$model = $this->add('Model_ShareCertificate');
 		$crud = $this->add('CRUD');
@@ -36,7 +40,7 @@ class page_share_management extends Page {
 		$crud->setModel($model);
 
 		$crud->grid->addPaginator(200);
-		$crud->grid->addQuickSearch(['name']);
+		$crud->grid->addQuickSearch(['name','member']);
 		$his_crud = $crud->addRef('Share');
 	}
 }

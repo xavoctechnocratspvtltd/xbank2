@@ -276,16 +276,15 @@ class Model_Share extends Model_Table {
 		$shares_to_settle = $no_certificate_shares->count()->getOne();
 
 		$i=0;
-		$previous_no = 0;
+		$previous_no = null;
 		$new_certificate = null;
 		foreach ($no_certificate_shares as $sh) {
-			if(!$new_certificate){
+			if($previous_no==null || $new_certificate == null){
 				$new_certificate = $this->add('Model_ShareCertificate')->createNew();
 			}
 			$sh['share_certificate_id'] = $new_certificate->id;
 			$sh->currentHistoryEntry()->set('share_certificate_id',$new_certificate->id)->save();
-			$sh->saveAndUnload();
-			if($sh['no'] != ($previous_no+1)) {
+			if($previous_no!==null && $sh['no'] != ($previous_no+1)) {
 				// LOGIC: Certificate can print 4 lines only, one line is one share group (range or individual) 4-12,23,45-69,23
 				// Then new certificate must be used for next 4 lines of share range.
 				$i++;
@@ -293,6 +292,8 @@ class Model_Share extends Model_Table {
 					$new_certificate = null;
 				}
 			}
+			$previous_no = $sh['no'];
+			$sh->saveAndUnload();
 		}
 
 	}

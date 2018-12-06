@@ -88,7 +88,9 @@ class Model_Account_FixedAndMis extends Model_Account{
 		$transaction->createNewTransaction(TRA_FIXED_ACCOUNT_DEPOSIT, $this->ref('branch_id'), $on_date, "Initial Fixed Amount Deposit in ".$this['AccountNumber'], $only_transaction=null, array('reference_id'=>$this->id));
 		
 		if($form['debit_account']){
-			$db_acc = $this->add('Model_Account',['with_balance_cr'=>true,'with_balance_dr'=>true])->setActualFields(['balance_cr','balance_dr','SchemeType'])->loadBy('AccountNumber',$form['debit_account']);
+			$db_acc = $this->add('Model_Account',['with_balance_cr'=>true,'with_balance_dr'=>true])
+				->setActualFields(['balance_cr','balance_dr','SchemeType'])
+				->loadBy('AccountNumber',$form['debit_account']);
 			$credit_balance = $db_acc['balance_cr'];
 			$debit_balance = $db_acc['balance_dr'];	
 			$compare_with = $this['Amount'];

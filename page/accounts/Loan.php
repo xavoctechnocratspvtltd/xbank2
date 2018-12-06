@@ -302,6 +302,7 @@ class page_accounts_Loan extends Page {
 				->move('sm_amount','after','Amount')
 				->move('other_account','after','sm_amount')
 				->move('other_account_cr_amount','after','other_account')
+				->move('action','first')
 				->now();
 
 		}

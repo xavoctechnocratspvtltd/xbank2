@@ -297,13 +297,14 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addColumn('other_account','other_account');
 			$crud->grid->addColumn('other_account_cr_amount','other_account_cr_amount');
 
-			$crud->grid->addOrder()
-				->move('loan_from_account','after','dealer')
+			$ox=$crud->grid->addOrder();
+			$ox->move('loan_from_account','after','dealer')
 				->move('sm_amount','after','Amount')
 				->move('other_account','after','sm_amount')
-				->move('other_account_cr_amount','after','other_account')
-				->move('action','first')
-				->now();
+				->move('other_account_cr_amount','after','other_account');
+			if($this->api->auth->model['AccessLevel']>=80)
+				$ox->move('action','first');
+			$ox->now();
 
 		}
 

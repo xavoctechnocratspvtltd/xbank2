@@ -287,10 +287,10 @@ class Model_Share extends Model_Table {
 			if($previous_no!==null && $sh['no'] != ($previous_no+1)) {
 				// LOGIC: Certificate can print 4 lines only, one line is one share group (range or individual) 4-12,23,45-69,23
 				// Then new certificate must be used for next 4 lines of share range.
-				$i++;
 				if($i % SHARES_LINE_IN_CERTIFICATE == 0){
 					$new_certificate = null;
 				}
+				$i++;
 			}
 			$previous_no = $sh['no'];
 			$sh->saveAndUnload();

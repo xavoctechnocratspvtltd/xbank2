@@ -34,6 +34,14 @@ class Model_ShareCertificate extends Model_Table {
 					->fieldQuery('current_member');
 		});
 
+		$this->addExpression('member_sm_account')->set(function($m,$q){
+			$cm_id = $m->add('Model_Share')
+					->addCondition('share_certificate_id',$q->getField('id'))
+					->setLimit(1)
+					->fieldQuery('current_member_id');
+			return  $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])->addCondition('member_id',$cm_id)->setLimit(1)->fieldQuery('AccountNumber');
+		});
+
 		$this->hasMany('Share','share_certificate_id');
 	}
 

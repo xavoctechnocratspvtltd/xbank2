@@ -35,6 +35,12 @@ class Model_Account_Recurring extends Model_Account{
 		if(!$on_date) $on_date = $this->api->now;
 		if(!$AccountNumber) $AccountNumber = $this->getNewAccountNumber();
 		
+		$scheme = $this->add('Model_Scheme')->load($scheme_id);
+		if($scheme['MinLimit']){
+			if($otherValues['Amount']< $scheme['MinLimit'])
+				throw $this->exception('Scheme Minimum Limit is set as '.$scheme['MinLimit'], 'ValidityCheck')->setField('Amount');
+		}		
+
 		parent::createNewAccount($member_id,$scheme_id,$branch_id, $AccountNumber,$otherValues,$form, $on_date);
 		$this->createPremiums();
 		// return true;
@@ -46,7 +52,9 @@ class Model_Account_Recurring extends Model_Account{
 		if(isset($otherValues['initial_opening_amount']) and $otherValues['initial_opening_amount']){
 
 			if($otherValues['debit_account']){
-				$db_acc = $this->add('Model_Account',['with_balance_cr'=>true,'with_balance_dr'=>true])->setActualFields(['balance_cr','balance_dr','SchemeType'])->loadBy('AccountNumber',$form['debit_account']);
+				$db_acc = $this->add('Model_Account',['with_balance_cr'=>true,'with_balance_dr'=>true])
+					->setActualFields(['balance_cr','balance_dr','SchemeType'])
+					->loadBy('AccountNumber',$form['debit_account']);
 				$credit_balance = $db_acc['balance_cr'];
 				$debit_balance = $db_acc['balance_dr'];	
 				$compare_with = $otherValues['initial_opening_amount'];

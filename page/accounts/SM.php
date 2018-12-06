@@ -19,7 +19,12 @@ class page_accounts_SM extends Page {
 		$crud->addHook('myupdate',function($crud,$form){
 			if($crud->isEditing('edit')) return false;
 			
-			$Default_account_model = $crud->add('Model_Account_SM');			
+			$Default_account_model = $crud->add('Model_Account_SM');
+
+			if($form['Amount'] < RATE_PER_SHARE || $form['Amount'] % RATE_PER_SHARE !=0) {
+				throw $this->exception('Amount must be multiple of '.RATE_PER_SHARE,'ValidityCheck')->setField('Amount');
+			}
+						
 			try {
 				$crud->api->db->beginTransaction();
 			    $Default_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $Default_account_model->getNewAccountNumber() ,$form->getAllFields(),$form);

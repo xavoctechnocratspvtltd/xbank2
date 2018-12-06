@@ -32,9 +32,10 @@ class Model_Account_SM extends Model_Account_Default{
 	}
 
 	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=null,$form=null,$created_at=null){
-		if($form['Amount'] % RATE_PER_SHARE !=0) {
+		if($form['Amount'] < RATE_PER_SHARE || $form['Amount'] % RATE_PER_SHARE !=0) {
 			throw $this->exception('Amount must be multiple of '.RATE_PER_SHARE,'ValidityCheck')->setField('Amount');
 		}
+		
 		parent::createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues,$form,$created_at);
 	}
 

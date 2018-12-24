@@ -7,6 +7,7 @@ class page_accounts_Loan extends Page {
 		$pending_accounts_tab = $tabs->addTabURL($this->api->url('./pendingAccounts'),'Pending');
 		$accounts_tab = $tabs->addTabURL($this->api->url('./accounts'),'Accounts');
 		$bike_legal = $tabs->addTabURL($this->api->url('accounts_Loan_bikelegal'),'Manage Surrender Bike and Legal');
+		$legal_hearing = $tabs->addTabURL($this->api->url('accounts_Loan_casehearing'),'Manage Legal Case & Hearing');
 	}
 
 	function page_pendingAccounts(){

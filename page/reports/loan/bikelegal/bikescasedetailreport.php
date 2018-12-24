@@ -20,6 +20,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 									->setValuelist(['Active'=>'Active','InActive'=>'InActive']);
 
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','hl'=>'HL','other'=>'Other'));
+		$form->addField('DropDown','last_hearing_stage')->setValuelist(array_combine(LEGAL_CASE_STAGES, LEGAL_CASE_STAGES))->setEmptyText('Any');
 
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
@@ -127,12 +128,23 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 			return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges_due')]);
 		});
 
-		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at','ActiveStatus'];
+		$account_model->addExpression('last_hearing_stage')->set(function($m,$q){
+			return $this->add('Model_LegalCaseHearing')
+					->addCondition('account_id',$m->getElement('id'))
+					->setLimit(1)
+					->fieldQuery('stage');
+		});
+
+		$grid_column_array = ['AccountNumber','member','FatherName','PermanentAddress','landmark','tehsil','district','PhoneNos','dealer','member_sm_account','bike_surrendered_on','Amount','no_of_emi','emi_amount','due_premium_amount','due_panelty','other_charges','total_cr','premium_amount_received','penalty_amount_received','other_received','other_charges_due','total_due','created_at','ActiveStatus','last_hearing_stage'];
 
 		$grid = $this->add('Grid_AccountsBase')->addSno();
 		if($this->api->stickyGET('filter')){
 			if($this->api->stickyGET('dealer')){
 				$account_model->addCondition('dealer_id',$_GET['dealer']);
+			}
+
+			if($this->api->stickyGET('last_hearing_stage')){
+				$account_model->addCondition('last_hearing_stage',$_GET['last_hearing_stage']);
 			}
 
 			foreach ($document as $junk) {
@@ -253,7 +265,7 @@ class page_reports_loan_bikelegal_bikescasedetailreport extends Page {
 		$grid->addPaginator(100);
 
 		if($form->isSubmitted()){
-			$send = array('filter'=>1,'dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_status'=>$form['account_status'],'legal_status'=>$form['legal_status'],'loan_type'=>$form['loan_type']);
+			$send = array('filter'=>1,'dealer'=>$form['dealer'],'to_date'=>$form['to_date']?:0,'from_date'=>$form['from_date']?:0,'account_status'=>$form['account_status'],'legal_status'=>$form['legal_status'],'loan_type'=>$form['loan_type'],'last_hearing_stage'=>$form['last_hearing_stage']?:0);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

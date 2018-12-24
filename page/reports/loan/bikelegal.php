@@ -19,6 +19,7 @@ class page_reports_loan_bikelegal extends Page {
 		$tabs->addTabURL('reports_loan_bikelegal_bikescasedetailreport','Legal Case Detail Report');
 		$tabs->addTabURL('reports_loan_bikelegal_legalfinalised','Legal Finalised');
 		$tabs->addTabURL('reports_loan_bikelegal_bikesarbitrationdetailreport','Arbitration Case Detail Report');
+		$tabs->addTabURL('reports_loan_bikelegal_legalcasehearing','Legal Case Hearing Report');
 
 	}
 }

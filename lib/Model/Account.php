@@ -192,6 +192,7 @@ class Model_Account extends Model_Table {
 		$this->hasMany('Transaction','reference_id',null,'RelatedTransactions');
 		$this->hasMany('Comment','account_id');
 		$this->hasMany('BikeSurrenderHistory','account_id');
+		$this->hasMany('LegalCase','account_id');
 
 		$this->addHook('beforeSave',array($this,'defaultBeforeSave'));
 		$this->addHook('beforeSave',array($this,'updateTransactionRows'));

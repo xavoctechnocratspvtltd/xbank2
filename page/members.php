@@ -166,12 +166,33 @@ class page_members extends Page {
 		}
 
 		$form_fields=null;
+
 		if($crud->isEditing()){
 			$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active'];
 		}
 		
 		if($crud->isEditing('edit')){
 			$form_fields[]='member_no';
+		}
+
+		if($crud->isEditing('add')){
+			$debit_account = $crud->form->addField('autocomplete/Basic','debit_account');
+			
+			$debit_account_model = $this->add('Model_Active_Account');
+		
+			$debit_account_model->addCondition(
+					$debit_account_model->dsql()->orExpr()
+						// ->where($debit_account_model->scheme_join->table_alias.'.name',BANK_ACCOUNTS_SCHEME)
+						// ->where($debit_account_model->scheme_join->table_alias.'.name',BANK_OD_SCHEME)
+						// ->where($debit_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_SAVING)
+						// ->where($debit_account_model->scheme_join->table_alias.'.name',SUSPENCE_ACCOUNT_SCHEME)
+						->where($debit_account_model->table_alias.'.AccountNumber',$this->app->current_branch['Code'].SP.'MEMBERSHIP ADVANCE AMOUNT')
+						->where($debit_account_model->table_alias.'.AccountNumber',$this->app->current_branch['Code'].SP.CASH_ACCOUNT)
+
+				);			
+			// $debit_account_model->add('Controller_Acl');
+
+			$debit_account->setModel($debit_account_model,'AccountNumber');
 		}
 
 		$crud->setModel($member_model,$form_fields);
@@ -242,6 +263,7 @@ class page_members extends Page {
 		// }
 
 		if($crud->isEditing('add')){
+
 		    // $o->move('open_share_account','before','Nominee');
 		    // $o->move('share_account_amount','before','Nominee');
 			// $open_share_account_field = $crud->form->getElement('open_share_account');

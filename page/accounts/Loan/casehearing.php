@@ -10,6 +10,6 @@ class page_accounts_Loan_casehearing extends Page {
 		
 		$crud = $this->add('CRUD');
 		$crud->setModel('LegalCase');
-		$crud->addRef('LegalCaseHearing');
+		$crud->addRef('LegalCaseHearing',['grid_fields'=>['legalcase','hearing_date','stage','owner','dealer']]);
 	}
 }

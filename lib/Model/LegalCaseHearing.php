@@ -27,7 +27,7 @@ class Model_LegalCaseHearing extends Model_Table {
 		$this->addExpression('owner')->set(function ($m,$q){
 			return $this->add('Model_Account')
 						->addCondition('id',$m->getElement('account_id'))
-						->fieldQuery('member');
+						->fieldQuery('member_name_only');
 		});
 
 		$this->addExpression('dealer')->set(function ($m,$q){

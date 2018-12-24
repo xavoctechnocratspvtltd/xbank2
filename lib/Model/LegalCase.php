@@ -27,12 +27,17 @@ class Model_LegalCase extends Model_Table {
 			return $m->refSQL('LegalCaseHearing')->setLimit(1)->setOrder('hearing_date','desc')->fieldQuery('hearing_date');
 		});
 
+		$this->addExpression('owner')->set(function ($m,$q){
+			return $this->add('Model_Account')
+						->addCondition('id',$m->getElement('account_id'))
+						->fieldQuery('member_name_only');
+		});
 
 		$this->addExpression('account_guarantor')->set(function($m,$q){
 			$ag = $this->add('Model_AccountGuarantor');
 			$ag->addCondition('account_id',$m->getElement('account_id'));
 			$ag->setLimit(1);
-			return $ag->fieldQuery('member_id');
+			return $ag->fieldQuery('member');
 		});
 
 		$this->addHook('beforeDelete',$this);

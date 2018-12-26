@@ -13,6 +13,7 @@ class page_transactions_remove extends Page {
 		$tr_rev_tab = $tabs->addTab('Transaction Remove');
 		$naration_edit = $tabs->addTab('Narration Edit');
 		$agent_tds_remove_tab = $tabs->addTab('Agent TDS Entry Remove');
+		$transaction_account_edit = $tabs->addTab('Edit Accounts of Transactions');
 
 		$columns = $tr_rev_tab->add('Columns');
 
@@ -254,6 +255,54 @@ class page_transactions_remove extends Page {
 
 		if($form->isSubmitted()){
 			$agent_tds_grid->js()->reload($form->get())->execute();
+		}
+
+
+		// ===================== EDIT ACCOUNTS IN TRANSACTIONS ================
+
+		// Virtual page first and then form
+		$transaction_account_edit->add('Controller_Acl');
+		$account_edit_voucher_vp = $transaction_account_edit->add('VirtualPage')->set(function($p){
+			$f_year = $p->api->getFinancialYear($p->api->today);	
+			$start_date = $f_year['start_date'];
+			$end_date = $f_year['end_date'];
+
+			$transaction = $p->add('Model_Transaction');
+			$transaction->addCondition('id',$p->api->stickyGET('voucher_uuid'));
+			$transaction->addCondition('voucher_no',$p->api->stickyGET('voucher_no'));
+			$transaction->addCondition('created_at','>=',$start_date);
+			$transaction->addCondition('created_at','<',$p->api->nextDate($end_date));
+			$transaction->addCondition('branch_id',$p->api->stickyGET('branch_id'));
+			$transaction->tryLoadAny();
+
+			if(!$transaction->loaded()){
+				$p->add('View_Error')->set('Could Not Load Such Transaction, or transaction is not in current financial year');
+				return;
+			}
+
+			$v = $p->add('View_Voucher');
+			$v->setModel($transaction);
+
+			if($p->api->auth->model->isSuper()){
+
+				$transaction_rows = $this->add('Model_TransactionRow');
+				$transaction_rows->addCondition('transaction_id',$transaction->id);
+
+				$crud = $p->add('CRUD',['allow_add'=>false,'allow_del'=>false]);
+				$crud->setModel($transaction_rows,['account_id'],['transaction','account','amountDr','amountCr']);
+			}
+
+		});
+
+		$transaction_account_edit->add('H3')->set('Edit Accounts in Voucher');
+		$form = $transaction_account_edit->add('Form');
+		$form->addField('autocomplete/Basic','branch')->validateNotNull()->setModel('Branch');
+		$form->addField('line','voucher_no')->validateNotNull();
+		$form->addField('line','voucher_uuid')->validateNotNull();
+		$form->addSubmit('Get Voucher');
+
+		if($form->isSubmitted()){
+			$this->js()->univ()->frameURL('TRANSACTION',$this->api->url($account_edit_voucher_vp->getURL(),array('branch_id'=>$form['branch'],'voucher_no'=>$form['voucher_no'],'voucher_uuid'=>$form['voucher_uuid'])))->execute();
 		}
 
 	}

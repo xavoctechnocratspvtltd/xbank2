@@ -12,6 +12,8 @@ class page_accounts_Loan extends Page {
 
 	function page_pendingAccounts(){
 		$this->add('Controller_Acl');
+		
+		$this->app->skipUpdateTransactions = true; // for Model_Account beforeSave hook
 
 		$crud=$this->add('xCRUD',array('allow_del'=>false,'add_form_beautifier'=>false));
 		$account_loan_model = $this->add('Model_PendingAccount',array('table'=>'accounts_pending'));
@@ -66,8 +68,6 @@ class page_accounts_Loan extends Page {
 			if(!$form['other_account'] && $form['other_account_cr_amount']){
 					$form->displayError('other_account_cr_amount',"Must be filled");
 			}
-
-
 
 			if($crud->isEditing('edit')) {
 				$extra_info = json_decode($crud->form->model['extra_info'],true);

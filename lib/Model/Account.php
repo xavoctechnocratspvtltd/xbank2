@@ -246,7 +246,9 @@ class Model_Account extends Model_Table {
 	}
 
 	function updateTransactionRows(){
-		if($this->isDirty('scheme_id') && $this->loaded()){
+
+		// $this->app->skipUpdateTransactions setted from page_Accounts_Loan -> func page_pendingAccount
+		if(!isset($this->app->skipUpdateTransactions) && $this->isDirty('scheme_id') && $this->loaded()){
 			$old = $this->add('Model_Account')->load($this->id);
 			$tr = $this->add('Model_TransactionRow');
 			$tr->addCondition('account_id',$this->id);

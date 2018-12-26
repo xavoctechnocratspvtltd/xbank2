@@ -13,7 +13,7 @@ class page_transactions_remove extends Page {
 		$tr_rev_tab = $tabs->addTab('Transaction Remove');
 		$naration_edit = $tabs->addTab('Narration Edit');
 		$agent_tds_remove_tab = $tabs->addTab('Agent TDS Entry Remove');
-		$transaction_account_edit = $tabs->addTab('Edit Accounts of Transactions');
+		// $transaction_account_edit = $tabs->addTab('Edit Accounts of Transactions');
 
 		$columns = $tr_rev_tab->add('Columns');
 
@@ -258,6 +258,8 @@ class page_transactions_remove extends Page {
 		}
 
 
+		/*
+
 		// ===================== EDIT ACCOUNTS IN TRANSACTIONS ================
 
 		// Virtual page first and then form
@@ -304,6 +306,7 @@ class page_transactions_remove extends Page {
 		if($form->isSubmitted()){
 			$this->js()->univ()->frameURL('TRANSACTION',$this->api->url($account_edit_voucher_vp->getURL(),array('branch_id'=>$form['branch'],'voucher_no'=>$form['voucher_no'],'voucher_uuid'=>$form['voucher_uuid'])))->execute();
 		}
+		*/
 
 	}
 }

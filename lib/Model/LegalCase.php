@@ -8,6 +8,7 @@ class Model_LegalCase extends Model_Table {
 
 		$this->hasOne('Account','account_id')->display(['form'=>'autocomplete/Basic']);
 		$this->addField('name')->caption('Legal Case No');
+		$this->addField('bccs_file_no');
 		$this->addField('court');
 		$this->addField('autorised_person');
 		$this->addField('case_type')->enum(LEGAL_CASE_TYPES);

@@ -27,6 +27,7 @@ class page_duesms extends \Page{
 
 		$acc_j = $premium->join('accounts','account_id');
 		$acc_j->addField('AccountNumber');
+		$acc_j->addField('ActiveStatus');
 		$mem_j = $acc_j->join('members','member_id');
 		$mem_j->addField('PhoneNos');
 
@@ -39,6 +40,7 @@ class page_duesms extends \Page{
 				]);
 		});
 
+		$premium->addCondition('ActiveStatus',true);
 		$premium->addCondition('DueDate',$date);
 		$premium->addCondition('PaidOn','is',null);
 

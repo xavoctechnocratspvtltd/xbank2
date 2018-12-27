@@ -39,6 +39,7 @@ class Menu_Base extends Menu {
 			$admin_sub_menus_popover=$this->add('View_Popover');
 
 		$mad_sub_menus_popover = $this->add('View_Popover');
+		$stock_sub_menus_popover = $this->add('View_Popover');
 		$account_sub_menu_popover = $this->add('View_Popover');
 
 		$reports_sub_menu_popover = $this->add('View_Popover');
@@ -108,6 +109,12 @@ class Menu_Base extends Menu {
 		// $general_sub_menus->addMenuItem('reports_general_document','Document Report');
 		// $general_sub_menus->addMenuItem('reports_general_periodical','Periodical Report');
 		// $general->js('click',$general_sub_menus_popover->showJS());
+
+		$stock_sub_menus = $stock_sub_menus_popover->add('Menu_Vertical');
+		$stock_sub_menus->addMenuItem('stock_main','Stock Old');
+		$stock_sub_menus->addMenuItem('stocknew_main','Stock New');
+		$stock->js('click',$stock_sub_menus_popover->showJS());
+
 
 		$account_sub_menu = $account_sub_menu_popover->add('Menu_Vertical');
 		$account_sub_menu->addMenuItem('accounts','Accounts Management');

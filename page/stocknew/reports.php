@@ -4,6 +4,14 @@ class page_stocknew_reports extends Page {
 	
 	function page_index(){
 
+		$tabs = $this->add('Tabs');
+		$overall_stock_report_tab = $tabs->addTabURL($this->app->url('./overall'),'Over All Stock Report');
+		$stock_distribution_report_tab = $tabs->addTabURL($this->app->url('./distribution'),'Stock Distribution Report');
+		
+
+	}
+
+	function page_overall(){
 		$this->add('H3')->set('Stock Report');
 
 		$form = $this->add('Form');
@@ -28,9 +36,27 @@ class page_stocknew_reports extends Page {
 		$grid = $this->add('Grid');
 		$grid->setModel($item_stock);
 
+		$grid->removeColumn('name');
+		$grid->removeColumn('code');
+		$grid->removeColumn('allowed_in_transactions');
+		$grid->removeColumn('description');
+
 		if($form->isSubmitted()){
 			$grid->js()->reload($form->get())->execute();
 		}
+	}
 
+	function page_distribution(){
+		$form = $this->add('Form');
+		$form->addField('autocomplete/Basic','item')->setModel('StockNew_Item');
+		$form->addSubmit('Get Report');
+
+		$item = $this->add('Model_StockNew_ItemStock');
+		$grid=$this->add('Grid');
+		$grid->setModel($item);
+
+		if($form->isSubmitted()){
+			$grid->js()->reload(['item'=>$form['item']])->execute();
+		}
 	}
 }

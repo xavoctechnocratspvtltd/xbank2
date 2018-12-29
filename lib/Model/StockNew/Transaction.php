@@ -22,6 +22,8 @@ class Model_StockNew_Transaction extends Model_Table {
 		$this->addField('rate')->type('money');
 		$this->addField('narration')->type('text');
 
+		$this->addField('created_at')->defaultValue($this->app->now);
+
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

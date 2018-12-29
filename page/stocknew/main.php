@@ -7,9 +7,10 @@ class page_stocknew_main extends Page {
 		parent::init();
 
 		$tabs=$this->add('Tabs');
+		$tab1=$tabs->addTabURL('stocknew_reports','Reports');
+		$tab1=$tabs->addTabURL('stocknew_ledgers','Ledgers');
 		$tab1=$tabs->addTabURL('stocknew_master','Master');
 		$tab1=$tabs->addTabURL('stocknew_transactions','Transactions');
-	// 	$tab1=$tabs->addTabURL('stocknew_ledger_main','Ledgers');
-	// 	$tab1=$tabs->addTabURL('stocknew_reports_main','Reports');
+		// $tab1=$tabs->addTabURL('stocknew_reports_main','Reports');
 	}
 }

@@ -1,7 +1,10 @@
 <?php
 
 class Model_StockNew_Item extends Model_Table {
-	var $table= "stocknew_items";
+
+	public $table 		= "stocknew_items";
+	public $title_field = 'name_with_code';
+
 	function init(){
 		parent::init();
  
@@ -9,10 +12,13 @@ class Model_StockNew_Item extends Model_Table {
 		
 		$this->addField('name')->sortable(true);
 		$this->addField('code');
+
+		$this->addExpression('name_with_code')->set('CONCAT(name," [",code,"]")');
+		$this->addExpression('allowed_in_transactions')->set($this->refSQL('category_id')->fieldQuery('allowed_in_transactions'));
+
 		$this->addField('description')->type('text');
-		$this->addField('allowed_transactions')->display(['form'=>'DropDown'])->setValueList(array_combine(STOCK_TRANSACTIONS, STOCK_TRANSACTIONS));
-		$this->addExpression('transactions')->set('allowed_transactions');
 		$this->addField('is_active')->type('boolean')->defaultValue(true)->sortable(true);
+		$this->addField('is_fixed_asset')->type('boolean')->defaultValue(false)->sortable(true);
 		
 		$this->hasMany('StockNew_Transaction','item_id');
 		$this->hasMany('StockNew_ContainerRowItemQty','item_id');

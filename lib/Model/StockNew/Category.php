@@ -8,22 +8,17 @@ class Model_StockNew_Category extends Model_Table {
 
 			
 		$this->addField('name')->sortable(true);
-		
+		$this->addField('allowed_in_transactions');
+
 		$this->hasMany('StockNew_Item','category_id');
-		$this->addHook('beforeDelete',$this);	
+		$this->addHook('beforeSave',$this);
+		$this->addHook('beforeDelete',$this);
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function getAllItem($category){
+	function beforeSave(){
 		
-		if(!$category instanceof Model_Stock_Category)
-			throw new Exception("Model is not a instanceof Category model");
-			
-		$item_model = $this->add('Model_StockNew_Item');
-		$item_model->addCondition('category_id',$category->id);
-		$item_model->tryLoadAny();
-		return $item_model;
-	}		
+	}
 
 	function beforeDelete($model){
 		if($this->ref('StockNew_Item')->count()->getOne() > 0)

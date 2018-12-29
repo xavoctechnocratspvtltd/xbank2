@@ -6,8 +6,11 @@ class page_stocknew_transactions extends Page {
 		parent::init();
 
 		$form = $this->add('Form');
-		$form->addField('DropDown','transaction_template')->setModel('StockNew_TransactionTemplate','name');
+		$trt_field = $form->addField('DropDown','transaction_template')->setEmptyText('Select Transaction to execute')->validateNotNull();
+		$trt_field->setModel('StockNew_TransactionTemplate','name');
 		$form->addSubmit('DO');
+
+		$trt_field->js('change',$form->js()->submit());
 
 		if($tr=$this->app->stickyGET('transaction_template')){
 			$tr_m = $this->add('Model_StockNew_TransactionTemplate')->load($tr);
@@ -17,6 +20,7 @@ class page_stocknew_transactions extends Page {
 				$f->process();
 				$f->js(null,$f->js()->univ()->successMessage('Done'))->reload()->execute();
 			}
+			$trt_field->set($tr);
 		}
 
 		if($form->isSubmitted()){

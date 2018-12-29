@@ -32,6 +32,12 @@ class Model_StockNew_ContainerRow extends Model_Table {
 		}
 	}
 
+	function loadDefault($branch_id){
+		$this->addCondition('branch_id',$branch_id);
+		$this->addCondition('is_default',true);
+		$this->loadAny();
+	}
+
 	// function beforeDelete($model){
 	// 	if($this->ref('StockNew_ContainerRow')->count()->getOne() > 0)
 	// 		$this->api->js()->univ()->errorMessage('Category ('.$model['name'].') Contains Rows(s), Cannot Delete')->execute();

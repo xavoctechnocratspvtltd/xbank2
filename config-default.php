@@ -255,7 +255,6 @@ define('STOCK_ADDED',  1);
 define('STOCK_REMOVED', 0);
 define('STOCK_ALLOTED', 2);
 define('STOCK_RETURNED', 3);
-define('STOCK_TRANSACTIONS',['Opening','Purchase','PurchaseRetunred','Move','Transfer','Issue','Consume','Submit','SubmitDead','UsedSubmit','Dead','DeadSold']);
 
 define('PRESENT',   'P');
 define('LEAVE',   'L');

@@ -62,6 +62,7 @@ class page_accounts_SM extends Page {
 						->where($debit_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_SAVING)
 						->where($debit_account_model->scheme_join->table_alias.'.name',SUSPENCE_ACCOUNT_SCHEME)
 						->where($debit_account_model->scheme_join->table_alias.'.name',CASH_ACCOUNT_SCHEME)
+						->where($debit_account_model->table_alias.'.AccountNumber',$this->app->current_branch['Code'].SP.'MEMBERSHIP ADVANCE AMOUNT')
 
 				);
 

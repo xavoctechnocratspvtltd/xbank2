@@ -1,17 +1,16 @@
-<p>&nbsp;</p>
+<p> </p>
 <table style="height: 166px;" width="557">
 <tbody>
 <tr>
 <td style="padding-left: 60px;">
 <p>To,</p>
 <p>{$member_name} S/o {$member_FatherName}</p>
-<p>Address {$member_landmark}&nbsp; &nbsp;{$member_tehsil}, {$member_district}</p>
-<p>{$member_pin_code} , {$member_state}</p>
-<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;खाता संख्या - {$AccountNumber}</p>
+<p>Address {$member_CurrentAddress}</p>
+<p>                                                                       खाता संख्या - {$AccountNumber}</p>
 <p>Bhawani Credit Co-Op. Society Ltd.</p>
 <p>7,Amrit Shree plaza, Dudiya Ganesh Ji, Sajjangar Rod Udaiur</p>
 <p>8003597805</p>
-<p>&nbsp;</p>
+<p> </p>
 </td>
 </tr>
 </tbody>

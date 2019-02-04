@@ -104,6 +104,7 @@ class page_jvimport extends Page {
 
 						$transaction = $this->add('Model_Transaction');
 						$transaction->createNewTransaction($row['Transaction_Type'],$in_branch=null,$row['Transaction_Date'],$row['Narration']);
+						$running_transaction_number = $row['Transaction'];
 					}
 
 					if($row['DR_Account']) $transaction->addDebitAccount($row['DR_Account'],$row['DR_Amount']);

@@ -109,7 +109,7 @@ class page_jvimport extends Page {
 					if($row['DR_Account']) $transaction->addDebitAccount($row['DR_Account'],$row['DR_Amount']);
 					if($row['CR_Account']) $transaction->addCreditAccount($row['CR_Account'],$row['CR_Amount']);
 				}
-				$do = $this->app->stickyGET('do')?:false;
+				$do = $this->app->stickyGET('do')?false:true;
 				if(isset($transaction) && !$transaction->executed) $transaction->execute($do);
 				$row_no++;
 				$c->out($row_no.' is imported');

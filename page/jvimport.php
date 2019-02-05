@@ -11,7 +11,7 @@ class page_jvimport extends Page {
 
 		$this->add('Controller_Acl');
 
-		$this->app->sticketGET('do');
+		$this->app->stickyGET('do');
 
 		$this->import_vp = $this->add('VirtualPage');
 		$this->import_vp->set([$this,'performImport']);

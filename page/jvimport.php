@@ -86,7 +86,7 @@ class page_jvimport extends Page {
 							$errors_count++;
 						}
 					}
-
+					$c->out($row_no.' is checked');
 					$row_no++;
 				}
 

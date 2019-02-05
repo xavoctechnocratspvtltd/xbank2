@@ -96,11 +96,12 @@ class page_jvimport extends Page {
 				}
 
 				// Actual transaction creation
+				$do = $this->app->stickyGET('do')?false:true;
 				$row_no=2;
 				$running_transaction_number=null;
 				foreach ($data as $row) {
 					if($row['Transaction'] != $running_transaction_number){
-						if(isset($transaction) && !$transaction->executed) $transaction->execute();
+						if(isset($transaction) && !$transaction->executed) $transaction->execute($do);
 
 						$transaction = $this->add('Model_Transaction');
 						$transaction->createNewTransaction($row['Transaction_Type'],$in_branch=null,$row['Transaction_Date'],$row['Narration']);
@@ -109,11 +110,10 @@ class page_jvimport extends Page {
 
 					if($row['DR_Account']) $transaction->addDebitAccount($row['DR_Account'],$row['DR_Amount']);
 					if($row['CR_Account']) $transaction->addCreditAccount($row['CR_Account'],$row['CR_Amount']);
+					$c->out($row_no.' is imported');
+					$row_no++;
 				}
-				$do = $this->app->stickyGET('do')?false:true;
 				if(isset($transaction) && !$transaction->executed) $transaction->execute($do);
-				$row_no++;
-				$c->out($row_no.' is imported');
 				$this->api->db->commit();
 			}catch(\Exception $e){
 				$this->api->db->rollback();

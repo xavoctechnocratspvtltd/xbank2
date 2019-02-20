@@ -176,15 +176,15 @@ class Model_ContentFile extends Model_Table {
 			$tr_m->addCondition('account_id',$q->getField('id'));
 			$received = $tr_m->sum('amountCr');
 			$premium_paid = $q->expr('([0]*[1])',[$m->getElement('paid_premium_count'),$m->getElement('emi_amount')]);
-			return $q->expr('([0]-[1])',[$received,$premium_paid]);
+			return $q->expr('(IFNULL([0],0)-IFNULL([1],0))',[$received,$premium_paid]);
 		});
 
 		$model->addExpression('total_due_amount')->set(function($m,$q){
-			return $q->expr('[0]+[1]+[2]',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges')]);
+			return $q->expr('IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0)',[$m->getElement('due_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges')]);
 		});
 
 		$model->addExpression('total_overdue_amount')->set(function($m,$q){
-			return $q->expr('[0]+[1]+[2]',[$m->getElement('overdue_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges')]);
+			return $q->expr('IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0)',[$m->getElement('overdue_premium_amount'),$m->getElement('due_panelty'),$m->getElement('other_charges')]);
 		});		
 
 		$model->addExpression('member_sm_account')->set(function($m,$q){

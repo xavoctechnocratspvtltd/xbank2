@@ -30,10 +30,15 @@ class page_transactions_bankwithdrawl extends Page {
 			
 			$account_model = $this->add('Model_Account');
 			$account_model->load($form['bank_account']);
+			
 			$op_bal = $account_model->getOpeningBalance($this->api->nextDate($this->api->today));
 
-			$op_bal = $op_bal['dr']-$op_bal['cr'];
-
+			if($account_model['scheme_name'] == "Bank OD"){
+				$op_bal = $op_bal['cr']-$op_bal['dr'];
+			}else{
+				$op_bal = $op_bal['dr']-$op_bal['cr'];
+			}
+			
 			if(($op_bal - $form['amount']) <= 0 ){
 				$form->displayError('bank_account','Not Sufficient Balance as on Date, Current Balance is ' . $op_bal . ' /-');
 			}

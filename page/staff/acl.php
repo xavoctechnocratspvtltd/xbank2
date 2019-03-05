@@ -9,9 +9,10 @@ class page_staff_acl extends Page {
 		$tabs = $this->add('Tabs');
 		$data_tab = $tabs->addTab('Data');
 		$report_tab = $tabs->addTab('Report');
+		$document_tab = $tabs->addTab('Document');
 
 		$acl_model = $data_tab->add('Model_Acl');
-
+		$acl_model->addCondition('documents_id',null);
 		if($sid=$data_tab->api->stickyGET('staff_id')){
 			$acl_model->addCondition('staff_id',$sid);
 		}
@@ -19,7 +20,7 @@ class page_staff_acl extends Page {
 		$acl_model->setOrder('class,staff_id');
 
 		$crud = $data_tab->add('CRUD');
-		$crud->setModel($acl_model);
+		$crud->setModel($acl_model,['staff_id','class','can_view','allow_add','allow_edit','allow_del','is_all_branch_allowed'],['staff','class','can_view','allow_add','allow_edit','allow_del','is_all_branch_allowed']);
 		$crud->grid->addPaginator(200);
 		$crud->grid->addQuickSearch(['staff','class']);
 
@@ -47,7 +48,16 @@ class page_staff_acl extends Page {
 		if(!$crud->isEditing()){
 			$crud->grid->addFormatter('is_allowed','grid/inline');
 		}
+
+
+		// Document ACL Management
+		$document_acl_crud = $document_tab->add('CRUD');
+		$acl_model = $this->add('Model_DocumentAcl');
+		
+		if($sid=$data_tab->api->stickyGET('staff_id')){
+			$acl_model->addCondition('staff_id',$sid);
+		}
+		$document_acl_crud->setModel($acl_model,['staff_id','documents_id','class','allow_add','allow_edit','allow_del','is_all_branch_allowed'],['staff','class','documents','allow_add','allow_edit','allow_del','is_all_branch_allowed']);
+
 	}
-
-
 }

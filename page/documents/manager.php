@@ -53,8 +53,11 @@ class page_documents_manager extends Page {
 		$_m->addCondition($doc_sub_field,$_GET[$uid]);
 
 		$crud = $this->add('CRUD');
+
+
 		$crud->setModel($_m,array('documents_id','Description','doc_image_id'),array('documents','Description','doc_image'));
-		$crud->add('Controller_Acl');
+		$acl = $crud->add('Controller_Acl');
+		$acl->documentACL();
 
 		if($crud->form){
 			$crud->form->getElement('documents_id')->getModel()->addCondition($_GET['what'],true);

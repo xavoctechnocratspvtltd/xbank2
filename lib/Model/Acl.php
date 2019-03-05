@@ -8,6 +8,9 @@ class Model_Acl extends Model_Table {
 		parent::init();
 
 		$this->hasOne('Staff','staff_id');
+
+		$this->hasOne('DocumentAll','documents_id');
+
 		$this->addField('class');
 
 		$this->addField('can_view')->type('boolean')->defaultValue(true);
@@ -15,6 +18,7 @@ class Model_Acl extends Model_Table {
 		$this->addField('allow_add')->type('boolean')->defaultValue(false);
 		$this->addField('allow_edit')->type('boolean')->defaultValue(false);
 		$this->addField('allow_del')->type('boolean')->defaultValue(false)->caption('Allow Delete');
+
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -55,6 +59,10 @@ class Model_Acl extends Model_Table {
 		return $this['allow_del'];
 	}
 
-
+	function isDocument(){
+		if(!$this->loaded()) $this->tryLoadAny();
+		
+		return ($this['class'] == "Model_DocumentSubmitted");
+	}
 
 }

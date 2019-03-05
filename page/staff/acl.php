@@ -20,6 +20,8 @@ class page_staff_acl extends Page {
 
 		$crud = $data_tab->add('CRUD');
 		$crud->setModel($acl_model);
+		$crud->grid->addPaginator(200);
+		$crud->grid->addQuickSearch(['staff','class']);
 
 		if(!$crud->isEditing()){
 			$crud->grid->addFormatter('can_view','grid/inline');

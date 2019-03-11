@@ -1,6 +1,6 @@
 <?php
 
-class Model_DocumentAcl extends Model_ACL {
+class Model_DocumentAcl extends Model_Acl {
 
 	function init(){
 		parent::init();

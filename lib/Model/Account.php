@@ -129,6 +129,7 @@ class Model_Account extends Model_Table {
 		$this->addField('new_or_renew')->enum(['New','ReNew'])->defaultValue('New');
 		
 		$this->addField('lock_status_changed_reason');
+		$this->addField('bank_account_limit')->type('int')->defaultValue(0); //used for applying limit condition over od account at time of bank withdrawl
 		
 		$this->addField('extra_info')->type('text')->system(true); // Put json style extra info in this field
 

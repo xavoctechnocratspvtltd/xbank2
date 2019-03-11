@@ -96,6 +96,7 @@ class Menu_Base extends Menu {
 		$hod_auth_menu->addMenuItem('documents','Documents Management');
 		$hod_auth_menu->addMenuItem('utility_bankslist','Banks List');
 		$hod_auth_menu->addMenuItem('utility_premimumtable','Premimum Table');
+		$hod_auth_menu->addMenuItem('utility_odlimit','Over Draft Limit');
 		$hod_auth_menu->addMenuItem('log','Log Check');
 		$hod->js('click',$hod_sub_menus_popover->showJS());
 

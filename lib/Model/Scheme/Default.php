@@ -116,18 +116,41 @@ class Model_Scheme_Default extends Model_Scheme {
 			if (strtotime($account['created_at']) > strtotime(date('Y',strtotime($on_date)) - 1 . "-09-30")) {
                 $depr = $account['DepriciationPercentAfterSep'];
             } else {
-                $depr = $account['DepriciationPercentBeforeSep'];
+            	$depr = $account['DepriciationPercentBeforeSep'];
             }
 
             $depAmt = ($account['CurrentBalanceDr'] - $account['CurrentBalanceCr']) * $depr / 100;
 //                    echo $depAmt;
 
-            $transaction = $this->add('Model_Transaction');
-            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated", $only_transaction=null, array('reference_id'=>$accounts->id));
-            
-            $transaction->addDebitAccount($account['branch_code'] . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
-            $transaction->addCreditAccount($account, round($depAmt,COMMISSION_ROUND_TO));
-            $transaction->execute();
+            // get opening balance on_date After-Sep
+            // get opening balance on_date 30-Sep
+            $op_bal_array_before_sep = $account->getOpeningBalance((date('Y',strtotime($on_date)) - 1).'-09-30');
+            $op_bal_before_sep = $op_bal_array_before_sep['dr'] - $op_bal_array_before_sep['cr'];
+            $depr = $account['DepriciationPercentBeforeSep'];
+            $depAmt = ($op_bal_before_sep) * $depr / 100;
+			 
+			if($op_bal_before_sep > 0){
+	            $transaction = $this->add('Model_Transaction');
+	            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated", $only_transaction=null, array('reference_id'=>$accounts->id));
+	            
+	            $transaction->addDebitAccount($account['branch_code'] . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
+	            $transaction->addCreditAccount($account, round($depAmt,COMMISSION_ROUND_TO));
+	            $transaction->execute();
+			}
+			
+            $op_bal_array_after_sep = $account->getOpeningBalance(date('Y',strtotime($on_date)).'-03-31');
+            $op_bal_after_sep = ($op_bal_array_after_sep['dr'] - $op_bal_array_after_sep['cr']) - $op_bal_before_sep;
+            $depr = $account['DepriciationPercentAfterSep'];
+            $depAmt = ($op_bal_after_sep) * $depr / 100;
+            if($op_bal_after_sep > 0 ){
+            	$transaction = $this->add('Model_Transaction');
+	            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated", $only_transaction=null, array('reference_id'=>$accounts->id));
+	            
+	            $transaction->addDebitAccount($account['branch_code'] . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
+	            $transaction->addCreditAccount($account, round($depAmt,COMMISSION_ROUND_TO));
+	            $transaction->execute();
+            }
+
 		}
 
 		

@@ -113,14 +113,16 @@ class Model_Scheme_Default extends Model_Scheme {
 
 		foreach ($accounts as $account) {
 			
-			if (strtotime($account['created_at']) > strtotime(date('Y',strtotime($on_date)) - 1 . "-09-30")) {
-                $depr = $account['DepriciationPercentAfterSep'];
-            } else {
-            	$depr = $account['DepriciationPercentBeforeSep'];
-            }
+			// before code ....
+			// if (strtotime($account['created_at']) > strtotime(date('Y',strtotime($on_date)) - 1 . "-09-30")) {
+   //              $depr = $account['DepriciationPercentAfterSep'];
+   //          } else {
+   //          	$depr = $account['DepriciationPercentBeforeSep'];
+   //          }
 
-            $depAmt = ($account['CurrentBalanceDr'] - $account['CurrentBalanceCr']) * $depr / 100;
+   //          $depAmt = ($account['CurrentBalanceDr'] - $account['CurrentBalanceCr']) * $depr / 100;
 //                    echo $depAmt;
+			// end of before code ....
 
             // get opening balance on_date After-Sep
             // get opening balance on_date 30-Sep

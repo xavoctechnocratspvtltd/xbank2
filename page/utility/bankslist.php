@@ -14,7 +14,7 @@ class page_utility_bankslist extends Page{
 		$s = $this->api->normalizeName('BankBranches');
 
         if (isset($_GET['expander'])) {
-			$sub_view->add('Controller_Acl');
+			$sub_view->add('Controller_Acl',['default_view'=>false]);
         }
 		
 	}

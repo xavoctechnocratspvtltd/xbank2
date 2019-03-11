@@ -6,7 +6,7 @@ class page_romoassociationedit extends Page {
 	function init(){
 		parent::init();
 
-		$this->add('Controller_Acl');
+		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$tabs = $this->add('Tabs');
 		

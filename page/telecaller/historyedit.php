@@ -6,7 +6,7 @@ class page_telecaller_historyedit extends Page {
 	function init(){
 		parent::init();
 
-		$this->add('Controller_Acl');
+		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$m= $this->add('Model_TeleCallerAccountHistory');
 

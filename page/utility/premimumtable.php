@@ -4,7 +4,7 @@ class Page_utility_premimumtable extends Page{
 	function init(){
 		parent::init();
 
-		$this->add('Controller_Acl');
+		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$form=$this->add('Form');
 		$account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();

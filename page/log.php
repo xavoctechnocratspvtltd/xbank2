@@ -6,7 +6,7 @@ class page_log extends Page {
 	function init(){
 		parent::init();
 		
-		$this->add('Controller_Acl');
+		$this->add('Controller_Acl',['default_view'=>false]);
 		
 		$model = $this->add('Model_Log');
 		if($model_filter = $this->api->stickyGET('model')){

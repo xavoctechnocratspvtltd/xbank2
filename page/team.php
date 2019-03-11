@@ -8,7 +8,7 @@ class page_team extends Page {
 
 		$crud = $this->add('CRUD');
 		$crud->setModel('Team');
-		$crud->add('Controller_Acl');
+		$crud->add('Controller_Acl',['default_view'=>false]);
 
 	}
 }

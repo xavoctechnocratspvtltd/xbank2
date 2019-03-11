@@ -6,7 +6,7 @@ class page_moagentupdate extends Page {
 	function init(){
 		parent::init();
 
-		$this->add('Controller_Acl');
+		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$branch_form = $this->add('Form');
 		$branch_form->addField('DropDown','branch')->setModel('Branch');

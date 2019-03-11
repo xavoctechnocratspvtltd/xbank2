@@ -15,7 +15,7 @@ class page_mos extends Page {
 		// MO/RO add edit
 		$crud = $mo_tab->add('CRUD',['entity_name'=>'Mo/RO']);
 		$crud->setModel('Mo');
-		$crud->add('Controller_Acl');
+		$crud->add('Controller_Acl',['default_view'=>false]);
 		
 	}
 }

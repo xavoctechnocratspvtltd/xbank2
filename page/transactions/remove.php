@@ -6,7 +6,7 @@ class page_transactions_remove extends Page {
 	function init(){
 		parent::init();
 
-		$this->add('Controller_Acl',array('default_view'=>false));
+		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$tabs = $this->add('Tabs');
 

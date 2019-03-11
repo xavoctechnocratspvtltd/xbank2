@@ -7,7 +7,7 @@ class page_telecaller_manage extends Page {
 	function init(){
 		parent::init();
 
-		$this->add('Controller_Acl');
+		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$m = $this->add('Model_TeleCaller');
 

@@ -5,7 +5,7 @@ class page_utility_setdate extends Page {
 	function init(){
 		parent::init();
 
-		$this->add('Controller_Acl',['defaultValue'=>false]);
+		$this->add('Controller_Acl',['default_view'=>false]);
 		$form=$this->add('Form');
 		$form->addField('DatePicker','date')->set($this->api->today)->validateNotNull();
 		$form->addSubmit('Change');

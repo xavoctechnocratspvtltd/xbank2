@@ -72,9 +72,11 @@ class page_dashboard_cash extends Page {
 		$grid->receive_sum1=0;
 		$grid->paid_sum1=0;
 		$grid->balance_sum1=0;
+		$grid->available_limit_sum1=0;
 		$grid->receive_view1 = $this->add('View')->addClass('atk-align-right');
 		$grid->paid_view1 = $this->add('View')->addClass('atk-align-right');
 		$grid->balance_view1 = $this->add('View')->addClass('atk-align-right');
+		$grid->available_limit_view1 = $this->add('View')->addClass('atk-align-right');
 
 		$accounts=$this->add('Model_Active_Account');
 		$accounts->addCondition(
@@ -83,7 +85,7 @@ class page_dashboard_cash extends Page {
 				);
 
 		$accounts->add('Controller_Acl');
-		$grid->setModel($accounts,array('AccountNumber'));
+		$grid->setModel($accounts,array('AccountNumber','bank_account_limit'));
 		$grid->addSno();
 
 		$grid->addMethod('format_opbal',function($grid,$field){
@@ -122,6 +124,18 @@ class page_dashboard_cash extends Page {
 		});
 
 		$grid->addColumn('crbal','balance_on_date');
+
+		$grid->addMethod('format_availablelimit',function($grid,$field){
+			$bal = $grid->model->getOpeningBalance($grid->api->nextDate($grid->api->today));
+			$op_bal = $bal['dr'] - $bal['cr'] + $grid->model['bank_account_limit'];
+			
+			$grid->current_row[$field] = $op_bal;
+			$grid->available_limit_sum1 += $op_bal;
+			$grid->available_limit_view1->set("Total Available Limit ".round($grid->available_limit_sum1,2));
+		});
+		$grid->addColumn('availablelimit','available_limit');
+
+		$grid->addOrder()->move('bank_account_limit', 'before','available_limit')->now();
 
 		$this->add('H2')->set(array('Cash Report','icon'=>'flag'));
 		$grid2=$this->add('Grid_AccountsBase');

@@ -18,6 +18,7 @@ class Menu_Base extends Menu {
 			$admin = $this->addMenuItem('index','Super Admin');
 
 
+		$hod = $this->addMenuItem('#','HOD Authority');
 		$mad = $this->addMenuItem('#','M.A.D.');
 		$stock = 	$this->addMenuItem('stock_main','Stock');
 		// $stock = 	$this->addMenuItem('staff_main','Staff Management');
@@ -38,6 +39,7 @@ class Menu_Base extends Menu {
 		if($this->api->currentStaff->isSuper())
 			$admin_sub_menus_popover=$this->add('View_Popover');
 
+		$hod_sub_menus_popover = $this->add('View_Popover');
 		$mad_sub_menus_popover = $this->add('View_Popover');
 		$stock_sub_menus_popover = $this->add('View_Popover');
 		$account_sub_menu_popover = $this->add('View_Popover');
@@ -76,24 +78,28 @@ class Menu_Base extends Menu {
 			$admin_sub_menus->addMenuItem('staff_main','Staff');
 			$admin_sub_menus->addMenuItem('schemes',array('Schemes','swatch'=>'red','icon'=>'home'));
 			$admin_sub_menus->addMenuItem('branches','Branches');
-			$admin_sub_menus->addMenuItem('mos','Mos/Ros/TeleCallers');
-			$admin_sub_menus->addMenuItem('team','Teams');
 			$admin_sub_menus->addMenuItem('balancesheet','Top Heads');
-			$admin_sub_menus->addMenuItem('accounts_locking','Lock & Unlock Accounts');
 			$admin_sub_menus->addMenuItem('agentscadre','Agents Cadres');
-			$admin_sub_menus->addMenuItem('documents','Documents Management');
 			// $admin_sub_menus->addMenuItem('operations_edit','Edit Accounts');
-			$admin_sub_menus->addMenuItem('transactions_remove','Edit/Delete Transaction');
-			$admin_sub_menus->addMenuItem('utility_premimumtable','Premimum Table');
-			$admin_sub_menus->addMenuItem('utility_bankslist','Banks List');
 			// $admin_sub_menus->addMenuItem('utility_crpbedit','CRPB Edit');
-			$admin_sub_menus->addMenuItem('log','Log Check');
 			$admin_sub_menus->addMenuItem('closingnew','Closing');
 			$admin_sub_menus->addMenuItem('contentmanagement','Content Management');
 			$admin_sub_menus->addMenuItem('share_management','Share Management');
 			$admin->js('click',$admin_sub_menus_popover->showJS());
 		}
 
+		$hod_auth_menu = $hod_sub_menus_popover->add('Menu_Vertical');
+		$hod_auth_menu->addMenuItem('mos','Mos/Ros/TeleCallers');
+		$hod_auth_menu->addMenuItem('team','Teams');
+		$hod_auth_menu->addMenuItem('accounts_locking','Lock & Unlock Accounts');
+		$hod_auth_menu->addMenuItem('transactions_remove','Edit/Delete Transaction');
+		$hod_auth_menu->addMenuItem('documents','Documents Management');
+		$hod_auth_menu->addMenuItem('utility_bankslist','Banks List');
+		$hod_auth_menu->addMenuItem('utility_premimumtable','Premimum Table');
+		$hod_auth_menu->addMenuItem('log','Log Check');
+		$hod->js('click',$hod_sub_menus_popover->showJS());
+
+		
 		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');
 		$mad_sub_menus->addMenuItem('members','Members');
 		$mad_sub_menus->addMenuItem('agents','Agents');

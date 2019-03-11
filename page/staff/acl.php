@@ -57,7 +57,7 @@ class page_staff_acl extends Page {
 		if($sid=$data_tab->api->stickyGET('staff_id')){
 			$acl_model->addCondition('staff_id',$sid);
 		}
-		$document_acl_crud->setModel($acl_model,['staff_id','documents_id','class','allow_add','allow_edit','allow_del','is_all_branch_allowed'],['staff','class','documents','allow_add','allow_edit','allow_del','is_all_branch_allowed']);
+		$document_acl_crud->setModel($acl_model,['staff_id','documents_id','class','allow_edit','allow_del'],['documents','staff','class','allow_edit','allow_del']);
 
 	}
 }

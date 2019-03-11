@@ -5,10 +5,17 @@ class page_utility_bankslist extends Page{
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
 		$crud = $this->add('CRUD');
 		$crud->setModel('Bank');
+		$crud->add('Controller_Acl');
 
-		$crud->addRef('BankBranches');
+		$sub_view = $crud->addRef('BankBranches');
+		$s = $this->api->normalizeName('BankBranches');
+
+        if (isset($_GET['expander'])) {
+			$sub_view->add('Controller_Acl');
+        }
 		
 	}
 }

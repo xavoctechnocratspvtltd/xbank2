@@ -8,6 +8,6 @@ class page_documents extends Page {
 
 		$crud = $this->add('CRUD');
 		$crud->setModel('DocumentAll');
-
+		$crud->add('Controller_Acl');
 	}
 }

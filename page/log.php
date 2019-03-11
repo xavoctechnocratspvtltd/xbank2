@@ -5,7 +5,9 @@ class page_log extends Page {
 
 	function init(){
 		parent::init();
-
+		
+		$this->add('Controller_Acl');
+		
 		$model = $this->add('Model_Log');
 		if($model_filter = $this->api->stickyGET('model')){
 			$model->addCondition('model_class',$model_filter);

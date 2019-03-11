@@ -3,6 +3,9 @@ class Page_utility_premimumtable extends Page{
 	public $title = 'Premium Table';
 	function init(){
 		parent::init();
+
+		$this->add('Controller_Acl');
+
 		$form=$this->add('Form');
 		$account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();
 		

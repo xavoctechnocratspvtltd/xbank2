@@ -183,8 +183,8 @@ class Form_StockTransaction extends Form_Stacked {
 
 			}
 
-			if($item_stock['net_stock']<=$this['qty'])
-				throw new \Exception("Stock Unavailable to process, Available stock : ". $item_stock['net_stock'], 1);
+			if($item_stock['net_stock'] < $this['qty'])
+				throw new \Exception("Stock Unavailable to process, Available stock : ". $item_stock['net_stock']." Requested Stock ".$this['qty'], 1);
 		}
 
 		$selected_item = $this->add('Model_StockNew_Item')->load($this['item_id']);

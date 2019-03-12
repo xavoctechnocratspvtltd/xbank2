@@ -867,7 +867,7 @@ class Model_Account extends Model_Table {
 		$narration.= " - ".$staff_model['name'];
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_CONVEYANCE_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_id'=>$staff));
+		$transaction->createNewTransaction(TRA_CONVEYANCE_CAHRGES,$in_branch,$transaction_date,$narration,null,array('reference_id'=>$account_cr->id));
 		
 		$transaction->addDebitAccount($account_dr,$amount);
 		$transaction->addCreditAccount($account_cr,$amount);			

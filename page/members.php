@@ -93,12 +93,9 @@ class page_members extends Page {
 				if($field) $form->displayError($field,$field.' is Mandatory');
 			
 			}
-
-
-
 			
-			// if(!$form['FilledForm60'] and !$form['PanNo'])
-			// 	$form->displayError('PanNo','PanNo is must');
+			if(!$form['form_60_61_is_submitted'] and !$form['PanNo'])
+				$form->displayError('PanNo','either PanNo or Form 60/61 is required');
 			
 			if($form['PanNo']){
 
@@ -121,14 +118,14 @@ class page_members extends Page {
 			if($member_old->loaded()){
 				$form->displayError('AdharNumber','Already Exists');
 			}
-
+			
 			try {
 				$crud->api->db->beginTransaction();
 				$new_member_model->createNewMember($form['name'], $admissionFee=10, $shareValue, $branch=null, $other_values=$form->getAllFields(),$form,$on_date=null);
 				
 				// update form 60/61 detail
 				if($form['form_60_61_is_submitted']){
-					$new_member_model->submitForm60($form['form_60_61_description']);
+					$new_member_model->submitForm60();
 				}
 
 				$crud->api->db->commit();
@@ -172,7 +169,7 @@ class page_members extends Page {
 		$form_fields=null;
 
 		if($crud->isEditing()){
-			$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active','form_60_61_is_submitted','form_60_61_description'];
+			$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active','form_60_61_is_submitted'];
 		}
 		
 		if($crud->isEditing('edit')){
@@ -201,8 +198,9 @@ class page_members extends Page {
 
 		if($crud->isEditing('add')){
 			$form = $crud->form;
+			$o = $form->add('Order');
 			$form->addField('checkbox','form_60_61_is_submitted');
-			$form->addField('text','form_60_61_description');
+			$o->move('form_60_61_is_submitted','after','PanNo');
 		}
 
 		$crud->setModel($member_model,$form_fields);

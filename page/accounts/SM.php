@@ -9,7 +9,7 @@ class page_accounts_SM extends Page {
 		$this->app->stickyGET('selected_member_id');
 
 		$this->add('Controller_Acl');
-
+		
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
 		$account_Default_model = $this->add('Model_Account_SM');
 
@@ -40,8 +40,13 @@ class page_accounts_SM extends Page {
 			    $Default_account_model->deposit($form['Amount'],$narration='Share Account Opened for member '. $form['member'],$form['debit_account']?[ [ $form['debit_account']=>$form['Amount'] ] ]:null,$form,$transaction_date=null,$in_branch=null);
 				
 				// submit form 60/61
-				if(!$member_model->form60IsSubmitted() && $form['form_60_61_is_submitted']){
-					$member_model->submitForm60($form['form_60_61_description'],$Default_account_model->id);
+				$form60_model = $member_model->form60IsSubmitted('model');
+
+				if(!$form60_model->loaded() && $form['form_60_61_is_submitted']){
+					$member_model->submitForm60(null,$Default_account_model->id);
+				}elseif(!$form60_model['accounts_id'] && $form['form_60_61_is_submitted']){
+					$form60_model['accounts_id'] = $Default_account_model->id;
+					$form60_model->save();
 				}
 				
 			    $crud->api->db->commit();
@@ -87,9 +92,7 @@ class page_accounts_SM extends Page {
 
 			$form = $crud->form;
 			$form->addField('checkbox','form_60_61_is_submitted');
-			$form->addField('text','form_60_61_description');
 			$o->move('form_60_61_is_submitted','last');
-			$o->move('form_60_61_description','last');
 		}
 
 		if($crud->isEditing('edit')){
@@ -139,12 +142,7 @@ class page_accounts_SM extends Page {
 			$member_field->getModel()->addCondition('is_active',true);
 
 			$form_60_61_is_submitted_field = $crud->form->getElement('form_60_61_is_submitted');
-			$form_60_61_description_field = $crud->form->getElement('form_60_61_description');
-			$member_field->other_field->js('change',
-				[
-					$crud->form->js()->atk4_form('reloadField','form_60_61_is_submitted',array($this->api->url(),'selected_member_id'=>$member_field->js()->val())),
-					$crud->form->js()->atk4_form('reloadField','form_60_61_description',array($this->api->url(),'selected_member_id'=>$member_field->js()->val()))
-				]);
+			$member_field->other_field->js('change',$crud->form->js()->atk4_form('reloadField','form_60_61_is_submitted',array($this->api->url(),'selected_member_id'=>$member_field->js()->val())));
 
 			if($mid = $_GET['selected_member_id']){
 				$m_model = $this->add('Model_Member')->load($mid);
@@ -152,10 +150,11 @@ class page_accounts_SM extends Page {
 
 				if($submit_form_60_model->loaded()){
 					$form_60_61_is_submitted_field->set($submit_form_60_model->loaded());
-					$form_60_61_is_submitted_field->setAttr('disabled','disabled');
+					// $form_60_61_is_submitted_field->setAttr('disabled','disabled');
+					$form_60_61_is_submitted_field->afterField()->add('View')->set('Submitted On = '.$submit_form_60_model['submitted_on']." with account = ".$submit_form_60_model['accounts']);
 
-					$form_60_61_description_field->set($submit_form_60_model['description'].", Submitted on = ".$submit_form_60_model['submitted_on']);
-					$form_60_61_description_field->setAttr('disabled','disabled');
+					// $form_60_61_description_field->set($submit_form_60_model['description'].", Submitted on = ".$submit_form_60_model['submitted_on']);
+					// $form_60_61_description_field->setAttr('disabled','disabled');
 				}
 
 			}

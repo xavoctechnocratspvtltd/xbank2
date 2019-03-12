@@ -55,7 +55,7 @@ class page_documents_manager extends Page {
 		$crud = $this->add('CRUD');
 
 
-		$crud->setModel($_m,array('documents_id','Description','doc_image_id'),array('documents','Description','doc_image'));
+		$crud->setModel($_m,array('documents_id','Description','doc_image_id'),array('documents','Description','doc_image','submitted_on'));
 		$acl = $crud->add('Controller_Acl');
 		$acl->documentACL();
 

@@ -5,13 +5,17 @@ class page_reports_conveyance extends Page {
 	public $title="Conveyance Book";
 
 	function init(){
-		parent::init();	
+		parent::init();
 
 		$this->add('Controller_Acl');
 		$staff =  $this->add('Model_Employee');
 		$form=$this->add('Form')->addClass('noneprintalbe');
-		$staff_field = $form->addField('autocomplete/Basic','staff')->validateNotNull();
+		$staff_field = $form->addField('autocomplete/Basic','staff');
 		$staff_field->setModel($staff);
+
+		$sv_model = $this->add('Model_Account_SavingAndCurrent');
+		$staff_sb_field = $form->addField('autocomplete/Basic','staff_sb');
+		$staff_sb_field->setModel($sv_model);
 
 
 		$form->addField('DatePicker','from_date')->set($_GET['from_date']);
@@ -37,10 +41,11 @@ class page_reports_conveyance extends Page {
 
 
 		if($form->isSubmitted()){
-			
+			if(!$form['staff_sb'] && !$form['staff'])  $form->displayError('staff_sb','Either Staff OR Staff SB must required');
+						
 			$v->js()->reload(
 					array(
-						'staff_id'=>$form['staff'],
+						'staff_id'=>($form['staff_sb']?$form['staff_sb']:$form['staff']),
 						'from_date'=>($form['from_date'])?:0,
 						'to_date'=>($form['to_date'])?:0,
 						'filter'=>1,

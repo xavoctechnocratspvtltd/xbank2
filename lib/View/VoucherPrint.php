@@ -21,6 +21,7 @@ class View_VoucherPrint extends View{
 
 
 		$transaction = $this->add('Model_Transaction');
+		$transaction->getElement('staff_id')->getModel()->title_field = "username";
 		$transaction->load($this->transaction_id);
 		
 		$v = $this->add('View')->addClass('atk-padding-small');
@@ -37,7 +38,7 @@ class View_VoucherPrint extends View{
 		$grid->setModel($transaction->ref('TransactionRow')->setOrder('amountDr desc, amountCr desc'),array('account','amountDr','amountCr'));
 
 		$v->add('View')->set(array($transaction['Narration'],'icon'=>'pencil'));
-		$v->add('View')->set(array($transaction['reference'],'icon'=>'pencil'));
+		$v->add('View')->set(array($transaction['reference']." created by ".$transaction['staff'],'icon'=>'pencil'));
 
 
 		if(!$_GET['hide_print_btn']){

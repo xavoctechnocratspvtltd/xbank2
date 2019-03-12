@@ -6,6 +6,8 @@ class page_accounts_SM extends Page {
 	function init(){
 		parent::init();
 
+		$this->app->stickyGET('selected_member_id');
+
 		$this->add('Controller_Acl');
 
 		$crud=$this->add('xCRUD',array('grid_class'=>'Grid_Account','add_form_beautifier'=>false));
@@ -24,11 +26,24 @@ class page_accounts_SM extends Page {
 			if($form['Amount'] < RATE_PER_SHARE || $form['Amount'] % RATE_PER_SHARE !=0) {
 				throw $this->exception('Amount must be multiple of '.RATE_PER_SHARE,'ValidityCheck')->setField('Amount');
 			}
-						
+			
+			// check here validation either pancard or form 60/61 is required
+			$member_model = $this->add('Model_Member')->load($form['member_id']);
+			
+			if(empty($member_model['PanNo']) && !$form['form_60_61_is_submitted'] && !$member_model->form60IsSubmitted()){
+				throw $this->exception('either PanCard No or Form 60/61 is required','ValidityCheck')->setField('form_60_61_is_submitted');
+			}
+			
 			try {
 				$crud->api->db->beginTransaction();
-			    $Default_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $Default_account_model->getNewAccountNumber() ,$form->getAllFields(),$form);
-			    $Default_account_model->deposit($form['Amount'],$narration='Share Account Opened for member '. $form['member'],$form['debit_account']?[ [ $form['debit_account']=>$form['Amount'] ] ]:null,$form,$transaction_date=null,$in_branch=null);			    
+			    $id = $Default_account_model->createNewAccount($form['member_id'],$form['scheme_id'],$crud->api->current_branch, $Default_account_model->getNewAccountNumber() ,$form->getAllFields(),$form);
+			    $Default_account_model->deposit($form['Amount'],$narration='Share Account Opened for member '. $form['member'],$form['debit_account']?[ [ $form['debit_account']=>$form['Amount'] ] ]:null,$form,$transaction_date=null,$in_branch=null);
+				
+				// submit form 60/61
+				if(!$member_model->form60IsSubmitted() && $form['form_60_61_is_submitted']){
+					$member_model->submitForm60($form['form_60_61_description'],$Default_account_model->id);
+				}
+				
 			    $crud->api->db->commit();
 			} catch(Exception_ValidityCheck $e){
 			} catch (Exception $e) {
@@ -69,6 +84,12 @@ class page_accounts_SM extends Page {
 			// $debit_account_model->add('Controller_Acl');
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
+
+			$form = $crud->form;
+			$form->addField('checkbox','form_60_61_is_submitted');
+			$form->addField('text','form_60_61_description');
+			$o->move('form_60_61_is_submitted','last');
+			$o->move('form_60_61_description','last');
 		}
 
 		if($crud->isEditing('edit')){
@@ -114,14 +135,38 @@ class page_accounts_SM extends Page {
 		}
 
 		if($crud->isEditing('add')){
-			$crud->form->getElement('member_id')->getModel()->addCondition('is_active',true);
+			$member_field = $crud->form->getElement('member_id');
+			$member_field->getModel()->addCondition('is_active',true);
+
+			$form_60_61_is_submitted_field = $crud->form->getElement('form_60_61_is_submitted');
+			$form_60_61_description_field = $crud->form->getElement('form_60_61_description');
+			$member_field->other_field->js('change',
+				[
+					$crud->form->js()->atk4_form('reloadField','form_60_61_is_submitted',array($this->api->url(),'selected_member_id'=>$member_field->js()->val())),
+					$crud->form->js()->atk4_form('reloadField','form_60_61_description',array($this->api->url(),'selected_member_id'=>$member_field->js()->val()))
+				]);
+
+			if($mid = $_GET['selected_member_id']){
+				$m_model = $this->add('Model_Member')->load($mid);
+				$submit_form_60_model = $m_model->form60IsSubmitted('model');
+
+				if($submit_form_60_model->loaded()){
+					$form_60_61_is_submitted_field->set($submit_form_60_model->loaded());
+					$form_60_61_is_submitted_field->setAttr('disabled','disabled');
+
+					$form_60_61_description_field->set($submit_form_60_model['description'].", Submitted on = ".$submit_form_60_model['submitted_on']);
+					$form_60_61_description_field->setAttr('disabled','disabled');
+				}
+
+			}
+
 			$m = $crud->form->getElement('scheme_id')->getModel();
 			// $m->addCondition('SchemeType',ACCOUNT_TYPE_DEFAULT);
 			$m->addCondition('name','Share Capital');
 			$m->addCondition('published',true);
 			$m->putValidDateCondition();
-			// $o->move('initial_opening_amount','before','Amount')
-			// ->now();
+			// $o->move('initial_opening_amount','before','Amount');
+			$o->now();
 		}
 		$crud->add('Controller_Acl');
 	}

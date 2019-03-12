@@ -278,4 +278,30 @@ class Model_Member extends Model_Table {
 		$this->addCondition('is_defaulter',false);
 	}
 
+	//check for current financial year 
+	function form60IsSubmitted($return=null){
+		if(!$this->loaded()) throw $this->exception('Please call on loaded object');
+		$dates = $this->api->getFinancialYear();
+		$md_model = $this->add('Model_MemberDocument')
+			->addCondition('member_id',$this->id)
+			->addCondition('submitted_on','>=',$dates['start_date'])
+			->addCondition('submitted_on','<',$this->app->nextDate($dates['end_date']))
+			->setOrder('submitted_on','desc');
+
+		if($return == "model")
+			return $md_model->tryLoadAny();
+
+		return $md_model->count()->getOne();
+	}
+
+	function submitForm60($desc = null,$account_id=null){
+		$md_model = $this->add('Model_MemberDocument');
+		$md_model['Description'] = $desc;
+		$md_model['submitted_on'] = $this->app->now;
+		$md_model['member_id'] = $this->id;
+		if($account_id)
+			$md_model['accounts_id'] = $account_id;
+		$md_model->save();
+	}
+
 }

@@ -6,7 +6,7 @@ class page_members extends Page {
 
 	function page_index(){
 		// parent::init();
-
+		
 		$this->add('Controller_Acl');
 
 		$crud = $this->add('xCRUD',array('grid_class'=>'Grid_Member'));
@@ -64,8 +64,8 @@ class page_members extends Page {
 
 		$member_model->addExpression('shares_count')->set($member_model->refSQL('Share')->count());
 
-
 		$crud->addHook('myupdate',function($crud,$form){
+
 			if($crud->isEditing('edit')) return false;
 			
 			$new_member_model = $crud->add('Model_Member');
@@ -125,6 +125,12 @@ class page_members extends Page {
 			try {
 				$crud->api->db->beginTransaction();
 				$new_member_model->createNewMember($form['name'], $admissionFee=10, $shareValue, $branch=null, $other_values=$form->getAllFields(),$form,$on_date=null);
+				
+				// update form 60/61 detail
+				if($form['form_60_61_is_submitted']){
+					$new_member_model->submitForm60($form['form_60_61_description']);
+				}
+
 				$crud->api->db->commit();
 			} catch (Exception $e) {
 			   	$crud->api->db->rollBack();
@@ -143,8 +149,6 @@ class page_members extends Page {
 			$member_model->getElement('is_agent')->system(true);
 			// $member_model->getElement('is_active')->system(true);
 			$member_model->getElement('is_defaulter')->system(true);
-
-
 		}
 
 		if($crud->isEditing('edit')){
@@ -168,7 +172,7 @@ class page_members extends Page {
 		$form_fields=null;
 
 		if($crud->isEditing()){
-			$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active'];
+			$form_fields=['branch_id','title','name','FatherName','RelationWithFatherField','Cast','landmark','tehsil','city','district','state','pin_code','CurrentAddress','Occupation','PhoneNos','DOB','PanNo','AdharNumber','bankbranch_a_id','bank_account_number_1','bankbranch_b_id','bank_account_number_2','memebr_type','Witness1Name','Witness1FatherName','Witness1Address','Witness2Name','Witness2FatherName','Witness2Address','is_active','form_60_61_is_submitted','form_60_61_description'];
 		}
 		
 		if($crud->isEditing('edit')){
@@ -193,6 +197,12 @@ class page_members extends Page {
 			// $debit_account_model->add('Controller_Acl');
 
 			$debit_account->setModel($debit_account_model,'AccountNumber');
+		}
+
+		if($crud->isEditing('add')){
+			$form = $crud->form;
+			$form->addField('checkbox','form_60_61_is_submitted');
+			$form->addField('text','form_60_61_description');
 		}
 
 		$crud->setModel($member_model,$form_fields);
@@ -246,7 +256,6 @@ class page_members extends Page {
 			// $g->addClass('.mygrid');
 			// $g->js('reload')->reload();
 		}
-
 		// if($crud->isEditing()){
 		// 	$is_minor_field = $crud->form->getElement('IsMinor');
 		// 	$is_minor_field->js(true)->univ()->bindConditionalShow(array(

@@ -257,16 +257,32 @@ class page_Accounts_FixedAndMis extends Page {
 	function renew($page){
 		$id = $_GET[$page->short_name.'_id'];
 
+		$financial_year = $this->api->getFinancialYear();
+
 		$account_fixedandmis_model = $this->add('Model_Account_FixedAndMis');
-		$account_fixedandmis_model->load($id);
+		$account_fixedandmis_model->addCondition('maturity_date','>=',$financial_year['start_date']);
+		$account_fixedandmis_model->addCondition('maturity_date','<',$this->app->nextDate($financial_year['end_date']));
+		$account_fixedandmis_model->addCondition('id',$id);
+		$account_fixedandmis_model->tryLoadAny();
+		if(!$account_fixedandmis_model->loaded()){
+			$page->add('View_Warning')->setHtml("Account is not matured in current financial_year Start Date: ".$financial_year['start_date']." End Date: ".$financial_year['end_date']);
+			return;
+		}
 
 		$balance = $account_fixedandmis_model->getOpeningBalance($this->app->nextDate($this->app->today));
 		$op_balance = $balance['cr'] - $balance['dr'];
 		
-		if(!$account_fixedandmis_model['ActiveStatus'] || $op_balance <= 0 || $account_fixedandmis_model->isLocked() ){
-			$page->add('View_Warning')->setHtml("<br/>Account ".$account_fixedandmis_model['name']." not Renew, possible reasons are <br/>"."<br/> Account Status: ".($account_fixedandmis_model['ActiveStatus']?'Active':'DeActive')."<br/> Balance: ".$op_balance."<br/> Is Locked: ".($account_fixedandmis_model->isLocked()?"Yes, First Final SL Loan then Renew Again":"No"));
+		if(!$account_fixedandmis_model['ActiveStatus'] || $op_balance <= 0 || $account_fixedandmis_model->isLocked() ||!$account_fixedandmis_model->isMatured() ){
+			$page->add('View_Warning')->setHtml("<br/>
+					Account ".$account_fixedandmis_model['name']." not Renew, possible reasons are <br/>".
+					"<br/> Account Status: ".($account_fixedandmis_model['ActiveStatus']?'Active':'DeActive').
+					"<br/> Balance: ".$op_balance.
+					"<br/> Is Locked: ".($account_fixedandmis_model->isLocked()?"Yes, First Final SL Loan then Renew Again":"No".
+					"<br/> Account Matured: ".($account_fixedandmis_model->isMatured()?"Yes":"No"))
+				);
 			return;
 		}
+
 		// $account_fixedandmis_model->add('Controller_Acl');
 
 		$form_fields = ['account_type','debit_account_id','member_id','scheme_id','Amount','agent_id','team_id','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeDOB','MinorNomineeParentName','sig_image_id','new_or_renew'];

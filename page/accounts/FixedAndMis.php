@@ -260,9 +260,9 @@ class page_Accounts_FixedAndMis extends Page {
 		$account_fixedandmis_model = $this->add('Model_Account_FixedAndMis');
 		$account_fixedandmis_model->load($id);
 
-		$balance = $account_fixedandmis_model->getOpeningBalance($this->app->today);
+		$balance = $account_fixedandmis_model->getOpeningBalance($this->app->nextDate($this->app->today));
 		$op_balance = $balance['cr'] - $balance['dr'];
-
+		
 		if(!$account_fixedandmis_model['ActiveStatus'] || $op_balance <= 0 || $account_fixedandmis_model->isLocked() ){
 			$page->add('View_Warning')->setHtml("<br/>Account ".$account_fixedandmis_model['name']." not Renew, possible reasons are <br/>"."<br/> Account Status: ".($account_fixedandmis_model['ActiveStatus']?'Active':'DeActive')."<br/> Balance: ".$op_balance."<br/> Is Locked: ".($account_fixedandmis_model->isLocked()?"Yes, First Final SL Loan then Renew Again":"No"));
 			return;
@@ -340,7 +340,6 @@ class page_Accounts_FixedAndMis extends Page {
 				
 				$renew_form->api->db->beginTransaction();
 
-
 				if($renew_form['MaturityToAccount_id']){
 					$maturity_to_account_model = $crud->add('Model_Account');
 					$maturity_to_account_model->addCondition('id',$renew_form['MaturityToAccount_id']);
@@ -356,10 +355,10 @@ class page_Accounts_FixedAndMis extends Page {
 				$form_data['ModeOfOperation'] = $account_fixedandmis_model['ModeOfOperation'];
 				$form_data['intrest_to_account_id'] = $account_fixedandmis_model['intrest_to_account_id'];
 				$form_data['new_or_renew'] = 'ReNew';
-				
+
 				$fixedAndMis_account_model->allow_any_name = true;
 			    $fixedAndMis_account_model->createNewAccount($member_model->id,$renew_form['scheme_id'],$renew_form->api->current_branch,null,$form_data,$renew_form);
-			    	
+
 		    	// submit form 60/61
 				$form60_model = $member_model->form60IsSubmitted('model');
 				if(!$form60_model->loaded() && $renew_form['form_60_61_is_submitted']){
@@ -368,6 +367,10 @@ class page_Accounts_FixedAndMis extends Page {
 					$form60_model['accounts_id'] = $fixedAndMis_account_model->id;
 					$form60_model->save();
 				}
+
+				// old fd deactivated
+				$account_fixedandmis_model['ActiveStatus'] = false;
+				$account_fixedandmis_model->save();
 
 			    $renew_form->api->db->commit();
 			}catch(Exception_ValidityCheck $e){

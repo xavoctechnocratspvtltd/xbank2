@@ -248,5 +248,144 @@ class page_Accounts_FixedAndMis extends Page {
 		}
 
 		$crud->add('Controller_Acl');
+
+		$crud->grid->add('VirtualPage')
+			->addColumn('renew','Renew','Renew')
+			->set([$this,'renew']);
 	}
+
+	function renew($page){
+		$id = $_GET[$page->short_name.'_id'];
+
+		$account_fixedandmis_model = $this->add('Model_Account_FixedAndMis');
+		$account_fixedandmis_model->load($id);
+
+		$balance = $account_fixedandmis_model->getOpeningBalance($this->app->today);
+		$op_balance = $balance['cr'] - $balance['dr'];
+
+		if(!$account_fixedandmis_model['ActiveStatus'] || $op_balance <= 0 || $account_fixedandmis_model->isLocked() ){
+			$page->add('View_Warning')->setHtml("<br/>Account ".$account_fixedandmis_model['name']." not Renew, possible reasons are <br/>"."<br/> Account Status: ".($account_fixedandmis_model['ActiveStatus']?'Active':'DeActive')."<br/> Balance: ".$op_balance."<br/> Is Locked: ".($account_fixedandmis_model->isLocked()?"Yes, First Final SL Loan then Renew Again":"No"));
+			return;
+		}
+		// $account_fixedandmis_model->add('Controller_Acl');
+
+		$form_fields = ['account_type','debit_account_id','member_id','scheme_id','Amount','agent_id','team_id','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeDOB','MinorNomineeParentName','sig_image_id','new_or_renew'];
+		$copy_fields = ['account_type','member_id','agent_id','team_id','ModeOfOperation','intrest_to_account_id','MaturityToAccount_id','Nominee','RelationWithNominee','NomineeAge','MinorNomineeDOB','MinorNomineeParentName','sig_image_id'];
+		$read_only_fields = ['account_type','debit_account','member_id','ModeOfOperation','intrest_to_account_id','new_or_renew','Amount'];
+		// if($account_fixedandmis_model['account_type'])
+		// $page->add('View')->set("Account Type ".$account_fixedandmis_model['account_type']);
+		$renew_model = $this->add('Model_Account_FixedAndMis');
+
+		$renew_form = $page->add('Form',null,null,['form/stacked']);
+		$debit_account = $renew_form->addField('Readonly','debit_account');
+		$debit_account_model = $this->add('Model_Active_Account');
+		// $debit_account_model->addCondition(
+		// 		$debit_account_model->dsql()->orExpr()
+		// 			->where($debit_account_model->scheme_join->table_alias.'.name',BANK_ACCOUNTS_SCHEME)
+		// 			->where($debit_account_model->scheme_join->table_alias.'.name',BANK_OD_SCHEME)
+		// 			->where($debit_account_model->scheme_join->table_alias.'.SchemeType',ACCOUNT_TYPE_SAVING)
+		// 			->where($debit_account_model->scheme_join->table_alias.'.name',SUSPENCE_ACCOUNT_SCHEME)
+		// 			->where($debit_account_model->scheme_join->table_alias.'.name',CASH_ACCOUNT_SCHEME)
+		// 	);
+		$debit_account->setModel($debit_account_model,'AccountNumber');
+
+		$renew_form->setModel($renew_model,$form_fields);
+		$renew_form->addField('checkbox','form_60_61_is_submitted');
+
+		foreach ($copy_fields as $key => $field_name){
+			$renew_form->getElement($field_name)->set($account_fixedandmis_model[$field_name]);
+		}
+
+		$renew_form->getElement('new_or_renew')->set('ReNew');
+		$renew_form->getElement('Amount')->set($op_balance);
+		$renew_form->getElement('debit_account')->set($account_fixedandmis_model['AccountNumber']);
+
+
+		foreach ($read_only_fields as $key => $field_name){
+			$field = $renew_form->getElement($field_name);
+			if(in_array($field_name, ['member_id','intrest_to_account_id']))
+				$field->other_field->disable()->validate();
+			else
+				$field->disable()->validate();
+		}
+
+		$renew_form->addSubmit('ReNew Now')->addClass('atk-button atk-swatch-yellow atk-box atk-padding');
+
+		if($renew_form->isSubmitted()){
+			
+			$fixedAndMis_account_model = $page->add('Model_Account_FixedAndMis');
+
+			$sm_model = $this->add('Model_Account_SM');
+			$sm_model->addCondition('member_id',$account_fixedandmis_model['member_id']);
+			$sm_model->tryLoadAny();
+			if(!$sm_model->loaded()){
+				$renew_form->displayError('member_id',"Member Does not have SM Account");
+			}
+			
+			// check here validation either pancard or form 60/61 is required
+			$member_model = $this->add('Model_Member')->load($account_fixedandmis_model['member_id']);
+			if(empty($member_model['PanNo']) && !$renew_form['form_60_61_is_submitted'] && !$member_model->form60IsSubmitted()){
+				$renew_form->displayError('form_60_61_is_submitted',"either PanCard No or Form 60/61 is required");
+			}
+
+			if($account_fixedandmis_model['account_type']=='MIS' and !$account_fixedandmis_model['intrest_to_account_id']){
+				$renew_form->displayError('intrest_to_account_id','Field is must for MIS type accounts');
+			}
+			
+			if($renew_form['NomineeAge'] And  $renew_form['NomineeAge']<18 And $renew_form['MinorNomineeParentName']==""){
+				$renew_form->displayError('MinorNomineeParentName','mandatory field');
+			}
+
+			try {
+				
+				$renew_form->api->db->beginTransaction();
+
+
+				if($renew_form['MaturityToAccount_id']){
+					$maturity_to_account_model = $crud->add('Model_Account');
+					$maturity_to_account_model->addCondition('id',$renew_form['MaturityToAccount_id']);
+					$maturity_to_account_model->tryLoadAny();
+					if($maturity_to_account_model['member_id'] != $account_fixedandmis_model['member_id']){
+						$renew_form->displayError('MaturityToAccount_id','Not for same member ');
+					}
+				}
+
+				$form_data = $renew_form->getAllFields();
+				$form_data['account_type'] = $account_fixedandmis_model['account_type'];
+				$form_data['Amount'] = $op_balance;
+				$form_data['ModeOfOperation'] = $account_fixedandmis_model['ModeOfOperation'];
+				$form_data['intrest_to_account_id'] = $account_fixedandmis_model['intrest_to_account_id'];
+				$form_data['new_or_renew'] = 'ReNew';
+				
+				$fixedAndMis_account_model->allow_any_name = true;
+			    $fixedAndMis_account_model->createNewAccount($member_model->id,$renew_form['scheme_id'],$renew_form->api->current_branch,null,$form_data,$renew_form);
+			    	
+		    	// submit form 60/61
+				$form60_model = $member_model->form60IsSubmitted('model');
+				if(!$form60_model->loaded() && $renew_form['form_60_61_is_submitted']){
+					$member_model->submitForm60(null,$fixedAndMis_account_model->id);
+				}elseif(!$form60_model['accounts_id'] && $renew_form['form_60_61_is_submitted']){
+					$form60_model['accounts_id'] = $fixedAndMis_account_model->id;
+					$form60_model->save();
+				}
+
+			    $renew_form->api->db->commit();
+			}catch(Exception_ValidityCheck $e){
+				$renew_form->api->db->rollBack();
+				if($renew_form->hasElement($e->getField()))
+				   	$renew_form->displayError($e->getField(),$e->getMessage());
+				  else
+				  	$renew_form->js()->univ()->errorMessage($e->getMessage())->execute();
+			}catch (Exception $e) {
+			   	$renew_form->api->db->rollBack();
+			   	throw $e;
+			}
+
+			$fixedAndMis_account_model->callApi();
+
+			$renew_form->js(null,[$renew_form->js()->trigger('reload')])->univ()->successMessage('Account Renew Successfully ')->closeDialog()->execute();
+		}
+
+	}
+
 }

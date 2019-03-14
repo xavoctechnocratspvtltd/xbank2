@@ -127,6 +127,7 @@ class Menu_Base extends Menu {
 		$account_sub_menu->addMenuItem('accounts','Accounts Management');
 		$account_sub_menu->addMenuItem('accounts_statement','Accounts Statement');
 		$account_sub_menu->addMenuItem('utility_accwithoutimage','Accounts Without Images');
+		$account_sub_menu->addMenuItem('noclog','NOC Management');
 		$account->js('click',$account_sub_menu_popover->showJS());
 
 		$transactions_sub_menus = $transactions_sub_menus_popover->add('Menu_Vertical');

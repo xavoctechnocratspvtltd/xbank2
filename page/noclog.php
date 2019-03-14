@@ -8,7 +8,7 @@ class page_noclog extends Page {
 
 		$tabs = $this->add('Tabs');
 		$tabs->addTabURL('noclog_new','Send NOC');
-		$tabs->addTabURL('noclog_receive','Send NOC');
+		$tabs->addTabURL('noclog_receive','Receive NOC');
 
 	}
 }

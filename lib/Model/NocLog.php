@@ -41,4 +41,14 @@ class Model_NocLog extends Model_Table {
 		if($this['is_dispatch_to_customer'] && !$this['dispatch_at']) $this['dispatch_at'] = $this->app->now;
 	}
 
+
+	// return an array of noc
+	function getSendNocIds(){
+		$ids = $this->add('Model_NocLog')
+				->addCondition('is_return',false)
+				->_dsql()->del('fields')->field('accounts_id')->getAll();
+
+		return iterator_to_array(new \RecursiveIteratorIterator(new \RecursiveArrayIterator($ids)),false);
+	}
+
 }

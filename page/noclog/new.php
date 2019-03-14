@@ -9,8 +9,8 @@ class page_noclog_new extends Page {
 		$this->add('Controller_Acl');
 
 		$noc_model = $this->add('Model_NocLog');
+
 		$noc_model->addCondition('created_by_id',$this->app->current_branch->id);
-		// ->addCondition([['received_by_id',null],['received_by_id',0]])
 		$noc_model->setOrder('send_at','desc');
 
 		$crud = $this->add('CRUD',['form_class'=>'Form_Stacked']);
@@ -20,7 +20,8 @@ class page_noclog_new extends Page {
 		
 		if($crud->isEditing('add')){
 			$form = $crud->form;
-			// $form->getElement('accounts_id')->getModel()->addCondition('id','<>',$this->app->current_branch->id);
+			$send_ids = $noc_model->getSendNocIds();
+			$form->getElement('accounts_id')->getModel()->addCondition('id','<>',$send_ids);
 			$form->getElement('to_branch_id')->getModel()->addCondition('id','<>',$this->app->current_branch->id);
 		}
 		

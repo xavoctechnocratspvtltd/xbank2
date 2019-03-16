@@ -37,6 +37,7 @@ class page_noclog_report extends Page {
 		$branch_field->setEmptyText('All Branch');
 
 		$account_model = $this->add('Model_Account_Loan');
+		$account_model->addCondition('DefaultAC',false);
 		$account_field->setModel($account_model);
 
 		$report_type_field->setValueList($report_type_list);

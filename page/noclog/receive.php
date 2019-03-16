@@ -7,6 +7,8 @@ class page_noclog_receive extends Page {
 	function init(){
 		parent::init();
 		
+		$this->add('Controller_Acl');
+		
 		$noc_model = $this->add('Model_NocLog');
 		if($this->app->current_branch->id)
 			$noc_model->addCondition('to_branch_id',$this->app->current_branch->id);

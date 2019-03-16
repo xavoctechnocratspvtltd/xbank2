@@ -6,6 +6,8 @@ class page_noclog_dispatch extends Page {
 	function init(){
 		parent::init();
 		
+		$this->add('Controller_Acl');
+		
 		$id = $this->app->stickyGET('recordid');
 
 		$view = $this->add('View');

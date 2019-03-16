@@ -5,7 +5,9 @@ class page_noclog_report extends Page {
 
 	function init(){
 		parent::init();
-		
+			
+		$this->add('Controller_Acl');
+
 		$report_type_list = [
 						'noc_not_made_due_to'=>'Noc Not Made Due To',
 						'noc_hold_due_to'=>'Noc Hold Due To',

@@ -109,6 +109,8 @@ class Menu_Base extends Menu {
 		
 		if($this->api->auth->model['AccessLevel'] >= 80)
 			$mad_sub_menus->addMenuItem('employee','Employees');
+		
+		$mad_sub_menus->addMenuItem('insurancemember','Member Insurance');
 
 		$mad->js('click',$mad_sub_menus_popover->showJS());
 		

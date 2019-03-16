@@ -16,7 +16,7 @@ class page_noclog_new extends Page {
 		$crud = $this->add('CRUD',['form_class'=>'Form_Stacked']);
 
 		$crud->grid->addSno();
-		$crud->setModel($noc_model,['accounts_id','noc_letter_received_on','to_branch_id','send_narration','is_dispatch_to_customer','dispatch_narration'],['accounts','noc_letter_received_on','to_branch','created_by','send_at','send_narration','is_dispatch_to_customer','is_return']);
+		$crud->setModel($noc_model,['accounts_id','noc_letter_received_on','to_branch_id','send_narration','is_dispatch_to_customer','dispatch_narration','is_noc_not_made','noc_not_made_due_to','is_noc_hold','noc_hold_due_to'],['accounts','noc_letter_received_on','to_branch','created_by','send_at','send_narration','is_dispatch_to_customer','is_return']);
 		
 		if($crud->isEditing('add')){
 			$form = $crud->form;

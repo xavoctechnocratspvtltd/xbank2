@@ -38,6 +38,6 @@ class page_noclog_new extends Page {
 		$crud->grid->removeColumn('created_by');
 		$crud->grid->removeColumn('send_at');
 		$crud->grid->removeColumn('send_narration');
-		$crud->add('Controller_Acl');
+		$crud->add('Controller_Acl',['default_view'=>false]);
 	}
 }

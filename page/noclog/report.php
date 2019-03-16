@@ -34,13 +34,13 @@ class page_noclog_report extends Page {
 
 		$branch_model = $this->add('Model_Branch')->addCondition('id','<>',$this->app->current_branch->id);
 		$branch_field->setModel($branch_model);
-		$branch_field->setEmptyText('Please Select');
+		$branch_field->setEmptyText('All Branch');
 
 		$account_model = $this->add('Model_Account_Loan');
 		$account_field->setModel($account_model);
 
 		$report_type_field->setValueList($report_type_list);
-		$report_type_field->setEmptyText('Please Select');
+		$report_type_field->setEmptyText('All');
 
 		$this->add('View')->setElement('hr');
 

@@ -285,6 +285,12 @@ class Frontend extends ApiFrontend {
         );
     }
 
+    function subtractMonth($date,$month=1){
+        if(!$date) $date=$this->api->today;
+
+        return date("Y-m-d", strtotime(date("Y-m-d", strtotime($date)) . " -".$month." MONTH"));
+    }
+
     function get_months($date1, $date2) { 
        $time1  = strtotime($date1); 
        $time2  = strtotime($date2); 

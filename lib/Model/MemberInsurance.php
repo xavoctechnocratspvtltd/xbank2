@@ -15,9 +15,7 @@ class Model_MemberInsurance extends Model_Table {
 		$this->addField('narration')->type('text');
 		
 		$this->addField('next_insurance_due_date')->type('date')->system(true);
-		// $this->addExpression('next_insurance_due_date')->set(function($m,$q){
-		// 	return $q->expr('DATE_ADD([0], INTERVAL [1] YEAR)',[$m->getElement('insurance_start_date'),$m->getElement('insurance_duration')]);
-		// })->type('date');
+		$this->addField('is_renew')->type('boolean')->defaultValue(false);
 
 		$this->addExpression('account_number')->set(function($m,$q){
 			return $q->expr('[0]',[$m->refSQL('accounts_id')->fieldQuery('AccountNumber')]);

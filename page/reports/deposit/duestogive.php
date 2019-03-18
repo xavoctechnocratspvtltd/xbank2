@@ -136,7 +136,10 @@ class page_reports_deposit_duestogive extends Page {
 			$account->add('Controller_Acl');
 		}
 
-		$account->addExpression('MaturityAmount','(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr)');
+		$account->addExpression('MaturityAmount',function($m,$q){
+			return $q->expr('IF([0]="MIS",[1],(CurrentBalanceCr + CurrentInterest - CurrentBalanceDr))',[$m->getElement('account_type'),$m->getElement('Amount')]);
+		});
+
 		$grid->setModel($account,$grid_column_array);
 		$grid->addPaginator(500);
 		$grid->addSno();

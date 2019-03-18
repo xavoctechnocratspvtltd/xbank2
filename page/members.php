@@ -142,14 +142,14 @@ class page_members extends Page {
 			// $member_model->getElement('Nominee')->system(true);
 			// $member_model->getElement('NomineeAge')->system(true);
 			// $member_model->getElement('RelationWithNominee')->system(true);
-			$member_model->getElement('username')->system(true);
+			// $member_model->getElement('username')->system(true);
 			$member_model->getElement('is_agent')->system(true);
 			// $member_model->getElement('is_active')->system(true);
 			$member_model->getElement('is_defaulter')->system(true);
 		}
 
 		if($crud->isEditing('edit')){
-			$member_model->getElement('username')->system(true);
+			// $member_model->getElement('username')->system(true);
 			// $member_model->getElement('Nominee')->system(true);
 			// $member_model->getElement('RelationWithNominee')->system(true);
 			// $member_model->getElement('NomineeAge')->system(true);
@@ -174,6 +174,11 @@ class page_members extends Page {
 		
 		if($crud->isEditing('edit')){
 			$form_fields[]='member_no';
+			if($this->app->auth->model->isSuper()){
+				$form_fields[] = 'username';
+				$form_fields[] = 'password';
+			}
+
 		}
 
 		if($crud->isEditing('add')){
@@ -279,6 +284,10 @@ class page_members extends Page {
 			// 	'*'=>array('share_account_amount','Nominee','RelationWithNominee','NomineeAge')
 			// 	),'div .atk-form-row');
 			$o->now();
+		}
+
+		if(!$this->app->auth->model->isSuper()){
+			$crud->grid->removeColumn('password');
 		}
 
 		$crud->add('Controller_Acl');

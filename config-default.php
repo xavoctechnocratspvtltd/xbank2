@@ -168,7 +168,7 @@ define('LEGAL_CASE_STAGES',['Investigation (Jaanch)','Allegation (Prasangyan)','
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	"Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME'");
 //define('CURRENT_BRANCH_CASH_ACCOUNT',	'Doctrine::getTable("Accounts")->findOneByBranch_idAndAccountnumber(Branch::getDefaultBranch()->id,Branch::getDefaultBranch()->Code.SP.CASH_ACCOUNT_SCHEME);')
 
-define('MEMBER_TYPES',                         "General,VIP,VVIP");
+define('MEMBER_TYPES',                         "General,VIP,VVIP,Other VIP,Prospected VIP");
 
 // define('ACCOUNT_TYPES',                         "LOAN");
 // Keep Default in last as it reverts TDS ect that are not any product specific

@@ -19,6 +19,16 @@ class View_AccountDetail extends View {
 	function recursiveRender(){
 		$ac_m=$this->account;
 		
+		$ac_m->addExpression('maturity_date')->set(function($m,$q){
+			return "(IF (".$q->getField('account_type')."='FD' OR ".$q->getField('account_type')."='MIS',(
+					DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +(".$m->scheme_join->table_alias.".MaturityPeriod + 0) DAY)
+				),(
+				DATE_ADD(DATE_ADD(DATE(".$q->getField('created_at')."), INTERVAL +(".$m->scheme_join->table_alias.".MaturityPeriod) MONTH), INTERVAL + 0 DAY)
+				)
+				)
+				)";
+		});
+
 		if(!$ac_m->loaded()){
 			return parent::recursiveRender();
 		}

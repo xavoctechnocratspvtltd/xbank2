@@ -8,8 +8,9 @@ class page_newrenewinsurance extends Page{
 		$this->add('Controller_Acl');
 
 		$filter = $this->app->stickyGET('filter');
-		$from_date = $this->app->stickyGET('from_date');
-		$to_date = $this->app->stickyGET('to_date');
+		$this->from_date = $from_date = $this->app->stickyGET('from_date');
+		$this->to_date = $to_date = $this->app->stickyGET('to_date');
+
 
 		$col = $this->add('Columns');
 		$col1 = $col->addColumn(4);
@@ -40,7 +41,11 @@ class page_newrenewinsurance extends Page{
 		$m_join = $model->join('member_insurance.accounts_id',null,null,'memberinsu');
 		$m_join->addField('next_insurance_due_date');
 		$m_join->addField('insurance_number','name');
-			
+		$m_join->addField('insurance_record_id','id');
+		$m_join->addField('is_renew');
+		
+		$model->addCondition([['is_renew',false],['is_renew',null]]);
+
 		if($filter){
 			$model->addCondition(
 				$model->dsql()->orExpr()
@@ -58,10 +63,11 @@ class page_newrenewinsurance extends Page{
 			$model->addCondition("id",-1);
 		}
 
-		$grid->addSelectable($field_accounts);
+		// $grid->addSelectable($field_accounts);
 		// $grid->addSno();
 
-		$grid->setModel($model,['AccountNumber','member','created_at','next_insurance_due_date','insurance_number']);
+		// $grid->setSource($model->getRows());
+		$grid->setModel($model,['AccountNumber','member','created_at','next_insurance_due_date','insurance_number','insurance_record_id']);
 
 		if($form->isSubmitted()){
 			$view->js()->reload(['filter'=>1,'from_date'=>$form['from_date'],'to_date'=>$form['to_date']])->execute();
@@ -76,28 +82,8 @@ class page_newrenewinsurance extends Page{
 			if(!count($account_array)){
 				throw new \Exception("please select at least one account to procced");
 			}
-
-			$query = 'INSERT INTO `member_insurance`(`member_id`, `accounts_id`, `name`, `insurance_start_date`, `insurance_duration`, `narration`, `next_insurance_due_date`) VALUES ';
-			foreach ($account_array as $key => $account_id) {
-								
-				$model_acocunt = $this->add('Model_Account')->load($account_id);
-				$member_id = $model_acocunt['member_id'];
-
-				$next_insurance_due_date = date('Y-m-d',strtotime("+".$ins_form['insurance_duration']." year",strtotime($ins_form['insurance_date'])));
-				
-				$query .= '(';
-				$query .= $member_id.",";
-				$query .= $account_id.",";
-				$query .= '"-",';
-				$query .= '"'.$ins_form['insurance_date'].'",';
-				$query .= $ins_form['insurance_duration'].",";
-				$query .= '"-",';
-				$query .= '"'.$next_insurance_due_date.'"';
-				$query .= '),';
-			}
-
-			$query = trim($query,',');
-			$query .= ';';
+			
+			$query = $this->getQueryString($account_array,$ins_form);
 			
 			try{
 				$this->api->db->beginTransaction();
@@ -110,15 +96,81 @@ class page_newrenewinsurance extends Page{
 			
 			$js_event = [
 					$ins_form->js()->reload(),
-					$view->js()->reload(['filter'=>1,
-								'from_date'=>$_GET['from_date'],
-								'to_date'=>$_GET['to_date']
-							])
+					$view->js()->reload(['filter'=>0])
 				];
 
-			$ins_form->js(null,$js_event)->univ()->successMessage('Insurance Added Successfully')->execute();
+			$ins_form->js(null,$js_event)->univ()->successMessage('saved successfully')->execute();
 		}
 
+		// manually create a grid selectable
+		// for collecting both Account_id AND Memberinsurance_id
+
+        $grid->addMethod('format_select',function($g,$f){
+        	$id = $g->model->id.'_'.$g->model['insurance_record_id'];
+        	$g->current_row_html[$f] = '<input type="checkbox" id="cb_'.$id.'" name="cb_'.$id.'" value="'.$id.'">';
+
+			$g->setTDParam('select','data-insuranceid',$g->model['insurance_record_id']);
+        });
+        $grid->addColumn('select', 'select');
+
+        // manually call grid selectabel value
+		$grid->js_widget = null;
+        $grid->js(true)
+            ->_load('ui.atk4_checkboxes')
+            ->atk4_checkboxes(array('dst_field' => $field_accounts));
+        $grid->addOrder()
+            ->useArray($grid->columns)
+            ->move('select', 'first')
+            ->now();		
 
 	}
+
+
+	function getQueryString($account_array,$ins_form){
+
+		$query = 'INSERT INTO `member_insurance`(`member_id`, `accounts_id`, `name`, `insurance_start_date`, `insurance_duration`, `narration`, `next_insurance_due_date`) VALUES ';
+		$member_insurance_ids = [];
+		foreach ($account_array as $key => $ids) {
+			$id_array = explode("_", $ids);
+
+			$account_id = $id_array[0];
+			if(isset($id_array[1]) && $id_array[1] > 0)
+				$member_insurance_ids[] = $id_array[1];
+
+			$model_acocunt = $this->add('Model_Account')->load($account_id);
+			$member_id = $model_acocunt['member_id'];
+
+			$next_insurance_due_date = date('Y-m-d',strtotime("+".$ins_form['insurance_duration']." year",strtotime($ins_form['insurance_date'])));
+			
+			$query .= '(';
+			$query .= $member_id.",";
+			$query .= $account_id.",";
+			$query .= '"-",';
+			$query .= '"'.$ins_form['insurance_date'].'",';
+			$query .= $ins_form['insurance_duration'].",";
+			$query .= '"-",';
+			$query .= '"'.$next_insurance_due_date.'"';
+			$query .= '),';
+		}
+		$query = trim($query,',');
+		$query .= ';';
+
+		if(count($member_insurance_ids)){
+			$query_insurance = "UPDATE `member_insurance` SET `is_renew` = '1' WHERE `member_insurance`.`id` in ";
+			$str = "(";
+			foreach ($member_insurance_ids as $key => $id) {
+				$str .= "'".$id."',";
+			}
+			$str = trim($str,',');
+			$str.= ");";
+			$query_insurance .= $str;
+			$query .= $query_insurance;
+		}else{
+			$query_insurance = 0;
+		}
+
+		return $query;
+	}
+
+
 }

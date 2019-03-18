@@ -24,13 +24,13 @@ class page_reports_member_loaninsurancenew extends Page {
 		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance List As On '. date('d-M-Y',strtotime($till_date)));
 
 		$accounts_model = $this->add('Model_Account');
-		$m_join = $accounts_model->join('member_insurance.accounts_id',null,null,'memberinsu');
+		$m_join = $accounts_model->leftJoin('member_insurance.accounts_id',null,null,'memberinsu');
 		$m_join->addField('next_insurance_due_date');
 
 		$accounts_model->addCondition(
 				$accounts_model->dsql()->orExpr()
 					->where('SchemeType','Loan')
-					->where('SchemeType','CC')
+					// ->where('SchemeType','CC')
 			);
 
 		if($_GET['filter']){

@@ -38,13 +38,14 @@ class page_newrenewinsurance extends Page{
 		$ins_form->addSubmit('Add/ Renew Insurance');
 
 		$model = $view->add('Model_Account');
-		$m_join = $model->join('member_insurance.accounts_id',null,null,'memberinsu');
+		$m_join = $model->leftJoin('member_insurance.accounts_id',null,null,'memberinsu');
 		$m_join->addField('next_insurance_due_date');
 		$m_join->addField('insurance_number','name');
 		$m_join->addField('insurance_record_id','id');
 		$m_join->addField('is_renew');
 		
 		$model->addCondition([['is_renew',false],['is_renew',null]]);
+		$model->addCondition($model->dsql()->orExpr()->where('SchemeType','Loan'));
 
 		if($filter){
 			$model->addCondition(
@@ -120,7 +121,9 @@ class page_newrenewinsurance extends Page{
         $grid->addOrder()
             ->useArray($grid->columns)
             ->move('select', 'first')
-            ->now();		
+            ->now();
+
+        $grid->addFormatter('member','wrap');
 
 	}
 

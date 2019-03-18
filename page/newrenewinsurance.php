@@ -65,8 +65,7 @@ class page_newrenewinsurance extends Page{
 
 		// $grid->addSelectable($field_accounts);
 		// $grid->addSno();
-
-		// $grid->setSource($model->getRows());
+		
 		$grid->setModel($model,['AccountNumber','member','created_at','next_insurance_due_date','insurance_number','insurance_record_id']);
 
 		if($form->isSubmitted()){

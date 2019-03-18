@@ -1,24 +1,32 @@
 <?php
-class page_reports_member_loaninsurance extends Page {
+class page_reports_member_loaninsurancenew extends Page {
 	public $title="Loan Member Insurance Report";
 
 	function init(){
 		parent::init();
-		$till_date=$till_date=$this->api->today;
+
+		$filter = $this->app->stickyGET('filter');
+		$from_date = $this->app->stickyGET('from_date');
+		$to_date = $this->app->stickyGET('to_date');
+
+		$till_date = $till_date = $this->api->today;
 		if($_GET['to_date']){
 			$till_date=$_GET['to_date'];
 		}
+
 		$form=$this->add('Form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('dropdown','type')->setValueList(array_merge(array('CC'=>'CC','0'=>'All'),array_combine(explode(',',LOAN_TYPES),explode(',',LOAN_TYPES))));
+		// $form->addField('dropdown','type')->setValueList(array_merge(array('0'=>'All','CC'=>'CC'),array_combine(explode(',',LOAN_TYPES),explode(',',LOAN_TYPES))));
 		$form->addSubmit('GET List');
-
 
 		$grid=$this->add('Grid_AccountsBase');
 		$grid->add('H3',null,'grid_buttons')->set('Loan Insurance List As On '. date('d-M-Y',strtotime($till_date)));
 
-		$accounts_model=$this->add('Model_Account');
+		$accounts_model = $this->add('Model_Account');
+		$m_join = $accounts_model->join('member_insurance.accounts_id',null,null,'memberinsu');
+		$m_join->addField('next_insurance_due_date');
+
 		$accounts_model->addCondition(
 				$accounts_model->dsql()->orExpr()
 					->where('SchemeType','Loan')
@@ -27,19 +35,18 @@ class page_reports_member_loaninsurance extends Page {
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
-
-			if($_GET['from_date']){
-				$this->api->stickyGET('from_date');
-				$accounts_model->addCondition('created_at','>=',$_GET['from_date']);
-			}
-			if($_GET['to_date']){
-				$this->api->stickyGET('to_date');
-				$accounts_model->addCondition('created_at','<=',$_GET['to_date']);
-			}
-			if($_GET['type']){
-				$this->api->stickyGET('type');
-				$accounts_model->addCondition('account_type',$_GET['type']);
-			}
+			$accounts_model->addCondition(
+				$accounts_model->dsql()->orExpr()
+					->where(
+							$accounts_model->dsql()->andExpr()
+								->where($accounts_model->getElement('next_insurance_due_date'),'>=',$from_date)
+								->where($accounts_model->getElement('next_insurance_due_date'),'<',$to_date)
+					)->where(
+							$accounts_model->dsql()->andExpr()
+								->where($accounts_model->getElement('created_at'),'>=',$from_date)
+								->where($accounts_model->getElement('created_at'),'<',$to_date)
+					)
+			);
 
 		}else{
 			$accounts_model->addCondition('id',-1);
@@ -80,6 +87,7 @@ class page_reports_member_loaninsurance extends Page {
 		$accounts_model->addExpression('phone_nos')->set(function($m,$q){
 			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
 		});
+
 		$accounts_model->getElement('CurrentBalanceDr')->caption('Current Balance');
 		$grid->setModel($accounts_model,array('AccountNumber','created_at','scheme','gender','member_name','father_name','address','phone_nos','DOB','age','nominee','relation_with_nominee','Amount'));
 		$self=$this;
@@ -132,7 +140,7 @@ class page_reports_member_loaninsurance extends Page {
 
 		$grid->addFormatter('nominee','nominee');
 
-				$grid->addMethod('format_relation_with_nominee',function($g,$q){
+		$grid->addMethod('format_relation_with_nominee',function($g,$q){
 			if($g->model['relation_with_nominee'])
 				$nominee = $g->model['relation_with_nominee'];
 			else{
@@ -143,7 +151,6 @@ class page_reports_member_loaninsurance extends Page {
 			$g->current_row_html['relation_with_nominee'] = $nominee;
 		});
 		$grid->addFormatter('relation_with_nominee','relation_with_nominee');
-
 
 		// $js=array(
 		// 	$this->js()->_selector('.mymenu')->parent()->parent()->toggle(),
@@ -158,9 +165,8 @@ class page_reports_member_loaninsurance extends Page {
 
 
 		if($form->isSubmitted()){
-			$send = array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'type'=>$form['type'],'filter'=>1);
+			$send = array('from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1);
 			$grid->js()->reload($send)->execute();
-
 		}	
 	
 

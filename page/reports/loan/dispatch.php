@@ -2,6 +2,7 @@
 
 class page_reports_loan_dispatch extends Page {
 	public $title="Loan Dispatch Report";
+	public $setdealer = 0;
 	function init(){
 		parent::init();
 
@@ -11,9 +12,17 @@ class page_reports_loan_dispatch extends Page {
 			$till_date=$_GET['to_date'];
 		}
 
+		if($this->app->stickyGET('setdealer')){
+			$this->setdealer = $_GET['setdealer'];
+		}
+
 		$form=$this->add('Form');
 		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
 		$dealer_field->setModel('ActiveDealer');
+		if($this->setdealer){
+			$dealer_field->getModel()->addCondition('id',$this->setdealer);
+			$dealer_field->set($this->setdealer);
+		}
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
@@ -244,7 +253,6 @@ class page_reports_loan_dispatch extends Page {
 
 		$grid->js('click',$js);
 		if($form->isSubmitted()){
-
 			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'document'=>$form['document']?:0,'loan_type'=>$form['loan_type'], 'dsa'=>$form['dsa'], 'filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])

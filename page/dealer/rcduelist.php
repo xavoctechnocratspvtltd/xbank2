@@ -12,7 +12,7 @@ class page_dealer_rcduelist extends page_dealer_dashboard{
 		$tab->addTab('RC Due List');
 
 		$form=$this->add('Form');
-		$dealer_field=$form->addField('dropdown','dealer')->setEmptyText('Please Select');
+		$dealer_field=$form->addField('dropdown','dealer')->validateNotNull();
 		$dealer_field->setModel('ActiveDealer')->addCondition('id',$this->app->auth->model->id);
 		$dealer_field->set($this->app->auth->model->id);
 

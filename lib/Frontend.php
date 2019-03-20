@@ -78,8 +78,18 @@ class Frontend extends ApiFrontend {
             $agent_menu=$header->add('Menu')->addClass('mymenu');
             $agent_menu->addMenuItem('logout','Logout');
             $this->memorize('login_mode','agent');
-        }
-        else{
+        }elseif($mode == "dealer" || strpos($this->page,'dealer_') === 0){
+            $auth = $this->add('BasicAuth');
+            // $auth->allowPage(array('duesms'));
+            $auth_model = $this->add('Model_Dealer');
+            $auth_model->addCondition('ActiveStatus',true);
+            $auth->setModel($auth_model,'username','password');
+            $auth->check();
+
+            $this->app->dealer_menu = $dealer_menu = $header->add('Menu')->addClass('mymenu');
+            $dealer_menu->addMenuItem('dealer_logout','Logout')->addClass("atk-swatch-red");
+            $this->memorize('login_mode','dealer');
+        }else{
             $this->memorize('login_mode','staff');
             $staff_model = $this->add('Model_Staff');
             $staff_model->addCondition('is_active',true);

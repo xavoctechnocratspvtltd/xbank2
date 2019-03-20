@@ -12,7 +12,9 @@ class Model_Dealer extends Model_Table {
 		$this->addField('email_id_1');
 		$this->addField('email_id_2');
 		$this->addField('product');
-
+		
+		$this->addField('username')->mandatory(true);
+		$this->addField('password')->mandatory(true);
 		$this->addField('ActiveStatus')->type('boolean')->defaultValue(true);
 		
 		$this->addField('Address')->type('text');

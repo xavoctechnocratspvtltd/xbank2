@@ -22,6 +22,7 @@ class page_reports_loan_dispatch extends Page {
 		if($this->setdealer){
 			$dealer_field->getModel()->addCondition('id',$this->setdealer);
 			$dealer_field->set($this->setdealer);
+			$dealer_field->validateNotNull();
 		}
 
 		$form->addField('DatePicker','from_date');

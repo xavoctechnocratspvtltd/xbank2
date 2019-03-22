@@ -17,7 +17,7 @@ class page_allinsurance extends Page{
 		}
 		$crud->grid->addQuickSearch(['name','member','account_number']);
 		$crud->grid->addPaginator(50);
-		$crud->add('Controller_Acl');
+		$crud->add('Controller_Acl',['default_view'=>true]);
 
 		
 	}

@@ -12,6 +12,11 @@ class page_noclog_return extends Page {
 
 		$view = $this->add('View');
 		$noc_model = $view->add('Model_NocLog')->load($id);
+
+		if(!$noc_model['received_by_id']){
+			$view->add('View_Info')->setHtml('First Receive the NOC, after then Return to Head Office');
+			return;
+		}
 		if($noc_model['is_dispatch_to_customer']){
 			$view->add('View_Error')->setHtml('NOC Dispatched To Customer, Cannot Return');
 			return;
@@ -21,7 +26,7 @@ class page_noclog_return extends Page {
 			$view->add('View_Error')->setHtml('NOC is already return to head office');
 			return;
 		}
-
+		
 		$form = $view->add('Form',null,null,['form/stacked']);
 		$form->addField('text','return_narration');
 		$form->addSubmit('Return to Head Office');

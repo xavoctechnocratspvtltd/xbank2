@@ -20,8 +20,11 @@ class page_noclog_new extends Page {
 		
 		if($crud->isEditing('add')){
 			$form = $crud->form;
+			$field_account_model = $form->getElement('accounts_id')->getModel();
+			$field_account_model->addCondition([['DefaultAC',false],['DefaultAC',null]]);
 			$send_ids = $noc_model->getSendNocIds();
-			// $form->getElement('accounts_id')->getModel()->addCondition('id','<>',$send_ids)->addCondition([['DefaultAC',false],['DefaultAC',null]]);
+			if($send_ids)
+				$field_account_model->addCondition('id','<>',$send_ids);
 			$form->getElement('to_branch_id')->getModel()->addCondition('id','<>',$this->app->current_branch->id);
 		}
 		

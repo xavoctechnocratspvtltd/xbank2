@@ -52,7 +52,8 @@ class Model_NocLog extends Model_Table {
 		$ids = $this->add('Model_NocLog')
 				->addCondition('is_return',false)
 				->_dsql()->del('fields')->field('accounts_id')->getAll();
-
+		if(!count($ids)) return 0;
+		
 		return iterator_to_array(new \RecursiveIteratorIterator(new \RecursiveArrayIterator($ids)),false);
 	}
 

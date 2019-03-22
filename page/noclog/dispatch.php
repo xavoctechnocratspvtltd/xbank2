@@ -12,6 +12,10 @@ class page_noclog_dispatch extends Page {
 
 		$view = $this->add('View');
 		$noc_model = $view->add('Model_NocLog')->load($id);
+		if(!$noc_model['received_by_id']){
+			$view->add('View_Info')->setHtml('First Receive the NOC, after then Dispatch');
+			return;
+		}
 		if($noc_model['is_dispatch_to_customer']){
 			$view->add('View_Info')->setHtml('NOC Dispatched To Customer <br/> Dispatch On: '.$noc_model['dispatch_at']."<br/> Dispatch Narration: ".$noc_model['dispatch_narration']." <br/> Dispatch By: ".$noc_model['dispatch_by']);
 			return;

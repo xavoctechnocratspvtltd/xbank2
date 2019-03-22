@@ -80,8 +80,10 @@ class page_reports_bs_balancesheet extends Page{
 		// var_dump($curr_trans);
 
 		$bs_array=[];
-
-		foreach ($this->add('Model_BalanceSheet') as $bs_m) {
+		$bs_model_rows = $this->add('Model_BalanceSheet')->getRows();
+		foreach ($bs_model_rows as $bs_m) {
+			$bs_m_id = $bs_m['id'];
+			
 			$data=[];
 			$data['OpeningBalanceDr'] = 0;
 			$data['OpeningBalanceCr'] = 0;
@@ -90,24 +92,24 @@ class page_reports_bs_balancesheet extends Page{
 			$data['TransactionsDr'] = 0;
 			$data['TransactionsCr'] = 0;
 
-			$data['id']=$bs_m->id;
+			$data['id']=$bs_m_id;
 			$data['name'] = $bs_m['name'];
 			foreach ($op_balances as $opb) {
-				if($opb['id']==$bs_m->id){
+				if($opb['id']==$bs_m_id){
 					$data['OpeningBalanceDr'] = $opb['DR'];
 					$data['OpeningBalanceCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($prev_transactions as $opb) {
-				if($opb['id']==$bs_m->id){
+				if($opb['id']==$bs_m_id){
 					$data['PreviousTransactionsDr'] = $opb['DR'];
 					$data['PreviousTransactionsCr'] = $opb['CR'];
 				}
 			}
 
 			foreach ($curr_trans as $opb) {
-				if($opb['id']==$bs_m->id){
+				if($opb['id']==$bs_m_id){
 					$data['TransactionsDr'] = $opb['DR'];
 					$data['TransactionsCr'] = $opb['CR'];
 				}

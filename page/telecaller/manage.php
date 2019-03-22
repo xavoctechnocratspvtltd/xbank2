@@ -15,6 +15,7 @@ class page_telecaller_manage extends Page {
 		$crud->setModel($m);
 
 		$crud->grid->addPaginator(100);
+		$crud->add('Controller_Acl',['default_view'=>false]);
 
 	}
 }

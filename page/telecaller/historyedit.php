@@ -12,7 +12,7 @@ class page_telecaller_historyedit extends Page {
 
 		$crud= $this->add('CRUD');
 		$crud->setModel($m);
-
+		$crud->add('Controller_Acl',['default_view'=>false]);
 		$crud->grid->addPaginator(100);
 	}
 }

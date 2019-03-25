@@ -5,7 +5,7 @@ class page_newrenewinsurance extends Page{
 	function init(){
 		parent::init();
 
-		$this->add('Controller_Acl',['default_view'=>true]);
+		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$filter = $this->app->stickyGET('filter');
 		$this->from_date = $from_date = $this->app->stickyGET('from_date');

@@ -265,7 +265,7 @@ class page_Accounts_FixedAndMis extends Page {
 		$account_fixedandmis_model->addCondition('id',$id);
 		$account_fixedandmis_model->tryLoadAny();
 		if(!$account_fixedandmis_model->loaded()){
-			$page->add('View_Warning')->setHtml("Account is not matured in current financial_year Start Date: ".$financial_year['start_date']." End Date: ".$financial_year['end_date']);
+			$page->add('View_Warning')->setHtml("Account is not matured in current financial_year Start Date: ".$financial_year['start_date']." End Date: ".$financial_year['end_date']." maturity_date: ".$account_fixedandmis_model['maturity_date']);
 			return;
 		}
 

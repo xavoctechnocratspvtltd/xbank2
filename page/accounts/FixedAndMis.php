@@ -256,15 +256,19 @@ class page_Accounts_FixedAndMis extends Page {
 
 	function renew($page){
 		$id = $_GET[$page->short_name.'_id'];
-
-		$financial_year = $this->api->getFinancialYear();
+		$financial_year = $page->app->getFinancialYear();
+		$start_date = $financial_year['start_date'];
+		$end_date = $financial_year['end_date'];
+		// $end_date = $this->app->nextDate($end_date);
 
 		$account_fixedandmis_model = $this->add('Model_Account_FixedAndMis');
-		$account_fixedandmis_model->addCondition('maturity_date','>=',$financial_year['start_date']);
-		$account_fixedandmis_model->addCondition('maturity_date','<',$this->app->nextDate($financial_year['end_date']));
-		$account_fixedandmis_model->addCondition('id',$id);
-		$account_fixedandmis_model->tryLoadAny();
-		if(!$account_fixedandmis_model->loaded()){
+		$account_fixedandmis_model->load($id);
+		
+		$start_time = strtotime($start_date);
+		$end_time = strtotime($end_date);
+		$maturity_time = strtotime($account_fixedandmis_model['maturity_date']);
+
+		if(!($maturity_time >= $start_time && $maturity_time <= $end_time ) ){
 			$page->add('View_Warning')->setHtml("Account is not matured in current financial_year Start Date: ".$financial_year['start_date']." End Date: ".$financial_year['end_date']." maturity_date: ".$account_fixedandmis_model['maturity_date']);
 			return;
 		}

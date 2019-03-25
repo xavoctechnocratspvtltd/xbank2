@@ -27,6 +27,10 @@ class page_reports_member_loaninsurancenew extends Page {
 		$m_join = $accounts_model->leftJoin('member_insurance.accounts_id',null,null,'memberinsu');
 		$m_join->addField('next_insurance_due_date');
 
+		$accounts_model->addExpression('renew_date')->set(function($m,$q){
+			return $q->expr('if([0],DATE([0]),DATE([1]))',[$m->getElement('next_insurance_due_date'),$m->getElement('created_at')]);
+		})->caption('Applicable Renew Date');
+
 		$accounts_model->addCondition(
 				$accounts_model->dsql()->orExpr()
 					->where('SchemeType','Loan')
@@ -35,18 +39,21 @@ class page_reports_member_loaninsurancenew extends Page {
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
-			$accounts_model->addCondition(
-				$accounts_model->dsql()->orExpr()
-					->where(
-							$accounts_model->dsql()->andExpr()
-								->where($accounts_model->getElement('next_insurance_due_date'),'>=',$from_date)
-								->where($accounts_model->getElement('next_insurance_due_date'),'<',$to_date)
-					)->where(
-							$accounts_model->dsql()->andExpr()
-								->where($accounts_model->getElement('created_at'),'>=',$from_date)
-								->where($accounts_model->getElement('created_at'),'<',$to_date)
-					)
-			);
+			$accounts_model->addCondition('renew_date','>=',$from_date);
+			$accounts_model->addCondition('renew_date','<',$to_date);
+
+			// $accounts_model->addCondition(
+			// 	$accounts_model->dsql()->orExpr()
+			// 		->where(
+			// 				$accounts_model->dsql()->andExpr()
+			// 					->where($accounts_model->getElement('next_insurance_due_date'),'>=',$from_date)
+			// 					->where($accounts_model->getElement('next_insurance_due_date'),'<',$to_date)
+			// 		)->where(
+			// 				$accounts_model->dsql()->andExpr()
+			// 					->where($accounts_model->getElement('created_at'),'>=',$from_date)
+			// 					->where($accounts_model->getElement('created_at'),'<',$to_date)
+			// 		)
+			// );
 
 		}else{
 			$accounts_model->addCondition('id',-1);
@@ -89,7 +96,7 @@ class page_reports_member_loaninsurancenew extends Page {
 		});
 
 		$accounts_model->getElement('CurrentBalanceDr')->caption('Current Balance');
-		$grid->setModel($accounts_model,array('AccountNumber','created_at','scheme','gender','member_name','father_name','address','phone_nos','DOB','age','nominee','relation_with_nominee','Amount'));
+		$grid->setModel($accounts_model,array('AccountNumber','created_at','renew_date','scheme','gender','member_name','father_name','address','phone_nos','DOB','age','nominee','relation_with_nominee','Amount'));
 		$self=$this;
 		$grid->addColumn('current_balance');
 		$grid->addMethod('format_current_balance',function($g,$f)use($self){

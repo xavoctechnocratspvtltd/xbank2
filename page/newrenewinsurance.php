@@ -37,7 +37,7 @@ class page_newrenewinsurance extends Page{
 				->validateNotNull();
 		$ins_form->addSubmit('Add/ Renew Insurance');
 
-		$model = $view->add('Model_Account');
+		$model = $view->add('Model_Account');		
 		$m_join = $model->leftJoin('member_insurance.accounts_id',null,null,'memberinsu');
 		$m_join->addField('next_insurance_due_date');
 		$m_join->addField('insurance_number','name');
@@ -47,8 +47,46 @@ class page_newrenewinsurance extends Page{
 		$model->addExpression('renew_date')->set(function($m,$q){
 			return $q->expr('if([0],DATE([0]),DATE([1]))',[$m->getElement('next_insurance_due_date'),$m->getElement('created_at')]);
 		})->caption('Applicable Renew Date');
+		$model->addExpression('member_name')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('name');
+		});
+
+		$model->addExpression('DOB')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('DOB');
+		});
+
+		$model->addExpression('gender')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('gender');
+		});
+
+		$model->addExpression('father_name')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('FatherName');
+		});
+
+		$model->addExpression('address')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('PermanentAddress');
+		});
+
+		$model->addExpression('age')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('DOB');
+		});
+
+		$model->addExpression('nominee')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('Nominee');
+		});
+
+		$model->addExpression('relation_with_nominee')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('RelationWithNominee');
+		});
+
+		$model->addExpression('phone_nos')->set(function($m,$q){
+			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
+		});
+
+		$model->getElement('CurrentBalanceDr')->caption('Current Balance');
 
 		$model->addCondition([['is_renew',false],['is_renew',null]]);
+		$model->addCondition('ActiveStatus',true);
 		$model->addCondition($model->dsql()->orExpr()->where('SchemeType','Loan'));
 
 		if($filter){
@@ -74,7 +112,7 @@ class page_newrenewinsurance extends Page{
 		// $grid->addSelectable($field_accounts);
 		// $grid->addSno();
 		
-		$grid->setModel($model,['AccountNumber','member','created_at','next_insurance_due_date','insurance_number','insurance_record_id','renew_date']);
+		$grid->setModel($model,['AccountNumber','created_at','gender','member_name','father_name','address','phone_nos','DOB','age','nominee','relation_with_nominee','CurrentBalanceDr','next_insurance_due_date','insurance_number','insurance_record_id','renew_date']);
 
 		if($form->isSubmitted()){
 			$view->js()->reload(['filter'=>1,'from_date'=>$form['from_date'],'to_date'=>$form['to_date']])->execute();
@@ -130,7 +168,7 @@ class page_newrenewinsurance extends Page{
             ->move('select', 'first')
             ->now();
 
-        $grid->addFormatter('member','wrap');
+        $grid->addFormatter('address','wrap');
 
 	}
 

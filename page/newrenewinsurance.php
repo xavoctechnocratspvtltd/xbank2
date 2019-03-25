@@ -10,7 +10,7 @@ class page_newrenewinsurance extends Page{
 		$filter = $this->app->stickyGET('filter');
 		$this->from_date = $from_date = $this->app->stickyGET('from_date');
 		$this->to_date = $to_date = $this->app->stickyGET('to_date');
-
+		if($to_date) $this->to_date = $to_date = $this->app->nextDate($to_date);
 
 		$col = $this->add('Columns');
 		$col1 = $col->addColumn(4);
@@ -43,23 +43,30 @@ class page_newrenewinsurance extends Page{
 		$m_join->addField('insurance_number','name');
 		$m_join->addField('insurance_record_id','id');
 		$m_join->addField('is_renew');
-		
+
+		$model->addExpression('renew_date')->set(function($m,$q){
+			return $q->expr('if([0],DATE([0]),DATE([1]))',[$m->getElement('next_insurance_due_date'),$m->getElement('created_at')]);
+		})->caption('Applicable Renew Date');
+
 		$model->addCondition([['is_renew',false],['is_renew',null]]);
 		$model->addCondition($model->dsql()->orExpr()->where('SchemeType','Loan'));
 
 		if($filter){
-			$model->addCondition(
-				$model->dsql()->orExpr()
-					->where(
-							$model->dsql()->andExpr()
-								->where($model->getElement('next_insurance_due_date'),'>=',$from_date)
-								->where($model->getElement('next_insurance_due_date'),'<',$to_date)
-					)->where(
-							$model->dsql()->andExpr()
-								->where($model->getElement('created_at'),'>=',$from_date)
-								->where($model->getElement('created_at'),'<',$to_date)
-					)
-			);
+			$model->addCondition('renew_date','>=',$from_date);
+			$model->addCondition('renew_date','<',$to_date);
+
+			// $model->addCondition(
+			// 	$model->dsql()->orExpr()
+			// 		->where(
+			// 				$model->dsql()->andExpr()
+			// 					->where($model->getElement('next_insurance_due_date'),'>=',$from_date)
+			// 					->where($model->getElement('next_insurance_due_date'),'<',$to_date)
+			// 		)->where(
+			// 				$model->dsql()->andExpr()
+			// 					->where($model->getElement('created_at'),'>=',$from_date)
+			// 					->where($model->getElement('created_at'),'<',$to_date)
+			// 		)
+			// );
 		}else{
 			$model->addCondition("id",-1);
 		}
@@ -67,7 +74,7 @@ class page_newrenewinsurance extends Page{
 		// $grid->addSelectable($field_accounts);
 		// $grid->addSno();
 		
-		$grid->setModel($model,['AccountNumber','member','created_at','next_insurance_due_date','insurance_number','insurance_record_id']);
+		$grid->setModel($model,['AccountNumber','member','created_at','next_insurance_due_date','insurance_number','insurance_record_id','renew_date']);
 
 		if($form->isSubmitted()){
 			$view->js()->reload(['filter'=>1,'from_date'=>$form['from_date'],'to_date'=>$form['to_date']])->execute();

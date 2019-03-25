@@ -6,11 +6,15 @@ class page_reports_agent_topten extends Page {
 	function init(){
 		parent::init();
 		
-		$form=$this->add('Form');
+		$form=$this->add('Form',null,null,['form/horizontal']);
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
 		$form->addField('Dropdown','report_type')->validateNotNull()->setEmptyText("Please Select")->setValueList(['collection'=>"Collection Wise",'account'=>'Account Wise']);
 		$form->addField('Dropdown','branch')->setEmptyText("All")->setModel('Branch');
+		$form->addField('autocomplete/Basic','scheme')->setModel('Scheme');
+		$form->addField('Number','duration');
+		$form->addField('Dropdown','duration_unit')->setEmptyText('unit')->setValueList(['Month'=>'Month','Day'=>'Day']);
+
 		$form->addSubmit('GET LIST');
 
 		$rt = $this->app->stickyGET('report_type');
@@ -18,14 +22,50 @@ class page_reports_agent_topten extends Page {
 		$fd = $this->app->stickyGET('from_date');
 		$td = $this->app->stickyGET('to_date');
 		$fl = $this->app->stickyGET('filter');
+		$scheme_id = $this->app->stickyGET('scheme');
+		$duration = $this->app->stickyGET('duration');
+		$duration_unit = $this->app->stickyGET('duration_unit');
 
 		$view = $this->add('View');
 
 		if($fl){
+			$model = $this->add('Model_Agent');
+			$fields = ['name'];
+
+			if($scheme_id OR $duration){
+				$agent_acct_join = $model->join('accounts','account_id');
+				$agent_acct_join->addField('scheme_id');
+				$scheme_join = $agent_acct_join->join('schemes','scheme_id');
+				$scheme_join->addField('SchemeType');
+				$scheme_join->addField('MaturityPeriod');
+			
+				if($scheme_id){
+					$model->addCondition('scheme_id',$scheme_id);
+				}elseif($duration){
+					if($duration_unit == "Day"){
+						$model->addCondition('SchemeType',ACCOUNT_TYPE_FIXED);
+					}
+					if($duration_unit == "Month"){
+						$model->addCondition('SchemeType',['DDS','Loan','Recurring']);
+					}
+					$model->addCondition('MaturityPeriod','>=',$duration);
+				}
+				$fields = ['name','scheme_id','MaturityPeriod','SchemeType'];
+			}
+
+			/* month: 
+				$this->addCondition('SchemeType','DDS');
+				$this->addCondition('SchemeType','Loan');
+				$this->addCondition('SchemeType','Recurring');
+				Days
+					$this->addCondition('SchemeType',ACCOUNT_TYPE_FIXED);
+			*/
+
+
+
 			if($rt =='collection'){
 				$account_types=['RD'=>TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT,'DDS'=>TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT];
-				$model = $this->add('Model_Agent');
-				$fields=['name'];
+				// $fields=['name'];
 				$remove_zero_condition=[];
 				foreach ($account_types as $key=>$tr_type) {
 					$model->addExpression($key.'_amount_compared')->set(function($m,$q)use($fd,$td,$tr_type){
@@ -83,8 +123,8 @@ class page_reports_agent_topten extends Page {
 
 			}elseif($rt == 'account'){
 				$account_types=['DDS','FixedAndMis','Recurring'];
-				$model = $this->add('Model_Agent');
-				$fields=['name'];
+				// $model = $this->add('Model_Agent');
+				// $fields=['name'];
 				$remove_zero_condition=[];
 				foreach ($account_types as $acc_type) {
 					$model->addExpression($acc_type.'_amount_compared')->set(function($m,$q)use($fd,$td,$acc_type){
@@ -140,7 +180,7 @@ class page_reports_agent_topten extends Page {
 
 
 		if($form->isSubmitted()){
-			$view->js()->reload(array('report_type'=>$form['report_type'],'branch'=>$form['branch'], 'to_date'=>$form['to_date']?:'0','from_date'=>$form['from_date']?:'0','filter'=>1))->execute();
+			$view->js()->reload(array('report_type'=>$form['report_type'],'branch'=>$form['branch'], 'to_date'=>$form['to_date']?:'0','from_date'=>$form['from_date']?:'0','scheme'=>$form['scheme'],'duration'=>$form['duration'],'duration_unit'=>$form['duration_unit'],'filter'=>1))->execute();
 		}
 	}
 }

@@ -133,7 +133,7 @@ class Model_Scheme_Default extends Model_Scheme {
 			 
 			if($op_bal_before_sep > 0){
 	            $transaction = $this->add('Model_Transaction');
-	            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated full rate", $only_transaction=null, array('reference_id'=>$accounts->id));
+	            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated full rate ( ".$depr." )", $only_transaction=null, array('reference_id'=>$accounts->id));
 	            
 	            $transaction->addDebitAccount($account['branch_code'] . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
 	            $transaction->addCreditAccount($account, round($depAmt,COMMISSION_ROUND_TO));
@@ -146,7 +146,7 @@ class Model_Scheme_Default extends Model_Scheme {
             $depAmt = ($op_bal_after_sep) * $depr / 100;
             if($op_bal_after_sep > 0 ){
             	$transaction = $this->add('Model_Transaction');
-	            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated half rate", $only_transaction=null, array('reference_id'=>$accounts->id));
+	            $transaction->createNewTransaction(TRA_DEPRICIATION_AMOUNT_CALCULATED, $branch, $on_date, "Depreciation amount calculated half rate ( ".$depr." )", $only_transaction=null, array('reference_id'=>$accounts->id));
 	            
 	            $transaction->addDebitAccount($account['branch_code'] . SP . DEPRECIATION_ON_FIXED_ASSETS, round($depAmt,COMMISSION_ROUND_TO));
 	            $transaction->addCreditAccount($account, round($depAmt,COMMISSION_ROUND_TO));

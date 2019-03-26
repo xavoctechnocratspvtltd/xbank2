@@ -27,12 +27,18 @@ class page_reports_agent_topten extends Page {
 		$duration_unit = $this->app->stickyGET('duration_unit');
 
 		$view = $this->add('View');
-
+		if($duration_unit == "Day")
+			$view->add('View')->setElement('h3')->set('Show Records of Fixed and MIS Account');
+		elseif($duration_unit == "Month")
+			$view->add('View')->setElement('h3')->set('Show Records of DDD, RD, Loan');
+				
 		if($fl){
 			$model = $this->add('Model_Agent');
 			$fields = ['name'];
 
 			if($scheme_id OR $duration){
+				$fields = ['name','scheme_id','MaturityPeriod','SchemeType'];
+
 				$agent_acct_join = $model->join('accounts','account_id');
 				$agent_acct_join->addField('scheme_id');
 				$scheme_join = $agent_acct_join->join('schemes','scheme_id');
@@ -50,21 +56,26 @@ class page_reports_agent_topten extends Page {
 					}
 					$model->addCondition('MaturityPeriod','>=',$duration);
 				}
-				$fields = ['name','scheme_id','MaturityPeriod','SchemeType'];
 			}
 
 			/* month: 
 				$this->addCondition('SchemeType','DDS');
 				$this->addCondition('SchemeType','Loan');
 				$this->addCondition('SchemeType','Recurring');
+				form submission report_type must be Collection_wise
 				Days
 					$this->addCondition('SchemeType',ACCOUNT_TYPE_FIXED);
+				form submission report_type must be Account_wise
 			*/
 
 
 
 			if($rt =='collection'){
 				$account_types=['RD'=>TRA_RECURRING_ACCOUNT_AMOUNT_DEPOSIT,'DDS'=>TRA_DDS_ACCOUNT_AMOUNT_DEPOSIT];
+				if($duration_unit == "Day"){
+					$account_types = [];
+				}
+
 				// $fields=['name'];
 				$remove_zero_condition=[];
 				foreach ($account_types as $key=>$tr_type) {
@@ -123,6 +134,9 @@ class page_reports_agent_topten extends Page {
 
 			}elseif($rt == 'account'){
 				$account_types=['DDS','FixedAndMis','Recurring'];
+				if($duration_unit == "Month"){
+					$account_types = ['FixedAndMis'];
+				}
 				// $model = $this->add('Model_Agent');
 				// $fields=['name'];
 				$remove_zero_condition=[];
@@ -180,6 +194,11 @@ class page_reports_agent_topten extends Page {
 
 
 		if($form->isSubmitted()){
+			if($form['duration'] AND !$form['duration_unit']) $form->displayError('duration_unit','must not be empty');
+			if(!$form['duration'] AND $form['duration_unit']) $form->displayError('duration','must not be empty');
+
+			if($form['duration_unit'] == "Day" && $form['report_type'] == "collection") $form->displayError('report_type','must be account wise');
+
 			$view->js()->reload(array('report_type'=>$form['report_type'],'branch'=>$form['branch'], 'to_date'=>$form['to_date']?:'0','from_date'=>$form['from_date']?:'0','scheme'=>$form['scheme'],'duration'=>$form['duration'],'duration_unit'=>$form['duration_unit'],'filter'=>1))->execute();
 		}
 	}

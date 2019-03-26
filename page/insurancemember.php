@@ -5,6 +5,7 @@ class page_insurancemember extends Page{
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
 		$tab = $this->add('Tabs');
 		$tab->addTabUrl('allinsurance','Member Insurance');
 		$tab->addTabUrl('newrenewinsurance','New/ Renew Member Insurance');

@@ -134,6 +134,7 @@ define('TRA_FORCLOSE_CHARGE',  'ForCloseTransaction');
 define('TRA_BANK_DEPOSIT',  'BANK DEPOSIT');
 define('TRA_BANK_WITHDRAWL',  'BANK WITHDRAWL');
 define('TRA_EXCESS_AMOUNT_REVERT',  'EXCESS AMOUNT REVERT');
+define('TRA_PURCHASE_ENTRY',  'PURCHASE ENTRY');
 
 define('TRA_TDS_REVERT',  'TDS REVERT TRANSACTION');
 define('TRA_SALARY_AND_ALLOWENCES',  'Salary and Allowances Transaction');
@@ -182,6 +183,7 @@ define('ACCOUNT_TYPE_RECURRING',                "Recurring");
 define('ACCOUNT_TYPE_DDS',                      "DDS");
 define('ACCOUNT_TYPE_LOAN',                     "Loan");
 define('ACCOUNT_TYPE_CC',                       "CC");
+define('ACCOUNT_TYPE_GST',                       "GST");
 // define('ACCOUNT_TYPE_DHANSANCHAYA',             "DhanSanchaya");
 // define('ACCOUNT_TYPE_MONEYBACK',                "MoneyBack");
 

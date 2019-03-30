@@ -6,17 +6,7 @@ class page_transactions_purchase extends Page {
 
 	function init(){
 		parent::init();
-
-		// $this->add('Controller_Acl');
-		// foreach (explode(",",ACCOUNT_TYPES) as $schemeType) {
-		// 	$all_schemes_of_type = $this->add('Model_Scheme_'.$schemeType);
-		// 	foreach ($all_schemes_of_type as $scheme_array) {
-		// 		if($schemeType != 'Default') continue;
-		// 		echo $schemeType." = ".$all_schemes_of_type['name']."<br/>";
-		// 		// $all_schemes_of_type->createDefaultAccounts($new_branch);
-		// 	}
-		// }
-
+		
 		$supplier_model = $this->add('Model_Supplier')->addCondition('is_active',true);
 		$form = $this->add('Form');
 		$field_supplier = $form->addField('DropDown','supplier')
@@ -35,7 +25,7 @@ class page_transactions_purchase extends Page {
 		if($form->isSubmitted()){
 
 			if(!$this->session_model->count()) throw new \Exception("Please Add Purchase Item First ...");
-			
+
 			$data = [];
 			foreach ($this->session_model as $record) {
 				$data[] = $record->data;

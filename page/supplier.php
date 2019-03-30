@@ -8,8 +8,12 @@ class page_supplier extends Page {
 
 		$model = $this->add('Model_Supplier');
 		$crud = $this->add('CRUD');
+		if($crud->isEditing()){
+			$crud->form->add('misc\Controller_FormAsterisk');
+		}
 		$crud->setModel($model);
 		$crud->add('Controller_Acl',['default_view'=>false]);
 		
+
 	}
 }

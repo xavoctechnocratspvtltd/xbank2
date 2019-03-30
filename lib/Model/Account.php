@@ -132,6 +132,8 @@ class Model_Account extends Model_Table {
 		$this->addField('bank_account_limit')->type('int')->defaultValue(0); //used for applying limit condition over od account at time of bank withdrawl
 		  
 		$this->addField('extra_info')->type('text')->system(true); // Put json style extra info in this field
+		$this->addField('related_type')->system(true);
+		$this->addField('related_type_id')->type('int')->system(true);
 
 		$this->scheme_join = $this->leftJoin('schemes','scheme_id');
 		$this->scheme_join->addField('SchemeType');

@@ -7,11 +7,17 @@ class page_transactions_purchase extends Page {
 	function init(){
 		parent::init();
 		
-		$supplier_model = $this->add('Model_Supplier')->addCondition('is_active',true);
+		// $supplier_model = $this->add('Model_Supplier')->addCondition('is_active',true);
+		$supplier_model = $this->add('Model_Account_Default')
+					->addCondition('related_type','Model_Supplier')
+					->addCondition('branch_id',$this->app->current_branch->id);
+
 		$form = $this->add('Form',null,null,['form/horizontal']);
 		$field_supplier = $form->addField('DropDown','supplier')
 				->setEmptyText('Please Select ...')->validateNotNull();
+
 		$field_supplier->setModel($supplier_model);
+
 		$form->addField('invoice_no')->validateNotNull();
 		$form->addField('Text','narration')->set('Purchase Entry');
 		$form->addField('Number','tds_amount');
@@ -33,14 +39,15 @@ class page_transactions_purchase extends Page {
 				$data[] = $record->data;
 			}
 
-			$supplier_model = $this->add('Model_Supplier')->load($form['supplier']);
-			$data = $this->getTransactionData($supplier_model,$data);
+			$supplier_ac_model = $this->add('Model_Account_Default')->load($form['supplier']);
+			$data = $this->getTransactionData($supplier_ac_model,$data);
 			$data['narration'] = $form['narration'];
 			$data['tds_amount'] = $form['tds_amount'];
 			$data['invoice_no'] = $form['invoice_no'];
 
 			try {
 				$this->api->db->beginTransaction();
+				$supplier_model = $this->add('Model_Supplier')->load($supplier_ac_model['related_type_id']);
 			    $supplier_model->createPurchaseTransaction($data);
 			    $this->session_model->deleteAll();
 			    $this->api->db->commit();
@@ -97,13 +104,9 @@ class page_transactions_purchase extends Page {
 	}
 
 
-	function getTransactionData($supplier_model,$data){
+	function getTransactionData($supplier_ac_model,$data){
 
-		$s_ac_model = $this->add('Model_Account_Default');
-		$s_ac_model->addCondition('id',$supplier_model['account_id']);
-		$s_ac_model->tryLoadAny();
-
-		if(!$supplier_model['account_id'] AND !$s_ac_model->loaded()) throw new \Exception("Supplier Account Not Found");
+		if(!$supplier_ac_model->loaded()) throw new \Exception("Supplier Account Not Found");
 
 		$tra_data = [
 				'cr'=>['account_id'=>0,'amount'=>0],
@@ -128,7 +131,7 @@ class page_transactions_purchase extends Page {
 			$total_amount += $value['tax_included_amount'];
 		}
 		$tra_data['total_amount'] = $total_amount;
-		$tra_data['cr']['account_id'] = $s_ac_model->id;
+		$tra_data['cr']['account_id'] = $supplier_ac_model->id;
 		$tra_data['cr']['amount'] = $total_amount;
 
 		return $tra_data;

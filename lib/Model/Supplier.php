@@ -5,19 +5,43 @@ class Model_Supplier extends Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('Account_Default','account_id')->display(['form'=>'autocomplete/Basic']);
-		$this->addField('name')->caption('Full Name');
+		$this->addField('name')->caption('Full Name')->mandatory(true);
 		$this->addField('organization');
 		$this->addField('gstin');
-		$this->addField('address')->type('text');
+		$this->addField('address')->type('text')->mandatory(true);
 		$this->addField('email_ids')->type('text')->hint('comma (,) seperated multiple values');
 		$this->addField('phone_nos')->type('text')->hint('comma (,) seperated multiple values');
-		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
+		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now)->system(true);
 		$this->addField('is_active')->type('boolean')->defaultValue(true);
 
+		$this->addHook('afterSave',[$this,'updateSupplierAccounts']);
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
+	/*create/update all supplier accounts in all branch */
+	function updateSupplierAccounts(){
+
+		$all_branches = $this->add('Model_Branch')->getRows(['Code']);
+		
+		foreach ($all_branches as $branch_array){
+
+			$supp_act_number = $branch_array['Code'].SP.$this['name']." (".$this['organization'].")";
+			$default_member_id = $this->add('Model_Member')->loadBy('name',$branch_array['Code'].SP.'Default')->get('id');
+			$default_scheme_id = $this->add('Model_Scheme')->loadBy('name','Sundry Creditor')->get('id');
+			
+			$ac_model = $this->add('Model_Account_Default')->setActualFields(['member_id','scheme_id','related_account_id','related_type','AccountNumber','branch_id']);
+
+			$ac_model->addCondition('related_type','Model_Supplier');
+			$ac_model->addCondition('related_type_id',$this->id);
+			$ac_model->addCondition('scheme_id',$default_scheme_id);
+			$ac_model->addCondition('member_id',$default_member_id);
+			$ac_model->addCondition('branch_id',$branch_array['id']);
+			$ac_model->tryLoadAny();
+
+			$ac_model['AccountNumber'] = $supp_act_number;
+			$ac_model->save();
+		}
+	}
 
 
 	/* Data format 

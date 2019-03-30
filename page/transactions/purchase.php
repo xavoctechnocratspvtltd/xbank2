@@ -8,20 +8,22 @@ class page_transactions_purchase extends Page {
 		parent::init();
 		
 		$supplier_model = $this->add('Model_Supplier')->addCondition('is_active',true);
-		$form = $this->add('Form');
+		$form = $this->add('Form',null,null,['form/horizontal']);
 		$field_supplier = $form->addField('DropDown','supplier')
 				->setEmptyText('Please Select ...')->validateNotNull();
 		$field_supplier->setModel($supplier_model);
+		$form->addField('invoice_no')->validateNotNull();
+		$form->addField('Text','narration')->set('Purchase Entry');
+		$form->addField('Number','tds_amount');
 
 		$this->session_model = $this->getSessionModel();
-
 		$crud = $this->add('CRUD',['entity_name'=>'Purchase Item','allow_edit'=>false]);
 		if($crud->isEditing('add') Or $crud->isEditing('edit')){
 			$crud->form->add('misc\Controller_FormAsterisk');
 		}
-		$crud->setModel($this->session_model);
+		$crud->setModel($this->session_model,['purchase_account','tax_included_amount','tax'],['purchase_account','tax_excluded_amount','tax','tax_amount','tax_included_amount']);
+		
 		$form->add('misc\Controller_FormAsterisk');
-
 		if($form->isSubmitted()){
 
 			if(!$this->session_model->count()) throw new \Exception("Please Add Purchase Item First ...");
@@ -30,8 +32,12 @@ class page_transactions_purchase extends Page {
 			foreach ($this->session_model as $record) {
 				$data[] = $record->data;
 			}
-			
+
 			$supplier_model = $this->add('Model_Supplier')->load($form['supplier']);
+			$data = $this->getTransactionData($supplier_model,$data);
+			$data['narration'] = $form['narration'];
+			$data['tds_amount'] = $form['tds_amount'];
+			$data['invoice_no'] = $form['invoice_no'];
 
 			try {
 				$this->api->db->beginTransaction();
@@ -43,7 +49,7 @@ class page_transactions_purchase extends Page {
 			   	$this->api->db->rollBack();
 			   	throw $e;
 			}
-			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- conveynace added in " . $form['amount_from_account'])->execute();
+			$form->js(null,[$form->js()->reload(),$crud->js()->reload()])->univ()->successMessage("successfully submitted")->execute();
 		}
 
 		$this->add('Button')
@@ -59,20 +65,72 @@ class page_transactions_purchase extends Page {
 		
 		$model_default_account = $this->add('Model_Account_Default');
 
+		$session_model->addField('purchase_account_id');
 		$field_pur_acount = $session_model->addField('purchase_account');
 		$field_pur_acount->display(['form'=>'autocomplete/Basic'])->mandatory(true);
 		$field_pur_acount->setModel($model_default_account);
 
+
 		$session_model->addField('tax_included_amount')->mandatory(true);
-		$session_model->addField('tax')->mandatory(true);
+		$session_model->addField('tax')->setValueList(GST_VALUES);
+		$session_model->addField('tax_amount');
 		$session_model->addField('tax_excluded_amount');
 
-		$session_model->addHook('afterLoad',function($m){$m['purchase_account'] = $this->add('Model_Account_Default')->load($m['purchase_account'])->get('name'); });
+		$session_model->addHook('afterLoad',function($m){
+			$m['purchase_account_id'] = $m['purchase_account'];
+			$m['purchase_account'] = $this->add('Model_Account_Default')->load($m['purchase_account'])->get('name');
+		});
 		$session_model->addHook('beforeSave',function($m){
-			$tax = (100 + $m['tax']);
-			$m['tax_excluded_amount'] = round((($m['tax_included_amount']/$tax)*100),2);
+			if($m['tax']){
+				$temp = explode(" ", $m['tax']);
+				$tax_name = $temp[0];
+				$tax_percentage = $temp[1];
+				$tax = (100 + $tax_percentage);
+				$m['tax_excluded_amount'] = round((($m['tax_included_amount']/$tax)*100),2);
+				$m['tax_amount'] = round(($m['tax_included_amount'] - $m['tax_excluded_amount']),2);
+			}else{
+				$m['tax_excluded_amount'] = $m['tax_included_amount'];
+			}
 		});
 
 		return $session_model;
+	}
+
+
+	function getTransactionData($supplier_model,$data){
+
+		$s_ac_model = $this->add('Model_Account_Default');
+		$s_ac_model->addCondition('id',$supplier_model['account_id']);
+		$s_ac_model->tryLoadAny();
+
+		if(!$supplier_model['account_id'] AND !$s_ac_model->loaded()) throw new \Exception("Supplier Account Not Found");
+
+		$tra_data = [
+				'cr'=>['account_id'=>0,'amount'=>0],
+				'dr'=>[
+					'account'=>[],
+					'gst'=>[]
+					],
+				'total_amount'=>0,
+				'tds_amount'=>0,
+				'invoice_no'=>0
+			];
+
+		$total_amount = 0;
+		foreach ($data as $key => $value) {
+
+			if(!isset($tra_data['dr']['account'][$value['purchase_account_id']])) $tra_data['dr']['account'][$value['purchase_account_id']] = 0;
+			$tra_data['dr']['account'][$value['purchase_account_id']] += $value['tax_excluded_amount'];
+
+			if($value['tax'] && !isset($tra_data['dr']['gst'][$value['tax']])) $tra_data['dr']['gst'][$value['tax']] = 0;
+			$tra_data['dr']['gst'][$value['tax']] += $value['tax_amount'];
+
+			$total_amount += $value['tax_included_amount'];
+		}
+		$tra_data['total_amount'] = $total_amount;
+		$tra_data['cr']['account_id'] = $s_ac_model->id;
+		$tra_data['cr']['amount'] = $total_amount;
+
+		return $tra_data;
 	}
 }

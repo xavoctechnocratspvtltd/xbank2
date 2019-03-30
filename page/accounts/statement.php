@@ -77,6 +77,10 @@ class page_accounts_statement extends Page {
 		}
 		$grid->add('View',null,'grid_buttons')->setHtml('<div style="text-align:center;font-size:20px">'.$title_acc_name.' <br><small>'. $joint_memebrs .'</small> <br/> <small >From Date - '.$t_from_date." - " . "   To Date - ".($_GET['to_date']?:$this->api->today."</small></div>"));
 		$transactions = $this->add('Model_TransactionRow');
+		$transactions->addExpression('invoice_no')->set(function($m,$q){	
+
+			return $q->expr('IF([0]=0,"-",[0])',[ $m->refSQL('transaction_id')->fieldQuery('invoice_no')]);
+		});
 
 		if($_GET['account_id'] or $_GET['AccountNumber']){
 			$this->api->stickyGET('account_id');
@@ -122,7 +126,7 @@ class page_accounts_statement extends Page {
 
 		// $transactions->add('Controller_Acl');
 		$transactions->setOrder('created_at');
-		$grid->setModel($transactions,array('voucher_no','created_at','Narration','amountDr','amountCr'));
+		$grid->setModel($transactions,array('voucher_no','created_at','invoice_no','Narration','amountDr','amountCr'));
 		// $grid->addPaginator(10);
 
 		$grid->addSno();

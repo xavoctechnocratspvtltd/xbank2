@@ -73,8 +73,9 @@ class Model_Scheme_Default extends Model_Scheme {
 				// array('under_scheme'=>'indirect expenses','intermediate_text'=>"",'Group'=>'ROUND OF','PAndLGroup'=>'ROUND OF'),
 				// array('under_scheme'=>BRANCH_TDS_ACCOUNT,'intermediate_text'=>"",'Group'=>BRANCH_TDS_ACCOUNT,'PAndLGroup'=>BRANCH_TDS_ACCOUNT),
 				// array('under_scheme'=>ADMISSION_FEE_ACCOUNT,'intermediate_text'=>"",'Group'=>'Admission Fees Received','PAndLGroup'=>'Admission Fees Received'),
-				array('under_scheme'=>'Adminssion Fee','intermediate_text'=>"",'Group'=>'Admission Fees Received','PAndLGroup'=>'Admission Fees Received'),
+				// array('under_scheme'=>'Adminssion Fee','intermediate_text'=>"",'Group'=>'Admission Fees Received','PAndLGroup'=>'Admission Fees Received'),
 				// array('under_scheme'=>CASH_ACCOUNT_SCHEME,'intermediate_text'=>"",'Group'=>CASH_ACCOUNT,'PAndLGroup'=>CASH_ACCOUNT),
+				
 			);
 	}
 
@@ -84,6 +85,24 @@ class Model_Scheme_Default extends Model_Scheme {
 				array('under_scheme'=>'indirect expenses','intermediate_text'=>"",'Group'=>'ROUND OF','PAndLGroup'=>'ROUND OF'),
 				array('under_scheme'=>BRANCH_TDS_ACCOUNT,'intermediate_text'=>"",'Group'=>BRANCH_TDS_ACCOUNT,'PAndLGroup'=>BRANCH_TDS_ACCOUNT),
 				array('under_scheme'=>'indirect expenses','intermediate_text'=>"",'Group'=>'Conveyance Expenses','PAndLGroup'=>"Conveyance Expenses"),
+
+				// BRANCH SPECIFIC GST ACCOUNT
+				// array('under_scheme'=>CURRENT_LIABILITIES_SCHEME,'intermediate_text'=>DUTIES_TAXES_SCHEME." GST",'Group'=>DUTIES_TAXES_SCHEME." GST",'PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"CGST 9%",'Group'=>'GST 18%','PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"SGST 9%",'Group'=>'GST 18%','PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"IGST 18%",'Group'=>'IGST 18%','PAndLGroup'=>""),
+
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"CGST 14%",'Group'=>'GST 28%','PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"SGST 14%",'Group'=>'GST 28%','PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"IGST 28%",'Group'=>'IGST 28%','PAndLGroup'=>""),
+
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"CGST 2.5%",'Group'=>'GST 5%','PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"SGST 2.5%",'Group'=>'GST 5%','PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"IGST 5%",'Group'=>'IGST 5%','PAndLGroup'=>""),
+
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"CGST 3%",'Group'=>'GST 6%','PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"SGST 3%",'Group'=>'GST 6%','PAndLGroup'=>""),
+				// array('under_scheme'=>ACCOUNT_TYPE_GST,'intermediate_text'=>"IGST 6%",'Group'=>'IGST 6%','PAndLGroup'=>"")
 			);
 	}
 

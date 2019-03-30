@@ -300,3 +300,15 @@ define("FLAT_RATE", "Flat");
 
 define("BALANCE_SHEET", true);
 define("MIN_BALANCE_CHARGE", 20);
+
+$gst_array = [
+		'GST 18'=>'GST 18%',
+		'IGST 18'=>'IGST 18%',
+		'GST 28'=>'GST 28%',
+		'IGST 28'=>'IGST 28%',
+		'GST 5'=>'GST 5%',
+		'IGST 5'=>'IGST 5%',
+		'GST 6'=>'GST 6%',
+		'IGST 6'=>'IGST 6%'
+	];
+define("GST_VALUES", $gst_array);

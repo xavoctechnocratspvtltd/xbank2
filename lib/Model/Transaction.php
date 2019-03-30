@@ -36,6 +36,8 @@ class Model_Transaction extends Model_Table {
 		$this->addField('created_at')->type('datetime')->defaultValue($this->api->now);
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
 
+		$this->addField('invoice_no');
+
 		$this->hasMany('TransactionRow','transaction_id');
 
 		$this->addExpression('cr_sum')->set(function($m,$q){
@@ -113,6 +115,8 @@ class Model_Transaction extends Model_Table {
 		$this['voucher_no'] = $branch->newVoucherNumber($branch,$transaction_date);
 		$this['Narration'] = $Narration;
 		$this['created_at'] = $transaction_date;		
+		// new field aded for both purchase and sale invoice no
+		if(isset($options['invoice_no'])) $this['invoice_no'] = $options['invoice_no'];
 
 		$this->transaction_type = $transaction_type;
 		$this->branch = $branch;

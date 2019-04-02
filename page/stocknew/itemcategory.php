@@ -4,6 +4,8 @@ class page_stocknew_itemcategory extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		$tabs = $this->add('Tabs');
 		$item_tab = $tabs->addTab('Items');
 		$category_tab = $tabs->addTab('Item Categories');

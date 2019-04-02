@@ -4,20 +4,31 @@ class page_stocknew_reports extends Page {
 	
 	function page_index(){
 
+		$this->add('Controller_Acl',['default_view'=>false]);
+
 		$tabs = $this->add('Tabs');
 		$overall_stock_report_tab = $tabs->addTabURL($this->app->url('./overall'),'Over All Stock Report');
 		$stock_distribution_report_tab = $tabs->addTabURL($this->app->url('./distribution'),'Stock Distribution Report');
-		
-
 	}
 
 	function page_overall(){
+
 		$this->add('H3')->set('Stock Report');
 
 		$form = $this->add('Form');
-		$form->addField('DropDown','branch')->setEmptyText('All')->setModel('Branch');
-		$form->addField('DropDown','container')->setEmptyText('All')->setModel('StockNew_Container');
-		$form->addField('DropDown','container_row')->setEmptyText('All')->setModel('StockNew_ContainerRow');
+		$branch = $this->add('Model_Branch');
+		$container_model = $this->add('Model_StockNew_Container');
+		$container_row_model = $this->add('Model_StockNew_ContainerRow');
+
+		if($this->app->current_branch->id){
+			$branch->addCondition('id',$this->app->current_branch->id);
+			$container_model->addCondition('branch_id',$this->app->current_branch->id);
+			$container_row_model->addCondition('branch_id',$this->app->current_branch->id);
+		}
+			
+		$form->addField('DropDown','branch')->setEmptyText('All')->setModel($branch);
+		$form->addField('DropDown','container')->setEmptyText('All')->setModel($container_model);
+		$form->addField('DropDown','container_row')->setEmptyText('All')->setModel($container_row_model);
 		$form->addField('autocomplete/Basic','member')->setModel('Model_StockNew_Member');
 
 		$form->addSubmit('Filter');
@@ -51,8 +62,8 @@ class page_stocknew_reports extends Page {
 		$form->addField('autocomplete/Basic','item')->setModel('StockNew_Item');
 		$form->addSubmit('Get Report');
 
-		$item = $this->add('Model_StockNew_ItemStock');
-		$grid=$this->add('Grid');
+		$item = $this->add('Model_StockNew_ItemStock',['for_branch_id'=>$this->app->current_branch->id]);
+		$grid = $this->add('Grid');
 		$grid->setModel($item);
 
 		if($form->isSubmitted()){

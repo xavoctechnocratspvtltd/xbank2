@@ -19,6 +19,7 @@ class Menu_Base extends Menu {
 
 
 		$hod = $this->addMenuItem('#','HOD Authority');
+		$purchase = $this->addMenuItem('#','Purchase');
 		$mad = $this->addMenuItem('#','M.A.D.');
 		$stock = 	$this->addMenuItem('stock_main','Stock');
 		// $stock = 	$this->addMenuItem('staff_main','Staff Management');
@@ -43,7 +44,7 @@ class Menu_Base extends Menu {
 		$mad_sub_menus_popover = $this->add('View_Popover');
 		$stock_sub_menus_popover = $this->add('View_Popover');
 		$account_sub_menu_popover = $this->add('View_Popover');
-
+		$purchase_sub_menus_popover = $this->add('View_Popover');
 		$reports_sub_menu_popover = $this->add('View_Popover');
 		
 		// $books_sub_menus_popover = $this->add('View_Popover');
@@ -100,6 +101,10 @@ class Menu_Base extends Menu {
 		$hod_auth_menu->addMenuItem('log','Log Check');
 		$hod->js('click',$hod_sub_menus_popover->showJS());
 
+		$purchase_auth_menu = $purchase_sub_menus_popover->add('Menu_Vertical');
+		$purchase_auth_menu->addMenuItem('supplier','Supplier');
+		$purchase_auth_menu->addMenuItem('transactions_purchase','Purchase');
+		$purchase->js('click',$purchase_sub_menus_popover->showJS());
 		
 		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');
 		$mad_sub_menus->addMenuItem('members','Members');

@@ -34,7 +34,7 @@ class page_stocknew_transactionedit extends Page {
 		} 
 		if($transaction_type) $model->addCondition('transaction_template_type_id',$transaction_type);
 		if($from_branch) $model->addCondition('from_branch_id',$from_branch);
-		if($to_branch) $model->addCondition('from_branch_id',$to_branch);
+		if($to_branch) $model->addCondition('to_branch_id',$to_branch);
 
 		$crud  = $this->add('CRUD');
 		$crud->setModel($model);

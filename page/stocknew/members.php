@@ -6,6 +6,7 @@ class page_stocknew_members extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
 		$crud = $this->add('CRUD');
 		$crud->setModel('StockNew_Member');
 

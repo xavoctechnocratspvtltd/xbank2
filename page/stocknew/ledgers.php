@@ -6,7 +6,7 @@ class page_stocknew_ledgers extends Page {
 
 		// $tabs = $this->add('Tabs');
 		// $tabs->addTabURL($this->app->url('./item'),'Item');
-
+		$this->add('Controller_Acl',['default_view'=>false]);
 		$this->page_item();
 	}
 

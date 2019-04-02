@@ -6,6 +6,8 @@ class page_stocknew_rowscontainers extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		$tabs = $this->add('Tabs');
 		$container_rows_tab  = $tabs->addTab('Containers & Rows');
 		$container_types_tab = $tabs->addTab('Container Types');

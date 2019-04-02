@@ -23,11 +23,12 @@ class Model_Supplier extends Model_Table {
 
 		$all_branches = $this->add('Model_Branch')->getRows(['Code']);
 		
+		$default_scheme_id = $this->add('Model_Scheme')->setActualFields(['name','id'])->loadBy('name','Sundry Creditor')->get('id');
+		
 		foreach ($all_branches as $branch_array){
 
 			$supp_act_number = $branch_array['Code'].SP.$this['name']." (".$this['organization'].")";
-			$default_member_id = $this->add('Model_Member')->loadBy('name',$branch_array['Code'].SP.'Default')->get('id');
-			$default_scheme_id = $this->add('Model_Scheme')->loadBy('name','Sundry Creditor')->get('id');
+			$default_member_id = $this->add('Model_Member')->setActualFields(['name','id'])->loadBy('name',$branch_array['Code'].SP.'Default')->get('id');
 			
 			$ac_model = $this->add('Model_Account_Default')->setActualFields(['member_id','scheme_id','related_account_id','related_type','AccountNumber','branch_id']);
 

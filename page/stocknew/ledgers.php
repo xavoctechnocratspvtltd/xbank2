@@ -13,9 +13,9 @@ class page_stocknew_ledgers extends Page {
 	function page_item(){
 
 		$form = $this->add('Form');
-		$form->addField('DropDown','branch')->setEmptyText('All')->setModel('Branch');
-		$form->addField('DropDown','container')->setEmptyText('All')->setModel('StockNew_Container');
-		$form->addField('DropDown','container_row')->setEmptyText('All')->setModel('StockNew_ContainerRow');
+		$form->addField('DropDown','branch')->setEmptyText('All')->setModel('Branch')->addCondition('id',$this->app->current_branch->id);
+		$form->addField('DropDown','container')->setEmptyText('All')->setModel('StockNew_Container')->addCondition('branch_id',$this->app->current_branch->id);
+		$form->addField('DropDown','container_row')->setEmptyText('All')->setModel('StockNew_ContainerRow')->addCondition('branch_id',$this->app->current_branch->id);
 		$form->addField('autocomplete/Basic','member')->setModel('StockNew_Member');
 		$form->addField('DropDown','item')->setEmptyText('All')->setModel('StockNew_Item');
 		$form->addField('DatePicker','from_date');

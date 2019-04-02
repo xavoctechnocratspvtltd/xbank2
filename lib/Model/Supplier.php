@@ -59,7 +59,6 @@ class Model_Supplier extends Model_Table {
     */
 
 	function createPurchaseTransaction($data){
-		if(!$this->loaded()) throw new \Exception("supplier model must loaded");
 		
 		$in_branch = $this->api->current_branch;
 		$transaction_date = $this->api->now;

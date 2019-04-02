@@ -39,19 +39,19 @@ class page_transactions_purchase extends Page {
 				$data[] = $record->data;
 			}
 
-			$supplier_ac_model = $this->add('Model_Account_Default')->load($form['supplier']);
-			$data = $this->getTransactionData($supplier_ac_model,$data);
+			// $supplier_ac_model = $this->add('Model_Account_Default')->load($form['supplier']);
+			$data = $this->getTransactionData($form['supplier'],$data);
+
 			$data['narration'] = $form['narration'];
 			$data['tds_amount'] = $form['tds_amount'];
 			$data['invoice_no'] = $form['invoice_no'];
 
 			try {
 				$this->api->db->beginTransaction();
-				$supplier_model = $this->add('Model_Supplier')->load($supplier_ac_model['related_type_id']);
+				$supplier_model = $this->add('Model_Supplier');
 			    $supplier_model->createPurchaseTransaction($data);
 			    $this->session_model->deleteAll();
 			    $this->api->db->commit();
-
 			} catch (Exception $e) {
 			   	$this->api->db->rollBack();
 			   	throw $e;
@@ -104,9 +104,9 @@ class page_transactions_purchase extends Page {
 	}
 
 
-	function getTransactionData($supplier_ac_model,$data){
+	function getTransactionData($supplier_ac_id,$data){
 
-		if(!$supplier_ac_model->loaded()) throw new \Exception("Supplier Account Not Found");
+		if(!$supplier_ac_id) throw new \Exception("Supplier Account Not Found");
 
 		$tra_data = [
 				'cr'=>['account_id'=>0,'amount'=>0],
@@ -131,7 +131,7 @@ class page_transactions_purchase extends Page {
 			$total_amount += $value['tax_included_amount'];
 		}
 		$tra_data['total_amount'] = $total_amount;
-		$tra_data['cr']['account_id'] = $supplier_ac_model->id;
+		$tra_data['cr']['account_id'] = $supplier_ac_id;
 		$tra_data['cr']['amount'] = $total_amount;
 
 		return $tra_data;

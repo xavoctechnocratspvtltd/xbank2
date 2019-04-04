@@ -25,7 +25,7 @@ class page_reports_agent_tdsfromtable extends Page {
 		$model = $this->add('Model_AgentTDS');
 		$model->addExpression('account_type')->set($model->refSQL('related_account_id')->fieldQuery('account_type'));
 		$model->addExpression('PanNo')->set($model->refSQL('agent_id')->fieldQuery('agent_pan_no'));
-
+		$model->getElement('branch')->sortable(true);
 		if($_GET['filter']){
 			$this->api->stickyGET("filter");
 			$this->api->stickyGET("from_date");

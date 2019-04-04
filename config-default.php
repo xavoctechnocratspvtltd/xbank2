@@ -80,7 +80,11 @@ define('BRANCH_AND_DIVISIONS',                  'Branch & Divisions' );
 
 
 define('INTEREST_RECEIVED_ON',				'Interest Received On');
-define('PROCESSING_FEE_RECEIVED',				'Processing Fee Received On');
+
+// define('PROCESSING_FEE_RECEIVED',				'Processing Fee Received On');
+define('PROCESSING_FEE_RECEIVED',				'Pre Interest Received On');
+
+
 define('PENALTY_DUE_TO_LATE_PAYMENT_ON',		'Penalty Due To Late Payment On');
 define('FOR_CLOSE_ACCOUNT_ON',		'For Close Account On');
 define('INTEREST_PAID_ON',				'Interest Paid On');

@@ -15,7 +15,7 @@ class page_stocknew_itemcategory extends Page {
 		$item_crud = $item_tab->add('CRUD');
 		$item_crud->setModel('Model_StockNew_Item');
 		$item_crud->grid->addPaginator(100);
-		
+		$item_crud->add('Controller_Acl',['default_view'=>false]);
 		// ====== Categories ========
 		$crud=$category_tab->add('xCRUD');
 
@@ -40,7 +40,6 @@ class page_stocknew_itemcategory extends Page {
 			return true;
 			
 		});
-
 		$category=$this->add('Model_StockNew_Category');
 		$category->add('Controller_Acl');
 
@@ -53,8 +52,8 @@ class page_stocknew_itemcategory extends Page {
 		}
 
 		$crud->setModel($category,['name'],['name','allowed_in_transactions']);
+		$crud->add('Controller_Acl',['default_view'=>false]);
 		$ref_item_crud = $crud->addRef('StockNew_Item');
-
 		if($f=$crud->form){
 			$f->add('Order')->move('name','first')->now();
 		}

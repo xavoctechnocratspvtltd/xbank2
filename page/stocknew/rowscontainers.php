@@ -14,11 +14,16 @@ class page_stocknew_rowscontainers extends Page {
 
 		$crud = $container_rows_tab->add('CRUD');
 		$crud->setModel('StockNew_Container');
+		$crud->add('Controller_Acl',['default_view'=>false]);
 
-		$crud->addRef('StockNew_ContainerRow');
+		$row_crud = $crud->addRef('StockNew_ContainerRow');
+		if($row_crud instanceof CRUD)
+			$row_crud->add('Controller_Acl',['default_view'=>false]);
 
 		$crud = $container_types_tab->add('CRUD');
 		$crud->setModel('StockNew_ContainerType');
+		$crud->add('Controller_Acl',['default_view'=>false]);
+
 
 	}
 }

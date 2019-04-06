@@ -121,11 +121,23 @@ class Model_Scheme_Loan extends Model_Scheme {
 		});
 
 		$loan_accounts->addCondition('branch_id',$branch->id);
+		$loan_accounts->addExpression('calculated_due_date')->set(function($m,$q){
+			return $q->expr('DATE_ADD([duedate],INTERVAL (IF([panelty]>0,IFNULL([panelty_grace],0),0))+1 DAY)',
+				[
+					'duedate'=>$m->getElement('DueDate'),
+					'panelty_grace'=>$m->getElement('panelty_grace'),
+					'panelty'=>$m->getElement('panelty')
+				]);
+		})->type('date');
 
-        $loan_accounts->addCondition($q->expr('IF([loan_panelty_per_day] is not null,DueDate,DATE_ADD(DueDate, INTERVAL IFNULL([panelty_grace],0)+1 DAY ))',['loan_panelty_per_day'=>$loan_accounts->getElement('loan_panelty_per_day'),'panelty_grace'=>$loan_accounts->getElement('panelty_grace')]),$this->api->nextDate($on_date));
+		$loan_accounts->addCondition('calculated_due_date',"<=",$this->api->nextDate($on_date));
+
+        // $loan_accounts->addCondition(
+        // 		$q->expr('IF([loan_panelty_per_day] is not null,DueDate,DATE_ADD(DueDate, INTERVAL IFNULL([panelty_grace],0)+1 DAY ))',['loan_panelty_per_day'=>$loan_accounts->getElement('loan_panelty_per_day'),'panelty_grace'=>$loan_accounts->getElement('panelty_grace')]),
+        // 		$this->api->nextDate($on_date));
         // $loan_accounts->addCondition('DueDate','like',$this->api->nextDate($on_date).' %');
 		if($test_account) $loan_accounts->addCondition('id',$test_account->id);
-
+		
 		// Copy to let be Deactivated in some process in between
 		// So, its Not active account
 		// will load it by active account id in loop

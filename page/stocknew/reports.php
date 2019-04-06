@@ -9,6 +9,8 @@ class page_stocknew_reports extends Page {
 		$tabs = $this->add('Tabs');
 		$overall_stock_report_tab = $tabs->addTabURL($this->app->url('./overall'),'Over All Stock Report');
 		$stock_distribution_report_tab = $tabs->addTabURL($this->app->url('./distribution'),'Stock Distribution Report');
+		
+		$tabs->addTabURL('./itemlocation','Stock Location');
 	}
 
 	function page_overall(){
@@ -129,5 +131,46 @@ class page_stocknew_reports extends Page {
 		if($form->isSubmitted()){
 			$grid->js()->reload(['item'=>$form['item']])->execute();
 		}
+	}
+
+	function page_itemlocation(){
+		$form = $this->add('Form');
+		
+		$filter = $this->app->stickyGET('filter');
+		$container = $this->app->stickyGET('container');
+		$item = $this->app->stickyGET('item');
+
+		$container_model = $this->add('Model_StockNew_Container');
+		if($this->app->auth->model['username'] != 'xadmin'){
+			$container_model->addCondition('branch_id',$this->app->current_branch->id);
+		}
+
+		$field_member = $form->addField('DropDown','container')->setEmptyText('Please Select')
+			->setModel($container_model);
+		$field_item = $form->addField('autocomplete\Basic','item')->setModel('StockNew_Item');
+		$form->addSubmit('Filter');
+
+		$tra_model = $this->add('Model_StockNew_Transaction');
+		if($this->app->auth->model['username'] != 'xadmin'){
+			$tra_model->addCondition('to_branch_id',$this->app->current_branch->id);
+		}
+
+		if($filter){
+			if($container)
+				$tra_model->addCondition('to_container_id',$container);
+			if($item)
+				$tra_model->addCondition('item_id',$item);
+		}else{
+			$tra_model->addCondition('id',-1);
+		}
+
+		$grid = $this->add('Grid');
+		$grid->setModel($tra_model,['item','qty','rate','to_container','to_container_row']);
+		$grid->addPaginator(50);
+
+		if($form->isSubmitted()){
+			$grid->js()->reload(['filter'=>1,'container'=>$form['container']?:0,'item'=>$form['item']?:0])->execute();
+		}
+
 	}
 }

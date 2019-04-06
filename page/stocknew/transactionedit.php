@@ -40,6 +40,7 @@ class page_stocknew_transactionedit extends Page {
 		$crud->setModel($model);
 
 		$crud->grid->addPaginator(100);
+		$crud->add('Controller_Acl',['default_view'=>false]);
 
 		if($form->isSubmitted()){
 			$crud->js(null)->reload([

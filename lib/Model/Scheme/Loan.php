@@ -237,7 +237,7 @@ class Model_Scheme_Loan extends Model_Scheme {
 		$scheme_join->addField('panelty_grace');
 		
 		$premiums->addExpression('calculated_due_date')->set(function($m,$q){
-			return $q->expr('DATE_ADD([duedate],INTERVAL (IF([panelty]>0,[panelty_grace],0)) DAY)',
+			return $q->expr('DATE_ADD([duedate],INTERVAL (IF([panelty]>0,[panelty_grace],1)) DAY)',
 				[
 					'duedate'=>$m->getElement('DueDate'),
 					'panelty_grace'=>$m->getElement('panelty_grace'),

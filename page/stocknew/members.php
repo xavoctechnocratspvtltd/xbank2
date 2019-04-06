@@ -11,6 +11,6 @@ class page_stocknew_members extends Page {
 		$crud->setModel('StockNew_Member');
 
 		$crud->grid->addPaginator(50);
-
+		$crud->add('Controller_Acl',['default_view'=>false]);
 	}
 }

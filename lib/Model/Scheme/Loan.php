@@ -130,8 +130,8 @@ class Model_Scheme_Loan extends Model_Scheme {
 				]);
 		})->type('date');
 
-		$loan_accounts->addCondition('calculated_due_date',"<=",$this->api->nextDate($on_date));
-
+		$loan_accounts->addCondition('calculated_due_date',$this->api->nextDate($on_date));
+		
         // $loan_accounts->addCondition(
         // 		$q->expr('IF([loan_panelty_per_day] is not null,DueDate,DATE_ADD(DueDate, INTERVAL IFNULL([panelty_grace],0)+1 DAY ))',['loan_panelty_per_day'=>$loan_accounts->getElement('loan_panelty_per_day'),'panelty_grace'=>$loan_accounts->getElement('panelty_grace')]),
         // 		$this->api->nextDate($on_date));

@@ -30,6 +30,8 @@ class page_stocknew_reports extends Page {
 		$form->addField('DropDown','container')->setEmptyText('All')->setModel($container_model);
 		$form->addField('DropDown','container_row')->setEmptyText('All')->setModel($container_row_model);
 		$form->addField('autocomplete/Basic','member')->setModel('Model_StockNew_Member');
+		$form->addField('DropDown','category')->setEmptyText('All')->setModel('Model_StockNew_Category');
+		$form->addField('autocomplete/Basic','item')->setModel('Model_StockNew_Item');
 
 		$form->addSubmit('Filter');
 
@@ -41,6 +43,8 @@ class page_stocknew_reports extends Page {
 		$filter_array['for_container_id'] = $this->app->stickyGET('container');
 		$filter_array['for_container_row_id'] = $this->app->stickyGET('container_row');
 		$filter_array['for_member_id'] = $this->app->stickyGET('member');
+		$filter_array['for_category_id'] = $this->app->stickyGET('category');
+		$filter_array['for_item_id'] = $this->app->stickyGET('item');
 
 		$item_stock = $this->add('Model_StockNew_ItemStock',$filter_array);
 
@@ -90,6 +94,12 @@ class page_stocknew_reports extends Page {
 					'avg_factor_sub_qty'=>$m->getElement('avg_factor_sub_qty'),
 				]);
 		});
+
+		if($cat_id = $filter_array['for_category_id'])
+			$item_stock->addCondition('category_id',$cat_id);
+
+		if($item_id = $filter_array['for_item_id'])
+			$item_stock->addCondition('id',$item_id);
 
 		$grid = $this->add('Grid');
 		$grid->setModel($item_stock);

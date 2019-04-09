@@ -75,7 +75,7 @@ class Model_StockNew_ItemStock extends Model_StockNew_Item {
 
 		$this->addExpression('net_stock')->set(function($m,$q){
 			return $q->expr('IFNULL([0],0) - IFNULL([1],0)',[$m->getElement('total_in'),$m->getElement('total_out')]);
-		})->type('number');
+		})->type('number')->sortable(true);
 
 	}
 }

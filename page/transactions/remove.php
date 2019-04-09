@@ -44,7 +44,7 @@ class page_transactions_remove extends Page {
 			$v = $p->add('View_Voucher');
 			$v->setModel($transaction);
 
-			if($p->api->auth->model->isCEO()){
+			if($p->api->auth->model->isCEO() OR $p->api->auth->model->isSuper()){
 
 				$form = $p->add('Form');
 				$form->addField('line','confirm_amount');

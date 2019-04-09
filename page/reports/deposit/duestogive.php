@@ -27,7 +27,7 @@ class page_reports_deposit_duestogive extends Page {
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 			
-		if($this->app->auth->model->isCEO()){
+		if($this->app->auth->model->isCEO() OR $this->app->auth->model->isSuper()){
 			$form->addField('dropdown','branch_id')->setEmptyText('All')->setModel('Branch');
 		}
 

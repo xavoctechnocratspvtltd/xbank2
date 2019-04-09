@@ -13,6 +13,7 @@ class page_stocknew_transactionedit extends Page {
 		$transaction_type = $this->app->stickyGET('transaction_type');
 		$from_branch = $this->app->stickyGET('from_branch');
 		$to_branch = $this->app->stickyGET('to_branch');
+		$item = $this->app->stickyGET('item');
 
 		$this->add('View')->setElement('h3')->set('Filter Form');
 
@@ -22,6 +23,7 @@ class page_stocknew_transactionedit extends Page {
 		$form->addField('DropDown','transaction_type')->setEmptyText('Please Select ...')->setModel('StockNew_TransactionTemplate');
 		$form->addField('DropDown','from_branch')->setEmptyText('Please Select ...')->setModel('Branch');
 		$form->addField('DropDown','to_branch')->setEmptyText('Please Select ...')->setModel('Branch');
+		$form->addField('autocomplete/Basic','item')->setModel('Model_StockNew_Item');
 
 		$form->addSubmit('Filter');
 			
@@ -36,6 +38,8 @@ class page_stocknew_transactionedit extends Page {
 		if($from_branch) $model->addCondition('from_branch_id',$from_branch);
 		if($to_branch) $model->addCondition('to_branch_id',$to_branch);
 
+		if($item) $model->addCondition('item_id',$item);
+
 		$crud  = $this->add('CRUD');
 		$crud->setModel($model);
 
@@ -49,6 +53,7 @@ class page_stocknew_transactionedit extends Page {
 				'transaction_type'=>$form['transaction_type']?$form['transaction_type']:0,
 				'from_branch'=>$form['from_branch']?$form['from_branch']:0,
 				'to_branch'=>$form['to_branch']?$form['to_branch']:0,
+				'item'=>$form['item']?$form['item']:0,
 			])->execute();
 		}
 

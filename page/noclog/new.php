@@ -11,6 +11,7 @@ class page_noclog_new extends Page {
 		$noc_model = $this->add('Model_NocLog');
 
 		$noc_model->addCondition('created_by_id',$this->app->current_branch->id);
+		$noc_model->addCondition([['received_by_id',null],['received_by_id',0]]);
 		$noc_model->setOrder('send_at','desc');
 
 		$crud = $this->add('CRUD',['form_class'=>'Form_Stacked']);

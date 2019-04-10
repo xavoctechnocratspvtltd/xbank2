@@ -10,7 +10,8 @@ class page_stocknew_members extends Page {
 		$crud = $this->add('CRUD');
 		$crud->setModel('StockNew_Member');
 
-		$crud->grid->addPaginator(50);
+		$crud->grid->addPaginator(500);
+		$crud->grid->addQuickSearch(['name','ph_no']);
 		$crud->add('Controller_Acl',['default_view'=>false]);
 	}
 }

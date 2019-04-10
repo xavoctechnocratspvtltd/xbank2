@@ -14,7 +14,8 @@ class page_stocknew_itemcategory extends Page {
 		// ====== Items ========
 		$item_crud = $item_tab->add('CRUD');
 		$item_crud->setModel('Model_StockNew_Item');
-		$item_crud->grid->addPaginator(100);
+		$item_crud->grid->addPaginator(500);
+		$item_crud->grid->addQuickSearch(['name','code']);
 		$item_crud->add('Controller_Acl',['default_view'=>false]);
 
 		// ====== Categories ========

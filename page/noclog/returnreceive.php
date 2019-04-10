@@ -20,8 +20,9 @@ class page_noclog_returnreceive extends Page {
 		if($this->app->current_branch->id AND !$this->app->auth->model->isSuper())
 			$noc_model->addCondition('to_branch_id',$this->app->current_branch->id);
 
-		$noc_model->setOrder('send_at','desc');
+		$noc_model->addCondition('is_return',true);
 
+		$noc_model->setOrder('send_at','desc');
 		$grid = $this->add('Grid');
 		$grid->addSno();
 		$grid->setModel($noc_model,['account_number','member_name','noc_letter_received_on','send_at','created_by','received_by','received_at','received_narration','from_branch','to_branch','received_by','return_by','return_received','send_at','send_narration','received_narration','is_return','return_at','return_narration','return_received_narration','return_received_by','accounts_id','from_branch_id','to_branch_id','created_by_id','received_by_id','dispatch_by_id','return_by_id','return_received_by_id']);

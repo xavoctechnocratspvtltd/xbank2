@@ -59,14 +59,17 @@ class page_accounts_Loan extends Page {
 			}
 
 			if($form['sm_amount'] && !is_numeric($form['sm_amount']))
-					$form->displayError('sm_amount',"Must be a number");
+				$form->displayError('sm_amount',"Must be a number");
 
-			if($form['other_account'] && !$form['other_account_cr_amount']){
-					$form->displayError('other_account',"Must be filled");
+			if($form['other_account'] && !($form['other_account_cr_amount'] OR $form['other_account_cr_amount_percentage'] )) {
+				$form->displayError('other_account_cr_amount',"Must be filled either other_account_cr_amount_percentage or other_account_cr_amount");
 			}
-
-			if(!$form['other_account'] && $form['other_account_cr_amount']){
-					$form->displayError('other_account_cr_amount',"Must be filled");
+			
+			if(!$form['other_account'] && ($form['other_account_cr_amount'] OR $form['other_account_cr_amount_percentage']) ){
+				$form->displayError('other_account',"Must be filled");
+			}
+			if($form['other_account_cr_amount'] && $form['other_account_cr_amount_percentage']){
+				$form->displayError('other_account_cr_amount',"please fill either other_account_cr_amount or other_account_cr_amount_percentage");
 			}
 
 			if($crud->isEditing('edit')) {
@@ -74,7 +77,15 @@ class page_accounts_Loan extends Page {
 				$extra_info['loan_from_account'] = $form['loan_from_account'];
 				$extra_info['sm_amount'] = $form['sm_amount'];
 				$extra_info['other_account'] = $form['other_account'];
-				$extra_info['other_account_cr_amount'] = $form['other_account_cr_amount'];
+				$extra_info['other_account_cr_amount_percentage'] = $form['other_account_cr_amount_percentage'];
+				
+				if($form['other_account_cr_amount_percentage']){
+					$amount = (($form['other_account_cr_amount_percentage'] * $form['Amount'] ) / 100);
+					$form['other_account_cr_amount'] = $amount;
+					$extra_info['other_account_cr_amount'] = $amount;
+				}else{
+					$extra_info['other_account_cr_amount'] = $form['other_account_cr_amount'];
+				}
 				$crud->form->model['extra_info'] = json_encode($extra_info);
 				// $crud->form->model->debug()->saveAs('Account');
 				return;
@@ -150,7 +161,8 @@ class page_accounts_Loan extends Page {
 			$crud->form->addField('sm_amount');
 			$other_account_autocomplete = $crud->form->addField('autocomplete/Basic','other_account');
 			$other_account_autocomplete->setModel('Model_Account_Default');
-			$crud->form->addField('other_account_cr_amount');
+			$field_cr_percentage =  $crud->form->addField('other_account_cr_amount_percentage')->setFieldHint('value in %, put 10,15 etc');
+			$field_cr_amount = $crud->form->addField('other_account_cr_amount');
 		}
 		
 
@@ -178,9 +190,11 @@ class page_accounts_Loan extends Page {
 
 			$other_account_filled = $extra_info_sm_amount['other_account'];
 			$other_account_filled_cr_amount = $extra_info_sm_amount['other_account_cr_amount'];
+			$other_account_cr_amount_percentage = $extra_info_sm_amount['other_account_cr_amount_percentage'];
 			
 			$crud->form->getElement('other_account')->set($other_account_filled);
 			$crud->form->getElement('other_account_cr_amount')->set($other_account_filled_cr_amount);
+			$crud->form->getElement('other_account_cr_amount_percentage')->set($other_account_cr_amount_percentage);
 
 			// 	$account_model=$this->add('Model_Active_Account');
 
@@ -255,6 +269,7 @@ class page_accounts_Loan extends Page {
 				->move('other_account','after','sm_amount')
 				->move($other_account_autocomplete->other_field,'after','other_account')
 				->move('other_account_cr_amount','after','other_account')
+				->move('other_account_cr_amount_percentage','after','other_account')
 				->now();
 		}
 
@@ -291,17 +306,25 @@ class page_accounts_Loan extends Page {
 			$crud->grid->addMethod('format_other_account_cr_amount',function($g,$f){
 				$extra_info = json_decode($g->model['extra_info']);
 				$g->current_row[$f]= isset($extra_info->other_account_cr_amount)?$extra_info->other_account_cr_amount:'';
+			});	
+
+			// Not editing
+			$crud->grid->addMethod('format_other_account_cr_amount_percentage',function($g,$f){
+				$extra_info = json_decode($g->model['extra_info']);
+				$g->current_row[$f]= isset($extra_info->other_account_cr_amount_percentage)?$extra_info->other_account_cr_amount_percentage:'';
 			});		
 
 			$crud->grid->addColumn('loan_from_account','loan_from_account');
 			$crud->grid->addColumn('sm_amount','sm_amount');
 			$crud->grid->addColumn('other_account','other_account');
+			$crud->grid->addColumn('other_account_cr_amount_percentage','other_account_cr_amount_percentage');
 			$crud->grid->addColumn('other_account_cr_amount','other_account_cr_amount');
 
 			$ox=$crud->grid->addOrder();
 			$ox->move('loan_from_account','after','dealer')
 				->move('sm_amount','after','Amount')
 				->move('other_account','after','sm_amount')
+				->move('other_account_cr_amount_percentage','after','other_account')
 				->move('other_account_cr_amount','after','other_account');
 			if($this->api->auth->model['AccessLevel']>=80)
 				$ox->move('action','first');

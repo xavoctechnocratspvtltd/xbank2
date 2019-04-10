@@ -7,9 +7,10 @@ class page_members extends Page {
 	function page_index(){
 		// parent::init();
 		
-		$this->add('Controller_Acl');
+		$this->add('Controller_Acl');		
 
 		$crud = $this->add('xCRUD',array('grid_class'=>'Grid_Member'));
+		$crud->addClass('membercrud');
 
 		$member_model = $this->add('Model_Member');
 		$member_model->setOrder('member_no','desc');

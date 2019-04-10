@@ -80,12 +80,12 @@ define('BRANCH_AND_DIVISIONS',                  'Branch & Divisions' );
 
 
 define('INTEREST_RECEIVED_ON',				'Interest Received On');
-
 // define('PROCESSING_FEE_RECEIVED',				'Processing Fee Received On');
 define('PROCESSING_FEE_RECEIVED',				'Pre Interest Received On');
 
-
 define('PENALTY_DUE_TO_LATE_PAYMENT_ON',		'Penalty Due To Late Payment On');
+define('PENAL_INTEREST_RECEIVED_ON',		'Penal Interest Received On');
+
 define('FOR_CLOSE_ACCOUNT_ON',		'For Close Account On');
 define('INTEREST_PAID_ON',				'Interest Paid On');
 define('COMMISSION_PAID_ON',				'Commission Paid On');
@@ -138,7 +138,6 @@ define('TRA_FORCLOSE_CHARGE',  'ForCloseTransaction');
 define('TRA_BANK_DEPOSIT',  'BANK DEPOSIT');
 define('TRA_BANK_WITHDRAWL',  'BANK WITHDRAWL');
 define('TRA_EXCESS_AMOUNT_REVERT',  'EXCESS AMOUNT REVERT');
-define('TRA_PURCHASE_ENTRY',  'PURCHASE ENTRY');
 
 define('TRA_TDS_REVERT',  'TDS REVERT TRANSACTION');
 define('TRA_SALARY_AND_ALLOWENCES',  'Salary and Allowances Transaction');
@@ -187,7 +186,6 @@ define('ACCOUNT_TYPE_RECURRING',                "Recurring");
 define('ACCOUNT_TYPE_DDS',                      "DDS");
 define('ACCOUNT_TYPE_LOAN',                     "Loan");
 define('ACCOUNT_TYPE_CC',                       "CC");
-define('ACCOUNT_TYPE_GST',                       "GST");
 // define('ACCOUNT_TYPE_DHANSANCHAYA',             "DhanSanchaya");
 // define('ACCOUNT_TYPE_MONEYBACK',                "MoneyBack");
 
@@ -304,15 +302,3 @@ define("FLAT_RATE", "Flat");
 
 define("BALANCE_SHEET", true);
 define("MIN_BALANCE_CHARGE", 20);
-
-$gst_array = [
-		'GST 18'=>'GST 18%',
-		'IGST 18'=>'IGST 18%',
-		'GST 28'=>'GST 28%',
-		'IGST 28'=>'IGST 28%',
-		'GST 5'=>'GST 5%',
-		'IGST 5'=>'IGST 5%',
-		'GST 6'=>'GST 6%',
-		'IGST 6'=>'IGST 6%'
-	];
-define("GST_VALUES", $gst_array);

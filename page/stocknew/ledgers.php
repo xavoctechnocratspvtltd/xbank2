@@ -56,6 +56,10 @@ class page_stocknew_ledgers extends Page {
 			$model->addCondition('created_at','<',$this->app->nextDate($to_date));
 		}
 
+		if(!$this->app->stickyGET('filter')){
+			$model->addCondition('id',-1);
+		}
+
 		$grid = $this->add('Grid');
 		$grid->setModel($model);
 
@@ -63,6 +67,7 @@ class page_stocknew_ledgers extends Page {
 
 		if($form->isSubmitted()){
 			$grid->js()->reload([
+				'filter'=>1,
 				'branch'=>$form['branch']?:0,
 				'container'=>$form['container']?:0,
 				'container_row'=>$form['container_row']?:0,

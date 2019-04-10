@@ -23,11 +23,24 @@ class Model_StockNew_Item extends Model_Table {
 		$this->hasMany('StockNew_Transaction','item_id');
 		$this->hasMany('StockNew_ContainerRowItemQty','item_id');
  		$this->addHook('beforeDelete',$this);
+ 		$this->addHook('beforeSave',$this);
 		$this->_dsql()->order('name','asc');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 	
+
+	function beforeSave(){
+		$old_model = $this->add('Model_StockNew_Item');
+		$old_model->addCondition('code',trim($this['code']));
+		$old_model->addCondition('id','<>',$this->id);
+		$old_model->tryLoadAny();
+		if($old_model->loaded()){
+			throw $this->Exception('Code is already added','ValidityCheck')->setField('code');
+		}
+
+	}
+
 	function beforeDelete($model){
 		if($this->ref('Stock_Transaction')->count()->getOne() > 0)
 			throw $this->exception('Item ( '.$model['name'].' ) Cannot Delete');	

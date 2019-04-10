@@ -428,12 +428,21 @@ class Model_Account_Loan extends Model_Account{
 		if(!$this->hasElement('due_panelty')) throw $this->exception('The Account must be called via scheme daily function');
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penalty deposited on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_id'=>$this->id));
+		$transaction->createNewTransaction(TRA_PENALTY_ACCOUNT_AMOUNT_DEPOSIT,$this->ref('branch_id'), $on_date, "Penal Interest Receive on Loan Account for ".date("F",strtotime($on_date)), null, array('reference_id'=>$this->id));
 
 		$amount = $this['due_panelty'];
 		
 		$transaction->addDebitAccount($this, $amount);
-		$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . SP.  $this['scheme_name'], $amount);
+
+		// transaction type name changed 
+		// if scheme date is greater then 31-marhc-2019 
+		$s_date = $this->add('Model_Scheme_Loan')->load($this['scheme_id'])->get('created_at');
+		if(strtotime($s_date) > strtotime('2019-03-31')){
+			$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENAL_INTEREST_RECEIVED_ON . SP.  $this['scheme_name'], $amount);
+		}else{
+			$transaction->addCreditAccount($this->ref('branch_id')->get('Code') . SP . PENALTY_DUE_TO_LATE_PAYMENT_ON . SP.  $this['scheme_name'], $amount);
+		}
+
 		
 		$transaction->execute();
 

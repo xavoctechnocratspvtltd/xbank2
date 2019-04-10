@@ -6,6 +6,8 @@ class Model_StockNew_ItemStock extends Model_StockNew_Item {
 	public $for_container_id 		= null;
 	public $for_container_row_id	= null;
 	public $for_member_id			= null;
+	public $for_category_id			= null;
+	public $for_item_id				= null;
 
 	function init(){
 		parent::init();
@@ -73,7 +75,7 @@ class Model_StockNew_ItemStock extends Model_StockNew_Item {
 
 		$this->addExpression('net_stock')->set(function($m,$q){
 			return $q->expr('IFNULL([0],0) - IFNULL([1],0)',[$m->getElement('total_in'),$m->getElement('total_out')]);
-		})->type('number');
+		})->type('number')->sortable(true);
 
 	}
 }

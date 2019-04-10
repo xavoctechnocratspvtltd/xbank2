@@ -30,7 +30,7 @@ class page_romoassociationedit extends Page {
 
 		$crud = $mo_tab->add('CRUD');
 		$crud->setModel($mo_ass_model,['mo_id','agent_id','from_date','actual_to_date'],['mo','agent','from_date','effective_to_date']);
-
+		$crud->add('Controller_Acl',['default_view'=>false]);
 		$crud->grid->addPaginator(100);
 
 		if($mo_form->isSubmitted()){
@@ -61,7 +61,7 @@ class page_romoassociationedit extends Page {
 		$crud->setModel($ro_ass_model,['mo_id','account_id','from_date','actual_to_date'],['mo','account','from_date','effective_to_date']);
 		$crud->add('Controller_Acl',['default_view'=>false]);
 		$crud->grid->addPaginator(100);
-
+		$crud->add('Controller_Acl',['default_view'=>false]);
 		if($ro_form->isSubmitted()){
 			$crud->js()->reload(['ro'=>$ro_form['mo']])->execute();
 		}

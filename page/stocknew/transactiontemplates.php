@@ -13,5 +13,7 @@ class page_stocknew_transactiontemplates extends Page {
 
 		$crud = $this->add('CRUD');
 		$crud->setModel($model);
+
+		$crud->add('Controller_Acl',['default_view'=>false]);
 	}
 }

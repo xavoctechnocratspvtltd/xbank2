@@ -96,7 +96,7 @@ class page_stocknew_reports extends Page {
 					'avg_factor_sub_qty'=>$m->getElement('avg_factor_sub_qty'),
 				]);
 		});
-
+		$item_stock->addCondition('net_stock','>',0);
 		if($cat_id = $filter_array['for_category_id'])
 			$item_stock->addCondition('category_id',$cat_id);
 

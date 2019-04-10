@@ -19,7 +19,7 @@ class Menu_Base extends Menu {
 
 
 		$hod = $this->addMenuItem('#','HOD Authority');
-		$purchase = $this->addMenuItem('#','Purchase');
+		$purchase = $this->addMenuItem('#','GST');
 		$mad = $this->addMenuItem('#','M.A.D.');
 		$stock = 	$this->addMenuItem('stock_main','Stock');
 		// $stock = 	$this->addMenuItem('staff_main','Staff Management');
@@ -104,6 +104,7 @@ class Menu_Base extends Menu {
 		$purchase_auth_menu = $purchase_sub_menus_popover->add('Menu_Vertical');
 		$purchase_auth_menu->addMenuItem('supplier','Supplier');
 		$purchase_auth_menu->addMenuItem('transactions_purchase','Purchase');
+		$purchase_auth_menu->addMenuItem('memorandum','Memorandum');
 		$purchase->js('click',$purchase_sub_menus_popover->showJS());
 		
 		$mad_sub_menus = $mad_sub_menus_popover->add('Menu_Vertical');

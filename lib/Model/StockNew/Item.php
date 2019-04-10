@@ -42,8 +42,8 @@ class Model_StockNew_Item extends Model_Table {
 	}
 
 	function beforeDelete($model){
-		if($this->ref('Stock_Transaction')->count()->getOne() > 0)
-			throw $this->exception('Item ( '.$model['name'].' ) Cannot Delete');	
+		if($this->ref('StockNew_Transaction')->count()->getOne() > 0)
+			throw $this->exception('Item ( '.$model['name'].' ) Cannot Delete');
 	}
 
 	function getAvgRate($as_on){

@@ -29,12 +29,9 @@ class page_memorandum_deposite extends Page{
 
 		if($form->isSubmitted()){
 			
-			$tra_data = $this->getTransactionData($form->get());
+			$this->setTransactionData($form->get());
 
-			echo "<pre>";
-			print_r($tra_data);
-			echo "</pre>";
-			die();
+			throw new \Exception("Error Processing Request", 1);
 
 			try{
 				$this->api->db->beginTransaction();
@@ -74,7 +71,7 @@ class page_memorandum_deposite extends Page{
 	}
 
 
-	function getTransactionData($form){
+	function setTransactionData($form){
 		$tra_array = MEMORANDUM_ACCOUNT_TRA_ARRAY;
 		$transaction_type = $tra_array[$form['transaction_type']][0];
 
@@ -101,9 +98,11 @@ class page_memorandum_deposite extends Page{
 		if(!$gst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$cgst_account_number." )");
 		$cgst_account_number_id = $gst_account_model->id;
 
-		$default_cash_account_id = 1;
+		$cash_default = $this->add('Model_Account')->addCondition('AccountNumber',$this->app->currentBranch['Code'].SP.CASH_ACCOUNT_SCHEME)->tryLoadAny();
+		if(!$cash_default->loaded()) throw new \Exception("Default Cash Account Not Found" .$this->app->currentBranch['Code'].SP.CASH_ACCOUNT_SCHEME);
+		$default_cash_account_id = $cash_default->id;
 
-		$data = [
+		$this->data = $data = [
 				'transaction_credit'=>[
 						'transaction_type'=>$transaction_type,
 						'account_cr'=>['id'=>$form['amount_from_account'],'amount'=>$form['amount']],

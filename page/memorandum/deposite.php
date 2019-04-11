@@ -29,27 +29,35 @@ class page_memorandum_deposite extends Page{
 
 		if($form->isSubmitted()){
 			
-			
+			$tra_data = $this->getTransactionData($form->get());
+
+			echo "<pre>";
+			print_r($tra_data);
+			echo "</pre>";
+			die();
+
 			try{
 				$this->api->db->beginTransaction();
 				// Create Actual Transaction CREDIT
-					$transaction->createNewTransaction($transaction_array[$form['type']][1],$this->api->currentBranch,$this->app->now,$form['narration'],null,['reference_id'=>$account_dr->id]);
-					$transaction->addDebitAccount($account_dr,$form['amount']);
+					$transaction->createNewTransaction($tra_data['transaction_credit']['transaction_type'],$this->api->currentBranch,$this->app->now,$form['narration'],null,['reference_id'=>$form['amount_from_account']]);
+					//amount from account credit
 					$transaction->addCreditAccount($account_cr,$form['amount']);
+					//charge ie(visit, etc), gst are debit
+					$transaction->addDebitAccount($account_dr,$form['amount']);
 					$transaction->execute();
 				// end of Actual Transaction CREDIT ----------------------
 
 				// Create Actual Transaction DEBIT
-					$account_dr = $this->add('Model_Account')->loadBy('AccountNumber',$form['amount_from_account']);
-					$account_cr = $this->add('Model_Account')->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.$transaction_array[$form['type']][0]);
-					$transaction = $this->add('Model_Transaction');
-					$transaction->createNewTransaction($transaction_array[$form['type']][1],$this->api->currentBranch,$this->app->now,$form['narration'],null,['reference_id'=>$account_dr->id]);
-					$transaction->addDebitAccount($account_dr,$form['amount']);
-					$transaction->addCreditAccount($account_cr,$form['amount']);
-					$transaction->execute();
-					$account_dr['is_'.$form['type']]=true;
-					$account_dr[$form['type'].'_on']=$this->app->now;
-					$account_dr->save();
+					// $account_dr = $this->add('Model_Account')->loadBy('AccountNumber',$form['amount_from_account']);
+					// $account_cr = $this->add('Model_Account')->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.$transaction_array[$form['type']][0]);
+					// $transaction = $this->add('Model_Transaction');
+					// $transaction->createNewTransaction($transaction_array[$form['type']][1],$this->api->currentBranch,$this->app->now,$form['narration'],null,['reference_id'=>$account_dr->id]);
+					// $transaction->addDebitAccount($account_dr,$form['amount']);
+					// $transaction->addCreditAccount($account_cr,$form['amount']);
+					// $transaction->execute();
+					// $account_dr['is_'.$form['type']]=true;
+					// $account_dr[$form['type'].'_on']=$this->app->now;
+					// $account_dr->save();
 				// end of Actual Transaction DEBIT -----------------------
 
 				// Create Memorandum Amount Received
@@ -64,4 +72,58 @@ class page_memorandum_deposite extends Page{
 
 		}
 	}
+
+
+	function getTransactionData($form){
+		$tra_array = MEMORANDUM_ACCOUNT_TRA_ARRAY;
+		$transaction_type = $tra_array[$form['transaction_type']][0];
+
+		$tax_percentage = 18;
+		$tax = (100 + $tax_percentage);
+		$tax_excluded_amount = round((($form['amount']/$tax)*100),2);
+		$tax_amount = round(($form['amount'] - $tax_excluded_amount),2);
+
+		$charge_account_number = $this->api->currentBranch['Code'].SP.$tra_array[$form['transaction_type']][0];
+		$charge_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$charge_account_number);
+		$charge_account_model->tryLoadAny();
+		if(!$charge_account_model->loaded()) throw new \Exception("Account Not Found ".$charge_account_number);
+
+		$sgst_account_number = $this->api->currentBranch['Code'].SP."SGST 9%";
+		$cgst_account_number = $this->api->currentBranch['Code'].SP."CGST 9%";
+
+		$gst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$sgst_account_number);
+		$gst_account_model->tryLoadAny();
+		if(!$gst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$sgst_account_number." )");
+		$sgst_account_number_id = $gst_account_model->id;
+
+		$gst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$cgst_account_number);
+		$gst_account_model->tryLoadAny();
+		if(!$gst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$cgst_account_number." )");
+		$cgst_account_number_id = $gst_account_model->id;
+
+		$default_cash_account_id = 1;
+
+		$data = [
+				'transaction_credit'=>[
+						'transaction_type'=>$transaction_type,
+						'account_cr'=>['id'=>$form['amount_from_account'],'amount'=>$form['amount']],
+						'account_dr'=>[
+								'charge_account'=>['id'=>$charge_account_model->id,'amount'=>$tax_excluded_amount],
+								'cgst'=>['id'=>$cgst_account_number_id,'amount'=>round(($tax_amount/2),2)],
+								'sgst'=>['id'=>$sgst_account_number_id,'amount'=>round(($tax_amount/2),2)],
+							],
+					],
+				'transaction_debit'=>[
+						'account_cr'=>['id'=>$default_cash_account_id,'amount'=>$form['amount']],
+						'account_dr'=>['id'=>$form['amount_from_account'],'amount'=>$form['amount']]
+					],
+				'memorandum_debit'=>[
+						'account_cr'=>['id'=>$default_cash_account_id,'amount'=>$form['amount']],
+						'account_dr'=>['id'=>$form['amount_from_account'],'amount'=>$form['amount']]
+					],
+			];
+
+		return $data;
+	}
+
 }

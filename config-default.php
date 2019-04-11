@@ -317,3 +317,40 @@ $gst_array = [
 		'IGST 6'=>'IGST 6%'
 	];
 define("GST_VALUES", $gst_array);
+
+define('MEMORANDUM_ACCOUNT_TRA_ARRAY',[
+										'visit_charge'=>['Visit Charge'],
+										'legal_notice_sent'=>['LEGAL NOTICE CHARGE RECEIVED'],
+										'cheque_returned'=>['CHEQUE RETURN CHARGES RECEIVED'],
+										'godowncharge_debited'=>['VECHICLE GODOWN RENT RECEIVED'],
+										'legal_expenses_received'=>['LEGAL EXPENSES RECEIVED'],
+										'legal_notice_sent_for_bike_auction'=>['LEGAL NOTICE SENT FOR BIKE AUCTION CHARGE RECEIVED'],
+										'final_recovery_notice_sent'=>['FINAL RECOVERY NOTICE CHARGE RECEIVED'],
+										'notice_sent_after_cheque_returned'=>['CHEQUE RETURN NOTICE CHARGE RECEIVED'],
+										'society_notice_sent'=>['SOCIETY NOTICE CHARGE RECEIVED'],
+										'insurance_processing_fees'=>['INSURANCE PROCESSING FEES'],
+										'nach_registration_fees_charge_received'=>['NACH REGISTRATION FEES CHARGE RECEIVED'],
+										'nach_transaction_file_canceling_charge_received'=>['NACH TRANSACTION FILE CANCELING CHARGE RECEIVED'],
+										// not with customer account
+										'noc_handling_charge_received'=>['NOC HANDLING CHARGE'], //DR to cash account and Cr to NOC handeling
+										'file_cancel_charge'=>['FILE CANCEL CHARGE RECEIVED'], //DR to cash account and Cr to file cancel charge
+										'staff_stationary_charge_received'=>['PRINTING & STATIONERY CHARGE RECEIVED']
+								]);
+define('MEMORANDUM_TRA_ARRAY',[
+							'visit_charge'=>'Visit Charge',
+							'legal_notice_sent'=>'Legal Notice Charge Received',
+							'cheque_returned'=>'Cheque Return Charge Received',
+							'godowncharge_debited'=>'Vechicle Godown Rent Received',
+							'legal_expenses_received'=>'Legal Expenses Received',
+							'legal_notice_sent_for_bike_auction'=>'Legal Notice Sent For Bike Auction Charge Received',
+							'final_recovery_notice_sent'=>'Final Recovery Notice Charge Received',
+							'notice_sent_after_cheque_returned'=>'Cheque Return Notice Charge Received',
+							'society_notice_sent'=>'Society Notice Charge Received',
+							'insurance_processing_fees'=>'Insurance Processing Fees',
+							'nach_registration_fees_charge_received'=>'NACH Registration Fees Charge Received',
+							'nach_transaction_file_canceling_charge_received'=>'NACH Transaction File Canceling Charge Received',
+							// not with customer account
+							'noc_handling_charge_received'=>'NOC Handling Charge', //DR to cash account and Cr to NOC handeling
+							'file_cancel_charge'=>'File Cancel Charge Received', //DR to cash account and Cr to file cancel charge
+							'staff_stationary_charge_received'=>'PRINTING & STATIONERY Charge Received'
+					]);

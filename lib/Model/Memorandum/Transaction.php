@@ -33,23 +33,7 @@ class Model_Memorandum_Transaction extends Model_Table {
 	}
 
 	function getTransactionType(){
-		$type = [
-			'Visiting Charge'=>'Visiting Charge',
-			'Legal Charge'=>'Legal Charge',
-			'Cheque Return Charge'=>'Cheque Return Charge',
-			'File Cancel Charge'=>'File Cancel Charge',
-			'Godown Charge'=>'Godown Charge',
-			'Legal Expenses Receipt'=>'Legal Expenses Receipt',
-			'Minimum Balance Charge Received on Saving'=>'Minimum Balance Charge Received on Saving',
-			'Noc handling Charge'=>'Noc handling Charge',
-			'Staff Stationary Charge Received'=>'Staff Stationary Charge Received',
-			'Bike Auction Charge'=>'Bike Auction Charge',
-			'Legal Notice Sent For Bike Auction'=>'Legal Notice Sent For Bike Auction',
-			'Final Recovery Notice Sent'=>'Final Recovery Notice Sent',
-			'Notice Sent After Cheque Return'=>'Notice Sent After Cheque Return',
-			'Society Notice Sent'=>'Society Notice Sent'
-		];
-
+		$type = MEMORANDUM_TRA_ARRAY;
 		return $type;
 	}
 
@@ -65,12 +49,12 @@ class Model_Memorandum_Transaction extends Model_Table {
 	*/
 
 	function createNewTransaction($name=null,$memorandum_type,$narration,$row_data=[]){
-		if(!count($row_data)) throw new \Exception("must pass row values for memmorandum transaction");
+		if(!count($row_data)) throw new \Exception("must pass row values for memorandum transaction");
 		
 
 		try{
 			$this->api->db->beginTransaction();
-
+			
 			$this['name'] = $name?:0;
 			$this['memorandum_type'] = $memorandum_type;
 			$this['narration'] = $narration;

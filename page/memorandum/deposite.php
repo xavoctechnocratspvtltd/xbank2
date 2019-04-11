@@ -27,14 +27,15 @@ class page_memorandum_deposite extends Page{
 		$form->add('misc\Controller_FormAsterisk');
 
 		if($form->isSubmitted()){
-			$row_data = [0=>
-				[
+			$row_data = [0=>[
 					'account_id'=>$form['amount_from_account'],
 					'amount_cr'=>0,
 					'amount_dr'=>$form['amount'],
 					'tax'=>$form['tax']
 				]];
+			
 			$model_memo_tran->createNewTransaction(null,$form['transaction_type'],$form['narration'],$row_data);
+
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
 		}
 	}

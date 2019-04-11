@@ -27,10 +27,11 @@ class page_memorandum_charge extends Page {
 		$form->add('misc\Controller_FormAsterisk');
 
 		if($form->isSubmitted()){
-			$row_data = $this->getRowData($form->get());
 			
+			$row_data = $this->getRowData($form->get());
 			$model_memo_tran->createNewTransaction(null,$form['transaction_type'],$form['narration'],$row_data);
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
+
 		}
 	}
 

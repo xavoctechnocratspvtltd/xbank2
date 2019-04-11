@@ -11,7 +11,7 @@ class Model_StockNew_Item extends Model_Table {
 		$this->hasOne('StockNew_Category','category_id')->sortable(true);
 		
 		$this->addField('name')->sortable(true);
-		$this->addField('code');
+		$this->addField('code')->sortable(true);
 
 		$this->addExpression('name_with_code')->set('CONCAT(name," [",code,"]")');
 		$this->addExpression('allowed_in_transactions')->set($this->refSQL('category_id')->fieldQuery('allowed_in_transactions'));

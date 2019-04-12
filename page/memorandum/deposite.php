@@ -138,6 +138,7 @@ class page_memorandum_deposite extends Page{
 
 		$this->sgst_tax_amount = $this->cgst_tax_amount = round(($tax_amount/2),2);
 
+		$this->tax_excluded_amount =  round($form['amount'] - ($this->sgst_tax_amount + $this->cgst_tax_amount),2);
 		// $this->data = $data = [
 		// 		'transaction_credit'=>[
 		// 				'transaction_type'=>$transaction_type,

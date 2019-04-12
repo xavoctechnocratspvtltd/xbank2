@@ -68,7 +68,7 @@ class Model_Memorandum_Transaction extends Model_Table {
 				$model_row['amountCr'] = $value['amount_cr']?:0;
 				$model_row['amountDr'] = $value['amount_dr']?:0;
 				$model_row['created_at'] = $this->app->now;
-				$model_row['tax'] = $value['tax'];
+				$model_row['tax'] = $value['tax']?:0;
 				$model_row->save();
 			}
 

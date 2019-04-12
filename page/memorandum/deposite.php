@@ -10,6 +10,7 @@ class page_memorandum_deposite extends Page{
 	public $sgst_account_model=null;
 	public $cgst_account_model=null;
 	public $cash_default_model=null;
+	public $bank_account=null;
 	public $bank_default_model=null;
 	public $amount_from_account_model=null;
 	public $total_tax_amount=0;
@@ -34,14 +35,28 @@ class page_memorandum_deposite extends Page{
 		$form->addField('autocomplete/Basic','amount_from_account')->validateNotNull()->setModel($model_account);
 		// $form->addField('DropDown','tax')->setValueList(GST_VALUES)->validateNotNull();
 		$form->addField('amount')->validateNotNull();
-		$field_bank_cheque_box = $form->addField('checkbox','by_bank')->set(false);
+		$field_bank_cheque_box = $form->addField('checkbox','amount_received_from_bank');
+		$field_bank_account = $form->addField('autocomplete\Basic','bank_account');
+		$field_bank_account->setModel($model_account);
+
+		$field_bank_cheque_box->js(true)->univ()->bindConditionalShow(array(
+					''=>array(''),
+					'*'=>array('bank_account')
+					),'div .atk-form-row');
+
 		// $form->addField('text','narration');
 		$form->addSubmit('Submit');
 
 		$form->add('misc\Controller_FormAsterisk');
 
 		if($form->isSubmitted()){
-			
+			$amount_type = "CASH";
+
+			if($form['amount_received_from_bank'] && !$form['bank_account']){
+				$form->displayError('bank_account','Bank Account Must Not Be Empty');
+			}
+			if($form['amount_received_from_bank']) $amount_type = "BANK";
+
 			$this->setTransactionData($form->get());
 
 			try{
@@ -61,10 +76,16 @@ class page_memorandum_deposite extends Page{
 				// end of Actual Transaction CREDIT ----------------------
 
 				// Create Actual Transaction DEBIT
-					$narration = "Being CASH Deposited in ".$this->amount_from_account_model['name'];
+					$narration = "Being ".$amount_type." Deposited in ".$this->amount_from_account_model['name'];
 					$transaction = $this->add('Model_Transaction');
 					$transaction->createNewTransaction($this->transaction_type,$this->api->currentBranch,$this->app->now,$narration,null,['reference_id'=>$form['amount_from_account']]);
-					$transaction->addDebitAccount($this->cash_default_model,$form['amount']);
+
+					if($form['amount_received_from_bank'] && $this->bank_account){
+						$transaction->addDebitAccount($this->bank_account,$form['amount']);
+					}else{
+						$transaction->addDebitAccount($this->cash_default_model,$form['amount']);
+					}
+
 					$transaction->addCreditAccount($this->amount_from_account_model,$form['amount']);
 					$transaction->execute();
 					$this->amount_from_account_model['is_'.$form['transaction_type']]=true;
@@ -75,8 +96,12 @@ class page_memorandum_deposite extends Page{
 				// Create Memorandum Amount Received
 					$memo_transaction = $this->add('Model_Memorandum_Transaction');
 					$row_data = [];
+
+					$dr_account_id = $this->cash_default_model->id;
+					if($form['amount_received_from_bank'] && $this->bank_account) $dr_account_id = $this->bank_account->id;
+
 					$row_data[] = [
-							'account_id'=>$this->cash_default_model->id,
+							'account_id'=>$dr_account_id,
 							'amount_dr'=>$form['amount'],
 							'amount_cr'=>0,
 							'tax'=>0
@@ -133,6 +158,10 @@ class page_memorandum_deposite extends Page{
 		$this->cash_default_model = $cash_default = $this->add('Model_Account')->addCondition('AccountNumber',$this->app->currentBranch['Code'].SP.CASH_ACCOUNT_SCHEME)->tryLoadAny();
 		if(!$cash_default->loaded()) throw new \Exception("Default Cash Account Not Found" .$this->app->currentBranch['Code'].SP.CASH_ACCOUNT_SCHEME);
 		$default_cash_account_id = $cash_default->id;
+
+		if($form['amount_received_from_bank'] && $form['bank_account']){
+			$this->bank_account = $this->add('Model_Account')->load($form['bank_account']);
+		}
 
 		$this->amount_from_account_model = $this->add('Model_Account')->load($form['amount_from_account']);
 

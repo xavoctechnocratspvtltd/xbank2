@@ -30,6 +30,7 @@ class page_memorandum_charge extends Page {
 			
 			$narration = "Being ".$form['transaction_type']." Debited in ".$this->add('Model_Account')->setActualFields(['id','name'])->load($form['amount_from_account'])->get('name')." ".$form['narration'] ;
 			$row_data = $this->getRowData($form->get());
+			
 			$model_memo_tran->createNewTransaction(null,$form['transaction_type'],$narration,$row_data);
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
 
@@ -64,7 +65,13 @@ class page_memorandum_charge extends Page {
 		$tax = (100 + $tax_percentage);
 		$tax_excluded_amount = round((($amount/$tax)*100),2);
 		$tax_amount = round(($amount - $tax_excluded_amount),2);
-		
+
+		$sgst_amount = round(($tax_amount/2),2);
+		$cgst_amount = round(($tax_amount/2),2);
+		if($tax_name === "GST"){
+			$tax_excluded_amount = round(($amount - ($sgst_amount + $cgst_amount)),2);
+		}
+
 		if($tax_excluded_amount){
 			// loading charge account model
 			$account_number = $this->api->currentBranch['Code'].SP.$tra_array[$form['transaction_type']][0];
@@ -85,8 +92,6 @@ class page_memorandum_charge extends Page {
 		if($tax_name === "GST"){
 			$sgst_account_number = $this->api->currentBranch['Code'].SP."SGST ".round(($tax_percentage/2),1)."%";
 			$cgst_account_number = $this->api->currentBranch['Code'].SP."CGST ".round(($tax_percentage/2),1)."%";
-
-			$sgst_amount = $cgst_amount = ($tax_amount/2);
 
 			$cr_gst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$sgst_account_number);
 			$cr_gst_account_model->tryLoadAny();
@@ -127,12 +132,20 @@ class page_memorandum_charge extends Page {
 			$total_cr_amount += $tax_amount;
 
 		}
+
+		$total_cr_amount = round($total_cr_amount,2);
+		$total_dr_amount = round($total_dr_amount,2);
 		// end of gst calculation
 
 		// check here validation sum of amount_cr === amount_dr
 		if($total_cr_amount != $total_dr_amount) throw $this->exception('CR AND DR Amount Must Be Same ')
-					->addMoreInfo('CR Amount',$total_cr_amount)
-					->addMoreInfo('DR Amount',$total_dr_amount);
+					->addMoreInfo('Tax Excluded Amount',$tax_excluded_amount)
+					->addMoreInfo('SGST',$sgst_amount)
+					->addMoreInfo('CGST',$cgst_amount)
+					->addMoreInfo('Total Amount',$amount)
+					->addMoreInfo('Total CR Amount',$total_cr_amount)
+					->addMoreInfo('Total DR Amount',$total_dr_amount)
+					->addMoreInfo('Difference',($total_dr_amount - $total_cr_amount));
 
 		return $row_data;
 	}

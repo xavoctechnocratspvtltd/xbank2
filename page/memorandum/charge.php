@@ -28,7 +28,7 @@ class page_memorandum_charge extends Page {
 
 		if($form->isSubmitted()){
 			
-			$narration = "Being ".$this->transaction_type." Debited in ".$this->amount_from_account_model['name']." ".$form['narration'] ;
+			$narration = "Being ".$form['transaction_type']." Debited in ".$this->add('Model_Account')->setActualFields(['id','name'])->load($form['amount_from_account'])->get('name')." ".$form['narration'] ;
 			$row_data = $this->getRowData($form->get());
 			$model_memo_tran->createNewTransaction(null,$form['transaction_type'],$narration,$row_data);
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();

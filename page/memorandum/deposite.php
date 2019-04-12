@@ -48,7 +48,7 @@ class page_memorandum_deposite extends Page{
 				$this->api->db->beginTransaction();
 
 				// Create Actual Transaction CREDIT
-					$narration = "Being ".$this->transaction_type." Debited in ".$this->amount_from_account_model['name'];
+					$narration = "Being ".str_replace("RECEIVED", " ", strtoupper($this->transaction_type))." Debited in ".$this->amount_from_account_model['name'];
 					$transaction = $this->add('Model_Transaction');
 					$transaction->createNewTransaction($this->transaction_type,$this->api->currentBranch,$this->app->now,$narration,null,['reference_id'=>$form['amount_from_account']]);
 					//amount from account credit
@@ -61,7 +61,7 @@ class page_memorandum_deposite extends Page{
 				// end of Actual Transaction CREDIT ----------------------
 
 				// Create Actual Transaction DEBIT
-					$narration = "Being ".$this->cash_default_model['name']." Deposited in ".$this->amount_from_account_model['name'];
+					$narration = "Being CASH Deposited in ".$this->amount_from_account_model['name'];
 					$transaction = $this->add('Model_Transaction');
 					$transaction->createNewTransaction($this->transaction_type,$this->api->currentBranch,$this->app->now,$narration,null,['reference_id'=>$form['amount_from_account']]);
 					$transaction->addDebitAccount($this->cash_default_model,$form['amount']);

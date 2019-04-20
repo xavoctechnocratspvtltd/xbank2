@@ -75,7 +75,11 @@ class page_accounts_statement extends Page {
 		}else{
 			$t_from_date=date('Y-m-d',strtotime($title_model['created_at']));
 		}
-		$grid->add('View',null,'grid_buttons')->setHtml('<div style="text-align:center;font-size:20px">'.$title_acc_name.' <br><small>'. $joint_memebrs .'</small> <br/> <small >From Date - '.$t_from_date." - " . "   To Date - ".($_GET['to_date']?:$this->api->today."</small></div>"));
+		$legal_message = "";
+		if($title_model['is_in_legal'] && !$title_model['is_legal_case_finalised'])
+			$legal_message = "<h4 style='color:red;'>(Account in Legal, do not print statement or not provide the information to customer)</h4>";
+
+		$grid->add('View',null,'grid_buttons')->setHtml('<div style="text-align:center;font-size:20px">'.$title_acc_name.' <br>'.$legal_message.'<small>'. $joint_memebrs .'</small> <br/> <small >From Date - '.$t_from_date." - " . "   To Date - ".($_GET['to_date']?:$this->api->today."</small></div>"));
 		$transactions = $this->add('Model_TransactionRow');
 		$transactions->addExpression('invoice_no')->set(function($m,$q){	
 

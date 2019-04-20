@@ -12,8 +12,23 @@ class page_stocknew_itemcategory extends Page {
 
 
 		// ====== Items ========
+		$item_model = $this->add('Model_StockNew_Item');
+		$item_model->addExpression('current_location')->set(function($m,$q){
+			$st = $m->add('Model_StockNew_Transaction');
+			$st->addCondition('item_id',$m->getElement('id'));
+			$st->setLimit(1);
+			$st->setOrder('id','desc');
+			return $q->expr('IF([0],(IF([1]="ISSUE",[2],concat([3]," :: ",[4])))," ")',[
+					$m->getElement('is_fixed_asset'),
+					$st->fieldQuery('transaction_template_type'),
+					$st->fieldQuery('to_member'),
+					$st->fieldQuery('to_container'),
+					$st->fieldQuery('to_container_row'),
+				]);
+		});
+
 		$item_crud = $item_tab->add('CRUD');
-		$item_crud->setModel('Model_StockNew_Item');
+		$item_crud->setModel($item_model);
 		$item_crud->grid->addPaginator(500);
 		$item_crud->grid->addQuickSearch(['name','code']);
 		$item_crud->add('Controller_Acl',['default_view'=>false]);

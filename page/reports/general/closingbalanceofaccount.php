@@ -10,6 +10,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$selected_account_type = $this->api->stickyGET('account_type');
 		$filter = $this->api->stickyGET('filter');
 		$this->api->stickyGET('status');
+		$this->api->stickyGET('matured_status');
 
 		if($_GET['as_on_date']){
 			$this->api->stickyGET('as_on_date');
@@ -23,6 +24,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$array_value = $array_key = explode(',', ACCOUNT_TYPES);
 		$account_type->setValueList(array_combine($array_key, $array_value))->setEmptyText('Select Account type');
 
+		$form->addField('DropDown','matured_status')->setValueList(array('Active'=>'Active','InActive'=>'InActive'))->setEmptyText('Select Status');
 		$form->addSubmit('GET List');
 
 		$grid=$this->add('Grid_Report_ClosingBalanceOfAccount',array('as_on_date'=>$till_date));
@@ -41,6 +43,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 		$tr_account_join->addField('OpeningBalanceCr');
 		$tr_account_join->addField('ActiveStatus');
 		$tr_account_join->addField('acc_created_at','created_at');
+		$tr_account_join->addField('MaturedStatus','MaturedStatus');
 
 		$scheme_join = $tr_account_join->leftJoin('schemes','scheme_id');
 		$scheme_join->addField('SchemeType');
@@ -61,7 +64,7 @@ class page_reports_general_closingbalanceofaccount extends Page {
 			return $acc->addCondition('member_id',$m->getField('member_id'))->addCondition('SchemeType','Default')->addCondition('scheme_name','Share Capital')->setLimit(1)->fieldQuery('AccountNumber');
 		});
 
-		$fields_array=array('AccountNumber','acc_created_at','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member');
+		$fields_array=array('AccountNumber','acc_created_at','name','FatherName','PermanentAddress','PhoneNos','scheme_name','SchemeType','sum','OpeningBalanceDr','OpeningBalanceCr','member_id','member','MaturedStatus');
 
 		if($filter){
 			if($selected_account_type){
@@ -79,6 +82,13 @@ class page_reports_general_closingbalanceofaccount extends Page {
 			if($selected_account_type == 'SavingAndCurrent'){
 				$fields_array[]='sm_no';
 			}
+
+			if($_GET['matured_status'] == "Active"){
+				$tr_model->addCondition('MaturedStatus',1);	
+			}elseif($_GET['matured_status'] == "InActive"){
+				$tr_model->addCondition('MaturedStatus',0);
+			}
+
 		}else{
 			$tr_model->addCondition('id',-1);
 		}
@@ -98,7 +108,9 @@ class page_reports_general_closingbalanceofaccount extends Page {
 								array('as_on_date'=>$form['as_on_date']?:0,
 									'account_type'=>$form['account_type'],
 									'status'=>$form['status'],
-									'filter'=>1))->execute();
+									'matured_status'=>$form['matured_status'],
+									'filter'=>1
+								))->execute();
 		}
 
 	}

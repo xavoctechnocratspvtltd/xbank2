@@ -33,11 +33,11 @@ class page_corrections_bsaudit extends Page {
 		$model = $this->add('Model_TransactionRow');
 		$model->addExpression('has_transaction')->set(function($m,$q){
 			return $m->add('Model_Transaction')->addCondition('id',$m->getElement('transaction_id'))->count();
-		});
+		})->sortable(true);
 		$model->addCondition('created_at','>','2018-04-01');
 		$model->addCondition('created_at','<','2019-04-01');
 		$model->addCondition([['has_transaction',0],['has_transaction',null]]);
-
+		
 		$grid = $this->add('Grid');
 		$grid->setModel($model);
 		$grid->addPaginator(100);

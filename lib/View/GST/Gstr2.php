@@ -1,6 +1,6 @@
 <?php
 
-class View_GST_Gstr1 extends View {
+class View_GST_Gstr2 extends View {
 	public $from_date;
 	public $to_date;
 
@@ -12,11 +12,13 @@ class View_GST_Gstr1 extends View {
 			return;
 		}
 
+		$data_array = $this->add('Model_GST_Transaction')
+				->getInwardGSTData($this->from_date,$this->to_date);
 
-		$data_array = $this->add('Model_GST_Transaction')->getGSTData($this->from_date,$this->to_date);
 		// echo "<pre>";
-		// print_r($temp);
+		// print_r($data_array);
 		// echo "</pre>";
+
 		$grid = $this->add('Grid');
 		$grid->setSource($data_array);
 		$grid->addColumn('taxable_value');
@@ -33,13 +35,26 @@ class View_GST_Gstr1 extends View {
 
 	function showDetail($page){
 		$id = $_GET[$page->short_name.'_id'];
+		// $page->add('Text')->set('ID ='.$id);
 		// $page->add('Text')->set('From ='.$this->from_date);
 		// $page->add('Text')->set('To ='.$this->to_date);
+		$percentage = explode(" ", $id)[1];
+		$gst_array = [
+			'sgst'=>$this->api->currentBranch['Code'].SP.'SGST '.($percentage/2).'%',
+			'cgst'=>$this->api->currentBranch['Code'].SP.'CGST '.($percentage/2).'%',
+			'igst'=>$this->api->currentBranch['Code'].SP.'IGST '.$percentage.'%'
+		];
+		$tra_array = [TRA_PURCHASE_ENTRY];
 
-		$tra = $this->add('Model_GST_Transaction');
+		$tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array]);
+
+		$tra->addCondition('created_at','>=',$this->from_date);
+		$tra->addCondition('created_at','<',$this->app->nextDate($this->to_date));
+		$tra->addCondition('transaction_type',$tra_array);
+
 		if($this->app->currentBranch->id)
 			$tra->addCondition('branch_id',$this->app->currentBranch->id);
-		
+
 		$tra->getElement('created_at')->caption('Date');
 		$tra->getElement('created_at')->caption('Date');
 		$tra->getElement('tax_amount_sum')->caption('Total Tax');

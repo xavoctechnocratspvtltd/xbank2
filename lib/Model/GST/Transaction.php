@@ -8,63 +8,84 @@ class Model_GST_Transaction extends Model_Transaction {
 
 		if(!count($this->gst_array)){
 			$this->gst_array = [
-					$this->api->currentBranch['Code'].SP.'SGST 9%',
-					$this->api->currentBranch['Code'].SP.'CGST 9%',
-					$this->api->currentBranch['Code'].SP.'IGST 18%'
+					'sgst'=>$this->api->currentBranch['Code'].SP.'SGST 9%',
+					'cgst'=>$this->api->currentBranch['Code'].SP.'CGST 9%',
+					'igst'=>$this->api->currentBranch['Code'].SP.'IGST 18%'
 				];
 		}
 
-		$this->sgst_id = $sgst_model_id = $this->add('Model_Account')->addCondition('AccountNumber',$this->gst_array[0])->tryLoadAny()->id;
-		$this->cgst_id = $cgst_model_id = $this->add('Model_Account')->addCondition('AccountNumber',$this->gst_array[1])->tryLoadAny()->id;
-		$this->igst_id = $igst_model_id = $this->add('Model_Account')->addCondition('AccountNumber',$this->gst_array[2])->tryLoadAny()->id;
+		if(isset($this->gst_array['sgst']))
+			$this->sgst_id = $this->add('Model_Account')->addCondition('AccountNumber',$this->gst_array['sgst'])->tryLoadAny()->id;
+		
+		if(isset($this->gst_array['cgst']))
+			$this->cgst_id = $this->add('Model_Account')->addCondition('AccountNumber',$this->gst_array['cgst'])->tryLoadAny()->id;
+
+		if(isset($this->gst_array['igst']))
+			$this->igst_id = $this->add('Model_Account')->addCondition('AccountNumber',$this->gst_array['igst'])->tryLoadAny()->id;
+		
+		$this->addExpression('sgst')->set(function($m,$q){
+			if(!$this->sgst_id) return "'0'";
+			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->sgst_id)->sum('amountDr');
+		});
+
+		$this->addExpression('cgst')->set(function($m,$q){
+			if(!$this->cgst_id) return "'0'";
+			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->cgst_id)->sum('amountDr');
+		});
+		
+		$this->addExpression('igst')->set(function($m,$q){
+			if(!$this->igst_id) return "'0'";
+			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->igst_id)->sum('amountDr');
+		});
 
 		$this->addExpression('tax_amount_sum')->set(function($m,$q){
-			return $m->refSQL('TransactionRow')
-					->addCondition('account_id',[$this->sgst_id,$this->cgst_id])
-					->sum('amountDr');
+			return $q->expr('IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0)',[
+					$m->getElement('sgst'),
+					$m->getElement('cgst'),
+					$m->getElement('igst')
+				]);
 		});
 
 		$this->addExpression('taxable_value')->set(function($m,$q){
 			return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
 		});
 
-		$this->addExpression('sgst')->set(function($m,$q){
-			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->sgst_id)->sum('amountDr');
-		});
-
-		$this->addExpression('cgst')->set(function($m,$q){
-			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->cgst_id)->sum('amountDr');
-		});
-		$this->addExpression('igst')->set(function($m,$q){
-			if(!$this->igst_id) return "'0'";
-			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->igst_id)->sum('amountDr');
-		});
-
 		$this->addCondition('tax_amount_sum','>',0);
 	}
 
-	function getGSTData($from_date,$to_date){
-		$all_gst = [
-			'GST 18'=>[],		
-			'GST 28'=>[],
-			'GST 5'=>[],
-			'GST 6'=>[]
-		];
+	// return supplier/Purchase GST Data
+	function getInwardGSTData($from_date,$to_date){
+		return $this->getGSTData($from_date,$to_date,[TRA_PURCHASE_ENTRY]);
+	}
+
+	// return sales GST Data
+	function getOutWardGSTData($from_date,$to_date){
+		return $this->getGSTData($from_date,$to_date,[TRA_PURCHASE_ENTRY],'notin');
+	}
+
+	function getGSTData($from_date,$to_date,$transaction_type=[],$tra_operator="in"){
+		$all_gst = GST_VALUES;
 		$data_array = [];
 
 		foreach ($all_gst as $gst_name => $value) {
-			$percent = explode(" ", $gst_name)[1];
+			$tax_array = explode(" ", $gst_name);
+			$percent = $tax_array[1];
+
+			if($tax_array[0] == "IGST") continue;
 
 			$gst_array = [
-					$this->api->currentBranch['Code'].SP.'SGST '.($percent/2).'%',
-					$this->api->currentBranch['Code'].SP.'CGST '.($percent/2).'%',
-					$this->api->currentBranch['Code'].SP.'IGST '.$percent.'%'
+					'sgst'=>$this->api->currentBranch['Code'].SP.'SGST '.($percent/2).'%',
+					'cgst'=>$this->api->currentBranch['Code'].SP.'CGST '.($percent/2).'%',
+					'igst'=>$this->api->currentBranch['Code'].SP.'IGST '.$percent.'%'
 				];
 
 			$model_tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array]);
 			$model_tra->addCondition('created_at','>=',$from_date);
 			$model_tra->addCondition('created_at','<',$this->app->nextDate($to_date));
 			$model_tra->addCondition('branch_id',$this->app->currentBranch->id);
+
+			if(count($transaction_type) && $tra_operator=="in") $model_tra->addCondition('transaction_type',$transaction_type);
+			if(count($transaction_type) && $tra_operator=="notin") $model_tra->addCondition('transaction_type','<>',$transaction_type);
 
 			if(!$model_tra->count()->getOne()) continue;
 
@@ -79,7 +100,7 @@ class Model_GST_Transaction extends Model_Transaction {
 				$temp = [
 					'id'=>$gst_name,
 					'taxable_value'=>($temp['taxable_value']+$value['taxable_value']),
-					'igst'=>$temp['igst'],
+					'igst'=>($temp['igst']+$value['igst']),
 					'cgst'=>($temp['cgst']+$value['cgst']),
 					'sgst'=>($temp['sgst']+$value['sgst']),
 					'total_tax'=>($temp['total_tax']+$value['tax_amount_sum']),

@@ -1,12 +1,12 @@
 <?php
 
-class page_memorandum_report_gstr1 extends Page{
-	public $title = "GSTR-1";
+class page_memorandum_report_gstr2 extends Page{
+	public $title = "GSTR-2";
 
 	function init(){
 		parent::init();
 
-		$this->add('View')->setElement('h3')->set('Outward GST Report');
+		$this->add('View')->setElement('h3')->set('Inward GST Report');
 
 		$this->filter = $this->app->stickyGET('filter')?:0;
 		$this->from_date = $this->app->stickyGET('from_date')?:0;
@@ -21,7 +21,7 @@ class page_memorandum_report_gstr1 extends Page{
 
 		$view = $this->add('View');
 		if($this->filter){
-			$view->add('View_GST_Gstr1',['from_date'=>$this->from_date,'to_date'=>$this->to_date]);
+			$view->add('View_GST_Gstr2',['from_date'=>$this->from_date,'to_date'=>$this->to_date]);
 		}
 
 		if($form->isSubmitted()){

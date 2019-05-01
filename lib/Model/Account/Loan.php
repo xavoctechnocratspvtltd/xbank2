@@ -212,9 +212,7 @@ class Model_Account_Loan extends Model_Account{
 			$gst_tax_amount = round((($other_account_cr_amount - $tax_excluded_amount)),2);
 			$other_account_cr_amount = $other_account_cr_amount - ($gst_tax_amount * 2);
 
-			$total_cr += $gst_tax_amount;
 			$transaction->addCreditAccount($sgst_account_model,$gst_tax_amount);
-			$total_cr += $gst_tax_amount;
 			$transaction->addCreditAccount($cgst_account_model,$gst_tax_amount);
 
 			$other_account = $this->add('Model_Account')->load($other_account);
@@ -226,8 +224,6 @@ class Model_Account_Loan extends Model_Account{
 		$transaction->addCreditAccount($loan_from_other_account, $AccountCredit);
 		
 		$transaction->execute();
-
-		
 	}
 
 	function addDocumentDetails($form){

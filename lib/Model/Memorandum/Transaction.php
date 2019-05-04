@@ -34,6 +34,10 @@ class Model_Memorandum_Transaction extends Model_Table {
 
 	function getTransactionType(){
 		$type = MEMORANDUM_TRA_ARRAY;
+		unset($type['insurance_processing_fees']);
+		unset($type['file_cancel_charge']);
+		unset($type['staff_stationary_charge_received']);
+		
 		return $type;
 	}
 

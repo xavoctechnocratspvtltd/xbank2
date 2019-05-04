@@ -19,7 +19,7 @@ class page_memorandum_charge extends Page {
 
 		$model_account = $this->add('Model_Account')->addCondition('branch_id',$this->app->current_branch->id);
 		$form->addField('autocomplete/Basic','amount_from_account')->validateNotNull()->setModel($model_account);
-		$form->addField('DropDown','tax')->setValueList(GST_VALUES)->validateNotNull();
+		$form->addField('DropDown','tax')->setValueList(['GST 18'=>'GST 18%'])->validateNotNull();
 		$form->addField('amount')->validateNotNull();
 		$form->addField('text','narration');
 		$form->addSubmit('Submit');
@@ -27,13 +27,42 @@ class page_memorandum_charge extends Page {
 		$form->add('misc\Controller_FormAsterisk');
 
 		if($form->isSubmitted()){
+
+			// first check charges is applicable or not
+			$account_dr = $this->add('Model_Account')->load($form['amount_from_account']);
 			
-			$narration = "Being ".$form['transaction_type']." Debited in ".$this->add('Model_Account')->setActualFields(['id','name'])->load($form['amount_from_account'])->get('name')." ".$form['narration'] ;
+			if($form['transaction_type'] == "visit_charge"){
+				$last_visit_in_same_month = (date('m',strtotime($account_dr['visit_done_on'])) == date('m',strtotime($this->app->now)));
+				$last_visit_within_last_15_days = ($this->app->my_date_diff($account_dr['visit_done_on'],$this->app->today)['days_total'] < 15);
+				if($last_visit_in_same_month && $last_visit_within_last_15_days){
+					$form->displayError('transaction_type','Visit must not be within 15 days in same month');
+				}
+			}
+
+			$narration = "Being ".$form['transaction_type']." Debited in ".$account_dr['name']." ".$form['narration'];
 			$row_data = $this->getRowData($form->get());
 			
 			$model_memo_tran->createNewTransaction(null,$form['transaction_type'],$narration,$row_data);
-			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
 
+			$new_old_related_trantype = [
+										'godowncharge_debited'=>'godowncharge_debited',
+										'legal_notice_sent_for_bike_auction'=>'legal_notice_sent_for_bike_auction',
+										'final_recovery_notice_sent'=>'final_recovery_notice_sent',
+										'cheque_returned'=>'cheque_returned',
+										'notice_sent_after_cheque_returned'=>'notice_sent_after_cheque_returned',
+										'society_notice_sent'=>'society_notice_sent',
+										'noc_handling_charge_received'=>'noc_handling_charge_received',
+										'legal_notice_sent'=>'legal_notice_sent',
+										'visit_charge'=>'visit_done',
+									];
+
+			// saving date and checkbox related data on actual account model
+			$type = $new_old_related_trantype[$form['transaction_type']];
+			$account_dr['is_'.$type] = true;
+			$account_dr[$type.'_on'] = $this->app->now;
+			$account_dr->save();
+
+			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
 		}
 	}
 

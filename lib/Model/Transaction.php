@@ -448,11 +448,7 @@ class Model_Transaction extends Model_Table {
 
 		$f_year = $this->api->getFinancialYear($transaction_date);
 		$start_date = $f_year['start_date'];
-		if(!$transaction_date){
-			$end_date = $f_year['end_date'];
-		}else{
-			$end_date=$transaction_date;
-		}
+		$end_date=$transaction_date;
 
 		$transaction_model = $this->add('Model_Transaction');
 		$transaction_model->addCondition('created_at','>=',$start_date);

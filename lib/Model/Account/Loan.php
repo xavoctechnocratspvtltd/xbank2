@@ -182,7 +182,12 @@ class Model_Account_Loan extends Model_Account{
 		} 
 
 		$transaction = $this->add('Model_Transaction');
-		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$on_date, $narration , null, array('reference_id'=>$this->id));
+		$invoice_no = 0;
+		if($other_account_cr_amount){
+			$invoice_no = $transaction->newInvoiceNumber($this->app->now);
+		}
+
+		$transaction->createNewTransaction(TRA_LOAN_ACCOUNT_OPEN,$this->ref('branch_id'),$on_date, $narration , null, array('reference_id'=>$this->id,'invoice_no'=>$invoice_no));
 		
 		$loan_from_other_account = $this->add('Model_Account')->load($from_account);
 

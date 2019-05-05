@@ -65,7 +65,9 @@ class page_memorandum_deposite extends Page{
 				// Create Actual Transaction CREDIT
 					$narration = "Being ".str_replace("RECEIVED", " ", strtoupper($this->transaction_type))." Debited in ".$this->amount_from_account_model['name'];
 					$transaction = $this->add('Model_Transaction');
-					$transaction->createNewTransaction($this->transaction_type,$this->api->currentBranch,$this->app->now,$narration,null,['reference_id'=>$form['amount_from_account']]);
+					$invoice_no = $transaction->newInvoiceNumber();
+										
+					$transaction->createNewTransaction($this->transaction_type,$this->api->currentBranch,$this->app->now,$narration,null,['reference_id'=>$form['amount_from_account'],'invoice_no'=>$invoice_no]);
 					//amount from account credit
 					$transaction->addDebitAccount($this->amount_from_account_model,$form['amount']);
 					//charge ie(visit, etc), gst are debit

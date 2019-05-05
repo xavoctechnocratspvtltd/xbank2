@@ -444,6 +444,22 @@ class Model_Transaction extends Model_Table {
 		return false;
 	}
 
+	function newInvoiceNumber($transaction_date=null){
+
+		$f_year = $this->api->getFinancialYear($transaction_date);
+		$start_date = $f_year['start_date'];
+		if(!$transaction_date){
+			$end_date = $f_year['end_date'];
+		}else{
+			$end_date=$transaction_date;
+		}
+
+		$transaction_model = $this->add('Model_Transaction');
+		$transaction_model->addCondition('created_at','>=',$start_date);
+		$transaction_model->addCondition('created_at','<',$this->api->nextDate($end_date)); // ! important next date
+		return $transaction_model->_dsql()->del('fields')->field('max(CAST(invoice_no AS int))')->getOne() + 1;
+	}
+
 	// function __destruct(){
 		// if($this->create_called and !$this->executed) throw $this->exception('Transaction created but not executed');
 	// }

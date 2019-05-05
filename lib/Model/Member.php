@@ -50,6 +50,7 @@ class Model_Member extends Model_Table {
 		$this->addField('FilledForm60')->caption('Filled Form 60/61')->type('boolean')->mandatory(true);
 		$this->addField('PanNo');
 		$this->addField('AdharNumber')->mandatory(true);
+		$this->addField('gstin');
 		$this->addField('Nominee')->system(true);
 		$this->addField('RelationWithNominee')->system(true);
 		$this->addField('NomineeAge')->system(true);

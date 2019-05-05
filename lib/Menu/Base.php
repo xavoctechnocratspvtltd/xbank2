@@ -107,6 +107,7 @@ class Menu_Base extends Menu {
 		$purchase_auth_menu->addMenuItem('memorandum_charge','Memorandum Apply');
 		$purchase_auth_menu->addMenuItem('memorandum_deposite','Memorandum Deposite');
 		$purchase_auth_menu->addMenuItem('memorandum_statement','Account Statement');
+		$purchase_auth_menu->addMenuItem('memorandum_generalgst','General GST');
 		$purchase_auth_menu->addMenuItem('memorandum_report','Report');
 		$purchase->js('click',$purchase_sub_menus_popover->showJS());
 		

@@ -461,9 +461,11 @@ class Model_Transaction extends Model_Table {
 		$transaction_model->addCondition('created_at','<',$this->api->nextDate($end_date)); // ! important next date
 		$transaction_model->addCondition('is_sale_invoice',1);
 
-		return $transaction_model->_dsql()->del('fields')->field('max(CAST(invoice_no AS int))')->getOne() + 1;
-		// if($max_inv_no > 766) return $max_inv_no+1;
-		// return 767;
+		$last_inv_no = $transaction_model->_dsql()->del('fields')->field('max(CAST(invoice_no AS int))')->getOne();
+		$new_inv_no = $last_inv_no + 1;
+		if($new_inv_no < 766) return 767;
+		
+		return $new_inv_no;
 	}
 
 	// function __destruct(){

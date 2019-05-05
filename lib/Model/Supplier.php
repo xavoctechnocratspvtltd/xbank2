@@ -69,7 +69,7 @@ class Model_Supplier extends Model_Table {
 		
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
-		$transaction->createNewTransaction(TRA_PURCHASE_ENTRY,$in_branch,$transaction_date,$narration,null,array('reference_id'=>$account_cr->id,'invoice_no'=>$data['invoice_no']));
+		$transaction->createNewTransaction(TRA_PURCHASE_ENTRY,$in_branch,$transaction_date,$narration,null,array('reference_id'=>$account_cr->id,'invoice_no'=>$data['invoice_no'],'is_sale_invoice'=>0));
 		$transaction->addCreditAccount($account_cr,$data['cr']['amount']);
 
 		foreach ($data['dr']['account'] as $ac_id => $amount){

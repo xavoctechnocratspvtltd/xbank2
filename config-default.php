@@ -323,7 +323,7 @@ define('MEMORANDUM_ACCOUNT_TRA_ARRAY',[
 										'legal_notice_sent'=>['LEGAL NOTICE CHARGE RECEIVED'],
 										'cheque_returned'=>['CHEQUE RETURN CHARGES RECEIVED'],
 										'godowncharge_debited'=>['VECHICLE GODOWN RENT RECEIVED'],
-										'legal_expenses_received'=>['LEGAL CASE CHARGE RECEIVED'],
+										'legal_expenses_received'=>['LEGAL EXPENSES RECEIVED'],
 										'legal_notice_sent_for_bike_auction'=>['LEGAL NOTICE SENT FOR BIKE AUCTION CHARGE RECEIVED'],
 										'final_recovery_notice_sent'=>['FINAL RECOVERY NOTICE CHARGE RECEIVED'],
 										'notice_sent_after_cheque_returned'=>['CHEQUE RETURN NOTICE CHARGE RECEIVED'],
@@ -347,7 +347,7 @@ define('MEMORANDUM_TRA_ARRAY',[
 							'final_recovery_notice_sent'=>'Final Recovery Notice Charge Received',
 							'cheque_returned'=>'Cheque Return Charge Received',
 							'notice_sent_after_cheque_returned'=>'Cheque Return Notice Charge Received',
-							'legal_expenses_received'=>'Legal Expenses Received',
+							'legal_expenses_received'=>'LEGAL CASE CHARGE RECEIVED',
 							'noc_handling_charge_received'=>'NOC Handling Charge', //DR to cash account and Cr to NOC handeling
 
 							'insurance_processing_fees'=>'Insurance Processing Fees',

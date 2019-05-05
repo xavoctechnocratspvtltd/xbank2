@@ -37,6 +37,7 @@ class Model_Transaction extends Model_Table {
 		$this->addField('updated_at')->type('datetime')->defaultValue($this->api->now);
 
 		$this->addField('invoice_no');
+		$this->addField('is_sale_invoice')->type('boolean')->defaultValue(false);
 
 		$this->hasMany('TransactionRow','transaction_id');
 
@@ -116,7 +117,12 @@ class Model_Transaction extends Model_Table {
 		$this['Narration'] = $Narration;
 		$this['created_at'] = $transaction_date;		
 		// new field aded for both purchase and sale invoice no
-		if(isset($options['invoice_no'])) $this['invoice_no'] = $options['invoice_no'];
+		if(isset($options['invoice_no']) && $options['invoice_no']){
+			$this['invoice_no'] = $options['invoice_no'];
+			
+			if(isset($options['is_sale_invoice'])) $this['is_sale_invoice'] = $options['is_sale_invoice'];
+			else $this['is_sale_invoice'] = 1;
+		} 
 
 		$this->transaction_type = $transaction_type;
 		$this->branch = $branch;
@@ -453,6 +459,8 @@ class Model_Transaction extends Model_Table {
 		$transaction_model = $this->add('Model_Transaction');
 		$transaction_model->addCondition('created_at','>=',$start_date);
 		$transaction_model->addCondition('created_at','<',$this->api->nextDate($end_date)); // ! important next date
+		$transaction_model->addCondition('is_sale_invoice',1);
+
 		return $transaction_model->_dsql()->del('fields')->field('max(CAST(invoice_no AS int))')->getOne() + 1;
 		// if($max_inv_no > 766) return $max_inv_no+1;
 		// return 767;

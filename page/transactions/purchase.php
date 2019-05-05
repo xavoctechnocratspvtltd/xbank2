@@ -36,6 +36,20 @@ class page_transactions_purchase extends Page {
 
 			if(!$this->session_model->count()) throw new \Exception("Please Add Purchase Item First ...");
 
+			$f_year = $this->api->getFinancialYear($this->app->now);
+			$start_date = $f_year['start_date'];
+			$end_date = $f_year['end_date'];
+
+			$tr_model = $this->add('Model_Transaction')
+						->addCondition('is_sale_invoice',0)
+						->addCondition('invoice_no',$form['invoice_no'])
+						->addCondition('created_at','>=',$start_date)
+						->addCondition('created_at','<',$this->api->nextDate($end_date))
+						->addCondition('reference_id',$form['supplier'])
+						->tryLoadAny();
+			if($tr_model->loaded()) $form->displayError('invoice_no','this purchase invoice is already used on '.$tr_model['created_at']);
+			 
+
 			$data = [];
 			foreach ($this->session_model as $record) {
 				$data[] = $record->data;
@@ -73,6 +87,7 @@ class page_transactions_purchase extends Page {
 		$session_model->setSource('Session');
 		
 		$model_default_account = $this->add('Model_Account_Default');
+		$model_default_account->addCondition('branch_id',$this->app->current_branch->id);
 
 		$session_model->addField('purchase_account_id');
 		$field_pur_acount = $session_model->addField('purchase_account');

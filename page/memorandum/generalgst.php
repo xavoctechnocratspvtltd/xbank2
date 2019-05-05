@@ -21,7 +21,7 @@ class page_memorandum_generalgst extends Page{
 		$col = $this->add('Columns');
 		$col1 = $col->addColumn(6);
 
-		$account_model = $this->add('Model_Account')->addCondition('branch_id',$this->app->current_branch->id);
+		$account_model = $this->add('Model_Active_Account')->addCondition('branch_id',$this->app->current_branch->id);
 
 		$form = $col1->add('Form');
 		$form->addField('autocomplete/Basic','dr_account')->validateNotNull()->setModel($account_model);
@@ -78,11 +78,11 @@ class page_memorandum_generalgst extends Page{
 		$sgst_account_number = $this->api->currentBranch['Code'].SP."SGST 9%";
 		$cgst_account_number = $this->api->currentBranch['Code'].SP."CGST 9%";
 
-		$this->sgst_account_model = $gst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$sgst_account_number);
+		$this->sgst_account_model = $gst_account_model = $this->add('Model_Active_Account')->addCondition('AccountNumber',$sgst_account_number);
 		$gst_account_model->tryLoadAny();
 		if(!$gst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$sgst_account_number." )");
 
-		$this->cgst_account_model = $gst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$cgst_account_number);
+		$this->cgst_account_model = $gst_account_model = $this->add('Model_Active_Account')->addCondition('AccountNumber',$cgst_account_number);
 		$gst_account_model->tryLoadAny();
 		if(!$gst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$cgst_account_number." )");
 
@@ -90,8 +90,8 @@ class page_memorandum_generalgst extends Page{
 
 		$this->cr_amount =  round($form['amount_included_gst'] - ($this->sgst_tax_amount + $this->cgst_tax_amount),2);
 		
-		$this->dr_model = $this->add('Model_Account')->load($form['dr_account']);
-		$this->cr_model = $this->add('Model_Account')->load($form['cr_account']);
+		$this->dr_model = $this->add('Model_Active_Account')->load($form['dr_account']);
+		$this->cr_model = $this->add('Model_Active_Account')->load($form['cr_account']);
 
 	}
 

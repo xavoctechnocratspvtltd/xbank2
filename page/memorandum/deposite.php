@@ -31,7 +31,7 @@ class page_memorandum_deposite extends Page{
 			->setEmptyText('Please Select ...')
 			->validateNotNull();
 
-		$model_account = $this->add('Model_Account')->addCondition('branch_id',$this->app->current_branch->id);
+		$model_account = $this->add('Model_Active_Account')->addCondition('branch_id',$this->app->current_branch->id);
 		$form->addField('autocomplete/Basic','amount_from_account')->validateNotNull()->setModel($model_account);
 		// $form->addField('DropDown','tax')->setValueList(GST_VALUES)->validateNotNull();
 		$form->addField('amount')->validateNotNull();

@@ -126,7 +126,7 @@ class Model_Account_Loan extends Model_Account{
 		return $pending_account;
 	}
 
-	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $on_date = null ){
+	function createNewAccount($member_id,$scheme_id,$branch, $AccountNumber,$otherValues=array(),$form=null, $on_date = null){
 
 		// AccountNumber is already comming as getNewAccountNumber from pending Account Actions.
 
@@ -214,7 +214,7 @@ class Model_Account_Loan extends Model_Account{
 			// calculate 18% from other_account_cr_amount and remain remaining amount to other_account_cr_amount
 			$tax = 118;
 			$tax_excluded_amount = (($other_account_cr_amount/$tax)*100);
-			$gst_tax_amount = round((($other_account_cr_amount - $tax_excluded_amount)),2);
+			$gst_tax_amount = round( (($other_account_cr_amount - $tax_excluded_amount)/2) ,2);
 			$other_account_cr_amount = $other_account_cr_amount - ($gst_tax_amount * 2);
 
 			$transaction->addCreditAccount($sgst_account_model,$gst_tax_amount);

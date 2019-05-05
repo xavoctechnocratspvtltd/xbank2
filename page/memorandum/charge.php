@@ -17,7 +17,9 @@ class page_memorandum_charge extends Page {
 			->setEmptyText('Please Select ...')
 			->validateNotNull();
 
-		$model_account = $this->add('Model_Account')->addCondition('branch_id',$this->app->current_branch->id);
+		$model_account = $this->add('Model_Active_Account')
+						->addCondition('branch_id',$this->app->current_branch->id);
+
 		$form->addField('autocomplete/Basic','amount_from_account')->validateNotNull()->setModel($model_account);
 		$form->addField('DropDown','tax')->setValueList(['GST 18'=>'GST 18%'])->validateNotNull();
 		$form->addField('amount')->validateNotNull();
@@ -29,7 +31,7 @@ class page_memorandum_charge extends Page {
 		if($form->isSubmitted()){
 
 			// first check charges is applicable or not
-			$account_dr = $this->add('Model_Account')->load($form['amount_from_account']);
+			$account_dr = $this->add('Model_Active_Account')->load($form['amount_from_account']);
 			
 			if($form['transaction_type'] == "visit_charge"){
 				$last_visit_in_same_month = (date('m',strtotime($account_dr['visit_done_on'])) == date('m',strtotime($this->app->now)));
@@ -54,12 +56,18 @@ class page_memorandum_charge extends Page {
 										'noc_handling_charge_received'=>'noc_handling_charge_received',
 										'legal_notice_sent'=>'legal_notice_sent',
 										'visit_charge'=>'visit_done',
+										'legal_expenses_received'=>'in_legal'
 									];
 
 			// saving date and checkbox related data on actual account model
 			$type = $new_old_related_trantype[$form['transaction_type']];
 			$account_dr['is_'.$type] = true;
-			$account_dr[$type.'_on'] = $this->app->now;
+
+			if($type == 'in_legal'){
+				$account_dr['legal_filing_date'] = $this->app->now;
+			}else 
+				$account_dr[$type.'_on'] = $this->app->now;
+
 			$account_dr->save();
 
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
@@ -104,7 +112,7 @@ class page_memorandum_charge extends Page {
 		if($tax_excluded_amount){
 			// loading charge account model
 			$account_number = $this->api->currentBranch['Code'].SP.$tra_array[$form['transaction_type']][0];
-			$cr_charge_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$account_number);
+			$cr_charge_account_model = $this->add('Model_Active_Account')->addCondition('AccountNumber',$account_number);
 			$cr_charge_account_model->tryLoadAny();
 			if(!$cr_charge_account_model->loaded()) throw new \Exception("Account Not Found ".$account_number);
 
@@ -122,7 +130,7 @@ class page_memorandum_charge extends Page {
 			$sgst_account_number = $this->api->currentBranch['Code'].SP."SGST ".round(($tax_percentage/2),1)."%";
 			$cgst_account_number = $this->api->currentBranch['Code'].SP."CGST ".round(($tax_percentage/2),1)."%";
 
-			$cr_gst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$sgst_account_number);
+			$cr_gst_account_model = $this->add('Model_Active_Account')->addCondition('AccountNumber',$sgst_account_number);
 			$cr_gst_account_model->tryLoadAny();
 			if(!$cr_gst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$sgst_account_number." )");
 			$row_data[] = [
@@ -132,7 +140,7 @@ class page_memorandum_charge extends Page {
 				'tax'=>null
 			];
 
-			$cr_gst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$cgst_account_number);
+			$cr_gst_account_model = $this->add('Model_Active_Account')->addCondition('AccountNumber',$cgst_account_number);
 			$cr_gst_account_model->tryLoadAny();
 			if(!$cr_gst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$cgst_account_number." )");
 			$row_data[] = [
@@ -148,7 +156,7 @@ class page_memorandum_charge extends Page {
 		if($tax_name === "IGST"){
 			$igst_account_number = $this->api->currentBranch['Code'].SP.$tax."%";
 			
-			$cr_gst_account_model = $this->add('Model_Account')->addCondition('AccountNumber',$igst_account_number);
+			$cr_gst_account_model = $this->add('Model_Active_Account')->addCondition('AccountNumber',$igst_account_number);
 			$cr_gst_account_model->tryLoadAny();
 			if(!$cr_gst_account_model->loaded()) throw new \Exception("GST Account Not found ( ".$igst_account_number." )");
 			$row_data[] = [

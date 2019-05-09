@@ -29,7 +29,12 @@ class Model_Memorandum_Transaction extends Model_Table {
 			return $m->refSQL('Memorandum_TransactionRow')->sum('tax_amount');
 		});
 
+		$this->addHook('beforeDelete',$this);
 		$this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeDelete(){
+		$this->ref('Memorandum_TransactionRow')->deleteAll();
 	}
 
 	function getTransactionType(){

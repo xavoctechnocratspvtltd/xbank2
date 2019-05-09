@@ -38,6 +38,7 @@ class Model_Transaction extends Model_Table {
 
 		$this->addField('invoice_no');
 		$this->addField('is_sale_invoice')->type('boolean')->defaultValue(false);
+		$this->addField('is_invoice_cancel')->type('boolean')->defaultValue(false);
 
 		$this->hasMany('TransactionRow','transaction_id');
 

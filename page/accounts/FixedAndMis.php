@@ -295,6 +295,7 @@ class page_Accounts_FixedAndMis extends Page {
 		// if($account_fixedandmis_model['account_type'])
 		// $page->add('View')->set("Account Type ".$account_fixedandmis_model['account_type']);
 		$renew_model = $this->add('Model_Account_FixedAndMis');
+		$renew_model->getElement('scheme_id')->getModel()->addCondition('ActiveStatus',true);
 
 		$renew_form = $page->add('Form',null,null,['form/stacked']);
 		$debit_account = $renew_form->addField('Readonly','debit_account');

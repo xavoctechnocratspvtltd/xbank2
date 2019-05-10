@@ -74,6 +74,12 @@ class page_reports_deposit_duestogive extends Page {
 				)";
 		});
 
+
+		// after confirm implement this becase when selecting checkbox from filter form it gives document
+		// $document_submitted_join=$account->join('documents_submitted.accounts_id');
+		// $document_submitted_join->addField('documents_id');
+		// $document_submitted_join->addField('Description');
+
 		$account->addExpression('agent_mo_id')->set($account->refSQL('agent_id')->fieldQuery('mo_id'));
 		$account->addExpression('agent_mo_name')->set($account->refSQL('agent_id')->fieldQuery('mo'))->caption('Mo');
 

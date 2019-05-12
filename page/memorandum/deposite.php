@@ -88,7 +88,7 @@ class page_memorandum_deposite extends Page{
 						}else{
 							$transaction1->addDebitAccount($this->cash_default_model,$form['amount']);
 						}
-						$devision_account = $this->app->currentBranch['Code'].SP.'BRANCH & DIVISIONS FOR'.SP.$this->account_branch['Code'];
+						$devision_account = $this->account_branch['Code'].SP.'BRANCH & DIVISIONS FOR'.SP.$this->app->currentBranch['Code'];
 						$transaction1->addCreditAccount($this->add('Model_Account')->loadBy('AccountNumber',$devision_account),$form['amount']);
 						$transaction1->execute();
 						//end of branch devision from current branch to account branch
@@ -96,7 +96,7 @@ class page_memorandum_deposite extends Page{
 						$narration = "Being ".$amount_type." Deposited in ".$this->amount_from_account_model['name'];
 						$transaction = $this->add('Model_Transaction');
 						$transaction->createNewTransaction($this->transaction_type,$this->account_branch,$this->app->now,$narration,null,['reference_id'=>$form['amount_from_account']]);
-						$devision_account = $this->account_branch['Code'].SP.'BRANCH & DIVISIONS FOR'.SP.$this->app->currentBranch['Code'];
+						$devision_account = $this->app->currentBranch['Code'].SP.'BRANCH & DIVISIONS FOR'.SP.$this->account_branch['Code'];
 						$transaction->addDebitAccount($this->add('Model_Account')->loadBy('AccountNumber',$devision_account),$form['amount']);
 						$transaction->addCreditAccount($this->amount_from_account_model,$form['amount']);
 						$transaction->execute();

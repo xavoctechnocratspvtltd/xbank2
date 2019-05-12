@@ -29,7 +29,7 @@ class Model_StockNew_ItemStock extends Model_StockNew_Item {
 					if($this->for_member_id) $tr_row->addCondition('to_member_id',$this->for_member_id);
 					$tr_row->addCondition('item_id',$m->getElement('id'));
 					$tr_row->addCondition('transaction_template_type_id',$trt_id);
-					return $tr_row->sum('qty');
+					return $q->expr('IFNULL([0],0)',[$tr_row->sum('qty')]);
 				});
 			}
 
@@ -43,7 +43,7 @@ class Model_StockNew_ItemStock extends Model_StockNew_Item {
 					if($this->for_member_id) $tr_row->addCondition('from_member_id',$this->for_member_id);
 					$tr_row->addCondition('item_id',$m->getElement('id'));
 					$tr_row->addCondition('transaction_template_type_id',$trt_id);
-					return $tr_row->sum('qty');
+					return $q->expr('IFNULL([0],0)',[$tr_row->sum('qty')]);
 				});
 			}
 

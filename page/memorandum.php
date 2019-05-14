@@ -6,6 +6,8 @@ class page_memorandum extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		$model = $this->add('Model_Memorandum_Transaction');
 		$model->addExpression('dr_account_no')->set(function($m,$q){
 			$x = $m->add('Model_Memorandum_TransactionRow',['table_alias'=>'memo_str']);

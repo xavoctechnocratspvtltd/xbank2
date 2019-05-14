@@ -308,5 +308,7 @@ class page_transactions_remove extends Page {
 		}
 		
 
+		$tabs->addTabURL('invoice','invoice');
+		$tabs->addTabURL('memorandum','memorandum');
 	}
 }

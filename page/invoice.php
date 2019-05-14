@@ -5,7 +5,8 @@ class page_invoice extends Page {
 
 	function page_index(){
 		// parent::init();
-
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		$model = $this->add('Model_Transaction');
 		$model->addCondition('is_sale_invoice',true);
 		$model->addCondition('transaction_type','<>','PURCHASE ENTRY');

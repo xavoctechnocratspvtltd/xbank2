@@ -10,20 +10,24 @@ class page_reports_pandl_pandl extends Page{
 		
 		$from_date = $this->api->stickyGET('from_date');
 		$to_date = $this->api->stickyGET('to_date');
+		$debug = $this->api->stickyGET('debug')?:0;
+
 		$branch_id = $this->app->current_branch->id == 1 ? null:$this->app->current_branch->id;
 
 		$f=$this->add('Form',null,null,['form/stacked']);
 		$c=$f->add('Columns')->addClass('row xepan-push');
-		$l=$c->addColumn(6)->addClass('col-md-6');
-		$r=$c->addColumn(6)->addClass('col-md-6');
+		$l=$c->addColumn(5)->addClass('col-md-5');
+		$r=$c->addColumn(5)->addClass('col-md-5');
+		$ct=$c->addColumn(2)->addClass('col-md-2');
 		$l->addField('DatePicker','from_date')->set($from_date);
 		$r->addField('DatePicker','to_date')->set($to_date);
+		$ct->addField('Checkbox','debug')->set(0);
 		$f->addSubmit('Filter');
 
 		$view = $this->add('View',null,null,['page/balancesheet']);
 		$view->add('View',null,'pndl_caption')->setHtml('<div><h2 class="text-center">Profit & Loss </h2></div><div class="text-center atk-text-dimmed">( From Date:'.$_GET['from_date'].'&nbsp;&nbsp To Date: '.$_GET['to_date'].')</div>');
 		if($f->isSubmitted()){
-			$view->js()->reload(['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0])->execute();
+			$view->js()->reload(['from_date'=>$f['from_date']?:0,'to_date'=>$f['to_date']?:0,'debug'=>$f['debug']])->execute();
 		}
 
 		if(!$from_date){
@@ -202,10 +206,10 @@ class page_reports_pandl_pandl extends Page{
 		$view->template->trySet('atotal',$right_sum);
 		
 		$grid_l->addColumn('name');
-		$grid_l->addFormatter('name','ExpanderPlain',['page'=>$this->api->url('reports_pandl_pandltopandlgroup',['branch_id'=>$branch_id])]);
+		$grid_l->addFormatter('name','ExpanderPlain',['page'=>$this->api->url('reports_pandl_pandltopandlgroup',['branch_id'=>$branch_id,'debug'=>$debug])]);
 
 		$grid_a->addColumn('name');
-		$grid_a->addFormatter('name','ExpanderPlain',['page'=>$this->api->url('reports_pandl_pandltopandlgroup',['branch_id'=>$branch_id])]);
+		$grid_a->addFormatter('name','ExpanderPlain',['page'=>$this->api->url('reports_pandl_pandltopandlgroup',['branch_id'=>$branch_id,'debug'=>$debug])]);
 
 		// if($branch_id)
   //       	$view->js('click')->_selector('.xepan-accounts-bs-group')->univ()->frameURL('BalanceSheet Head Groups',[$this->api->url('reports_pandl_pandltopandlgroup'),'bs_id'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);

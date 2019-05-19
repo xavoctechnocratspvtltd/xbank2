@@ -9,6 +9,7 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 		$from_date = $this->api->stickyGET('from_date');
 		$to_date = $this->api->stickyGET('to_date');
 		$branch_id = $this->api->stickyGET('branch_id');
+		$debug = $this->api->stickyGET('debug')?:0;
 
 		if($bs_id=='profit'){
 			$this->add('View_Error')->set('This is non diggable value, You cannot go in here');
@@ -163,7 +164,10 @@ class page_reports_pandl_pandltopandlgroup extends Page{
 		$this->template->trySet('dr_total',$total_dr);
 		$this->template->trySet('cr_total',$total_cr);
 
-		// $grid->addTotals(['ClosingBalanceDr','ClosingBalanceCr']);
+		if($debug == "true" OR $debug == 1){
+			$grid->addTotals(['ClosingBalanceDr','ClosingBalanceCr']);
+		}
+
         if($branch_id)
         	$this->js('click')->_selector('.xepan-accounts-bs-subgroup')->univ()->frameURL('Groups And Ledger',[$this->api->url('reports_pandl_pandlgrouptoaccounts'),'pandl_group'=>$this->js()->_selectorThis()->closest('[data-id]')->data('id'), 'from_date'=>$from_date, 'to_date'=>$to_date, 'branch_id'=>$branch_id]);
 		else

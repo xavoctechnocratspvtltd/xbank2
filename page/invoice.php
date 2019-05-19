@@ -33,13 +33,13 @@ class page_invoice extends Page {
 			if($tr_model['is_invoice_cancel']){
 				throw new \Exception("Invoice already Cancel");
 			}
-
+			
 			try{
 				$this->api->db->beginTransaction();
 
 				$narration = "Being Invoice Cancel ";
 				$transaction = $this->add('Model_Transaction');
-				$transaction->createNewTransaction("Invoice Cancel",$this->api->currentBranch,$this->app->now,$narration,null,['reference_id'=>$tr_model['reference_id']]);
+				$transaction->createNewTransaction("Invoice Cancel",$tr_model->ref('branch_id')->load($tr_model['branch_id']),$this->app->now,$narration,null,['reference_id'=>$tr_model['reference_id']]);
 				
 				foreach ($tr_model->rows() as $model){
 					if($model['side'] == "DR"){

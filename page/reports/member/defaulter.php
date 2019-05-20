@@ -16,7 +16,7 @@ class page_reports_member_defaulter extends Page{
 		$form->addField('DatePicker','to_date');
 
 		$grid=$this->add('Grid_AccountsBase');
-		$grid_column_array = array('member_no','branch','name','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','defaulter_on');
+		$grid_column_array = array('member_no','branch','name','FatherName','AdharNumber','CurrentAddress','tehsil','city','PhoneNos','created_at','is_active','defaulter_on');
 		// $grid->add('H3',null,'grid_buttons')->set('Member Repo As On '. date('d-M-Y',strtotime($till_date))); 
 
 		$document=$this->add('Model_Document');

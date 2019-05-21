@@ -231,7 +231,7 @@ class page_reports_loan_dispatch extends Page {
 			$trans_m = $this->add('Model_TransactionRow');
 			$trans_m->addCondition('reference_id',$q->getField('id'));
 			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
-			$trans_m->addCondition('account','like','% INSURANCE PROCESSING FEES');
+			$trans_m->addCondition('account','like','% INSURANCE PROCESSING FEES%');
 			return $q->expr('IFNULL([0],0)',[$trans_m->sum('amountCr')]);
 		});
 

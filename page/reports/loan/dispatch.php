@@ -121,7 +121,7 @@ class page_reports_loan_dispatch extends Page {
 			return $m->refSQL('dealer_id')->fieldQuery('dsa_id');
 		});
 
-		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','gst_amount','cheque_amount','no_of_emi','emi');
+		$grid_array = array('AccountNumber','LoanAgainst','created_at','member','member_sm','FatherName','CurrentAddress','scheme','PhoneNos','guarantor_name','guarantor_sm','guarantor_fathername','guarantor_phno','guarantor_addres','Amount','file_charge','gst_amount','insurance_processing_fees_amount','cheque_amount','no_of_emi','emi');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -227,8 +227,19 @@ class page_reports_loan_dispatch extends Page {
 			return $q->expr('IFNULL([0],0)',[$trans_m->sum('amountCr')]);
 		});
 
+		$account_model->addExpression('insurance_processing_fees_amount')->set(function($m,$q){
+			$trans_m = $this->add('Model_TransactionRow');
+			$trans_m->addCondition('reference_id',$q->getField('id'));
+			$trans_m->addCondition('transaction_type',TRA_LOAN_ACCOUNT_OPEN);
+			$trans_m->addCondition('account','like','% INSURANCE PROCESSING FEES');
+			return $q->expr('IFNULL([0],0)',[$trans_m->sum('amountCr')]);
+		});
+
+
+
+
 		$account_model->addExpression('cheque_amount')->set(function($m,$q){
-			return $q->expr("[0]-([1]+IFNULL([2],0) + IFNULL([3],0))",array($m->getElement('Amount'),$m->getElement('file_charge'),$m->getElement('sm_amount'),$m->getElement('gst_amount')));
+			return $q->expr("[0]-([1]+IFNULL([2],0) + IFNULL([3],0)+IFNULL([4],0) )",array($m->getElement('Amount'),$m->getElement('file_charge'),$m->getElement('sm_amount'),$m->getElement('gst_amount'),$m->getElement('insurance_processing_fees_amount')));
 		});
 
 		$account_model->addExpression('LoanAgainst')->set(function($m,$q){

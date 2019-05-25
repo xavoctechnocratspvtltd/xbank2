@@ -65,8 +65,14 @@ class page_transactions_premature extends Page {
 		$form->addSubmit('Execute');
 
 		if($_GET['account_selected']){
+
 			$account = $this->add('Model_Account')->tryLoadBy('AccountNumber',$_GET['account_selected']);
-			$account_model = $this->add('Model_Account_'.$account->ref('scheme_id')->get('SchemeType'));
+
+			$scheme_type = $account->ref('scheme_id')->get('SchemeType');
+			if($scheme_type == "DDS" && $account->ref('scheme_id')->get('type') == "DDS2")
+				$scheme_type = "DDS2";
+
+			$account_model = $this->add('Model_Account_'.$scheme_type);
 			$account_model->loadBy('AccountNumber',$account['AccountNumber']);
 			if($account->loaded()){
 				$right_col->add('H3')->set(array('Signature For - '));
@@ -98,6 +104,7 @@ class page_transactions_premature extends Page {
 				}
 				$account_field->other_field->set($_GET['account_selected']);
 				$account_field->set($account->id);
+				var_dump(get_class($account_model));
 				$right_col->js(true,$amount_field_ro->js()->html($account_model->pre_mature($this->app->today,true)),0);
 			}
 		}else{

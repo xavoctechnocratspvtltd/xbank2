@@ -58,7 +58,7 @@ class page_transactions_forclose extends Page {
 			   	$this->api->db->rollBack();
 			   	throw $e;
 			}
-			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- For Close Charge Received in " . $form['amount_from_account'])->execute();
+			$form->js(null,$form->js()->reload())->univ()->successMessage($form['amount']."/- Pre Closer Interest Received in " . $form['amount_from_account'])->execute();
 		}
 	}
 }

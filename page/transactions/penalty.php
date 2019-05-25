@@ -43,7 +43,7 @@ class page_transactions_penalty extends Page {
 		$amount_field = $form->addField('Number','amount')->validateNotNull();
 		$pan_details = $amount_field->belowField()->add('View');
 
-		$form->addField('DropDown','deposit_type')->setValueLIst(['Penalty'=>'Penalty','Other'=>'Other Charges'])->setEmptyText('PLease select type of deposit')->validateNotNull();
+		$form->addField('DropDown','deposit_type')->setValueLIst(['Penalty'=>'Penalty'])->setEmptyText('PLease select type of deposit')->validateNotNull();
 
 		if($_GET['check_min']){
 			$acc_bal_temp = $this->add('Model_Account_SavingAndCurrent');
@@ -178,7 +178,8 @@ class page_transactions_penalty extends Page {
 					$in_branch = $this->api->current_branch;
 					$transaction_date = $this->api->now;
 			    	$transaction = $this->add('Model_Transaction');
-			    	$narration = $form['narration']?: $form['deposit_type']. ' Amount submited in Loan Account '. $account_model['AccountNumber'];
+
+			    	$narration = $form['narration']?:"Penal Interest Received in Account ".$account_model['AccountNumber'];
 			    	$amount = $form['amount'];
 
 			    	if($form['deposit_type']==='Penalty')

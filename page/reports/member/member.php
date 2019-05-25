@@ -110,7 +110,7 @@ class page_reports_member_member extends Page {
 		});
 
 		$grid->addMethod('format_image2',function($g,$f)use($self){
-			$g->current_row_html[$f]=$g->model['doc_thumb_url']?'<img src="'.$g->model['doc_thumb_url'].'" data-sig-image-id="'.$g->model['sig_image_id'].'"/>':'';
+			$g->current_row_html[$f]=$g->model['doc_thumb_url']?'<img width="100px;" src="'.$g->model['doc_thumb_url'].'" data-sig-image-id="'.$g->model['sig_image_id'].'"/>':'';
 		});
 		
 		$grid->addFormatter('comment','comment');

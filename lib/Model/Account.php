@@ -1000,7 +1000,7 @@ class Model_Account extends Model_Table {
 										->loadBy('AccountNumber',$this->api->currentBranch['Code'].SP.'For Closed');
 		$transaction = $this->add('Model_Transaction');
 		// ---- $transaction->createNewTransaction(transaction_type, $branch, $transaction_date, $Narration, $only_transaction, array('reference_id'=>$this->id));
-		if(!$narration) $narration = 'For Close Charges Debited in '. $account_dr['AccountNumber'];
+		if(!$narration) $narration = 'Pre Closer Interest Received in '. $account_dr['AccountNumber'];
 
 		$transaction->createNewTransaction(TRA_FORCLOSE_CHARGE,$in_branch,$transaction_date,$narration);
 		

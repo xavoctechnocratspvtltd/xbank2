@@ -433,7 +433,11 @@ class Model_Account_DDS2 extends Model_Account{
 			// $interest_total += $interest;
 		}
 
-		$amount_to_give  = $this->paidPremiums() * $this['Amount'] + $interest;
+		$transactions = $this->add('Model_TransactionRow');
+		$transactions->addCondition('account_id',$this->id);
+		$transactions->addCondition('transaction_type','DDSAccountAmountDeposit');
+		$cr_sum = $transactions->sum('amountCr')->getOne();
+		$amount_to_give  = $cr_sum + $interest;
 
 		// echo "amount to give $amount_to_give <br/>";
 

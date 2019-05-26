@@ -7,7 +7,7 @@ class page_test  extends Page {
 	function init(){
 		parent::init();
 
-		throw new \Exception("Must kept thrown in commit version, comment on server and then stash when done", 1);
+		// throw new \Exception("Must kept thrown in commit version, comment on server and then stash when done", 1);
 		
 
 		ini_set('memory_limit', '2048M');

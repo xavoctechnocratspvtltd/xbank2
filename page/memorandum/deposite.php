@@ -45,7 +45,7 @@ class page_memorandum_deposite extends Page{
 		// 			'*'=>array('bank_account')
 		// 			),'div .atk-form-row');
 
-		// $form->addField('text','narration');
+		$form->addField('text','narration');
 		$form->addSubmit('Submit');
 
 		$form->add('misc\Controller_FormAsterisk');
@@ -94,6 +94,9 @@ class page_memorandum_deposite extends Page{
 						//end of branch devision from current branch to account branch
 
 						$narration = "Being ".$amount_type." Deposited in ".$this->amount_from_account_model['name'];
+						if($form['narration'])
+							$narration = $form['narration'];
+
 						$transaction = $this->add('Model_Transaction');
 						$transaction->createNewTransaction($this->transaction_type,$this->account_branch,$this->app->now,$narration,null,['reference_id'=>$form['amount_from_account']]);
 						$devision_account = $this->app->currentBranch['Code'].SP.'BRANCH & DIVISIONS FOR'.SP.$this->account_branch['Code'];
@@ -103,6 +106,8 @@ class page_memorandum_deposite extends Page{
 						//end of branch and devision entry
 					}else{
 						$narration = "Being ".$amount_type." Deposited in ".$this->amount_from_account_model['name'];
+						if($form['narration'])
+							$narration = $form['narration'];
 						$transaction = $this->add('Model_Transaction');
 						$transaction->createNewTransaction($this->transaction_type,$this->api->currentBranch,$this->app->now,$narration,null,['reference_id'=>$form['amount_from_account']]);
 

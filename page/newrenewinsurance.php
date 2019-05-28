@@ -8,6 +8,7 @@ class page_newrenewinsurance extends Page{
 		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$filter = $this->app->stickyGET('filter');
+		$loan_type = $this->app->stickyGET('loan_type');
 		$this->from_date = $from_date = $this->app->stickyGET('from_date');
 		$this->to_date = $to_date = $this->app->stickyGET('to_date');
 		if($to_date) $this->to_date = $to_date = $this->app->nextDate($to_date);
@@ -22,6 +23,7 @@ class page_newrenewinsurance extends Page{
 		$form = $col1->add('Form');
 		$form->addField('DatePicker','from_date')->validateNotNull();
 		$form->addField('DatePicker','to_date')->validateNotNull();
+		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','pl'=>'PL','fvl'=>'FVL','sl'=>'SL','hl'=>'HL','other'=>'Other'));
 		$form->addSubmit('Get Record');
 			
 		$view = $this->add('View');
@@ -105,6 +107,30 @@ class page_newrenewinsurance extends Page{
 			// 					->where($model->getElement('created_at'),'<',$to_date)
 			// 		)
 			// );
+			switch ($this->app->stickyGET('loan_type')) {
+				case 'vl':
+					$model->addCondition('AccountNumber','like','%vl%');
+					$model->addCondition('AccountNumber','not like','%fvl%');
+					break;
+				case 'pl':
+					$model->addCondition('AccountNumber','like','%pl%');
+					break;
+				case 'fvl':
+					$model->addCondition('AccountNumber','like','%FVL%');
+					break;
+				case 'sl':
+					$model->addCondition('AccountNumber','like','%SL%');
+					$model->addCondition('AccountNumber','not like','%VL%');
+					break;
+				case 'hl':
+					$model->addCondition('AccountNumber','like','%HL%');
+					break;
+				case 'other':
+					$model->addCondition('AccountNumber','not like','%pl%');
+					$model->addCondition('AccountNumber','not like','%vl%');
+					$model->addCondition('AccountNumber','not like','%hl%');
+					break;
+			}
 		}else{
 			$model->addCondition("id",-1);
 		}
@@ -115,7 +141,7 @@ class page_newrenewinsurance extends Page{
 		$grid->setModel($model,['AccountNumber','created_at','gender','member_name','father_name','address','phone_nos','DOB','age','nominee','relation_with_nominee','CurrentBalanceDr','next_insurance_due_date','insurance_number','insurance_record_id','renew_date']);
 
 		if($form->isSubmitted()){
-			$view->js()->reload(['filter'=>1,'from_date'=>$form['from_date'],'to_date'=>$form['to_date']])->execute();
+			$view->js()->reload(['filter'=>1,'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'loan_type'=>$form['loan_type']])->execute();
 		}
 
 

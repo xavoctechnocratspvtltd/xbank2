@@ -120,6 +120,7 @@ class page_reports_loan_penaltyandotherreceivedlist extends Page {
 				case 'in_recovery':
 					$transaction_row_model->addCondition('is_in_legal',false);
 					$transaction_row_model->addCondition('is_given_for_legal_process',false);
+					break;
 				default:
 					# code...
 					break;

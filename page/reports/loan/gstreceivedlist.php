@@ -22,7 +22,7 @@ class page_reports_loan_gstreceivedlist extends Page {
 
 		$form->addField('dropdown','loan_type')->setValueList(array('all'=>'All','vl'=>'VL','fvl'=>'FVL','pl'=>'PL','hl'=>'HL','other'=>'Other'));
 		$form->addField('dropdown','transaction_type')->setEmptyText("All")->setValueList($model_memo_tran->getTransactionType());
-		$form->addField('dropdown','legal_status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process'));
+		$form->addField('dropdown','legal_status')->setValueList(array('all'=>'All','is_in_legal'=>'Is In Legal','is_given_for_legal_process'=>'Is In Legal Process','in_recovery'=>'Is In Recovery'));
 
 		$form->addSubmit('GET List');
 
@@ -124,6 +124,11 @@ class page_reports_loan_gstreceivedlist extends Page {
 					$transaction_row_model->addCondition('is_given_for_legal_process',true);
 					break;
 
+				case 'in_recovery':
+					$transaction_row_model->addCondition('is_in_legal',false);
+					$transaction_row_model->addCondition('is_given_for_legal_process',false);
+					break;
+					
 				default:
 					# code...
 					break;

@@ -23,6 +23,7 @@ class page_reports_member_member extends Page {
 		$form->addField('Line','mobile');
 		$form->addField('Line','landmark');
 		$form->addField('Line','address');
+		$form->addField('Checkbox','form_61_is_submitted');
 
 		$form->addSubmit('Get List');
 		
@@ -43,6 +44,7 @@ class page_reports_member_member extends Page {
 			$this->api->stickyGET('address');
 			$this->api->stickyGET('mobile');
 			$this->api->stickyGET('landmark');
+			$this->api->stickyGET('form_61_is_submitted');
 			
 			if($_GET['status'] !=='all')
 				$member_model->addCondition('is_active',$_GET['status']==0?false:true);
@@ -82,6 +84,14 @@ class page_reports_member_member extends Page {
 
 			if($_GET['landmark']){
 				$member_model->addCondition('landmark','like','%'.$_GET['landmark'].'%');
+			}
+
+			if($_GET['form_61_is_submitted']){
+				// form 60 is submitted in current financial year
+				$fy = $this->app->getFinancialYear();
+				$member_model->addCondition('created_at','>=',$fy['start_date']);
+				$member_model->addCondition('created_at','<',$this->app->nextDate($fy['end_date']));
+				$member_model->addCondition('FilledForm60',true);
 			}
 
 		}else{
@@ -135,7 +145,7 @@ class page_reports_member_member extends Page {
 		// $grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$send = array('pan_no'=>$form['pan_no'],'adhar_no'=>$form['adhar_no'],'type'=>$form['type'],'bank'=>$form['bank'],'status'=>$form['status'],'name'=>$form['name'],'address'=>$form['address'],'landmark'=>$form['landmark'],'mobile'=>$form['mobile'],'filter'=>1);
+			$send = array('pan_no'=>$form['pan_no'],'adhar_no'=>$form['adhar_no'],'type'=>$form['type'],'bank'=>$form['bank'],'status'=>$form['status'],'name'=>$form['name'],'address'=>$form['address'],'landmark'=>$form['landmark'],'mobile'=>$form['mobile'],'form_61_is_submitted'=>$form['form_61_is_submitted'],'filter'=>1);
 			$grid->js()->reload($send)->execute();
 
 		}	

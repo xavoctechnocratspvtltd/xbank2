@@ -86,13 +86,13 @@ class page_reports_member_member extends Page {
 				$member_model->addCondition('landmark','like','%'.$_GET['landmark'].'%');
 			}
 
-			if($_GET['form_61_is_submitted']){
+			// if($_GET['form_61_is_submitted']){
 				// form 60 is submitted in current financial year
 				// $fy = $this->app->getFinancialYear();
 				// $member_model->addCondition('created_at','>=',$fy['start_date']);
 				// $member_model->addCondition('created_at','<',$this->app->nextDate($fy['end_date']));
-				$member_model->addCondition('FilledForm60',true);
-			}
+				// $member_model->addCondition('FilledForm60',true);
+			// }
 
 		}else{
 			$member_model->addCondition('id',-1);

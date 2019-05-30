@@ -88,9 +88,9 @@ class page_reports_member_member extends Page {
 
 			if($_GET['form_61_is_submitted']){
 				// form 60 is submitted in current financial year
-				$fy = $this->app->getFinancialYear();
-				$member_model->addCondition('created_at','>=',$fy['start_date']);
-				$member_model->addCondition('created_at','<',$this->app->nextDate($fy['end_date']));
+				// $fy = $this->app->getFinancialYear();
+				// $member_model->addCondition('created_at','>=',$fy['start_date']);
+				// $member_model->addCondition('created_at','<',$this->app->nextDate($fy['end_date']));
 				$member_model->addCondition('FilledForm60',true);
 			}
 

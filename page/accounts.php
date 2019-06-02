@@ -11,7 +11,8 @@ class page_accounts extends Page {
 		$tabs = $this->add('Tabs');
 		$tabs->addTabURL('accounts_SM','SM Accounts');
 		
-		$req_arr= explode(",", 'SavingAndCurrent,DDS,DDS2,Recurring,FixedAndMis,Loan,Default');
+		$req_arr= explode(",", 'SavingAndCurrent,DDS2,Recurring,FixedAndMis,Loan,Default');
+		// $req_arr= explode(",", 'SavingAndCurrent,DDS,DDS2,Recurring,FixedAndMis,Loan,Default');
 		$config_acctype_arr =explode(",", ACCOUNT_TYPES);
 
 		$arr= array_intersect($req_arr, $config_acctype_arr);

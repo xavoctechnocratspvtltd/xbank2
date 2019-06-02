@@ -138,7 +138,7 @@ class Menu_Base extends Menu {
 		$account_sub_menu = $account_sub_menu_popover->add('Menu_Vertical');
 		$account_sub_menu->addMenuItem('accounts','Accounts Management');
 		$account_sub_menu->addMenuItem('accounts_statement','Accounts Statement');
-		$account_sub_menu->addMenuItem('utility_accwithoutimage','Accounts Without Images');
+		// $account_sub_menu->addMenuItem('utility_accwithoutimage','Accounts Without Images');
 		$account_sub_menu->addMenuItem('noclog','NOC Management');
 		$account->js('click',$account_sub_menu_popover->showJS());
 
@@ -150,10 +150,10 @@ class Menu_Base extends Menu {
 		$transactions_sub_menus->addMenuItem('transactions_conveyance','Conveyance');
 		$transactions_sub_menus->addMenuItem('transactions_fuel','Fuel');
 		$transactions_sub_menus->addMenuItem('transactions_penalty','Penalty');
-		$transactions_sub_menus->addMenuItem('transactions_legalchargepaid','Legal Charge Paid');
-		$transactions_sub_menus->addMenuItem('transactions_legalchargereceived','Legal Charge Received');
+		// $transactions_sub_menus->addMenuItem('transactions_legalchargepaid','Legal Charge Paid');
+		// $transactions_sub_menus->addMenuItem('transactions_legalchargereceived','Legal Charge Received');
 		// $transactions_sub_menus->addMenuItem('transactions_visitcharge','Visit Charge');
-		$transactions_sub_menus->addMenuItem('transactions_recoveryandlegaltransactions','Recovery and Legal Transaction');
+		// $transactions_sub_menus->addMenuItem('transactions_recoveryandlegaltransactions','Recovery and Legal Transaction');
 		$transactions_sub_menus->addMenuItem('transactions_bankdeposit','Cash Bank Deposit');
 		$transactions_sub_menus->addMenuItem('transactions_bankwithdrawl','Cash Bank Withdrawl');
 		$transactions_sub_menus->addMenuItem('transactions_premature','Pre Mature Payments');

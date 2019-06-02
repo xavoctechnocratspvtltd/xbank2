@@ -6,7 +6,7 @@ class page_memorandum_report_gstr2 extends Page{
 	function init(){
 		parent::init();
 
-		$this->add('View')->setElement('h3')->set('Inward GST Report');
+		$this->add('View')->setElement('h3')->set('Outward GST Report');
 
 		$this->filter = $this->app->stickyGET('filter')?:0;
 		$this->from_date = $this->app->stickyGET('from_date')?:0;

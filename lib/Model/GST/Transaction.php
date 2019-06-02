@@ -99,7 +99,7 @@ class Model_GST_Transaction extends Model_Transaction {
 			foreach ($all_transaction as $key => $value) {
 				$temp = [
 					'id'=>$gst_name,
-					'taxable_value'=>($temp['taxable_value']+$value['taxable_value']),
+					'taxable_value'=>($temp['taxable_value']+ ($value['cr_sum'] - ($value['igst']+$value['cgst']+$value['sgst']) ) ),
 					'igst'=>($temp['igst']+$value['igst']),
 					'cgst'=>($temp['cgst']+$value['cgst']),
 					'sgst'=>($temp['sgst']+$value['sgst']),

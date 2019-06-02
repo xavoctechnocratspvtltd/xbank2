@@ -13,7 +13,7 @@ class View_GST_Gstr1 extends View {
 		}
 
 
-		$data_array = $this->add('Model_GST_Transaction')->getGSTData($this->from_date,$this->to_date);
+		$data_array = $this->add('Model_GST_Transaction')->getInwardGSTData($this->from_date,$this->to_date);
 		// echo "<pre>";
 		// print_r($temp);
 		// echo "</pre>";

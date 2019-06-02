@@ -6,6 +6,8 @@ class page_supplier extends Page {
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		$model = $this->add('Model_Supplier');
 		$crud = $this->add('CRUD');
 		if($crud->isEditing()){

@@ -1,7 +1,7 @@
 <?php
 
 class page_memorandum_deposite extends Page{
-	public $title = "Memorandum Deposite";
+	public $title = "GST Deposite";
 
 	public $transaction_type=null;
 	public $tax_excluded_amount=0;
@@ -22,6 +22,8 @@ class page_memorandum_deposite extends Page{
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		$model_memo_tran = $this->add('Model_Memorandum_Transaction');
 
 		$col = $this->add('Columns');

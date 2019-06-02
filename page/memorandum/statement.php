@@ -6,6 +6,8 @@ class page_memorandum_statement extends Page{
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		$account_id = $this->app->stickyGET('account_id')?:-1;
 		$form=$this->add('Form');
 		$account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();

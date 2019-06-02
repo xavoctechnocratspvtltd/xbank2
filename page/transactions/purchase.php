@@ -6,7 +6,8 @@ class page_transactions_purchase extends Page {
 
 	function init(){
 		parent::init();
-		
+			
+		$this->add('Controller_Acl',['default_view'=>false]);
 		// GST Account is Credted by Manual
 
 		// $supplier_model = $this->add('Model_Supplier')->addCondition('is_active',true);

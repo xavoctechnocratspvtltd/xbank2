@@ -18,6 +18,8 @@ class page_memorandum_generalgst extends Page{
 	function init(){
 		parent::init();
 
+		$this->add('Controller_Acl',['default_view'=>false]);
+		
 		$col = $this->add('Columns');
 		$col1 = $col->addColumn(6);
 

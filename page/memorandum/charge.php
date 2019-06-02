@@ -5,6 +5,8 @@ class page_memorandum_charge extends Page {
 
 	function init(){
 		parent::init();
+		
+		$this->add('Controller_Acl',['default_view'=>false]);
 
 		$model_memo_tran = $this->add('Model_Memorandum_Transaction');
 

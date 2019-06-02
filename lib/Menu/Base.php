@@ -105,7 +105,7 @@ class Menu_Base extends Menu {
 		$purchase_auth_menu->addMenuItem('supplier','Supplier');
 		$purchase_auth_menu->addMenuItem('transactions_purchase','Purchase');
 		$purchase_auth_menu->addMenuItem('memorandum_charge','Memorandum Apply');
-		$purchase_auth_menu->addMenuItem('memorandum_deposite','Memorandum Deposite');
+		$purchase_auth_menu->addMenuItem('memorandum_deposite','GST Deposite');
 		$purchase_auth_menu->addMenuItem('memorandum_statement','Account Statement');
 		$purchase_auth_menu->addMenuItem('memorandum_generalgst','General GST');
 		$purchase_auth_menu->addMenuItem('memorandum_report','Report');

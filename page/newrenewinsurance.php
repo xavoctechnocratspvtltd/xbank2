@@ -37,6 +37,7 @@ class page_newrenewinsurance extends Page{
 				->setValueList(['1'=>'1 Year','2'=>'2 Year','3'=>'3 Year','4'=>'4 Year','5'=>'5 Year','6'=>'6 Year','7'=>'7 Year','8'=>'8 Year','9'=>'9 Year','10'=>'10 Year'])
 				->setEmptyText('Please Select')
 				->validateNotNull();
+		$ins_form->addField('text','narration');
 		$ins_form->addSubmit('Add/ Renew Insurance');
 
 		$model = $view->add('Model_Account');		
@@ -223,7 +224,7 @@ class page_newrenewinsurance extends Page{
 			$query .= '"-",';
 			$query .= '"'.$ins_form['insurance_date'].'",';
 			$query .= $ins_form['insurance_duration'].",";
-			$query .= '"-",';
+			$query .= '"'.$ins_form['narration'].'",';
 			$query .= '"'.$next_insurance_due_date.'"';
 			$query .= '),';
 		}

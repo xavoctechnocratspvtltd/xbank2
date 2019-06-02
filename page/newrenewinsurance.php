@@ -88,7 +88,7 @@ class page_newrenewinsurance extends Page{
 
 		$model->addExpression('current_balance')->set(function($m,$q){
 			return $q->expr('IFNULL([0],0)-IFNULL([1],0)',[$m->getElement('CurrentBalanceDr'),$m->getElement('CurrentBalanceCr')]);
-		});
+		})->sortable(true);
 
 		$model->addCondition([['is_renew',false],['is_renew',null]]);
 		$model->addCondition('ActiveStatus',true);

@@ -33,13 +33,26 @@ class View_GST_Gstr1 extends View {
 
 	function showDetail($page){
 		$id = $_GET[$page->short_name.'_id'];
-		// $page->add('Text')->set('From ='.$this->from_date);
-		// $page->add('Text')->set('To ='.$this->to_date);
+		$page->add('View')->set($id);
 
-		$tra = $this->add('Model_GST_Transaction');
+		$tax = explode(" ", $id)[1];
+		$tax_half = ($tax/2);
+
+		$gst_array = [
+			'sgst'=>$this->api->currentBranch['Code'].SP.'SGST '.$tax_half."%",
+			'cgst'=>$this->api->currentBranch['Code'].SP.'CGST '.$tax_half."%",
+			'igst'=>$this->api->currentBranch['Code'].SP.'IGST '.$tax."%"
+		];
+		$page->add('Text')->set('From ='.$this->from_date);
+		$page->add('Text')->set('To ='.$this->to_date);
+
+		$tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array]);
 		if($this->app->currentBranch->id)
 			$tra->addCondition('branch_id',$this->app->currentBranch->id);
-		
+		$tra->addCondition('transaction_type',TRA_PURCHASE_ENTRY);
+		$tra->addCondition('created_at','>=',$this->from_date);
+		$tra->addCondition('created_at','<',$this->app->nextDate($this->to_date));
+
 		$tra->getElement('created_at')->caption('Date');
 		$tra->getElement('created_at')->caption('Date');
 		$tra->getElement('tax_amount_sum')->caption('Total Tax');

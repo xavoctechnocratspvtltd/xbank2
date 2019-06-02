@@ -41,6 +41,31 @@ class View_AccountDetail extends View {
 		// $ac_m_join->addField('accountopeningdate','created_at');
 		$ac_m_join->addField('PermanentAddress','PermanentAddress');
 		$ac_m_join->addField('PhoneNos');
+
+		// insurance info
+		$ac_m->addExpression('mem_insurance_start_date')->set(function($m,$q){
+			$mi = $m->add('Model_MemberInsurance',['table_alias'=>'minsd']);
+			$mi->addCondition('accounts_id',$m->getElement('id'));
+			$mi->setOrder('id','desc');
+			$mi->setLimit(1);
+			return $q->expr('IFNULL([0],"-")',[$mi->fieldQuery('insurance_start_date')]);
+		});
+		$ac_m->addExpression('mem_next_insurance_due_date')->set(function($m,$q){
+			$mi = $m->add('Model_MemberInsurance',['table_alias'=>'mindd']);
+			$mi->addCondition('accounts_id',$m->getElement('id'));
+			$mi->setOrder('id','desc');
+			$mi->setLimit(1);
+			return $q->expr('if([0],DATE([0]),DATE([1]))',[$mi->fieldQuery('next_insurance_due_date'),$m->getElement('created_at')]);
+		});
+		$ac_m->addExpression('insurance_narration')->set(function($m,$q){
+			$mi = $m->add('Model_MemberInsurance',['table_alias'=>'mindd']);
+			$mi->addCondition('accounts_id',$m->getElement('id'));
+			$mi->setOrder('id','desc');
+			$mi->setLimit(1);
+			return $mi->fieldQuery('narration');
+		});
+
+		// end of insurance info
 		if($this->show_pan_adhaar){
 			$ac_m_join->addField('PanNo');
 			$ac_m_join->addField('AdharNumber');

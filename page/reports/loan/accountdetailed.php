@@ -41,8 +41,7 @@ class page_reports_loan_accountdetailed extends Page {
 			);
 
 		$account_view->js('click',$js);
-
-
+		
 		if($form->isSubmitted()){
 			$account_view->js()->reload(array('accounts_no'=>$form['accounts_no']))->execute();
 

@@ -85,7 +85,9 @@ class page_newrenewinsurance extends Page{
 			return $m->refSQL('member_id')->fieldQuery('PhoneNos');
 		});
 
-		$model->getElement('CurrentBalanceDr')->caption('Current Balance');
+		$model->addExpression('current_balance')->set(function($m,$q){
+			return $q->expr('IFNULL([0],0)-IFNULL([1],0)',[$m->getElement('CurrentBalanceDr'),$m->getElement('CurrentBalanceCr')]);
+		});
 
 		$model->addCondition([['is_renew',false],['is_renew',null]]);
 		$model->addCondition('ActiveStatus',true);
@@ -138,7 +140,7 @@ class page_newrenewinsurance extends Page{
 		// $grid->addSelectable($field_accounts);
 		// $grid->addSno();
 		
-		$grid->setModel($model,['AccountNumber','created_at','gender','member_name','father_name','address','phone_nos','DOB','age','nominee','relation_with_nominee','CurrentBalanceDr','next_insurance_due_date','insurance_number','insurance_record_id','renew_date']);
+		$grid->setModel($model,['AccountNumber','created_at','gender','member_name','father_name','address','phone_nos','DOB','age','nominee','relation_with_nominee','current_balance','next_insurance_due_date','insurance_number','insurance_record_id','renew_date']);
 
 		if($form->isSubmitted()){
 			$view->js()->reload(['filter'=>1,'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'loan_type'=>$form['loan_type']])->execute();

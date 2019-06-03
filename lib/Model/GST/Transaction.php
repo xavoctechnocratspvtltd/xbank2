@@ -3,6 +3,11 @@
 class Model_GST_Transaction extends Model_Transaction {
 	public $gst_array=[];
 
+	public $tax_field = "amountDr";
+	public $gst_report = "inward";
+	//note gst_report == inward means purchase entry
+	// ouward means sale-invoice
+
 	function init(){
 		parent::init();
 
@@ -25,17 +30,17 @@ class Model_GST_Transaction extends Model_Transaction {
 		
 		$this->addExpression('sgst')->set(function($m,$q){
 			if(!$this->sgst_id) return "'0'";
-			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->sgst_id)->sum('amountDr');
+			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->sgst_id)->sum($this->tax_field);
 		});
 
 		$this->addExpression('cgst')->set(function($m,$q){
 			if(!$this->cgst_id) return "'0'";
-			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->cgst_id)->sum('amountDr');
+			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->cgst_id)->sum($this->tax_field);
 		});
 		
 		$this->addExpression('igst')->set(function($m,$q){
 			if(!$this->igst_id) return "'0'";
-			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->igst_id)->sum('amountDr');
+			return $m->refSQL('TransactionRow')->addCondition('account_id',$this->igst_id)->sum($this->tax_field);
 		});
 
 		$this->addExpression('tax_amount_sum')->set(function($m,$q){
@@ -55,15 +60,15 @@ class Model_GST_Transaction extends Model_Transaction {
 
 	// return supplier/Purchase GST Data
 	function getInwardGSTData($from_date,$to_date){
-		return $this->getGSTData($from_date,$to_date,[TRA_PURCHASE_ENTRY]);
+		return $this->getGSTData($from_date,$to_date,[TRA_PURCHASE_ENTRY],'in','inward');
 	}
 
 	// return sales GST Data
 	function getOutWardGSTData($from_date,$to_date){
-		return $this->getGSTData($from_date,$to_date,[TRA_PURCHASE_ENTRY],'notin');
+		return $this->getGSTData($from_date,$to_date,[TRA_PURCHASE_ENTRY],'notin','outward');
 	}
 
-	function getGSTData($from_date,$to_date,$transaction_type=[],$tra_operator="in"){
+	function getGSTData($from_date,$to_date,$transaction_type=[],$tra_operator="in",$gst_report="inward"){
 		$all_gst = GST_VALUES;
 		$data_array = [];
 
@@ -79,14 +84,16 @@ class Model_GST_Transaction extends Model_Transaction {
 					'igst'=>$this->api->currentBranch['Code'].SP.'IGST '.$percent.'%'
 				];
 
-			$model_tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array]);
+			$tax_field = 'amountDr';
+			if($gst_report == "outward") $tax_field = 'amountCr';
+			$model_tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array,'gst_report'=>$gst_report,'tax_field'=>$tax_field]);
 			$model_tra->addCondition('created_at','>=',$from_date);
 			$model_tra->addCondition('created_at','<',$this->app->nextDate($to_date));
 			$model_tra->addCondition('branch_id',$this->app->currentBranch->id);
+			if($gst_report == "outward") $model_tra->addCondition('is_sale_invoice',1);
 
 			if(count($transaction_type) && $tra_operator=="in") $model_tra->addCondition('transaction_type',$transaction_type);
 			if(count($transaction_type) && $tra_operator=="notin") $model_tra->addCondition('transaction_type','<>',$transaction_type);
-
 			if(!$model_tra->count()->getOne()) continue;
 
 			$all_transaction = $model_tra->getRows(['cr_sum','dr_sum','taxable_value','igst','sgst','cgst','tax_amount_sum']);

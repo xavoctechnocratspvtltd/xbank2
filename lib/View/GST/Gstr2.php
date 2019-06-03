@@ -12,8 +12,7 @@ class View_GST_Gstr2 extends View {
 			return;
 		}
 
-		$data_array = $this->add('Model_GST_Transaction')
-				->getInwardGSTData($this->from_date,$this->to_date);
+		$data_array = $this->add('Model_GST_Transaction')->getOutwardGSTData($this->from_date,$this->to_date);
 
 		// echo "<pre>";
 		// print_r($data_array);
@@ -44,14 +43,13 @@ class View_GST_Gstr2 extends View {
 			'cgst'=>$this->api->currentBranch['Code'].SP.'CGST '.($percentage/2).'%',
 			'igst'=>$this->api->currentBranch['Code'].SP.'IGST '.$percentage.'%'
 		];
-		$tra_array = [TRA_PURCHASE_ENTRY];
+		// $tra_array = [TRA_PURCHASE_ENTRY];
 
-		$tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array]);
-
+		$tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array,'tax_field'=>'amountCr','gst_report'=>'outward']);
 		$tra->addCondition('created_at','>=',$this->from_date);
 		$tra->addCondition('created_at','<',$this->app->nextDate($this->to_date));
-		$tra->addCondition('transaction_type',$tra_array);
-
+		$tra->addCondition('is_sale_invoice',1);
+		$tra->addCondition('transaction_type','<>',[TRA_PURCHASE_ENTRY]);
 		if($this->app->currentBranch->id)
 			$tra->addCondition('branch_id',$this->app->currentBranch->id);
 

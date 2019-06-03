@@ -43,10 +43,10 @@ class View_GST_Gstr1 extends View {
 			'cgst'=>$this->api->currentBranch['Code'].SP.'CGST '.$tax_half."%",
 			'igst'=>$this->api->currentBranch['Code'].SP.'IGST '.$tax."%"
 		];
-		$page->add('Text')->set('From ='.$this->from_date);
-		$page->add('Text')->set('To ='.$this->to_date);
+		// $page->add('Text')->set('From ='.$this->from_date);
+		// $page->add('Text')->set('To ='.$this->to_date);
 
-		$tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array]);
+		$tra = $this->add('Model_GST_Transaction',['gst_array'=>$gst_array,'tax_field'=>'amountDr','gst_report'=>'inward']);
 		if($this->app->currentBranch->id)
 			$tra->addCondition('branch_id',$this->app->currentBranch->id);
 		$tra->addCondition('transaction_type',TRA_PURCHASE_ENTRY);

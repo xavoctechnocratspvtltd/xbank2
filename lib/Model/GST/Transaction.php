@@ -44,7 +44,7 @@ class Model_GST_Transaction extends Model_Transaction {
 		});
 
 		$this->addExpression('tax_amount_sum')->set(function($m,$q){
-			return $q->expr('IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0)',[
+			return $q->expr('(IFNULL([0],0)+IFNULL([1],0)+IFNULL([2],0))',[
 					$m->getElement('sgst'),
 					$m->getElement('cgst'),
 					$m->getElement('igst')

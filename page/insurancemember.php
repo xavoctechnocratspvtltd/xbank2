@@ -1,14 +1,14 @@
 <?php
 
-class page_insurancemember extends Page{
+class page_insurancemember extends Page {
 	public $title = "Member Insurance";
-	function init(){
+	function init() {
 		parent::init();
 
-		$this->add('Controller_Acl',['default_view'=>false]);
+		$this->add('Controller_Acl', ['default_view' => false]);
 		$tab = $this->add('Tabs');
-		$tab->addTabUrl('allinsurance','Member Insurance');
-		$tab->addTabUrl('newrenewinsurance','New/ Renew Member Insurance');
+		$tab->addTabUrl('allinsurance', 'Member Insurance');
+		$tab->addTabUrl('newrenewinsurance', 'New/ Renew Member Insurance');
 
 		// $member_id = $this->app->stickyGET('selected_member_id');
 		// $insurance_model = $mi_tab->add('Model_MemberInsurance');
@@ -26,6 +26,5 @@ class page_insurancemember extends Page{
 		// $crud->grid->addPaginator(50);
 		// $crud->add('Controller_Acl');
 
-		
 	}
 }

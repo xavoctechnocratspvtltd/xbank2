@@ -17,12 +17,14 @@ class page_transactions_salaryandallowances extends Page {
 		
 		$account_from_account_model = $this->add('Model_Active_Account',array('table_alias'=>'acc'));
 		$account_from_account_model->addCondition([['SchemeType',ACCOUNT_TYPE_BANK],['SchemeType',ACCOUNT_TYPE_SAVING]]);
+		$account_from_account_model->addCondition('branch_id',$this->app->current_branch->id);
 		$account_from_account_model->add('Controller_Acl');
 
 		$form->addField('Number','net_salary')->validateNotNull();
 		$form->addField('autocomplete/Basic','submitted_into')->validateNotNull()->setModel($account_from_account_model);
 		$form->addField('Number','tds');
 		$form->addField('Number','pf');
+		$form->addField('Number','esi');
 		$form->addField('Number','health_insurance');
 		$form->addField('Number','security');
 
@@ -31,6 +33,9 @@ class page_transactions_salaryandallowances extends Page {
 
 		if($form->isSubmitted()){
 			try {
+				echo '<pre>';
+				print_r(($form));
+				exit;
 				$this->api->db->beginTransaction();
 				$dr = $this->add('Model_Account')->load($form['salary_account']);
 				$dr_amount=0;
@@ -68,6 +73,13 @@ class page_transactions_salaryandallowances extends Page {
 					$dr_amount += $form['pf'];
 				}
 
+				if($form['esi'] ANd !$branch_n_devision){
+					// fixed account udr esi
+					$cr_account = "UDR".SP.'ESI ACCOUNT';
+					$transaction->addCreditAccount($cr_account,$form['esi']);
+					$dr_amount += $form['pf'];
+				}
+
 				if($form['health_insurance'] AND !$branch_n_devision){
 					// fixed account udr insurance
 					$cr_account = "UDR".SP.'INSURANCE ON STAFF (STAR HEALTH)';
@@ -76,7 +88,7 @@ class page_transactions_salaryandallowances extends Page {
 				}
 
 				if($branch_n_devision){
-					$amount = (($form['tds']?$form['tds']:0) + ($form['pf']?$form['pf']:0) + ($form['health_insurance']?$form['health_insurance']:0));
+					$amount = (($form['tds']?$form['tds']:0) + ($form['pf']?$form['pf']:0) + ($form['esi']?$form['esi']:0) + ($form['health_insurance']?$form['health_insurance']:0));
 					$cr_account = "UDR".SP.BRANCH_AND_DIVISIONS.SP."For".SP.$dr['branch_code'];
 					$transaction->addCreditAccount($cr_account,$amount);
 					$dr_amount += $amount;
@@ -103,7 +115,11 @@ class page_transactions_salaryandallowances extends Page {
 					if($form['pf']){
 						$bnd_tran->addCreditAccount("UDR".SP.'PF ACCOUNT',$form['pf']);
 						$bnd_amount += $form['pf'];
-					} 
+					}
+					if($form['esi']){
+						$bnd_tran->addCreditAccount("UDR".SP.'ESI ACCOUNT',$form['esi']);
+						$bnd_amount += $form['esi'];
+					}  
 					if($form['health_insurance']){
 						$bnd_tran->addCreditAccount("UDR".SP.'INSURANCE ON STAFF (STAR HEALTH)',$form['health_insurance']);
 						$bnd_amount += $form['health_insurance'];

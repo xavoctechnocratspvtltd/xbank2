@@ -288,10 +288,15 @@ class page_transactions_remove extends Page {
 			if($p->api->auth->model->isSuper()){
 
 				$transaction_rows = $this->add('Model_TransactionRow');
+				$transaction_rows->addHook('beforeSave',function($m){
+					if($m->isDirty('account_id')){
+						$m['scheme_id'] = $m->ref('account_id')->get('scheme_id');
+					}
+				});
 				$transaction_rows->addCondition('transaction_id',$transaction->id);
 
 				$crud = $p->add('CRUD',['allow_add'=>false,'allow_del'=>false]);
-				$crud->setModel($transaction_rows,['account_id'],['transaction','account','amountDr','amountCr']);
+				$crud->setModel($transaction_rows,['account_id'],['transaction','account','scheme','amountDr','amountCr']);
 			}
 
 		});

@@ -91,8 +91,22 @@ class page_transactions_premature extends Page {
 				$right_col->add('View')->setHTML('<b>Premium Paid (IF RD) </b> : '. ($p_info['premiums_paid']) );
 
 
+				//$_document = $this->add('Model_DocumentSubmitted');
+				//$_document->loadBy('accounts_id',$account['id']);
+				$_document = $this->add('Model_DocumentSubmitted')->tryLoadBy('accounts_id',$account['id']);
+				$_document->addCondition('documents','like','%Gift%');
+				if($_document->loaded()){
+					$right_col->add('H3')->set(array('Document Details - '));
+					$right_col->add('View')->setHTML('<b>Type </b> : '. $_document['documents']);
+					$right_col->add('View')->setHTML('<b>Message</b> : '. $_document['Description']);
+					$right_col->add('View')->setHTML('<b>Doc Image</b> : <img src="'.$_document['doc_image'].'" />');					
+					$right_col->add('View')->setHTML('<b>Uploaded On</b> : '. $_document['submitted_on']);					
+				}
+				
+
 				// Show Signature image
 				// $img=$right_col->add('View')->setElement('img')->setAttr('src','../signatures/sig_'.$account->ref('member_id')->get('id').'.JPG');
+
 				$img=$right_col->add('View')->setElement('img')->setAttr('src',$account['sig_image']);
 				// $img->js('mouseover',$img->js()->width('200%'));
 				// $img->js('mouseout',$img->js()->width('100%'));

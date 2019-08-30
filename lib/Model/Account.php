@@ -41,7 +41,7 @@ class Model_Account extends Model_Table {
 		
 		//New Fields added//
 		$this->addField('LoanInsurranceDate')->type('datetime');
-		
+		$this->addField('insurance_tenure')->type('radio')->enum(['1 Year','5 Year'])->defaultValue('1 Year');
 		$this->addField('OpeningBalanceDr')->type('money')->defaultValue(0);
 		$this->addField('OpeningBalanceCr')->type('money')->defaultValue(0);
 		$this->addField('ClosingBalance')->type('money')->defaultValue(0);

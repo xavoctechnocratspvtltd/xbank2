@@ -7,11 +7,19 @@ class page_memorandum_statement extends Page{
 		parent::init();
 
 		$this->add('Controller_Acl',['default_view'=>false]);
+
+		$this->account = $this->app->stickyGET('account')?:0;
+		$this->from_date = $this->app->stickyGET('from_date')?:0;
+		$this->to_date = $this->app->stickyGET('to_date')?:0;
 		
 		$account_id = $this->app->stickyGET('account_id')?:-1;
 		$form=$this->add('Form');
-		$account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();
-		$account_field->setModel('Account');
+		// $account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();
+		// $account_field->setModel('Account');
+		$form->addField('autocomplete/Basic','account')->validateNotNull()->setModel('Account');
+		$form->addField('DatePicker','from_date')->validateNotNull();
+		$form->addField('DatePicker','to_date')->validateNotNull();
+		
 		$form->addSubmit('Get Statement');
 
 		$v = $this->add('View')->addStyle('width','100%');
@@ -19,9 +27,9 @@ class page_memorandum_statement extends Page{
 		if($form->isSubmitted()){	
 			$v->js()->reload(
 					array(
-						'account_id'=>$form['account']
-						// 'from_date'=>($form['from_date'])?:0,
-						// 'to_date'=>($form['to_date'])?:0,
+						'account_id'=>$form['account'],
+						'from_date'=>($form['from_date'])?:0,
+						'to_date'=>($form['to_date'])?:0
 						)
 					)->execute();
 		}

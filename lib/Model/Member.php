@@ -87,7 +87,7 @@ class Model_Member extends Model_Table {
 		$this->addExpression('member_name_only')->set(function($m,$q){
 			return $q->expr('[0]',[$m->getElement('name')]);
 		})->caption('Member Name');
-		$this->addExpression('member_name')->set('CONCAT(name," [",member_no, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]")')->display(array('grid'=>'shorttext'));
+		$this->addExpression('member_name')->set('CONCAT(name," [",member_no, "] :: ",IFNULL(PermanentAddress,""),"::[",IFNUll(landmark,""),"]","::[",IF(is_defaulter,"Defaulter","Not Defaulter"),"]")')->display(array('grid'=>'shorttext'));
 
 		$this->addExpression('search_string')->set("CONCAT(name,' ',FatherName,' ',PanNo)");
 

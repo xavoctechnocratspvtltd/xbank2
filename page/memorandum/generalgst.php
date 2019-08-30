@@ -27,8 +27,9 @@ class page_memorandum_generalgst extends Page{
 
 		$form = $col1->add('Form');
 		$form->addField('autocomplete/Basic','dr_account')->validateNotNull()->setModel($account_model);
-		
-		$form->addField('autocomplete/Basic','cr_account')->validateNotNull()->setModel($account_model);
+		$cr_account_model = $this->add('Model_Active_Account')->addCondition('branch_id',$this->app->current_branch->id);
+		$cr_account_model->addCondition('scheme_id','in',[14,10]);				
+		$form->addField('autocomplete/Basic','cr_account')->validateNotNull()->setModel($cr_account_model);
 
 		$form->addField('amount_included_gst')->validateNotNull();
 		$form->addField('DropDown','tax')->setValueList(['GST 18'=>'GST 18%'])->validateNotNull();

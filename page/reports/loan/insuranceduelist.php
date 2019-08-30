@@ -14,7 +14,7 @@ class page_reports_loan_insuranceduelist extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		
+		$form->addField('Radio','insurance_tenure')->setValueList(array('1 Year'=>'1 Year','5 Year'=>'5 Year'));
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
 		foreach ($document as $junk) {
@@ -37,7 +37,7 @@ class page_reports_loan_insuranceduelist extends Page {
 		$accounts_model->addExpression('insurance_date')->set('(DAY(LoanInsurranceDate))');
 		$q = $accounts_model->dsql();
 
-		$grid_column_array = array('AccountNumber','member','FatherName','PermanentAddress','PhoneNos','LoanInsurranceDate','dealer','insurance_month','insurance_date','maturity_date');
+		$grid_column_array = array('AccountNumber','member','FatherName','PermanentAddress','PhoneNos','LoanInsurranceDate','dealer','insurance_tenure','insurance_month','insurance_date','maturity_date');
 
 		if($_GET['filter']){
 			$this->api->stickyGET('filter');
@@ -53,6 +53,11 @@ class page_reports_loan_insuranceduelist extends Page {
 				$this->api->stickyGET('to_date');
 				$accounts_model->_dsql()->having('insurance_month','<=',(int)date('m',strtotime($_GET['to_date'])));
 				$accounts_model->_dsql()->having('insurance_date','<=',(int)date('d',strtotime($_GET['to_date'])));
+			}
+
+			if($_GET['insurance_tenure']){
+				$this->api->stickyGET('insurance_tenure');
+				$accounts_model->addCondition('insurance_tenure',$_GET['insurance_tenure']);
 			}
 			
 			if($_GET['dealer']){
@@ -121,7 +126,7 @@ class page_reports_loan_insuranceduelist extends Page {
 		$grid->js('click',$js);
 
 		if($form->isSubmitted()){
-			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'filter'=>1);
+			$send = array('dealer'=>$form['dealer'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0,'insurance_tenure'=>$form['insurance_tenure']?:'','filter'=>1);
 			foreach ($document as $junk) {
 				if($form['doc_'.$document->id])
 					$send['doc_'.$document->id] = $form['doc_'.$document->id];

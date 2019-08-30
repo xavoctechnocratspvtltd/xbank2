@@ -34,7 +34,7 @@ class page_noclog_report extends Page {
 
 		$form->addSubmit('Filter');
 
-		$branch_model = $this->add('Model_Branch')->addCondition('id','<>',$this->app->current_branch->id);
+		$branch_model = $this->add('Model_Branch')->addCondition('id','=',$this->app->current_branch->id);
 		$branch_field->setModel($branch_model);
 		$branch_field->setEmptyText('All Branch');
 

@@ -28,8 +28,16 @@ class Model_TransactionRow extends Model_Table {
 
 		$this->setOrder('created_at');
 
+		// $this->addHook('beforeSave',[$this,'updateSchemeIfAccountChanged']);
+
 		//$this->add('dynamic_model/Controller_AutoCreator');
 	}
+
+	// function updateSchemeIfAccountChanged($m){
+	// 	if($this->isDirty('account_id')){
+	// 		$this['scheme_id'] = $this->ref('account_id')->get('scheme_id');
+	// 	}
+	// }
 
 	function account(){
 		return $this->ref('account_id');

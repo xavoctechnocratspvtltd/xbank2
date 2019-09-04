@@ -105,9 +105,10 @@ class Model_Account_DDS2 extends Model_Account{
 
 	function getFirstEMIDate($return_date_string=false){
 		// ??? .... $this['created_at'] with dealer_monthly_date ... relation
-
+		$toAdd = 'P1M';
 		$date = new MyDateTime($this['created_at']);
-
+		$date->add(new DateInterval($toAdd));
+        $lastPremiumPaidDate = $date->format('Y-m-d');
 		return $date;
 
 		$toAdd = 'P1M';

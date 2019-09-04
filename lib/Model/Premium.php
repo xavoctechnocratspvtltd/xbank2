@@ -30,6 +30,10 @@ class Model_Premium extends Model_Table {
 	function payNowForRecurring($on_date=null){
 		
 		if(!$on_date) $on_date = $this->api->now;
+
+		if(!isset($on_date)){
+			$on_date = date('Y-m-d h:i:s');
+		}
 		
 		$this['PaidOn'] = $on_date;
 		$this->saveAs('Model_Premium');

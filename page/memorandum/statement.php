@@ -13,12 +13,15 @@ class page_memorandum_statement extends Page{
 		$this->to_date = $this->app->stickyGET('to_date')?:0;
 		
 		$account_id = $this->app->stickyGET('account_id')?:-1;
+		$from_date = $this->app->stickyGET('from_date')?:-1;
+		$to_date = $this->app->stickyGET('to_date')?:-1;
+
 		$form=$this->add('Form');
 		// $account_field = $form->addField('autocomplete/Basic','account')->validateNotNull();
 		// $account_field->setModel('Account');
 		$form->addField('autocomplete/Basic','account')->validateNotNull()->setModel('Account');
-		$form->addField('DatePicker','from_date')->validateNotNull();
-		$form->addField('DatePicker','to_date')->validateNotNull();
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
 		
 		$form->addSubmit('Get Statement');
 
@@ -28,8 +31,8 @@ class page_memorandum_statement extends Page{
 			$v->js()->reload(
 					array(
 						'account_id'=>$form['account'],
-						'from_date'=>($form['from_date'])?:0,
-						'to_date'=>($form['to_date'])?:0
+						'from_date'=>($form['from_date']),
+						'to_date'=>($form['to_date']),
 						)
 					)->execute();
 		}
@@ -45,8 +48,13 @@ class page_memorandum_statement extends Page{
 		$memo_tra_row_model->addExpression('narration')->set(function($m,$q){
 			return $q->expr('[0]',[$m->refSQL('memorandum_transaction_id')->fieldQuery('narration')]);
 		});
-
+		// echo 'A/C Id:'.$account_id;
+		// echo 'From_Date:'.$from_date;
+		// exit;
 		$memo_tra_row_model->addCondition('account_id',$account_id);
+		$memo_tra_row_model->addCondition('created_at','>=',$from_date);
+		$memo_tra_row_model->addCondition('created_at','<=',$to_date);
+
 		$memo_tra_row_model->setOrder('created_at');
 		// $grid->add('View',null,'grid_buttons')->setHtml('<div style="text-align:center;font-size:20px">'.$title_acc_name.' <br><small>'. $joint_memebrs .'</small> <br/> <small >From Date - '.$t_from_date." - " . "   To Date - ".($_GET['to_date']?:$this->api->today."</small></div>"));
 		$grid->setModel($memo_tra_row_model,['transaction','account','created_at','narration','tax','tax_amount','tax_narration','amountCr','amountDr']);

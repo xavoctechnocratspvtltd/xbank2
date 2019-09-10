@@ -17,8 +17,8 @@ class page_noclog_returnreceive extends Page {
 			return $q->expr('[0]',[$m->refSQL('accounts_id')->fieldQuery('member_name_only')]);
 		});
 		
-		if($this->app->current_branch->id AND !$this->app->auth->model->isSuper())
-			$noc_model->addCondition('to_branch_id',$this->app->current_branch->id);
+		// if($this->app->current_branch->id AND !$this->app->auth->model->isSuper())
+		// 	$noc_model->addCondition('to_branch_id',$this->app->current_branch->id);
 
 		$noc_model->addCondition('is_return',true);
 

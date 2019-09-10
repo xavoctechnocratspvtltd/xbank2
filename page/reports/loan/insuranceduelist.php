@@ -14,7 +14,7 @@ class page_reports_loan_insuranceduelist extends Page {
 
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
-		$form->addField('Radio','insurance_tenure')->setValueList(array('1 Year'=>'1 Year','5 Year'=>'5 Year'));
+		$form->addField('Radio','insurance_tenure')->setValueList(array(' '=>'None','1 Year'=>'1 Year','5 Year'=>'5 Year'));
 		$document=$this->add('Model_Document');
 		$document->addCondition('LoanAccount',true);
 		foreach ($document as $junk) {

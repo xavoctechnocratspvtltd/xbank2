@@ -17,7 +17,7 @@ class page_transactions_salaryandallowances extends Page {
 		
 		$account_from_account_model = $this->add('Model_Active_Account',array('table_alias'=>'acc'));
 		$account_from_account_model->addCondition([['SchemeType',ACCOUNT_TYPE_BANK],['SchemeType',ACCOUNT_TYPE_SAVING]]);
-		$account_from_account_model->addCondition('branch_id',$this->app->current_branch->id);
+		//$account_from_account_model->addCondition('branch_id',$this->app->current_branch->id);
 		$account_from_account_model->add('Controller_Acl');
 
 		$form->addField('Number','net_salary')->validateNotNull();

@@ -52,8 +52,7 @@ class Model_GST_Transaction extends Model_Transaction {
 		});
 
 		$this->addExpression('taxable_value')->set(function($m,$q){
-			return $m->refSQL('TransactionRow')->addCondition('account_id',4018)->sum($this->amountCr);
-			//return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
+			return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
 		});
 
 		$this->addCondition('tax_amount_sum','>',0);

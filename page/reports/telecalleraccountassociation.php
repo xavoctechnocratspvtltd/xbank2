@@ -37,7 +37,7 @@ class page_reports_telecalleraccountassociation extends Page {
 		$crud->add('Controller_Acl');
 
 		$crud->grid->removeColumn('final_to_date');
-		$crud->grid->addPaginator(50);
+		$crud->grid->addPaginator(500);
 		if($form->isSubmitted()){
 			$crud->js()->reload(array(
 								'telecaller_id'=>$form['telecaller'],

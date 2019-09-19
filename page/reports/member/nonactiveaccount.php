@@ -14,16 +14,26 @@ class page_reports_member_nonactiveaccount extends Page {
 		$this->grid->addPaginator(500);
 
 
-		$this->member->addExpression('sm_accounts')->set(function($m,$q){
-			return $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])
+		$this->member->addExpression('accounts')->set(function($m,$q){
+			return $this->add('Model_Account_SavingAndCurrent',['table_alias'=>'saving_accounts'])
 				->addCondition('member_id',$q->getField('id'))
 				->addCondition('ActiveStatus',false)
 				->_dsql()->del('fields')
 				->field('GROUP_CONCAT(AccountNumber)');
 		});
 
+		$this->member->addExpression('sm_accounts')->set(function($m,$q){
+			return $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])
+				->addCondition('member_id',$q->getField('id'))
+				->addCondition('ActiveStatus',true)
+				->_dsql()->del('fields')
+				->field('GROUP_CONCAT(AccountNumber)');
+		});
+
+		$this->member->addCondition('sm_count','>','0');
 		$this->member->addCondition('sm_accounts','!=','');
-		$this->grid->setModel($this->member,['sm_count','sm_accounts','member_no','name','PhoneNos','PermanentAddress']);
+		$this->member->addCondition('accounts','!=','');
+		$this->grid->setModel($this->member,['member_no','sm_accounts','accounts','name','PhoneNos','PermanentAddress']);
 	}
 
 

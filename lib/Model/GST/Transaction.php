@@ -51,10 +51,18 @@ class Model_GST_Transaction extends Model_Transaction {
 				]);
 		});
 
-		$this->addExpression('taxable_value')->set(function($m,$q){
-			//return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
-			return $q->expr('([0]*118)/18',[$m->getElement('tax_amount_sum')]);
+		// $this->addExpression('taxable_value')->set(function($m,$q){
+		// 	//return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
+		// 	return $q->expr('round(([0]*118)/18,2)',[$m->getElement('tax_amount_sum')]));
+		// });		
+$this->addExpression('total_invoice_value')->set(function ($m, $q) {
+return $q->expr('round(([0]*118)/18,2)',[$m->getElement('tax_amount_sum')]));
 		});
+
+		$this->addExpression('taxable_value')->set(function ($m, $q) {
+			return $q->expr('([0]-[1])', [$m->getElement('total_invoice_value'), $m->getElement('tax_amount_sum')]);
+		});
+
 
 		$this->addCondition('tax_amount_sum','>',0);
 	}

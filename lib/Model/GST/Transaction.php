@@ -52,7 +52,8 @@ class Model_GST_Transaction extends Model_Transaction {
 		});
 
 		$this->addExpression('taxable_value')->set(function($m,$q){
-			return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
+			//return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
+			return $q->expr('([0]*118)/18',[$m->getElement('tax_amount_sum')]);
 		});
 
 		$this->addCondition('tax_amount_sum','>',0);

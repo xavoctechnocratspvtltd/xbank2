@@ -49,7 +49,7 @@ class page_reports_loan_bikelegal_legalcasehearing extends Page {
 		$grid = $this->add('Grid');
 		$grid->addSno();
 
-		$field = ['account','owner','dealer','name','bccs_file_no','legal_filing_date','court','case_on','hearing_date','advocate','account_guarantor','autorised_person','stage'];
+		$field = ['account','owner','dealer','name','court','bccs_file_no','legal_filing_date','court','case_on','hearing_date','advocate','account_guarantor','autorised_person','stage'];
 		$grid->setModel($model,$field);
 
 		if($form->isSubmitted()){

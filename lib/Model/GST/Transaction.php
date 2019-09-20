@@ -55,8 +55,8 @@ class Model_GST_Transaction extends Model_Transaction {
 		// 	//return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
 		// 	return $q->expr('round(([0]*118)/18,2)',[$m->getElement('tax_amount_sum')]));
 		// });		
-$this->addExpression('total_invoice_value')->set(function ($m, $q) {
-return $q->expr('round(([0]*118)/18,2)',[$m->getElement('tax_amount_sum')]));
+		$this->addExpression('total_invoice_value')->set(function ($m, $q) {
+		return $q->expr('ROUND((([0]*118)/18),2)',[$m->getElement('tax_amount_sum')]);
 		});
 
 		$this->addExpression('taxable_value')->set(function ($m, $q) {

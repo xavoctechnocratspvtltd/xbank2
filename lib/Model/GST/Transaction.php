@@ -61,7 +61,7 @@ class Model_GST_Transaction extends Model_Transaction {
 		// }else{
 
 		$this->addExpression('taxable_value')->set(function ($m, $q) {
-			return $m->refSQL('TransactionRow')->addCondition('account_id','<>',[$this->sgst_id,$this->cgst_id,$this->igst_id])->addCondition('scheme_id',14)->sum('amountCr');
+			return $m->refSQL('TransactionRow')->addCondition('account_id','<>',[$this->sgst_id,$this->cgst_id,$this->igst_id])->addCondition('scheme_id',14)->addCondition('account_id','<',[$this->sgst_id,$this->cgst_id,$this->igst_id])->sum('amountCr');
 		});
 			//}
 

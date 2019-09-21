@@ -54,7 +54,7 @@ class Model_TransactionRow extends Model_Table {
 
 	function withScheme(){
 		$this->addExpression('SchemeType',function($m,$q){
-			return $q->expr('[0]', [$m->refSql('scheme_id')->getField('type')]);
+			return $q->expr('[0]', [$m->refSql('scheme_id')->fieldQuery('type')]);
 		});
 		return $this;
 	}

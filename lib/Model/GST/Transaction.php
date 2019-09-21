@@ -53,28 +53,26 @@ class Model_GST_Transaction extends Model_Transaction {
 
 		
 
-		// if($m->getElement('transaction_type') == 'LoanAccountOpen'){
-		// 	$this->addExpression('taxable_value')->set(function($m,$q){
-		// 		//return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
-		// 		return $m->refSQL('TransactionRow')->addCondition('scheme_id',14)->sum($this->amountCr);
-		// 	});
-		// }else{
-
-		$this->addExpression('taxable_value')->set(function ($m, $q) {
-			return $m->refSQL('TransactionRow')->withScheme()
-				->addCondition('account_id','<>',[$this->sgst_id,$this->cgst_id,$this->igst_id])
-				->addCondition('SchemeType','Default')
-				->sum('amountCr');
-		});
+		
+		// $this->addExpression('taxable_value')->set(function ($m, $q) {
+		// 	return $m->refSQL('TransactionRow')->withScheme()
+		// 		->addCondition('account_id','<>',[$this->sgst_id,$this->cgst_id,$this->igst_id])
+		// 		->addCondition('SchemeType','Default')
+		// 		->sum('amountCr');
+		// });
 			//}
 
 		// $this->addExpression('total_invoice_value')->set(function ($m, $q) {
 		// return $q->expr('ROUND((([0]*118)/18),2)',[$m->getElement('tax_amount_sum')]);
 		// });
 
-		$this->addExpression('total_invoice_value')->set(function ($m, $q) {
-			return $q->expr('([0]+[1])', [$m->getElement('taxable_value'), $m->getElement('tax_amount_sum')]);
+		$this->addExpression('taxable_value')->set(function($m,$q){
+			return $q->expr('([0]-[1])',[$m->getElement('cr_sum'),$m->getElement('tax_amount_sum')]);
 		});
+
+		// $this->addExpression('total_invoice_value')->set(function ($m, $q) {
+		// 	return $q->expr('([0]+[1])', [$m->getElement('taxable_value'), $m->getElement('tax_amount_sum')]);
+		// });
 
 
 		$this->addCondition('tax_amount_sum','>',0);

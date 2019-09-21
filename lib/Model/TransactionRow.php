@@ -51,4 +51,11 @@ class Model_TransactionRow extends Model_Table {
 
 		$this->delete();
 	}
+
+	function withScheme(){
+		$this->addExpression('SchemeType',function($m,$q){
+			return $q->refSql('scheme_id')->getField('type');
+		});
+		return $this;
+	}
 }

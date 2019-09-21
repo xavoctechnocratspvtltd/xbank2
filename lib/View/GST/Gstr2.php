@@ -59,10 +59,8 @@ class View_GST_Gstr2 extends View {
 		$tra->getElement('cr_sum')->caption('Total Invoice Value');
 
 		$grid = $page->add('Grid');
-		//$grid->setModel($tra,['created_at','reference','transaction_type','gstin','voucher_no','taxable_value','igst','cgst','sgst','tax_amount_sum','cr_sum']);
-		//$grid->setModel($tra,['created_at','reference','transaction_type','gstin','voucher_no','taxable_value','igst','cgst','sgst','tax_amount_sum','total_invoice_value']);
+		$grid->setModel($tra,['created_at','reference','transaction_type','gstin','voucher_no','taxable_value','igst','cgst','sgst','tax_amount_sum','cr_sum']);
 		$grid->addPaginator(100);
 		$grid->addTotals(['taxable_value','igst','cgst','sgst','tax_amount_sum','cr_sum']);
-		//$grid->addTotals(['taxable_value','igst','cgst','sgst','tax_amount_sum','total_invoice_value']);
 	}
 }

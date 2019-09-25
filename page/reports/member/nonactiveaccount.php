@@ -14,13 +14,30 @@ class page_reports_member_nonactiveaccount extends Page {
 		$this->grid->addPaginator(500);
 
 
-		$this->member->addExpression('accounts')->set(function($m,$q){
+		$this->member->addExpression('saving_and_current_accounts')->set(function($m,$q){
 			return $this->add('Model_Account_SavingAndCurrent',['table_alias'=>'saving_accounts'])
 				->addCondition('member_id',$q->getField('id'))
-				->addCondition('ActiveStatus',false)
+				->addCondition('ActiveStatus',true)
 				->_dsql()->del('fields')
 				->field('GROUP_CONCAT(AccountNumber)');
 		});
+
+		// $this->member->addExpression('loan_account')->set(function($m,$q){
+		// 	return $this->add('Model_Account_Loan')
+		// 				->addCondition('member_id',$q->getField('id'))
+		// 				->addCondition('ActiveStatus',false)
+		// 				->_dsql()->del('fields')
+		// 				->field('GROUP_CONCAT(AccountNumber)');
+		// });
+
+
+		// $this->member->addExpression('rd_account')->set(function($m,$q){
+		// 	return $m->add('Model_Account_Recurring')
+		// 				->addCondition('member_id',$q->getField('id'))
+		// 				->addCondition('ActiveStatus',false)
+		// 				->_dsql()->del('fields')
+		// 				->field('GROUP_CONCAT(AccountNumber)');
+		// });
 
 		$this->member->addExpression('sm_accounts')->set(function($m,$q){
 			return $this->add('Model_Account_SM',['table_alias'=>'sm_accounts'])
@@ -30,10 +47,25 @@ class page_reports_member_nonactiveaccount extends Page {
 				->field('GROUP_CONCAT(AccountNumber)');
 		});
 
+		$this->member->addExpression('non_active_accounts')->set(function($m,$q){
+			
+
+				return $m->add('Model_Account')
+					->addCondition('member_id',$q->getField('id'))
+					->addCondition('account_type',['FD',ACCOUNT_TYPE_DDS,ACCOUNT_TYPE_RECURRING,LOAN_AGAINST_DEPOSIT])
+					->addCondition('ActiveStatus',false)
+					->_dsql()->del('fields')
+					->field('GROUP_CONCAT(AccountNumber)');
+		});
+
+		
+
+
+
 		$this->member->addCondition('sm_count','>','0');
 		$this->member->addCondition('sm_accounts','!=','');
-		$this->member->addCondition('accounts','!=','');
-		$this->grid->setModel($this->member,['member_no','sm_accounts','accounts','name','PhoneNos','PermanentAddress']);
+		$this->member->addCondition('non_active_accounts','!=','');
+		$this->grid->setModel($this->member,['member_no','sm_accounts','saving_and_current_accounts','non_active_accounts','name','PhoneNos','PermanentAddress']);
 	}
 
 
@@ -62,7 +94,7 @@ class page_reports_member_nonactiveaccount extends Page {
 	// 				->where('SchemeType',ACCOUNT_TYPE_RECURRING)
 	// 				->where('SchemeType',ACCOUNT_TYPE_FIXED)
 	// 				->where('SchemeType',ACCOUNT_TYPE_DDS)
-	// 		);
+	// 		);	
 
 	// 	$accounts_model->addCondition('DefaultAC',false);
 

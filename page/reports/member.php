@@ -14,6 +14,6 @@ class page_reports_member extends Page {
 		$tab1=$tabs->addTabURL('utility_activemember','Active Memebr');
 		$tab1=$tabs->addTabURL('reports_member_loandetails','Member Loan Details');
 		$tab1=$tabs->addTabURL('reports_member_smaudit','Member SM Audit');
-		$tab1=$tabs->addTabURL('reports_member_nonactiveaccount','Member WithOut Active SM Account');
+		$tab1=$tabs->addTabURL('reports_member_nonactiveaccount','SM Member WithOut Active Loan/RD/DDS Accounts');
 	}
 }

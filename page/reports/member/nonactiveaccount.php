@@ -22,6 +22,13 @@ class page_reports_member_nonactiveaccount extends Page {
 				->field('GROUP_CONCAT(AccountNumber)');
 		});
 
+
+		$this->member->addExpression('sb_disactive')->set(function($m,$q){
+			
+				return  $this->add('Model_Account_SavingAndCurrent',['table_alias'=>'saving_accounts'])->addCondition('ActiveStatus',false)->addCondition('member_id',$q->getField('id'))->count();
+		});
+
+
 		// $this->member->addExpression('loan_account')->set(function($m,$q){
 		// 	return $this->add('Model_Account_Loan')
 		// 				->addCondition('member_id',$q->getField('id'))
@@ -65,6 +72,7 @@ class page_reports_member_nonactiveaccount extends Page {
 		$this->member->addCondition('sm_count','>','0');
 		$this->member->addCondition('sm_accounts','!=','');
 		$this->member->addCondition('non_active_accounts','!=','');
+		$this->member->addCondition('sb_disactive','<','1');
 		$this->grid->setModel($this->member,['member_no','sm_accounts','saving_and_current_accounts','non_active_accounts','name','PhoneNos','PermanentAddress']);
 	}
 

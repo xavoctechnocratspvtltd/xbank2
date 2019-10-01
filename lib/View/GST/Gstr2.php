@@ -51,7 +51,7 @@ class View_GST_Gstr2 extends View {
 		$tra->addCondition('is_sale_invoice',1);
 		$tra->addCondition('transaction_type','<>',[TRA_PURCHASE_ENTRY]);
 		if($this->app->currentBranch->id)
-			///$tra->addCondition('branch_id',$this->app->currentBranch->id);
+			$tra->addCondition('branch_id',$this->app->currentBranch->id);
 
 		$tra->getElement('created_at')->caption('Date');
 		$tra->getElement('created_at')->caption('Date');

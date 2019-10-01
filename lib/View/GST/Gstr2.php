@@ -51,7 +51,7 @@ class View_GST_Gstr2 extends View {
 		$tra->addCondition('is_sale_invoice',1);
 		$tra->addCondition('transaction_type','<>',[TRA_PURCHASE_ENTRY]);
 		if($this->app->currentBranch->id)
-			$tra->addCondition('branch_id',$this->app->currentBranch->id);
+			///$tra->addCondition('branch_id',$this->app->currentBranch->id);
 
 		$tra->getElement('created_at')->caption('Date');
 		$tra->getElement('created_at')->caption('Date');
@@ -59,7 +59,7 @@ class View_GST_Gstr2 extends View {
 		$tra->getElement('cr_sum')->caption('Total Invoice Value');
 
 		$grid = $page->add('Grid');
-		$grid->setModel($tra,['created_at','reference','transaction_type','gstin','voucher_no','taxable_value','igst','cgst','sgst','tax_amount_sum','cr_sum']);
+		$grid->setModel($tra,['created_at','reference','transaction_type','gstin','voucher_no','invoice_no','taxable_value','igst','cgst','sgst','tax_amount_sum','cr_sum']);
 		$grid->addPaginator(100);
 		$grid->addTotals(['taxable_value','igst','cgst','sgst','tax_amount_sum','cr_sum']);
 	}

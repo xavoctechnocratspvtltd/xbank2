@@ -44,6 +44,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$account_member_join->addField('phone_no','PhoneNos');
 		$account_member_join->addField('CurrentAddress','CurrentAddress');
 		$account_member_join->addField('landmark');
+		$account_member_join->addField('pan_no','PanNo');
 
 		$agent_join=$account_join->leftJoin('agents','agent_id');
 		$agent_member_join = $agent_join->leftJoin('members','member_id');
@@ -125,7 +126,7 @@ class page_reports_deposit_emireceivedlist extends Page {
 		$transaction_row_model->setOrder('created_at','desc');
 		$transaction_row_model->getElement('created_at')->caption('Deposited On');
 
-		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','FatherName','CurrentAddress','landmark','due_premium_count','amountCr','agent_name','agent_account_number','created_at','Narration','scheme_name','last_paid_on'));
+		$grid->setModel($transaction_row_model,array('AccountNumber','member_name','phone_no','pan_no','FatherName','CurrentAddress','landmark','due_premium_count','amountCr','agent_name','agent_account_number','created_at','Narration','scheme_name','last_paid_on'));
 		// $grid->removeColumn('CurrentAddress');
 		$grid->addFormatter('CurrentAddress','Wrap');
 		$grid->addFormatter('FatherName','100Wrap');

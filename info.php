@@ -1,1 +1,4 @@
-<?php phpinfo(); ?>
+<?php 
+echo 'test server details';
+phpinfo();
+ ?>

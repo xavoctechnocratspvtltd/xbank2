@@ -1,0 +1,7 @@
+<?php
+if (!defined('PDO::ATTR_DRIVER_NAME')) {
+echo 'PDO unavailable';
+}else{echo "yes";}
+get_loaded_extensions(); 
+	
+echo phinfo();

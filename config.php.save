@@ -1,0 +1,8 @@
+<?php
+
+$config['dsn']='mysql://root:voipinfotech@2019@127.0.0.1/bhawani_xbank';
+$config['user']="BHAWANICREDIT";
+$config['password']="$config['password']="bccs@789";";
+$config['senderId']="BCCSLT";
+
+$config['account_create_api_url']='http://bhawani.epan.in/api/v1/customer';
